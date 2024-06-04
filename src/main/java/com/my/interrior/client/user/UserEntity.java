@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
 
 
 @Entity(name = "user")
@@ -35,5 +38,7 @@ public class UserEntity {
     @Column(nullable = false, name = "u_tel")
     private String UTel;
 
-
+    @Column(nullable = false, name = "u_register")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate URegister;
 }
