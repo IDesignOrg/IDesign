@@ -17,9 +17,10 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        System.out.println("shshshshsh");
         registry.addInterceptor(interceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/auth/**"); //auth명시된건 패스시킨다
+                .excludePathPatterns("/auth/**","/","/login"); //auth명시된건 패스시킨다
 
 
 

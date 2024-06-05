@@ -10,7 +10,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class Interceptor implements HandlerInterceptor {
 
     @Override
-
     public boolean preHandle(HttpServletRequest  request, HttpServletResponse response, Object handler) throws Exception {
         // 요청이 컨트롤러에 도달하기 전에 실행되는 코드
 
@@ -19,10 +18,10 @@ public class Interceptor implements HandlerInterceptor {
 
         if (session == null || session.getAttribute("UId") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            System.out.println("권한이 필요합니다.");
+            System.out.println("11111");
             return false;
         }
-        System.out.println("권한 있음.");
+        System.out.println("22222");
         return true;
     }
 
