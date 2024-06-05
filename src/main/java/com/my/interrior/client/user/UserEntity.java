@@ -17,7 +17,6 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     @Column(name = "u_no")
     private Long UNo;
 
