@@ -18,10 +18,10 @@ public class Interceptor implements HandlerInterceptor {
 
         if (session == null || session.getAttribute("UId") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            System.out.println("11111");
+            System.out.println("aaaaa");
             return false;
         }
-        System.out.println("22222");
+        System.out.println("sessss");
         return true;
     }
 

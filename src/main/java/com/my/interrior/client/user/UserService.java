@@ -9,11 +9,6 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public String checkLogin(){
-
-        return "";
-    }
-
     public UserEntity checkLogin(String UId, String UPw) {
 
         UserEntity UserId = userRepository.findByUIdAndUPw(UId,UPw);
@@ -21,4 +16,6 @@ public class UserService {
         return UserId;
 
     }
+
+
 }
