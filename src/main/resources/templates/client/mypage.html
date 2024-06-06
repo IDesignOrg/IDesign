@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Page</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<h1>My Page</h1>
+
+<form id="userInfoForm">
+    <p>ID:<input type="text" id="UId" th:value="${userInfo.UId}"/></p>
+    <p>Name: <input type="text" id="UName" th:value="${userInfo.UName}" /></p>
+    <p>Birth: <input type="text" id="UBirth" th:value="${userInfo.UBirth}" /></p>
+    <p>Email: <input type="email" id="UMail" th:value="${userInfo.UMail}" /></p>
+    <p>Phone: <input type="text" id="UTel" th:value="${userInfo.UTel}" /></p>
+    <button type="button" onclick="updateUserInfo()">Update</button>
+</form>
+
+<a href="/">Home</a>
+
+<script>
+    function updateUserInfo() {
+        var updatedUser = {
+            UId: $('#UId').text(),
+            UName: $('#UName').val(),
+            UBirth: $('#UBirth').val(),
+            UMail: $('#UMail').val(),
+            UTel: $('#UTel').val()
+        };
+
+       $.ajax({
+    type: "PUT",
+    url: "/mypage/" + updatedUser.UId,
+    contentType: "application/json",
+    data: JSON.stringify(updatedUser),
+    success: function (response) {
+        // 성공적으로 업데이트된 사용자 정보를 받아와서 화면에 갱신하기
+        $('#UName').val(response.UName);
+        $('#UBirth').val(response.UBirth);
+        $('#UMail').val(response.UMail);
+        $('#UTel').val(response.UTel);
+    }
+});
+    }
+</script>
+</body>
+</html>
