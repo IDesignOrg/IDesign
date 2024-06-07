@@ -16,6 +16,14 @@ public class UserService {
         return UserId;
 
     }
+    
+    public UserEntity checkLogin(String UId) {
 
+        UserEntity UserId = userRepository.findByUId(UId);
+
+        return UserId;
+
+    }
+    
 
 }
