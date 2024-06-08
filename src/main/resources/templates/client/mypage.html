@@ -14,6 +14,9 @@
     <p>Birth: <input type="text" id="UBirth" th:value="${userInfo.UBirth}" /></p>
     <p>Email: <input type="email" id="UMail" th:value="${userInfo.UMail}" /></p>
     <p>Phone: <input type="text" id="UTel" th:value="${userInfo.UTel}" /></p>
+	<input type="hidden" id="UPw" th:value="${userInfo.UPw}"/>	
+	<input type="hidden" id="UNo" th:value="${userInfo.UNo}"/>
+	<input type="hidden" id="URegister" th:value="${userInfo.URegister}"/>
     <button type="button" onclick="updateUserInfo()">Update</button>
 </form>
 
@@ -22,11 +25,14 @@
 <script>
     function updateUserInfo() {
         var updatedUser = {
-            UId: $('#UId').text(),
+            UId: $('#UId').val(),
             UName: $('#UName').val(),
             UBirth: $('#UBirth').val(),
             UMail: $('#UMail').val(),
-            UTel: $('#UTel').val()
+            UTel: $('#UTel').val(),
+			UPw: $('#UPw').val(),
+			UNo: $('#UNo').val(),
+			URegister: $('#URegister').val()
         };
 
        $.ajax({
@@ -40,6 +46,9 @@
         $('#UBirth').val(response.UBirth);
         $('#UMail').val(response.UMail);
         $('#UTel').val(response.UTel);
+		$('#UPw').val(response.UPw);
+		$('#UNo').val(response.UNo);
+		$('#URegister').val(response.URegister);
     }
 });
     }
