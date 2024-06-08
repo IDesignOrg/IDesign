@@ -16,9 +16,8 @@ public class MypageRestController {
     private   MypageRepository mypageRepository;
 
 
-    @PutMapping("/mypage/{id}")
-    public ResponseEntity<UserEntity> updateUserInfo(@RequestBody UserEntity userEntity,@PathVariable("Uid") String id) {
-
+    @PutMapping("/mypage/{UId}")
+    public ResponseEntity<UserEntity> updateUserInfo(@RequestBody UserEntity userEntity,@PathVariable("UId") String id) {
         System.out.println("userentity:" +userEntity);
 
         mypageRepository.save(userEntity);
