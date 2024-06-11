@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-container {
+            width: 300px;
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .login-container h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .login-form label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        .login-form input {
+            width: calc(100% - 22px);
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        .login-form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .error-message {
+            display: none;
+            color: red;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <h1>Login</h1>
+    <!-- 모델에 저장된 에러 메시지가 있을 경우에만 표시 -->
+    <div th:if="${loginError}" class="error-message">
+        <p th:text="${loginError}"></p>
+        <!-- 에러 메시지 표시 후 모델에서 제거 -->
+    </div>
+    <!-- 로그인 폼 -->
+    <form class="login-form" method="post" action="/auth/login" onsubmit="return validateForm()">
+        <!-- 사용자 입력 필드 -->
+        <label for="UId">Username:</label>
+        <input type="text" id="UId" name="UId">
+        <label for="UPw">Password:</label>
+        <input type="password" id="UPw" name="UPw">
+        <!-- 로그인 버튼 -->
+        <button type="submit">Login</button>
+    </form>
+	<!-- kakao button -->
+	<div class="text-center">
+	    <a href="https://kauth.kakao.com/oauth/authorize"
+	       th:href="@{https://kauth.kakao.com/oauth/authorize(client_id=${kakaoApiKey}, redirect_uri=${redirectUri}, response_type='code')}">
+		   <img src="images/kakao_login_medium_wide.png" alt="Kakao Login">
+	    </a>
+	</div>
+	<div class="text-center">
+		<a th:href="@{https://accounts.google.com/o/oauth2/v2/auth(client_id=${googleClientId}, redirect_uri=${googleRedirectUri}, response_type='code', scope=${googleScope})}">구글 로그인</a>
+	</div>
+</div>
+
+<!-- JavaScript를 사용하여 알림창 표시 -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // 페이지 로드 시 알림창 표시
+    window.onload = function() {
+        var errorMessage = document.querySelector('.error-message');
+        if (errorMessage && errorMessage.innerText.trim() !== "") {
+            alert(errorMessage.innerText.trim());
+        }
+    };
+    /*]]>*/
+</script>
+</body>
+</html>
