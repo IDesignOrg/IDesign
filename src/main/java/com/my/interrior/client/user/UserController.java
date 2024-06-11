@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.my.interrior.common.GoogleApi;
+import com.my.interrior.common.KakaoApi;
+
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -24,8 +27,25 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private KakaoApi kakaoApi;
+    
+    @Autowired
+    private GoogleApi googleApi;
+    
     @GetMapping("/auth/login")
-    public String LoginPage(){
+    public String LoginPage(Model model){
+    	
+    	model.addAttribute("kakaoApiKey", kakaoApi.getKakaoApiKey());
+    	model.addAttribute("redirectUri", kakaoApi.getKakaoRedirectUri());
+    	model.addAttribute("googleClientId", googleApi.getClientId());
+    	model.addAttribute("googleRedirectUri", googleApi.getRedirectUri());
+    	model.addAttribute("googleScope", googleApi.getScope());
+    	
+    	
+    	System.out.println("googleClientId: " + googleApi.getClientId());
+    	System.out.println("googleRedirectUri: " + googleApi.getRedirectUri());
+    	System.out.println("googleScope: " + googleApi.getScope());
         return "client/login";
     }
 
