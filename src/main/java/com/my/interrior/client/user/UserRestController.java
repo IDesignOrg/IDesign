@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 
-//·¹½ºÆ® ÄÁÆ®·Ñ·¯´Â ¸®ÅÏÇü½ÄÀº ¹«Á¶°Ç JSON¶Ç´ÂXML ÀÌ´Ù.
+//ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½Æ®ï¿½Ñ·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ JSONï¿½Ç´ï¿½XML ï¿½Ì´ï¿½.
 
 @RestController
 public class UserRestController {

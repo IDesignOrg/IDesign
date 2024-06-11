@@ -30,4 +30,10 @@ public class MypageController {
 
         return "client/mypage";
     }
+    
+    
+    
+    
+    
+  
 }
