@@ -14,5 +14,10 @@ public class MypageService {
 
         return mypageRepository.findByUId(UId);
     }
+    
+    public void deleteUserInfo(String UId) {
+    	mypageRepository.deleteByUId(UId);
+    	
+    } 
 
 }
