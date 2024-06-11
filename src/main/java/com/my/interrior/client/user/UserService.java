@@ -25,5 +25,16 @@ public class UserService {
 
     }
     
+    public UserEntity checkUserByEmail(String email) {
+    	UserEntity user = userRepository.findByUMail(email);
+    	
+    	if(user != null) {
+    		
+    		return user;
+    	}else {
+    		return null;
+    	}
+    }
+    
 
 }
