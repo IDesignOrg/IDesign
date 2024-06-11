@@ -17,8 +17,14 @@
 	<input type="hidden" id="UPw" th:value="${userInfo.UPw}"/>	
 	<input type="hidden" id="UNo" th:value="${userInfo.UNo}"/>
 	<input type="hidden" id="URegister" th:value="${userInfo.URegister}"/>
-    <button type="button" onclick="updateUserInfo()">Update</button>
+	<button type="button" onclick="updateUserInfo()">Update</button>
+	<button type="button" onclick="deleteUserInfo()">Delete</button>
 </form>
+
+
+	
+
+
 
 <a href="/">Home</a>
 
@@ -34,7 +40,8 @@
 			UNo: $('#UNo').val(),
 			URegister: $('#URegister').val()
         };
-
+		
+	
        $.ajax({
     type: "PUT",
     url: "/mypage/" + updatedUser.UId,
@@ -51,7 +58,30 @@
 		$('#URegister').val(response.URegister);
     }
 });
-    }
+
+	
+}
+
+function deleteUserInfo(){
+		var deleteUser = $('#UId').val();
+		
+		
+		$.ajax({
+			type: "DELETE",
+			url: "/delete/" + deleteUser,
+			data: deleteUser,
+			success: function(response){
+				if(response == "success"){
+					alert("삭제가 완료되었습니다.");
+					window.location.href="/";
+				}else{
+					alert("삭제 실패.");
+					window.location.href="/";
+				}
+			}
+		});
+			
+	}	
 </script>
 </body>
 </html>
