@@ -10,13 +10,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.my.interrior.common.GoogleApi;
 import com.my.interrior.common.KakaoApi;
+import com.my.interrior.common.MailDTO;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 
 @Controller
 public class UserController {
@@ -100,6 +103,11 @@ public class UserController {
 	@GetMapping("/auth/findUId")
 	public String findPasswordPage() {
 		return "client/findUId";
+	}
+	
+	@GetMapping("/auth/findUPw")
+	public String findUPw() {
+		return "client/findUPw";
 	}
 
 	@PostMapping("/auth/findUserID")
