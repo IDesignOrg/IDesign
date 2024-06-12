@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 public interface MypageRepository extends JpaRepository<UserEntity, Long> {
 
     UserEntity findByUId(String UId);
+    
     @Transactional
     void deleteByUId(String UId);
 }
