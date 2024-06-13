@@ -10,16 +10,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.my.interrior.common.GoogleApi;
 import com.my.interrior.common.KakaoApi;
-import com.my.interrior.common.MailDTO;
+import com.my.interrior.common.NaverApi;
 
 import jakarta.servlet.http.HttpSession;
-import jakarta.transaction.Transactional;
 
 @Controller
 public class UserController {
@@ -38,6 +36,9 @@ public class UserController {
 
 	@Autowired
 	private GoogleApi googleApi;
+	
+	@Autowired
+	private NaverApi naverApi;
 
 	@GetMapping("/auth/login")
 	public String LoginPage(Model model) {
@@ -47,6 +48,9 @@ public class UserController {
 		model.addAttribute("googleClientId", googleApi.getClientId());
 		model.addAttribute("googleRedirectUri", googleApi.getRedirectUri());
 		model.addAttribute("googleScope", googleApi.getScope());
+		model.addAttribute("naverClientId", naverApi.getClientId());
+		model.addAttribute("naverRedirectUri", naverApi.getRedirectUri());
+		
 
 		System.out.println("googleClientId: " + googleApi.getClientId());
 		System.out.println("googleRedirectUri: " + googleApi.getRedirectUri());
