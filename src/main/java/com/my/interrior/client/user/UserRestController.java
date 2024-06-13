@@ -13,28 +13,40 @@ import com.my.interrior.common.MailDTO;
 
 import jakarta.transaction.Transactional;
 
-
 @RestController
 public class UserRestController {
 
 	@Autowired
 	private UserService userService;
-	
+
+	@Autowired
+	private UserRepository userRepository;
+
 	@Transactional
 	@GetMapping("/auth/findPw/{UName}")
-	public ResponseEntity<String> findUPw(@ModelAttribute UserMailDTO dto, @PathVariable("UName") String UName, Model model){
+	public ResponseEntity<String> findUPw(@ModelAttribute UserMailDTO dto, @PathVariable("UName") String UName,
+			Model model) {
 		String mail = dto.getUMail();
 		String name = dto.getUName();
-		
+
 		MailDTO user = userService.checkMailAndName(mail, name);
-		
-		if(user != null) {
-			
+
+		if (user != null) {
+
 			userService.mailSend(user);
 			return ResponseEntity.ok("success");
-		}else {
+		} else {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("fail");
 		}
-		
+
+	}
+
+	@GetMapping("/auth/check/{UId}")
+	public ResponseEntity<String> checkDuplicatedId(@PathVariable("UId") String userId) {
+
+		UserEntity user = userRepository.findByUId(userId);
+
+		return ResponseEntity.ok(user != null ? "duplicated" : "available");
+
 	}
 }
