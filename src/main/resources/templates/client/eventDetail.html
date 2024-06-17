@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title th:text="${event.eventTitle} + ' 상세 정보'">이벤트 상세 정보</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			line-height: 1.6;
+			background-color: #f8f9fa;
+			padding: 20px;
+			margin: 0;
+		}
+
+		.container {
+			max-width: 800px;
+			margin: 0 auto;
+			background-color: #fff;
+			border-radius: 5px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			padding: 20px;
+		}
+
+		.event-detail img {
+			max-width: 100%;
+			height: auto;
+			margin-bottom: 20px;
+			border-radius: 5px;
+		}
+
+		.event-title {
+			font-size: 28px;
+			font-weight: bold;
+			color: #333;
+			margin-bottom: 10px;
+		}
+
+		.event-content {
+			font-size: 16px;
+			color: #666;
+			margin-bottom: 20px;
+		}
+
+		.back-link {
+			display: inline-block;
+			color: #007bff;
+			text-decoration: none;
+			margin-top: 20px;
+		}
+
+		.back-link:hover {
+			text-decoration: underline;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<div class="event-detail">
+			<h1 class="event-title" th:text="${event.eventTitle}"></h1>
+			<p class="event-content" th:text="${event.eventContent}"></p>
+			<p th:text="${event.eventImg}" class="event-img"></p>
+			<a href="/auth/event" class="back-link">이벤트 목록으로 돌아가기</a>
+		</div>
+	</div>
+</body>
+
+</html>
