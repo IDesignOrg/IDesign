@@ -1,19 +1,26 @@
 package com.my.interrior.client.evaluation;
 
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
+import java.io.IOException;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.UUID;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
 
 @Service
 public class ReviewService {
 	private final Storage storage;
+	
+	@Autowired
+    private ReviewRepository reviewRepository;
 
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
@@ -30,5 +37,14 @@ public class ReviewService {
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
         storage.create(blobInfo, file.getBytes());
         return String.format("https://storage.googleapis.com/%s/%s", bucketName, fileName);
+    }
+    
+    // 페이징 처리된 후기 목록 가져오기
+    public Page<ReviewEntity> getAllReviews(Pageable pageable) {
+        return reviewRepository.findAll(pageable);
+    }
+
+    public Optional<ReviewEntity> getReviewById(Long rNo) {
+        return reviewRepository.findById(rNo);
     }
 }
