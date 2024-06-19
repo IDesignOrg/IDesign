@@ -36,10 +36,6 @@ public class ReviewEntity {
 	@Column(columnDefinition = "TEXT", name = "r_content")
 	private String RContent;
 
-	@JsonProperty("RMainphoto")
-	@Column(nullable = false, name = "r_mainphoto")
-	private String RMainphoto;
-
 	@JsonProperty("RCategory")
 	@Column(name = "r_category")
 	private String RCategory;
