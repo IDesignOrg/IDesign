@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
@@ -26,35 +27,23 @@ public class ReviewController {
     @Autowired
     private ReviewRepository reviewRepository;
 
-	@GetMapping("/auth/review_write")
+	@GetMapping("/review_write")
 	public String review() {
 		return "client/review/review_write"; 
 	}
 	
-	@PostMapping("/auth/review_write")
-	public String createReview(
-			@RequestParam("title") String title,
-			@RequestParam("file") MultipartFile file,
-			@RequestParam("category") String category,
-			Model model) {
-		try {
-            String imageUrl = reviewService.uploadFile(file);
+	@PostMapping("/review_write")
+    public String createReview(
+            @RequestParam("title") String title,
+            @RequestParam("category") String category,
+            @RequestParam("content") String content,
+            @RequestParam("starRating") String starRating,
+            @RequestParam("files") MultipartFile[] files,
+            Model model) throws IOException {
+        
+        reviewService.uploadFileAndCreateReview(title, category, content, starRating, files);
 
-            ReviewEntity review = new ReviewEntity();
-            review.setRTitle(title);
-            review.setRMainphoto(imageUrl);
-            review.setRCategory(category);
-
-            reviewRepository.save(review);
-
-            model.addAttribute("message", "Review created successfully!");
-
-        } catch (IOException e) {
-            model.addAttribute("message", "Failed to upload image!");
-            e.printStackTrace();
-        }
-
-        return "redirect:/auth/review_write";
+        return "redirect:/review_write";
     }
 	
 	@GetMapping("/auth/evaluation")
