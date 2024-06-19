@@ -1,16 +1,21 @@
 package com.my.interrior.client.user;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.my.interrior.client.csc.faq.FaqEntity;
+import com.my.interrior.client.csc.inquiry.InquiryEntity;
+import com.my.interrior.client.csc.notice.NoticeEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -56,4 +61,13 @@ public class UserEntity {
     @Column(nullable = false, name = "u_register")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate URegister;
+    
+    @OneToMany(mappedBy = "userEntity")
+    private List<NoticeEntity> notices;
+    
+    @OneToMany(mappedBy = "userEntity")
+    private List<InquiryEntity> Inquiries;
+    
+    @OneToMany(mappedBy = "userEntity")
+    private List<FaqEntity> faq;
 }

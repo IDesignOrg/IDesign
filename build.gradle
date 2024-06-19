@@ -33,6 +33,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	//google mail
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	//webSocket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
     // Spring Boot Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 //    testImplementation 'org.springframework.security:spring-security-test'

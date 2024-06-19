@@ -7,13 +7,75 @@
 </head>
 
 <body>
+	<!-- nav에 들어갈 요소들입니다. -->
 	<a href="/auth/login">로그인</a>
 	<a href="/auth/join">회원가입</a>
 	<p>마이페이지</p>
-	<a href="/mypage">내정보보기</a>
-	<a href ="/auth/event">이벤트</a>
-	<a href ="/auth/evaluation">후기</a>
+	<a href="/mypage">내정보보기</button>
+		<a href="/auth/event">이벤트</a>
+		<a href="/auth/evaluation">후기</a>
+		<a href="/auth/chat">나 관리자</a>
 
+		<!-- 채팅 창 컨테이너 -->
+		<div id="chatContainer">
+			<!-- 채팅 영역 -->
+			<div id="chatForm">
+				<form>
+					<!-- 텍스트 박스에 채팅의 내용을 작성한다. -->
+					<input id="textMessage" type="text" onkeydown="return enter()" />
+					<!-- 서버로 메시지를 전송하는 버튼 -->
+					<input onclick="sendMessage()" value="Send" type="button" />
+				</form>
+			</div>
+			<!-- 서버와 메시지를 주고 받는 콘솔 텍스트 영역 -->
+			<textarea id="messageTextArea" rows="10" cols="50" disabled="disabled"></textarea>
+		</div>
+		<!-- 1:1 채팅 스크립트 -->
+		<script>
+			//서버의 broadsocket의 서블릿으로 웹 소켓 시작
+			var webSocket = new WebSocket("ws://localhost:8080/broadsocket");
+			//콘솔 텍스트 영역
+			var messageTextArea = document.getElementById("messageTextArea");
+			//접속이 완료되면
+			webSocket.onopen = function (message) {
+				//콘솔에 메시지를 남긴다.
+				messageTextArea.value += "접속이 완료되었습니다.\n";
+			};
+			//접속이 끊기는 경우는 브라우저를 닫는 경우
+			webSocket.onclose = function (message) { };
+			//에러가 발생하면??
+			webSocket.onerror = function (message) {
+				//콘솔에 메시지를 남긴다.
+				messageTextArea.value += "서버에 에러가 발생되었습니다.\n";
+			};
+			//서버로부터 메시지가 도착하면(관리자로부터) 콘솔 화면에 메시지를 남긴다.
+			webSocket.onmessage = function (message) {
+				messageTextArea.value += "(operator) => " + message.data + "\n";
+			};
+			//서버로 메시지 보내자.
+			//Send 버튼 누르거나 텍스트 박스에서 엔터를 치면 실행
+			function sendMessage() {
+				//텍스트 박스의 객체를 가져온다.
+				var message = document.getElementById('textMessage');
+				//콘솔에 메시지를 추가
+				messageTextArea.value += "(me) => " + message.value + "\n";
+				// 소켓으로 보낸다.
+				webSocket.send(message.value);
+				// 텍스트 박스 초기화
+				message.value = "";
+			}
+
+			// 텍스트 박스에서 엔터를 누르면
+			function enter() {
+				if (event.keyCode === 13) {
+					//서버로 메시지 전송
+					sendMessage();
+					//자동 submit 막기
+					return false;
+				}
+				return true;
+			}
+		</script>
 </body>
 
 </html>
