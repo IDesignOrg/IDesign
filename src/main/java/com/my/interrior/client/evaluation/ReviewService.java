@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.Optional;
 
 
 import java.io.IOException;
@@ -117,15 +118,16 @@ public class ReviewService {
 	        reviewPhotoRepository.saveAll(reviewPhotos);
           
           // 페이징 처리된 후기 목록 가져오기
-    public Page<ReviewEntity> getAllReviews(Pageable pageable) {
-        return reviewRepository.findAll(pageable);
-    }
-
-    public Optional<ReviewEntity> getReviewById(Long rNo) {
-        return reviewRepository.findById(rNo);
-    }
+    
 
 	        
+	    }
+	    public Page<ReviewEntity> getAllReviews(Pageable pageable) {
+	        return reviewRepository.findAll(pageable);
+	    }
+
+	    public Optional<ReviewEntity> getReviewById(Long rNo) {
+	        return reviewRepository.findById(rNo);
 	    }
 
 }
