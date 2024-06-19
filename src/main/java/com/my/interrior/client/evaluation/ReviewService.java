@@ -1,5 +1,6 @@
 package com.my.interrior.client.evaluation;
 
+
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
@@ -10,10 +11,14 @@ import com.my.interrior.client.user.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -110,7 +115,17 @@ public class ReviewService {
 
 	        // reviewPhotoRepository 사용하여 사진 저장
 	        reviewPhotoRepository.saveAll(reviewPhotos);
+          
+          // 페이징 처리된 후기 목록 가져오기
+    public Page<ReviewEntity> getAllReviews(Pageable pageable) {
+        return reviewRepository.findAll(pageable);
+    }
+
+    public Optional<ReviewEntity> getReviewById(Long rNo) {
+        return reviewRepository.findById(rNo);
+    }
 
 	        
 	    }
+
 }
