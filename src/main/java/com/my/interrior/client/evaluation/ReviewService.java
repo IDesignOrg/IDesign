@@ -42,7 +42,9 @@ public class ReviewService {
 	private String bucketName;
 
 	public String uploadFile(MultipartFile file) throws IOException {
-		String fileName = UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
+		String userId = (String) session.getAttribute("UId");
+		String folderName = "user_" + userId;
+		String fileName = folderName + "/" + UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
 		BlobId blobId = BlobId.of(bucketName, fileName);
 		System.out.println("버킷 이름 : " + bucketName);
 		System.out.println("파일 이름 : " + fileName);
