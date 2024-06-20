@@ -1,6 +1,7 @@
 package com.my.interrior.client.evaluation;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +28,13 @@ public class ReviewController {
     @Autowired
     private ReviewRepository reviewRepository;
 
+    //후기 작성 만들기
 	@GetMapping("/review_write")
 	public String review() {
 		return "client/review/review_write"; 
 	}
 	
+	//후기 작성
 	@PostMapping("/review_write")
     public String createReview(
             @RequestParam("title") String title,
@@ -46,6 +49,7 @@ public class ReviewController {
         return "redirect:/review_write";
     }
 	
+	//후기 페이지
 	@GetMapping("/auth/evaluation")
 	public String allReviews(Model model, Pageable pageable) {
 	    Page<ReviewEntity> reviews = reviewService.getAllReviews(PageRequest.of(pageable.getPageNumber(), PAGE_SIZE));
@@ -56,6 +60,7 @@ public class ReviewController {
 	    return "client/review/reviewList";    
 	}
 	
+	//후기 상세페이지
 	@GetMapping("/auth/evaluation/{rNo}")
 	public String reviewDetail(@PathVariable("rNo") Long rNo, Model model) {
 		Optional<ReviewEntity> review = reviewService.getReviewById(rNo);
@@ -65,7 +70,16 @@ public class ReviewController {
 		} else {
 			return "error";
 		}
+		List<ReviewPhotoEntity> reviewPhoto = reviewService.getPhotosByReviewId(rNo);
+		if(review.isPresent()) {
+			model.addAttribute("reviewPhoto", reviewPhoto);
+			System.out.println("reviewPhoto : " + reviewPhoto);
+		}else {
+			return "error";
+		}
+		
 		
 		return "client/review/reviewDetail";
 	}
+	
 }
