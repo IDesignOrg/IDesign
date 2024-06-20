@@ -24,7 +24,7 @@ import lombok.ToString;
 @Entity(name = "user")
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"notices", "Inquiries", "faq"})
 public class UserEntity {
 
     @Id
