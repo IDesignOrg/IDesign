@@ -21,15 +21,22 @@
         height: 50px;
         background-color: red;
         z-index: 999;
-        cursor: pointer;
+        display: flex;
+        gap: 10px;
+        button {
+          cursor: pointer;
+        }
       }
     </style>
 
     <!-- <script type="module" src="./src/main.js" defer></script> -->
     <!-- <script type="module" src="./src/00.js" defer></script> -->
-    <script type="module" src="./src/ex.js" defer></script>
+    <script type="module" src="./src/main.js" defer></script>
   </head>
   <body>
-    <div id="hud-icon"></div>
+    <div id="hud-icon">
+      <button>책상</button>
+      <button>바닥</button>
+    </div>
   </body>
 </html>
