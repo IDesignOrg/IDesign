@@ -6,28 +6,37 @@ class Desk {
     z,
     object,
     width = 4,
-    height = 1.5,
+    length = 2,
     depth = 2,
     color = 0x8b4513,
+    opacity = 1,
   }) {
     this.delete = this.deleteObj();
     const legWidth = 0.1;
+    const legHeight = 2;
     const deskGroup = new THREE.Group();
-    deskGroup.name = "Desk";
+    deskGroup.name = "DESK";
 
     // 상판
-    const tableTopGeometry = new THREE.BoxGeometry(width, legWidth, depth);
-    const tableTopMaterial = new THREE.MeshBasicMaterial({ color });
+    const tableTopGeometry = new THREE.BoxGeometry(width, 0.1, length); //가로 두깨 새로
+    const tableTopMaterial = new THREE.MeshBasicMaterial({
+      color,
+      transparent: true,
+      opacity,
+    });
     const tableTop = new THREE.Mesh(tableTopGeometry, tableTopMaterial);
-    tableTop.position.y = height;
+    tableTop.position.y = legHeight;
 
     // 다리
     const legX = width / 2 - legWidth / 2;
-    const legY = height / 2;
+    const legY = length / 2;
     const legZ = depth / 2 - legWidth;
-    console.log(legZ);
-    const legGeometry = new THREE.BoxGeometry(legWidth, height, legWidth);
-    const legMaterial = new THREE.MeshBasicMaterial({ color });
+    const legGeometry = new THREE.BoxGeometry(legWidth, length, legWidth);
+    const legMaterial = new THREE.MeshBasicMaterial({
+      color,
+      transparent: true,
+      opacity,
+    });
     const leg1 = new THREE.Mesh(legGeometry, legMaterial);
     const leg2 = new THREE.Mesh(legGeometry, legMaterial);
     const leg3 = new THREE.Mesh(legGeometry, legMaterial);
@@ -43,13 +52,12 @@ class Desk {
     deskGroup.add(leg2);
     deskGroup.add(leg3);
     deskGroup.add(leg4);
-
     // object 내에 생성위치 계산
     const bbox = new THREE.Box3().setFromObject(object);
     const minX = bbox.min.x + width / 2;
     const maxX = bbox.max.x - width / 2;
-    const minZ = bbox.min.z + width / 2;
-    const maxZ = bbox.max.z - width / 2;
+    const minZ = bbox.min.z + length / 2;
+    const maxZ = bbox.max.z - length / 2;
     deskGroup.position.set(
       Math.max(minX, Math.min(maxX, x)),
       0,
@@ -60,7 +68,7 @@ class Desk {
   }
 
   deleteObj = () => {
-    console.log("zz");
+    // console.log("zz");
   };
 }
 
