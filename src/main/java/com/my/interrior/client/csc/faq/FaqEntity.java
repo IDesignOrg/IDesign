@@ -38,6 +38,7 @@ public class FaqEntity {
 	
 	private String faqCategory;
 	
+	private String faqAuthor;
 	@ManyToOne
 	@JoinColumn(name = "u_no")
 	@JsonProperty("UNo")
