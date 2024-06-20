@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>비밀번호 찾기</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+	<form id="findUIdForm">
+		<input type="text" id="UMail" name="UMail" placeholder="이메일">
+		<input type="text" id="UPw" name="UPw" placeholder="비밀번호">
+		<button type="button" onclick="findUserID()">아이디 찾기</button>
+	</form>
+
+	<script>
+		function findUserID() {
+			var formData = {
+				UPw: $('#UPw').val(),
+				UMail: $('#UMail').val(),
+			};
+
+			$.ajax({
+				type: 'POST',
+				url: '/auth/findUserID',
+				contentType: "application/json",
+				data: JSON.stringify(formData),
+				success: function (response) {
+					if (response) {
+						alert("아이디 : " + response);
+						window.location.href = "/auth/login";
+					} else {
+						alert("아이디를 찾을 수 없습니다.");
+					}
+				}
+			});
+		}
+	</script>
+</body>
+
+</html>

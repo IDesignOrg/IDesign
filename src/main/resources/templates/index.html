@@ -1,17 +1,372 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<a href="/auth/login">로그인</a>
-<a href="/auth/join">회원가입</a>
-깃허브 하는거 테스트입니다
-<P>마이페이지</P>
-<form action="/mypage">
-    <button type="submit">내정보보기</button>
-</form>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>I-DESIGN</title>
+
+	<!-- <link rel="canonical" href="https://.com" /> -->
+
+	<link rel="stylesheet" href="/css/reset.css" />
+	<link rel="stylesheet" href="/css/slick.css" />
+	<link rel="stylesheet" href="/css/common.css" />
+	<link rel="stylesheet" href="/css/style.css" />
+
+	<meta property="og:image" content="../meta/thumb.jpg" />
+	<link rel="shortcut icon" href="../meta/favicon.ico" />
+
+	<script src="/js/jquery-3.6.0.min.js"></script>
+	<script src="/js/slick.min.js"></script>
+	<script src="/js/EC_scroll.js"></script>
+	<script src="/js/common.js"></script>
+	<script src="/js/main.js"></script>
+
+	<!-- <script>
+      if (
+        navigator.userAgent.match(
+          /iPhone|iPad|Mobile|UP.Browser|Android|BlackBerry|Windows CE|Nokia|webOS|Opera Mini|SonyEricsson|opera mobi|Windows Phone|IEMobile|POLARIS/
+        ) != null
+      ) {
+        top.location.href = "../mobile/"; //모바일용 인덱스파일을 띄어라
+      }
+    </script> -->
+</head>
+
+<body>
+	
+		<!-- ChatContainer 아이콘 -->
+		<div id="chatIcon" onclick="toggleChatContainer()">
+			<img src="/image/free-icon-chat-724715.png" alt="Chat Icon" />
+		</div>
+
+		<!-- 채팅 창 컨테이너 -->
+		<div id="chatContainer" class = "hidden">
+			<!-- 채팅 영역 -->
+			<div id="chatForm">
+				<form>
+					<!-- 텍스트 박스에 채팅의 내용을 작성한다. -->
+					<input id="textMessage" type="text" onkeydown="return enter()" />
+					<!-- 서버로 메시지를 전송하는 버튼 -->
+					<input onclick="sendMessage()" value="Send" type="button" />
+				</form>
+			</div>
+			<!-- 서버와 메시지를 주고 받는 콘솔 텍스트 영역 -->
+			<textarea id="messageTextArea" rows="10" cols="50" disabled="disabled"></textarea>
+		</div>
+		<!-- main wrapper -->
+		<main class="main wrapper">
+			<!-- sec01 visual -->
+			<section class="sec01 visual">
+				<div class="viSlider">
+					<div class="itme" data-slide-nav="01. Home interior">
+						<img src="/image/living.png" alt="" />
+					</div>
+					<div class="itme" data-slide-nav="02. Office work interior">
+						<img src="/image/office.png" alt="" />
+					</div>
+					<div class="itme" data-slide-nav="03. Interior accessories">
+						<img src="/image/prop.png" alt="" />
+					</div>
+				</div>
+			</section>
+
+			<!-- sec02 service -->
+			<section class="sec02 service">
+				<div class="inner">
+					<div class="title">
+						<span class="ani_L t-delay0_2">service</span>
+						<h2 class="ani_R t-delay0_3">
+							아이 디자인 5가지 무료 서비스를 이용해 보세요.
+						</h2>
+					</div>
+
+					<div class="desc">
+						<div class="item ani t-delay0_4">
+							<img src="/image/service_item01.png" alt="" />
+						</div>
+						<div class="item ani t-delay0_7">
+							<img src="/image/service_item02.png" alt="" />
+						</div>
+						<div class="item ani t-delay0_3">
+							<img src="/image/service_item03.png" alt="" />
+						</div>
+						<div class="item ani t-delay0_6">
+							<img src="/image/service_item04.png" alt="" />
+						</div>
+						<div class="item ani t-delay0_5">
+							<img src="/image/service_item05.png" alt="" />
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- sec03 banner -->
+			<section class="sec03 banner">
+				<div class="title">
+					<span class="ani_L t-delay0_2">친절한 상단, 합리적인 가격, 깔끔한 시공!</span>
+					<h2 class="ani_L t-delay0_3">
+						<strong>무료 견적 문의</strong>부터 <strong>실측 신청</strong>까지
+						<br />
+						무엇이든 물어보세요.
+					</h2>
+
+					<a href="#" class="viewLink ani_L t-delay0_4">
+						<span>view more</span>
+					</a>
+				</div>
+			</section>
+
+			<!-- sec04 gallery -->
+			<section class="sec04 gallery">
+				<div class="title">
+					<h2 class="ani_L t-delay0_2">아이 디자인 시공 갤러리</h2>
+					<p class="ani_L t-delay0_3">
+						다양한 사례를 통한 작업 현장을 생생하게 담았습니다. <br />
+						아이 디자인과 함께 나만의 멋진 디자인을 해봐요.
+					</p>
+
+					<a href="#" class="viewLink ani_L t-delay0_4">
+						<span>view more</span>
+					</a>
+				</div>
+
+				<div class="gallSlider ani_R t-delay0_3">
+					<div class="item">
+						<img src="/image/gall_item01.png" alt="" />
+
+						<div class="tBox">
+							<span>럭셔리 욕실 인테리어</span>
+						</div>
+					</div>
+
+					<div class="item">
+						<img src="/image/gall_item02.png" alt="" />
+
+						<div class="tBox">
+							<span>모던한 욕실 인테리어</span>
+						</div>
+					</div>
+
+					<div class="item">
+						<img src="/image/gall_item03.png" alt="" />
+
+						<div class="tBox">
+							<span>우아한 공간 욕실 인테리어</span>
+						</div>
+					</div>
+
+					<div class="item">
+						<img src="/image/gall_item04.png" alt="" />
+
+						<div class="tBox">
+							<span>프리미엄 욕실 인테리어</span>
+						</div>
+					</div>
+
+					<div class="item">
+						<img src="/image/gall_item05.png" alt="" />
+
+						<div class="tBox">
+							<span>품격 있는 쉼 거실 인테리어</span>
+						</div>
+					</div>
+
+					<div class="item">
+						<img src="/image/gall_item06.png" alt="" />
+
+						<div class="tBox">
+							<span>우아한 주방 인테리어</span>
+						</div>
+					</div>
+
+					<div class="item">
+						<img src="/image/gall_item07.png" alt="" />
+
+						<div class="tBox">
+							<span>심플 모던한 거실 인테리어</span>
+						</div>
+					</div>
+
+					<div class="item">
+						<img src="/image/gall_item08.png" alt="" />
+
+						<div class="tBox">
+							<span>품격 있는 거실 인테리어</span>
+						</div>
+					</div>
+
+					<div class="item">
+						<img src="/image/gall_item09.png" alt="" />
+
+						<div class="tBox">
+							<span>클래식하고 고급스런 거실 인테리어</span>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- sec05 review -->
+			<section class="sec05 review">
+				<div class="inner">
+					<div class="title">
+						<h2 class="ani_L t-delay0_2">
+							<span>아이 디자인 시공 리뷰</span><br />
+							REVIEW
+						</h2>
+
+						<a href="#" class="viewLink ani_R t-delay0_3">
+							<span>view more</span>
+						</a>
+					</div>
+
+					<div class="reviewCont">
+						<div class="desc">
+							<div class="item ani t-delay0_2">
+								<img src="/image/review_item01.png" alt="" />
+							</div>
+						</div>
+
+						<div class="desc desc02">
+							<div class="items">
+								<div class="item ani t-delay0_6">
+									<img src="/image/review_item02.png" alt="" />
+								</div>
+								<div class="item ani t-delay0_4">
+									<img src="/image/review_item03.png" alt="" />
+								</div>
+								<div class="item ani t-delay0_3">
+									<img src="/image/review_item04.png" alt="" />
+								</div>
+								<div class="item ani t-delay0_5">
+									<img src="/image/review_item05.png" alt="" />
+								</div>
+							</div>
+							<div class="items">
+								<div class="item ani t-delay0_4">
+									<img src="/image/review_item06.png" alt="" />
+								</div>
+								<div class="item ani t-delay0_6">
+									<img src="/image/review_item07.png" alt="" />
+								</div>
+								<div class="item ani t-delay0_5">
+									<img src="/image/review_item08.png" alt="" />
+								</div>
+								<div class="item ani t-delay0_7">
+									<img src="/image/review_item09.png" alt="" />
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- sec05 shop -->
+			<section class="sec06 shop">
+				<div class="title">
+					<h2 class="ani_L t-delay0_2">
+						<strong>소품 SHOP</strong>에서 만나는
+						<strong>아이 디자인의 작은 마법</strong> <br />
+						<strong>당신의 일상</strong>을 더 <strong>빛나고 특별하게</strong>
+					</h2>
+					<p class="ani_L t-delay0_3">
+						일상을 반짝이게 할 특별한 아이템을 만나보세요.
+					</p>
+					<a href="#" class="shopLink ani_L t-delay0_4">
+						<span>소품 shop 바로가기</span>
+					</a>
+				</div>
+			</section>
+		</main>
+
+		<!-- footer -->
+		<footer class="footer" id="common">
+			<div class="inner">
+				<div class="desc">
+					<a href="index.html" class="footLogo">
+						<img src="/image/foot_logo.png" alt="" />
+					</a>
+
+					<h2>
+						아이 디자인이는 디자이너(퍼블리셔), 프론트, 백엔드 개발자들이 모여
+						진행하는 자기개발 프로젝트 입니다.
+					</h2>
+
+					<div>
+						<p>
+							※ 본 프로젝트의 디자인 및 개발 코드는 참여 인원의 개인 저작물로,
+							무단 복제나 배포는 저작권 침해로 간주됩니다.
+						</p>
+						<p>
+							※ 본 프로젝트의 아이디어는 팀원들의 공동 협력으로 도출된 것으로,
+							무단 사용 시 법적 조치가 취해질 수 있습니다.
+						</p>
+						<p>
+							※ 본 프로젝트에 사용된 CG, 사진, 이미지는 이해를 돕기 위한
+							목적으로 포함되었습니다.
+						</p>
+					</div>
+
+					<h3>
+						Copyright 2024.
+						<span style="text-transform: uppercase">i design study </span>All
+						rights reserved
+					</h3>
+				</div>
+
+				<div class="footBtn">
+					<a href="#">프로젝트 참여 인원</a>
+				</div>
+			</div>
+		</footer>
+	</div>
+	<!-- 1:1 채팅 스크립트 -->
+	<script>
+		//서버의 broadsocket의 서블릿으로 웹 소켓 시작
+		var webSocket = new WebSocket("ws://localhost:8080/broadsocket");
+		//콘솔 텍스트 영역
+		var messageTextArea = document.getElementById("messageTextArea");
+		//접속이 완료되면
+		webSocket.onopen = function (message) {
+			//콘솔에 메시지를 남긴다.
+			messageTextArea.value += "접속이 완료되었습니다.\n";
+		};
+		//접속이 끊기는 경우는 브라우저를 닫는 경우
+		webSocket.onclose = function (message) { };
+		//에러가 발생하면??
+		webSocket.onerror = function (message) {
+			//콘솔에 메시지를 남긴다.
+			messageTextArea.value += "서버에 에러가 발생되었습니다.\n";
+		};
+		//서버로부터 메시지가 도착하면(관리자로부터) 콘솔 화면에 메시지를 남긴다.
+		webSocket.onmessage = function (message) {
+			messageTextArea.value += "(operator) => " + message.data + "\n";
+		};
+		//서버로 메시지 보내자.
+		//Send 버튼 누르거나 텍스트 박스에서 엔터를 치면 실행
+		function sendMessage() {
+			//텍스트 박스의 객체를 가져온다.
+			var message = document.getElementById('textMessage');
+			//콘솔에 메시지를 추가
+			messageTextArea.value += "(me) => " + message.value + "\n";
+			// 소켓으로 보낸다.
+			webSocket.send(message.value);
+			// 텍스트 박스 초기화
+			message.value = "";
+		}
+
+		// 텍스트 박스에서 엔터를 누르면
+		function enter() {
+			if (event.keyCode === 13) {
+				//서버로 메시지 전송
+				sendMessage();
+				//자동 submit 막기
+				return false;
+			}
+			return true;
+		}
+	</script>
 </body>
+
 </html>

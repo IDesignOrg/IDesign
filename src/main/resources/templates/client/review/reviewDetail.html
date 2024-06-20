@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Review Detail</title>
+</head>
+<body>
+	<div>
+        <p><strong>No:</strong> <span th:text="${review.RNo}"></span></p>
+        <p><strong>Title:</strong> <span th:text="${review.RTitle}"></span></p>
+        <p><strong>Content:</strong> <span th:text="${review.RContent}"></span></p>
+        <p><strong>Main Photo:</strong> <span th:text="${review.RProfile}"></span></p>
+        <p><strong>Category:</strong> <span th:text="${review.RCategory}"></span></p>
+        <p><strong>Star Rating:</strong> <span th:text="${review.RStarRating}"></span></p>
+        <p><strong>Views:</strong> <span th:text="${review.RViews}"></span></p>
+        <p><strong>Written Time:</strong> <span th:text="${review.RWrittenTime}"></span></p>
+	</div>
+	<div>
+        <h3>Review Photos</h3>
+        <div th:if="${#lists.isEmpty(reviewPhoto)}">
+            <p>No photos available.</p>
+        </div>
+        <div th:each="photo : ${reviewPhoto}">
+            <img th:src="${photo.RpPhoto}" alt="Review Photo">
+            <p>Photo ID: <span th:text="${photo.RpNo}"></span></p>
+            <p>Photo URL: <span th:text="${photo.RpPhoto}"></span></p>
+        </div>
+    </div>
+	<a href = "/auth/evaluation" th:href="@{/auth/evaluation}"> 후기 리스트로 </a>
+</body>
+</html>
