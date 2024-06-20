@@ -45,8 +45,11 @@ public class ReviewService {
 
 	//gcs파일 업로드
 	public String uploadFile(MultipartFile file) throws IOException {
+		// 세션값 받아오기
 		String userId = (String) session.getAttribute("UId");
+		// 풀더 생성을 위해 user_ + 세션값으로 받기
 		String folderName = "user_" + userId;
+		// 경로설정 풀더이름 /uuid-원래 파일이름
 		String fileName = folderName + "/" + UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
 		BlobId blobId = BlobId.of(bucketName, fileName);
 		BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
