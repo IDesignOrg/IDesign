@@ -30,10 +30,18 @@ dependencies {
     // Spring Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
     //oauth2
-implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	//google mail
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	//webSocket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
     // Spring Boot Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 //    testImplementation 'org.springframework.security:spring-security-test'
+	implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter', version: '1.2.5.RELEASE'
+	// GCS starter
+	implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-storage', version: '1.2.5.RELEASE'
+	// GCS storage
 }
 
 test {
