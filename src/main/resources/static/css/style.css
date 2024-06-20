@@ -1,0 +1,366 @@
+.visual {
+}
+.visual .viSlider {
+  width: 1820px;
+  height: 800px;
+  margin: 120px auto 0;
+  position: relative;
+}
+.visual .viSlider .itme {
+}
+.visual .viSlider .itme img {
+}
+
+.visual .viSlider .slick-dots {
+  width: 720px;
+  height: 72px;
+  background: #6633ff70;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}
+.visual .viSlider .slick-dots li {
+  margin-right: 62px;
+  opacity: 0.4;
+}
+.visual .viSlider .slick-dots li:last-child {
+  margin-right: 0;
+}
+.visual .viSlider .slick-dots li.slick-active {
+  opacity: 1;
+}
+.visual .viSlider .slick-dots li span {
+  font-size: 18px;
+  font-weight: 400;
+  color: #fff;
+  display: block;
+  cursor: pointer;
+}
+
+/* service */
+.service {
+}
+.service .inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin: 130px 0;
+}
+.service .inner .title {
+  text-align: center;
+  margin-bottom: 70px;
+}
+.service .inner .title span {
+  font-size: 18px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: #6666ff;
+  margin-bottom: 16px;
+  display: block;
+}
+.service .inner .title h2 {
+  font-size: 36px;
+  font-weight: 700;
+  color: #6633ff;
+}
+
+.service .desc {
+  width: 1380px;
+  height: 320px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.service .desc .item {
+  width: 250px;
+  height: 100%;
+  box-shadow: 4px 5px 15px rgba(0, 0, 0, 0.295);
+  border-radius: 10px;
+}
+.service .desc .item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* banner */
+.banner {
+  height: 480px;
+  background: url("../image/banner_bg.png") no-repeat center center;
+  background-size: cover;
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+.banner .title {
+  margin-left: 230px;
+}
+.banner .title span {
+  font-size: 18px;
+  font-weight: 400;
+  color: #fff;
+
+  display: block;
+}
+.banner .title h2 {
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 50px;
+  color: #fff;
+
+  margin: 18px 0 36px;
+}
+.banner .title h2 strong {
+  font-weight: 700;
+}
+
+/* gallery */
+.gallery {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 170px 0;
+}
+.gallery .title {
+  margin-left: 130px;
+}
+.gallery .title h2 {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 50px;
+  color: #6633ff;
+}
+.gallery .title p {
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 36px;
+  color: #5a5a5a;
+  margin: 32px 0 62px;
+}
+.gallery .title .viewLink {
+}
+.gallery .title .viewLink span {
+}
+
+.gallSlider {
+  width: 1200px;
+  position: relative;
+}
+.gallSlider .slick-dots {
+  position: absolute;
+  left: 0;
+  bottom: -32px;
+
+  width: calc(100% - 20px);
+  height: 5px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.gallSlider .slick-dots li {
+  flex: 1;
+  height: 100%;
+  background: #6666ff80;
+  transition: 0.25s;
+}
+.gallSlider .slick-dots li.slick-active {
+  background: #6633ff;
+}
+.gallSlider .slick-dots li button {
+  display: none;
+}
+
+.gallSlider .item {
+  width: 380px !important;
+  border-radius: 20px;
+  border: 1px solid #676767;
+  box-sizing: border-box;
+  margin-right: 20px;
+
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+}
+.gallSlider .item:hover {
+  /* transform: translateY(-50px); */
+}
+.gallSlider .item img {
+  width: 380px;
+  height: 470px;
+}
+
+.gallSlider .item .tBox {
+  width: 100%;
+  height: 62px;
+  background: #6633ff;
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  opacity: 0;
+  transition: 0.5s;
+}
+.gallSlider .item .tBox span {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin-left: 20px;
+}
+
+.gallSlider .item:hover .tBox {
+  opacity: 11;
+}
+
+/* review */
+.review {
+  background: #f6f3ff;
+}
+.review .inner {
+  width: 1350px;
+  margin: 135px auto;
+}
+.review .title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 36px;
+}
+.review .title h2 {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 42px;
+  color: #6633ff;
+}
+.review .title h2 span {
+  font-size: 22px;
+  font-weight: 400;
+  color: #5a5a5a;
+}
+.review .title .viewLink {
+}
+.review .title .viewLink span {
+}
+
+.reviewCont {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.reviewCont .desc {
+}
+.reviewCont .desc .item {
+  width: 430px;
+  height: 430px;
+}
+.reviewCont .desc .item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.reviewCont .desc02 {
+  width: 890px;
+  height: 430px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+}
+.reviewCont .desc02 .items {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.reviewCont .desc02 .items .item {
+  width: 200px;
+  height: 200px;
+}
+.reviewCont .desc02 .items .item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* shop */
+.shop {
+  height: 530px;
+  background: url("../image/shop_bg.png") no-repeat center center;
+  background-size: cover;
+}
+.shop .title {
+  margin: 70px 0 0 400px;
+}
+.shop .title h2 {
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 50px;
+  color: #6633ff;
+  letter-spacing: -1.5px;
+}
+.shop .title h2 strong {
+  font-weight: 700;
+}
+
+.shop .title p {
+  font-size: 18px;
+  font-weight: 400;
+  color: #5a5a5a;
+  margin: 26px 0 36px;
+}
+
+.shop .title .shopLink {
+  width: 200px;
+  height: 52px;
+  background: #6633ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.shop .title .shopLink span {
+  font-size: 16px;
+  font-weight: 400;
+  color: #fff;
+  text-transform: uppercase;
+}
+#chatIcon {
+    position: fixed;
+    right: 50px; /* 오른쪽에서 50px 위치에 */
+    bottom: 50px; /* 아래에서 50px 위치에 고정 */
+    z-index: 997; /* 다른 요소 위에 나타나도록 */
+    cursor: pointer; /* 마우스 커서를 포인터로 변경하여 클릭 가능하게 */
+}
+
+#chatIcon img {
+    width: 50px; /* 아이콘 크기 조정 */
+    height: 50px;
+}
+
+#chatContainer {
+    position: fixed;
+    right: 50px; /* 오른쪽에서 50px 위치에 */
+    bottom: 50px; /* 아래에서 50px 위치에 고정 */
+    width: 300px; /* 채팅 창 너비 */
+    height: 300px; /* 채팅 창 높이 */
+    background-color: #fff; /* 배경색 */
+    border: 1px solid #ccc; /* 테두리 */
+    padding: 10px; /* 안쪽 여백 */
+    z-index: 998; /* 아이콘 아래에 표시 */
+}
+
+.hidden{
+	display: none;
+}

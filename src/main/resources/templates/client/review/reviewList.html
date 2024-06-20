@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Review List</title>
+</head>
+<body>
+    <h1>Review List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Title</th>
+                <th>Content</th>
+                <th>Written Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="review : ${reviews}">
+				<td th:text="${review.rNo}"></td>
+				<td>
+				  	<a th:href="@{/auth/evaluation/{id}(id=${review.rNo})}" th:text="${review.rTitle}"></a>
+				</td>
+				<td>
+					<a th:href="@{/auth/evaluation/{id}(id=${review.rNo})}" th:text="${review.rContent}"></a>
+				</td>
+				<td>
+					<a th:href="@{/auth/evaluation/{id}(id=${review.rNo})}" th:text="${review.rWrittenTime}"></a>
+				</td>
+            </tr>
+        </tbody>
+    </table>
+	
+	<div th:if="${totalPages > 1}">
+	        <ul class="pagination">
+	            <li th:class="${currentPage == 0} ? 'page-item disabled' : 'page-item'">
+	                <a class="page-link" th:href="@{/auth/evaluation(page=0)}">First</a>
+	            </li>
+	            
+	            <li th:class="${currentPage == 0} ? 'page-item disabled' : 'page-item'">
+	                <a class="page-link" th:href="@{/auth/evaluation(page=${currentPage - 1})}">Previous</a>
+	            </li>
+
+	            <li th:each="pageNumber : ${#numbers.sequence(0, totalPages - 1)}" 
+	                th:class="${currentPage == pageNumber} ? 'page-item active' : 'page-item'">
+	                <a class="page-link" th:href="@{/auth/evaluation(page=${pageNumber})}" th:text="${pageNumber + 1}"></a>
+	            </li>
+	
+	            <li th:class="${currentPage + 1 == totalPages} ? 'page-item disabled' : 'page-item'">
+	                <a class="page-link" th:href="@{/auth/evaluation(page=${currentPage + 1})}">Next</a>
+	            </li>
+
+	            <li th:class="${currentPage + 1 == totalPages} ? 'page-item disabled' : 'page-item'">
+	                <a class="page-link" th:href="@{/auth/evaluation(page=${totalPages - 1})}">Last</a>
+	            </li>
+	        </ul>
+	    </div>
+</body>
+</html>

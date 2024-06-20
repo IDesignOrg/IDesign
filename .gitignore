@@ -43,3 +43,7 @@ bin/
 
 # for client
 **/node_modules
+### 민감한정보 ###
+application-private.properties
+###GCS키###
+persuasive-feat-426613-s5-3ca8c7774f65.json
