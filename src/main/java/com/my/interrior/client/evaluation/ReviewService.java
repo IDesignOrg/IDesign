@@ -44,18 +44,18 @@ public class ReviewService {
 	@Value("${spring.cloud.gcp.storage.bucket}")
 	private String bucketName;
 
+	//gcs파일 업로드
 	public String uploadFile(MultipartFile file) throws IOException {
 		String userId = (String) session.getAttribute("UId");
 		String folderName = "user_" + userId;
 		String fileName = folderName + "/" + UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
 		BlobId blobId = BlobId.of(bucketName, fileName);
-		System.out.println("버킷 이름 : " + bucketName);
-		System.out.println("파일 이름 : " + fileName);
 		BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
 		storage.create(blobInfo, file.getBytes());
 		return String.format("https://storage.googleapis.com/%s/%s", bucketName, fileName);
 	}
 
+	// 후기 업로드
 	@Transactional
 	public void uploadFileAndCreateReview(String title, String category, String content, String starRating,
 			MultipartFile[] files) throws IOException {
@@ -69,12 +69,9 @@ public class ReviewService {
 		// 작성자 id는 세션에서 가져옴
 		String userId = (String) session.getAttribute("UId");
 
-		System.out.println("세션값 유저 아이디 : " + userId);
-
 		// UserEntity 객체 조회
 		UserEntity userEntity = userRepository.findByUId(userId);
 
-		System.out.println("유저 엔티티 확인 : " + userEntity);
 
 		// 작성 시간 설정
 		LocalDateTime writtenTime = LocalDateTime.now();
@@ -121,5 +118,14 @@ public class ReviewService {
 
 	public Optional<ReviewEntity> getReviewById(Long rNo) {
 		return reviewRepository.findById(rNo);
+	}
+	public List<ReviewPhotoEntity> getPhotosByReviewId(Long rNo) {
+	    // 1. 리뷰 번호(rNo)를 사용하여 리뷰 포토 엔티티(ReviewPhotoEntity)를 조회합니다.
+		 List<ReviewPhotoEntity> reviewPhotos = reviewPhotoRepository.findByReview_RNo(rNo);
+		 System.out.println("백엔드 rno의 값 : " + rNo);
+		 System.out.println("백엔드 reviewphotos :" + reviewPhotos);
+	    
+	    // 2. 조회된 리뷰 포토 목록을 반환합니다.
+	    return reviewPhotos;
 	}
 }
