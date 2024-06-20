@@ -40,6 +40,9 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+# for client
+**/node_modules
 ### 민감한정보 ###
 application-private.properties
 ###GCS키###

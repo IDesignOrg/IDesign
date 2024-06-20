@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./public/reset.css" />
+    <style>
+      #webgl-container {
+        position: "absolute";
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+      }
+      #hud-icon {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        background-color: red;
+        z-index: 999;
+        display: flex;
+        gap: 10px;
+        button {
+          cursor: pointer;
+        }
+      }
+    </style>
+
+    <!-- <script type="module" src="./src/main.js" defer></script> -->
+    <!-- <script type="module" src="./src/00.js" defer></script> -->
+    <script type="module" src="./src/main.js" defer></script>
+  </head>
+  <body>
+    <div id="hud-icon">
+      <button>책상</button>
+      <button>바닥</button>
+    </div>
+  </body>
+</html>
