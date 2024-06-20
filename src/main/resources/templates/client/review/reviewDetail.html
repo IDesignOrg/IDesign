@@ -6,15 +6,22 @@
 </head>
 <body>
 	<div>
-        <p><strong>No:</strong> <span th:text="${review.RNo}"></span></p>
+		<!-- 제목 -->
         <p><strong>Title:</strong> <span th:text="${review.RTitle}"></span></p>
+        <!-- 내용 -->
         <p><strong>Content:</strong> <span th:text="${review.RContent}"></span></p>
+        <!-- 프로필 -->
         <p><strong>Main Photo:</strong> <span th:text="${review.RProfile}"></span></p>
+        <!-- 카테고리 -->
         <p><strong>Category:</strong> <span th:text="${review.RCategory}"></span></p>
+        <!-- 별점 -->
         <p><strong>Star Rating:</strong> <span th:text="${review.RStarRating}"></span></p>
+        <!-- 조회수 -->
         <p><strong>Views:</strong> <span th:text="${review.RViews}"></span></p>
+        <!-- 작성시간 -->
         <p><strong>Written Time:</strong> <span th:text="${review.RWrittenTime}"></span></p>
 	</div>
+	<!-- 사진들 -->
 	<div>
         <h3>Review Photos</h3>
         <div th:if="${#lists.isEmpty(reviewPhoto)}">
