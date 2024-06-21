@@ -1,4 +1,5 @@
 import * as THREE from "../three.module.js";
+import { deskColor } from "./colors.js";
 
 class Desk {
   constructor({
@@ -8,7 +9,7 @@ class Desk {
     width = 4,
     length = 2,
     depth = 2,
-    color = 0x8b4513,
+    color = deskColor,
     opacity = 1,
   }) {
     this.delete = this.deleteObj();
