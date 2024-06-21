@@ -6,6 +6,9 @@ import { GLTFLoader } from "https://threejsfundamentals.org/threejs/resources/th
 // import { OrbitControls} from '.'
 import { WEBGL } from "./lib/webgl.js";
 import { Desk } from "./lib/objects/desk.js";
+import { Plane } from "./lib/objects/room.js";
+import { deskName, floorName, shadowName } from "./lib/objects/objectNames.js";
+import { deskColor, shadowColor } from "./lib/objects/colors.js";
 
 if (WEBGL.isWebGLAvailable()) {
   const btn = document.getElementById("hud-icon");
@@ -43,68 +46,54 @@ if (WEBGL.isWebGLAvailable()) {
   const axesHelper = new THREE.AxesHelper(100, 100, 100);
   scene.add(axesHelper);
 
-  const planeGeometry = new THREE.PlaneGeometry(CNT, CNT);
-  const planeMaterial = new THREE.MeshBasicMaterial({
-    color: 0xcccccc,
-    side: THREE.DoubleSide,
+  const initPlane = new Plane({});
+
+  objects[initPlane.uuid] = initPlane;
+  scene.add(initPlane);
+
+  // 각 벽과 천장을 검색하여 불투명도를 설정할 수 있도록 함
+  const wallsAndCeiling = [];
+  initPlane.children.forEach((child) => {
+    if (child.material && child.material instanceof THREE.MeshBasicMaterial) {
+      if (child.rotation.x !== -Math.PI / 2) {
+        // 바닥을 제외
+        child.material.transparent = true;
+        wallsAndCeiling.push(child);
+      }
+    }
   });
-  const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-  plane.name = "plane";
 
-  const de = new Desk({
-    x: 0,
-    z: 0,
-    object: plane,
-    width: 4,
-    height: 1.5,
-    depth: 2,
-  });
-  objects[de.uuid] = de;
-  scene.add(de);
+  function updateOpacity() {
+    const cameraDirection = new THREE.Vector3();
+    camera.getWorldDirection(cameraDirection);
 
-  objects[plane.uuid] = plane;
+    wallsAndCeiling.forEach((wall) => {
+      const wallNormal = new THREE.Vector3();
+      wall.getWorldDirection(wallNormal);
 
-  plane.rotation.x = Math.PI / 2; // 평면을 수직으로 회전
-  scene.add(plane);
+      const angle = wallNormal.angleTo(cameraDirection);
+      const maxAngle = Math.PI / 2; // 90 degrees
 
-  // 10x10 평면 생성 (30x30 평면도 왼쪽에 위치)
-  const smallPlaneGeometry = new THREE.PlaneGeometry(SMALL_CNT, SMALL_CNT);
-  const smallPlaneMaterial = new THREE.MeshBasicMaterial({
-    side: THREE.DoubleSide,
-    color: "rgb(240,238,232)",
-  });
-  const smallPlane = new THREE.Mesh(smallPlaneGeometry, smallPlaneMaterial);
-  smallPlane.name = "smallPlane";
-  smallPlane.rotation.y = Math.PI / 2;
-  smallPlane.position.set(-CNT / 2, SMALL_CNT / 2, 0);
-  scene.add(smallPlane);
-
-  // 그리드 헬퍼 추가
-  // const gridHelper = new THREE.GridHelper(CNT);
-  // scene.add(gridHelper);
-
-  // const de = new Desk({
-  //   x: 0,
-  //   z: 0,
-  //   object: plane,
-  //   width: 4,
-  //   height: 1.5,
-  //   depth: 2,
-  // });
-  // objects[de.uuid] = de;
-  // scene.add(de);
+      if (angle > maxAngle) {
+        wall.material.opacity = 0;
+      } else {
+        wall.material.opacity = 1 - angle / maxAngle;
+      }
+    });
+  }
 
   const animate = () => {
     requestAnimationFrame(animate);
 
     controls.update();
+    updateOpacity();
     renderer.render(scene, camera);
   };
 
   const createDesk = (x, z, object, color, condition) => {
-    if (objects.hasOwnProperty("shadow")) {
-      scene.remove(objects["shadow"]);
-      delete objects["shadow"];
+    if (objects.hasOwnProperty(shadowName)) {
+      scene.remove(objects[shadowName]);
+      delete objects[shadowName];
     }
     const desk = new Desk({
       x,
@@ -116,7 +105,7 @@ if (WEBGL.isWebGLAvailable()) {
       color,
     });
     if (condition) {
-      objects["shadow"] = desk;
+      objects[shadowName] = desk;
       // desk.name = "shadow";
     } else {
       // desk.name = "desk";
@@ -140,29 +129,53 @@ if (WEBGL.isWebGLAvailable()) {
     return raycaster.intersectObjects(scene.children, true); // 씬에 들어있는 각각의 오브젝트에 대해
   };
 
-  const onDocumentMouseDown = (event) => {
+  const creator = (event, shadowName, color) => {
+    console.log(color);
     const intersects = getMousePoint(event);
     if (intersects.length > 0) {
       const clickedObject = intersects.find(
-        (intersect) => intersect.object.name === "plane"
+        (intersect) => intersect.object.name === floorName
       );
       if (!clickedObject) return;
       const intersect = clickedObject.object;
-      createDesk(clickedObject.point.x, clickedObject.point.z, intersect);
-    } else {
+      createDesk(
+        clickedObject.point.x,
+        clickedObject.point.z,
+        intersect,
+        color,
+        shadowName
+      );
     }
+  };
+
+  const onDocumentMouseDown = (event) => {
+    creator(event, false, deskColor);
+    // const intersects = getMousePoint(event);
+    // if (intersects.length <= 0) return;
+    // const clickedObject = intersects.find(
+    //   (intersect) => intersect.object.name === floorName
+    // );
+    // if (!clickedObject) return;
+    // const intersect = clickedObject.object;
+    // createDesk(clickedObject.point.x, clickedObject.point.z, intersect);
   };
   const onDocumentMouseMove = (e) => {
     if (controls.enabled) return;
+
+    creator(e, shadowName, shadowColor);
+
+    return;
+
     const intersects = getMousePoint(e);
     if (intersects.length > 0) {
       const clickedObject = intersects.find(
-        (intersect) => intersect.object.name === "plane"
+        (intersect) => intersect.object.name === floorName
       );
+      console.log(intersects, clickedObject);
       if (!clickedObject) return;
       if (!selectedObject) return;
 
-      if (selectedObject === "desk") {
+      if (selectedObject === deskName) {
         createDesk(
           clickedObject.point.x,
           clickedObject.point.z,
@@ -183,7 +196,6 @@ if (WEBGL.isWebGLAvailable()) {
   const onClickIcon = (e) => {
     e.stopPropagation();
     const btn = e.target.closest("button");
-    console.log(btn);
 
     if (!btn) return;
     switch (btn.innerText) {
