@@ -23,6 +23,7 @@ public class WebSecurityConfig {
                 .cors(cors -> cors.disable())
                 .csrf(csrf -> csrf.disable())
                 .formLogin(formLogin -> formLogin.disable())
+                .logout(logout -> logout.disable())
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
 
         return http.build();

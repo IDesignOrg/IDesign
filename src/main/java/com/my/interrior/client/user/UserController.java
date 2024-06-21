@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.my.interrior.common.GoogleApi;
 import com.my.interrior.common.KakaoApi;
@@ -39,6 +40,9 @@ public class UserController {
 	
 	@Autowired
 	private NaverApi naverApi;
+	
+	@Autowired
+	private HttpSession session;
 
 	@GetMapping("/auth/login")
 	public String LoginPage(Model model) {
@@ -129,5 +133,13 @@ public class UserController {
 		} else {
 			return ResponseEntity.notFound().build();
 		}
+	}
+	
+	// 로그아웃
+	@RequestMapping("/logout")
+	public String logout() {
+		session.invalidate();
+		System.out.println("로그아웃 됨");
+		return "redirect:/";
 	}
 }
