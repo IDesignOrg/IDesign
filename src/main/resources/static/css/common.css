@@ -164,91 +164,83 @@ a {
 
 /* header */
 .header {
-	height: 120px;
+  height: 120px;
 
-	position: fixed;
-	left: 50%;
-	top: 0;
-	transform: translateX(-50%);
-	transition: 2s;
-	z-index: 5000;
+  position: fixed;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  transition: 2s;
+  z-index: 5000;
 
-	background: white;
+  background: white;
 }
-
 /* .header.active {
   top: -100%;
 } */
 .header .inner {
-	width: 90.4%;
-	height: 100%;
-	margin: 0 auto;
+  width: 90.4%;
+  height: 100%;
+  margin: 0 auto;
 
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-
 .header .inner .logo {
-	width: 7.24%;
+  width: 7.24%;
 }
-
 .header .inner .logo a {
-	width: 100%;
-	display: block;
+  width: 100%;
+  display: block;
 }
-
 .header .inner .logo a img {
-	width: 100%;
-	display: block;
-	object-fit: cover;
+  width: 100%;
+  display: block;
+  object-fit: cover;
 }
 
-.menuWrap {}
-
+.menuWrap {
+}
 .menuWrap .menu {
-	display: flex;
-	justify-content: center;
-	align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-
-.menuWrap .menu .qMenu {}
-
+.menuWrap .menu .qMenu {
+}
 .menuWrap .menu .qMenu a {
-	font-size: 16px;
-	font-weight: 700;
-	color: #272727;
-	margin: 0 30px;
-	display: block;
+  font-size: 16px;
+  font-weight: 700;
+  color: #272727;
+  margin: 0 30px;
+  display: block;
 }
-
 .menuWrap .menu .qMenu a:hover {
-	color: #6633ff;
+  color: #6633ff;
 }
 
 .userWrap {
-	display: flex;
-	justify-content: center;
-	align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-
 .userWrap a {
-	font-size: 16px;
-	font-weight: 700;
-	display: block;
-	color: #6633ff;
+  font-size: 16px;
+  font-weight: 700;
+  display: block;
+  color: #6633ff;
 }
-
-.userWrap a.login {}
-
-.userWrap a.memberJoin {}
-
+.userWrap a.login {
+}
+.userWrap a.memberJoin {
+}
 .userWrap .line {
-	width: 2px;
-	height: 21px;
-	background: #6666ff;
-	display: block;
-	margin: 0 20px;
+  width: 2px;
+  height: 21px;
+  background: #6666ff;
+  display: block;
+  margin: 0 20px;
 }
 
 /* footer */
@@ -257,12 +249,12 @@ a {
 }
 
 .footer .inner {
-	width: 1720px;
-	margin: 0 auto;
-	padding: 50px 0;
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-end;
+    width: 89.6%;
+    margin: 0 auto;
+    padding: 50px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
 }
 
 .footer .desc {}
