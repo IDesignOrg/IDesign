@@ -1,5 +1,6 @@
 <!-- footer -->
 <div th:fragment="footer">
+	<!-- footer -->
 	<footer class="footer" id="common">
 		<div class="inner">
 			<div class="desc">
@@ -35,8 +36,135 @@
 			</div>
 
 			<div class="footBtn">
-				<a href="#">프로젝트 참여 인원</a>
+				<a href="#" id="openteam">프로젝트 참여 인원</a>
 			</div>
 		</div>
 	</footer>
+
+	<style>
+		.team {
+			display: none;
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100vw;
+			height: 100vh;
+			background-color: rgba(0, 0, 0, 0.8);
+			z-index: 1000;
+			justify-content: center;
+			align-items: center;
+			overflow: hidden;
+		}
+
+		.team-content {
+			background-color: #fff;
+			padding: 60px;
+			width: 80%;
+			max-width: 1200px;
+			position: relative;
+		}
+
+		.team-content table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+
+		.team-content th,
+		.team-content td {
+			border: 1px solid #ddd;
+			padding: 15px;
+		}
+
+		.team-close {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			background: none;
+			border: none;
+			font-size: 1.5rem;
+			cursor: pointer;
+		}
+	</style>
+	<!-- team -->
+	<div class="team" id="team">
+		<div class="team-content">
+			<button class="team-close" id="closeteam">&times;</button>
+			<div class="members">
+				<table>
+					<thead>
+						<tr style="background-color: #f2f2f2">
+							<th style="border: 1px solid #ddd; padding: 15px">이름</th>
+							<th style="border: 1px solid #ddd; padding: 15px">
+								담당 파트
+							</th>
+							<th style="border: 1px solid #ddd; padding: 15px">이메일</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style="border: 1px solid #ddd; padding: 15px">박종복</td>
+							<td style="border: 1px solid #ddd; padding: 15px">
+								디자인, 퍼블리싱
+							</td>
+							<td style="border: 1px solid #ddd; padding: 15px">
+								<a href="#"> jongbok3048@daum.net </a>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #ddd; padding: 15px">한민욱</td>
+							<td style="border: 1px solid #ddd; padding: 15px">
+								1대1 상담, 문의 페이지(백엔드)
+							</td>
+							<td style="border: 1px solid #ddd; padding: 15px">
+								<a href="#"> dnlsemtmf@gmail.com </a>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #ddd; padding: 15px">박찬영</td>
+							<td style="border: 1px solid #ddd; padding: 15px">
+								이벤트 페이지(백엔드)
+							</td>
+							<td style="border: 1px solid #ddd; padding: 15px">
+								<a href="#"> qcd8989@gmail.com </a>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #ddd; padding: 15px">이준희</td>
+							<td style="border: 1px solid #ddd; padding: 15px">
+								three(프론트) 셀프 3D 인테리어 모델링 페이지
+							</td>
+							<td style="border: 1px solid #ddd; padding: 15px">
+								<a href="#"> dlwnsgml203@gmail.com </a>
+							</td>
+						</tr>
+						<tr>
+							<td style="border: 1px solid #ddd; padding: 15px">윤재환</td>
+							<td style="border: 1px solid #ddd; padding: 15px">
+								후기 페이지(백엔드)
+							</td>
+							<td style="border: 1px solid #ddd; padding: 15px">
+								<a href="#"> jelly0379@gmail.com </a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+<script>
+	document
+		.getElementById("openteam")
+		.addEventListener("click", function (event) {
+			event.preventDefault();
+			document.getElementById("team").style.display = "flex";
+			document.body.style.overflow = "hidden"; // 스크롤 비활성화
+		});
+
+	document
+		.getElementById("closeteam")
+		.addEventListener("click", function () {
+			document.getElementById("team").style.display = "none";
+			document.body.style.overflow = "auto"; // 스크롤 활성화
+		});
+</script>
 </div>
