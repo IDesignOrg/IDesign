@@ -135,7 +135,8 @@ if (WEBGL.isWebGLAvailable()) {
 
     if (nearestFloor) {
       const floor = nearestFloor;
-      if (!nearestFloor.position) return;
+      if (!floor.position) return;
+
       // 동서남북 방향으로 방 생성
       const directions = [
         { x: 1, z: 0 },
@@ -144,43 +145,62 @@ if (WEBGL.isWebGLAvailable()) {
         { x: 0, z: -1 },
       ];
 
-      for (const direction of directions) {
+      let closestDistance = Infinity;
+      let closestDirection = null;
+      let closestWall = null;
+
+      // 마우스와 가장 가까운 방향 찾기
+      directions.forEach((direction) => {
         const newX =
           floor.position.x +
-          direction.x * initRoom.children[0].geometry.parameters.width;
+          (direction.x * floor.geometry.parameters.width) / 2;
         const newZ =
           floor.position.z +
-          direction.z * initRoom.children[0].geometry.parameters.height;
-        const newPosition = new THREE.Vector3(newX, 0, newZ);
-
-        // 새로운 위치에 바닥이 없는 경우에만 방 생성
-        const newIntersects = raycaster.intersectObjects(scene.children, true);
-        const existingFloor = newIntersects.find(
-          (intersect) =>
-            intersect.object.name === floorName &&
-            intersect.point.distanceTo(newPosition) < 1
+          (direction.z * floor.geometry.parameters.height) / 2;
+        const distance = Math.sqrt(
+          Math.pow(newX - mouse.x, 2) + Math.pow(newZ - mouse.y, 2)
         );
 
-        if (!existingFloor) {
-          const newRoom = new Room({
-            floorColor: color,
-            wallColor: color,
-            ceilingColor: color,
-          });
-          newRoom.position.set(newX, 0, newZ);
-          newRoom.name = floorName;
-          if (isShadow) {
-            if (objects.hasOwnProperty("shadow")) {
-              scene.remove(objects["shadow"]);
-              delete objects["shadow"];
-            }
-            objects["shadow"] = newRoom;
-          } else {
-            objects[newRoom.uuid] = newRoom;
-          }
-          scene.add(newRoom);
-          break;
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestDirection = direction;
+          closestWall = new THREE.Vector3(newX, 0, newZ);
         }
+      });
+
+      const newX =
+        floor.position.x + closestDirection.x * floor.geometry.parameters.width;
+      const newZ =
+        floor.position.z +
+        closestDirection.z * floor.geometry.parameters.height;
+      const newPosition = new THREE.Vector3(newX, 0, newZ);
+
+      // 새로운 위치에 바닥이 없는 경우에만 방 생성
+      const newIntersects = raycaster.intersectObjects(scene.children, true);
+      const existingFloor = newIntersects.find(
+        (intersect) =>
+          intersect.object.name === floorName &&
+          intersect.point.distanceTo(newPosition) < 1
+      );
+
+      if (!existingFloor) {
+        const newRoom = new Room({
+          floorColor: color,
+          wallColor: color,
+          ceilingColor: color,
+        });
+        newRoom.position.copy(closestWall);
+        newRoom.name = floorName;
+        if (isShadow) {
+          if (objects.hasOwnProperty("shadow")) {
+            scene.remove(objects["shadow"]);
+            delete objects["shadow"];
+          }
+          objects["shadow"] = newRoom;
+        } else {
+          objects[newRoom.uuid] = newRoom;
+        }
+        scene.add(newRoom);
       }
     }
   };
