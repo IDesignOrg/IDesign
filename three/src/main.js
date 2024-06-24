@@ -1,5 +1,6 @@
 import * as THREE from "./lib/three.module.js";
-import { OrbitControls } from "https://threejsfundamentals.org/threejs/resources/threejs/r122/examples/jsm/controls/OrbitControls.js";
+// import { OrbitControls } from "https://threejsfundamentals.org/threejs/resources/threejs/r122/examples/jsm/controls/OrbitControls.js";
+import { OrbitControls } from "./lib/OrbitControls.js";
 import { WEBGL } from "./lib/webgl.js";
 import { Desk } from "./lib/objects/desk.js";
 import { Plane } from "./lib/objects/room.js";
@@ -141,6 +142,7 @@ if (WEBGL.isWebGLAvailable()) {
   };
 
   const onDocumentMouseDown = (event) => {
+    if (controls.enabled) return;
     creator(event, false, deskColor);
   };
 
@@ -169,6 +171,8 @@ if (WEBGL.isWebGLAvailable()) {
     const btn = event.target.closest("button");
 
     if (!btn) return;
+    controls.enabled = false;
+    console.log(controls.enabled);
     switch (btn.innerText) {
       case "책상":
         selectedObject = "desk";
@@ -179,7 +183,7 @@ if (WEBGL.isWebGLAvailable()) {
       default:
         break;
     }
-    controls.enabled = !controls.enabled;
+    // controls.enabled = !controls.enabled;
   };
 
   btn.addEventListener("mousedown", onClickIcon);
