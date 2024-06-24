@@ -30,6 +30,10 @@
             max-width: 100%;
             height: auto;
         }
+        .r_profile {
+			width : 50px;
+			height : 50px;
+		}
     </style>
 </head>
 <body>
@@ -90,7 +94,7 @@
                 <!-- 별점, 프로필 -->
                 <div>
                     <p><strong>Star Rating:</strong> <span th:text="${review.RStarRating}"></span></p>
-                    <p><strong>Main Photo:</strong> <span><img th:src="${review.RProfile}" alt="Main Photo"></span></p>
+                    <p><strong>프로필 사진:</strong> <span><img class="r_profile" th:src="${review.RProfile}" alt="Main Photo"></span></p>
                 </div>
             </div>
             <!-- 내용 -->
