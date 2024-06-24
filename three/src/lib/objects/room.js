@@ -1,7 +1,8 @@
 import * as THREE from "../three.module.js";
-import { ceilingName, floorName, wallName } from "./objectNames.js";
+import { ceilingName, floorName, roomName, wallName } from "./objectNames.js";
 import { floorColors } from "./colors.js";
-class Plane {
+
+class Room extends THREE.Group {
   constructor({
     x = 0,
     y = 0,
@@ -13,8 +14,9 @@ class Plane {
     wallColor = 0x9acd32, // yellowgreen 색상 (RGB(154,205,50))
     ceilingColor = 0x0000ff, // blue 색상 (RGB(0,0,255))
   }) {
-    const group = new THREE.Group();
-    group.name = "room";
+    super();
+    this.name = roomName;
+
     // 바닥 생성
     const floorGeometry = new THREE.PlaneGeometry(width, length);
     const floorMaterial = new THREE.MeshBasicMaterial({
@@ -25,7 +27,7 @@ class Plane {
     floor.name = floorName;
     floor.rotation.x = -Math.PI / 2;
     floor.position.set(x, y, z);
-    group.add(floor);
+    this.add(floor);
 
     // 벽 생성 함수
     const createWall = (width, height, color, position, rotation) => {
@@ -42,7 +44,7 @@ class Plane {
     };
 
     // 동쪽 벽 (z + length / 2)
-    group.add(
+    this.add(
       createWall(
         width,
         height,
@@ -52,7 +54,7 @@ class Plane {
       )
     );
     // 서쪽 벽 (z - length / 2)
-    group.add(
+    this.add(
       createWall(
         width,
         height,
@@ -62,7 +64,7 @@ class Plane {
       )
     );
     // 남쪽 벽 (x - width / 2)
-    group.add(
+    this.add(
       createWall(
         length,
         height,
@@ -72,7 +74,7 @@ class Plane {
       )
     );
     // 북쪽 벽 (x + width / 2)
-    group.add(
+    this.add(
       createWall(
         length,
         height,
@@ -92,10 +94,8 @@ class Plane {
     ceiling.name = ceilingName;
     ceiling.rotation.x = Math.PI / 2;
     ceiling.position.set(x, y + height, z);
-    group.add(ceiling);
-
-    return group;
+    this.add(ceiling);
   }
 }
 
-export { Plane };
+export { Room };
