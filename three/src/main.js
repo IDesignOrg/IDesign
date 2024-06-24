@@ -1,26 +1,16 @@
 import * as THREE from "./lib/three.module.js";
-// import { OrbitControls } from "./three-orbitcontrols/OrbitControls.js";
-import { OrbitControls } from "https://threejsfundamentals.org/threejs/resources/threejs/r122/examples/jsm/controls/OrbitControls.js";
-import { GLTFLoader } from "https://threejsfundamentals.org/threejs/resources/threejs/r122/examples/jsm/loaders/GLTFLoader.js";
-// import { OrbitControls } from "OrbitControls.js";
-// import { OrbitControls} from '.'
+import { OrbitControls } from "./lib/OrbitControls.js";
 import { WEBGL } from "./lib/webgl.js";
 import { Desk } from "./lib/objects/desk.js";
-import { Plane } from "./lib/objects/room.js";
+import { Room } from "./lib/objects/room.js";
 import { deskName, floorName, shadowName } from "./lib/objects/objectNames.js";
-import { deskColor, shadowColor } from "./lib/objects/colors.js";
+import { deskColor, floorColors, shadowColor } from "./lib/objects/colors.js";
 
 if (WEBGL.isWebGLAvailable()) {
   const btn = document.getElementById("hud-icon");
   let selectedObject = null;
-  // let isIconClick = false;
 
   const objects = {};
-
-  const CNT = 20;
-  const SMALL_CNT = 8;
-  const DESK_WIDTH = 4;
-  const DESK_DEPTH = 2;
 
   const scene = new THREE.Scene();
   const mouse = new THREE.Vector2();
@@ -43,17 +33,18 @@ if (WEBGL.isWebGLAvailable()) {
   controls.update();
 
   // for helper
-  const axesHelper = new THREE.AxesHelper(100, 100, 100);
+  const axesHelper = new THREE.AxesHelper(100);
   scene.add(axesHelper);
 
-  const initPlane = new Plane({});
+  const initRoom = new Room({});
+  initRoom.name = floorName;
 
-  objects[initPlane.uuid] = initPlane;
-  scene.add(initPlane);
+  objects[initRoom.uuid] = initRoom;
+  scene.add(initRoom);
 
   // 각 벽과 천장을 검색하여 불투명도를 설정할 수 있도록 함
   const wallsAndCeiling = [];
-  initPlane.children.forEach((child) => {
+  initRoom.children.forEach((child) => {
     if (child.material && child.material instanceof THREE.MeshBasicMaterial) {
       if (child.rotation.x !== -Math.PI / 2) {
         // 바닥을 제외
@@ -104,14 +95,94 @@ if (WEBGL.isWebGLAvailable()) {
       depth: 2,
       color,
     });
+    desk.children.forEach((child) => {
+      if (child.material && child.material instanceof THREE.MeshBasicMaterial) {
+        child.material.transparent = false;
+        child.material.opacity = 1;
+      }
+    });
     if (condition) {
       objects[shadowName] = desk;
-      // desk.name = "shadow";
     } else {
-      // desk.name = "desk";
       objects[desk.uuid] = desk;
     }
     scene.add(desk);
+  };
+
+  // 새로운 방 생성 함수
+  const createRoom = (intersects, color, isShadow) => {
+    let nearestFloor;
+    let position;
+
+    if (intersects.length === 0) {
+      // intersects의 길이가 0일 때는 화면 중심으로 새로운 방 생성
+      nearestFloor = initRoom.children.find(
+        (child) => child.name === floorName
+      );
+      position = new THREE.Vector3(0, 0, 0); // 화면 중심
+    } else {
+      nearestFloor = intersects.find(
+        (intersect) => intersect.object.name === floorName
+      );
+      if (nearestFloor) {
+        position = nearestFloor.point;
+      } else {
+        // intersections 배열에 floor 객체가 없는 경우, 첫 번째 교차점 사용
+        nearestFloor = intersects[0];
+        position = nearestFloor.point;
+      }
+    }
+
+    if (nearestFloor) {
+      const floor = nearestFloor;
+      if (!nearestFloor.position) return;
+      // 동서남북 방향으로 방 생성
+      const directions = [
+        { x: 1, z: 0 },
+        { x: -1, z: 0 },
+        { x: 0, z: 1 },
+        { x: 0, z: -1 },
+      ];
+
+      for (const direction of directions) {
+        const newX =
+          floor.position.x +
+          direction.x * initRoom.children[0].geometry.parameters.width;
+        const newZ =
+          floor.position.z +
+          direction.z * initRoom.children[0].geometry.parameters.height;
+        const newPosition = new THREE.Vector3(newX, 0, newZ);
+
+        // 새로운 위치에 바닥이 없는 경우에만 방 생성
+        const newIntersects = raycaster.intersectObjects(scene.children, true);
+        const existingFloor = newIntersects.find(
+          (intersect) =>
+            intersect.object.name === floorName &&
+            intersect.point.distanceTo(newPosition) < 1
+        );
+
+        if (!existingFloor) {
+          const newRoom = new Room({
+            floorColor: color,
+            wallColor: color,
+            ceilingColor: color,
+          });
+          newRoom.position.set(newX, 0, newZ);
+          newRoom.name = floorName;
+          if (isShadow) {
+            if (objects.hasOwnProperty("shadow")) {
+              scene.remove(objects["shadow"]);
+              delete objects["shadow"];
+            }
+            objects["shadow"] = newRoom;
+          } else {
+            objects[newRoom.uuid] = newRoom;
+          }
+          scene.add(newRoom);
+          break;
+        }
+      }
+    }
   };
 
   const getMousePoint = (event) => {
@@ -125,139 +196,109 @@ if (WEBGL.isWebGLAvailable()) {
     raycaster.setFromCamera(mouse, camera);
 
     // 평면과의 교차점 계산
-    //  or intersectObject(plane),true => 한 오브젝트에 대해 const intersects = raycaster.intersectObject(plane);
-    return raycaster.intersectObjects(scene.children, true); // 씬에 들어있는 각각의 오브젝트에 대해
+    return raycaster.intersectObjects(scene.children, true);
   };
 
   const creator = (event, shadowName, color) => {
-    console.log(color);
     const intersects = getMousePoint(event);
-    if (intersects.length > 0) {
-      const clickedObject = intersects.find(
-        (intersect) => intersect.object.name === floorName
-      );
-      if (!clickedObject) return;
-      const intersect = clickedObject.object;
-      createDesk(
-        clickedObject.point.x,
-        clickedObject.point.z,
-        intersect,
-        color,
-        shadowName
-      );
+    if (selectedObject === floorName) {
+      const roomColor = event.type === "mousemove" ? shadowColor : color;
+      const isShadow = event.type === "mousemove";
+      createRoom(intersects, roomColor, isShadow);
+      return;
     }
+    if (intersects.length < 1) {
+      return;
+    }
+    const conditionName = selectedObject === deskName ? floorName : "null";
+    const clickedObject = intersects.find(
+      (intersect) => intersect.object.name === conditionName
+    );
+    if (!clickedObject) return;
+    const intersect = clickedObject.object;
+    createDesk(
+      clickedObject.point.x,
+      clickedObject.point.z,
+      intersect,
+      color,
+      shadowName
+    );
   };
 
   const onDocumentMouseDown = (event) => {
-    creator(event, false, deskColor);
-    // const intersects = getMousePoint(event);
-    // if (intersects.length <= 0) return;
-    // const clickedObject = intersects.find(
-    //   (intersect) => intersect.object.name === floorName
-    // );
-    // if (!clickedObject) return;
-    // const intersect = clickedObject.object;
-    // createDesk(clickedObject.point.x, clickedObject.point.z, intersect);
-  };
-  const onDocumentMouseMove = (e) => {
     if (controls.enabled) return;
-
-    creator(e, shadowName, shadowColor);
-
-    return;
-
-    const intersects = getMousePoint(e);
-    if (intersects.length > 0) {
-      const clickedObject = intersects.find(
-        (intersect) => intersect.object.name === floorName
-      );
-      console.log(intersects, clickedObject);
-      if (!clickedObject) return;
-      if (!selectedObject) return;
-
-      if (selectedObject === deskName) {
-        createDesk(
-          clickedObject.point.x,
-          clickedObject.point.z,
-          clickedObject.object,
-          "rgb(215, 63, 63)",
-          "shadow"
-        );
-      }
-
-      if (selectedObject === "plane") {
-      }
-    } else {
-    }
-  };
-  const onDocumentKeyDown = () => {};
-  const onDocumentKeyUp = () => {};
-
-  const onClickIcon = (e) => {
-    e.stopPropagation();
-    const btn = e.target.closest("button");
-
-    if (!btn) return;
-    switch (btn.innerText) {
-      case "책상":
-        selectedObject = "desk";
+    if (!selectedObject) return;
+    let color = null;
+    switch (selectedObject) {
+      case deskName:
+        color = deskColor;
         break;
-
-      case "바닥":
-        selectedObject = "plane";
+      case floorName:
+        color = floorColors;
         break;
     }
-    controls.enabled = !controls.enabled;
+    creator(event, false, color);
   };
 
-  const onDoubleClick = (e) => {
-    return;
-    const intersects = getMousePoint(e);
-    if (intersects.length > 0) {
-      const clickedObject = intersects[0].object;
-      // console.log(intersects);
-      const obj = clickedObject.parent;
-      obj.rotation.y = THREE.MathUtils.degToRad(90);
-    } else {
-      console.log("마우스 아웃");
+  const onDocumentMouseMove = (event) => {
+    if (controls.enabled) return;
+    if (!selectedObject) return;
+    switch (selectedObject) {
+      case deskName:
+        break;
+      case floorName:
+        break;
     }
+    creator(event, shadowName, shadowColor);
   };
 
-  const onKeyDown = (e) => {
-    console.log(e.keyCode);
-
-    const { keyCode } = e;
+  const onKeyDown = (event) => {
+    const { keyCode } = event;
     switch (keyCode) {
       case 27:
         controls.enabled = !controls.enabled;
-        if (objects.hasOwnProperty("shadow")) {
-          scene.remove(objects["shadow"]);
-          delete objects["shadow"];
+        if (objects.hasOwnProperty(shadowName)) {
+          scene.remove(objects[shadowName]);
+          delete objects[shadowName];
         }
-        return;
-
+        break;
       default:
-        return;
+        break;
+    }
+  };
+
+  const onClickIcon = (event) => {
+    event.stopPropagation();
+    const btn = event.target.closest("button");
+
+    if (!btn) return;
+    controls.enabled = false;
+    switch (btn.innerText) {
+      case "책상":
+        selectedObject = deskName;
+        break;
+      case "바닥":
+        selectedObject = floorName;
+        break;
+      default:
+        break;
     }
   };
 
   btn.addEventListener("mousedown", onClickIcon);
-
   document.addEventListener("mousemove", onDocumentMouseMove, false);
   document.addEventListener("mousedown", onDocumentMouseDown, false);
-  document.addEventListener("keydown", onDocumentKeyDown, false);
-  document.addEventListener("keyup", onDocumentKeyUp, false);
-  document.addEventListener("dblclick", onDoubleClick, false);
-  document.addEventListener("keydown", onKeyDown);
+  document.addEventListener("keydown", onKeyDown, false);
+
   const onWindowResize = () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-
     renderer.setSize(window.innerWidth, window.innerHeight);
   };
+
   window.addEventListener("resize", onWindowResize, false);
   animate();
 } else {
-  var warning = WEBGL.getWebGLErrorMessage();
+  const warning = WEBGL.getWebGLErrorMessage();
   document.body.appendChild(warning);
 }
