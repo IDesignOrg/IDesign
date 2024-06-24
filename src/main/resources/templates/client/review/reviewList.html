@@ -21,6 +21,7 @@
 				<td>
 				  	<a th:href="@{/auth/evaluation/{id}(id=${review.rNo})}" th:text="${review.rTitle}"></a>
 				</td>
+				
 				<td>
 					<a th:href="@{/auth/evaluation/{id}(id=${review.rNo})}" th:text="${review.rContent}"></a>
 				</td>
@@ -29,7 +30,12 @@
 				</td>
             </tr>
         </tbody>
+        
+        <a href="/review_write" th:if="${session.UId} != null">작성</a>
     </table>
+    <div class="width1200">
+		<ul class="review"></ul>
+	</div>
 	
 	<div th:if="${totalPages > 1}">
 	        <ul class="pagination">
@@ -55,5 +61,11 @@
 	            </li>
 	        </ul>
 	    </div>
+	    
+	    <div class="ex">
+			<ul>
+				<li></li>
+			</ul>
+		</div>
 </body>
 </html>
