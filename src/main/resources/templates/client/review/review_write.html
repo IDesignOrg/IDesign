@@ -3,6 +3,19 @@
 <head>
 <meta charset="EUC-KR">
 <title>Insert title here</title>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<style>
+    #fileList {
+        list-style: none;
+        padding: 0;
+    }
+    #fileList li {
+        margin: 5px 0;
+        padding: 10px;
+        border: 1px solid #ccc;
+        background-color: #f9f9f9;
+    }
+</style>
 </head>
 <body>
 	<h1>Write a Review</h1>
@@ -31,10 +44,44 @@
         <option value="4.5">4.5</option>
         <option value="5">5</option>
     </select><br><br>
+    <label for="mainphoto">썸네일 사진 얿로드 :</label>
+    <input type="file" id="mainPhotoUp" name="mainPhoto" accept=".jpg, .png, .jpeg">
     
     <label for="files">사진 업로드:</label>
-    <input type="file" id="files" name="files" accept=".jpg,.png,.jpeg" multiple><br><br>
+    <input type="file" id="fileInput" name="files" accept=".jpg,.png,.jpeg" multiple><br><br>
+    
+    <!--사진 리스트-->
+    <label>맨 아래부터 1,2,3</label>
+    <ul id="fileList"></ul>
     
     <button type="submit">리뷰 작성 완료</button>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+
+        fileInput.addEventListener('change', (event) => {
+            fileList.innerHTML = '';
+            Array.from(event.target.files).forEach((file, index) => {
+                const listItem = document.createElement('li');
+                listItem.textContent = file.name;
+                listItem.setAttribute('data-index', index);
+                fileList.appendChild(listItem);
+            });
+        });
+
+        new Sortable(fileList, {
+            animation: 150,
+            onEnd: () => {
+                const newFileList = [];
+                fileList.querySelectorAll('li').forEach((listItem) => {
+                    const index = listItem.getAttribute('data-index');
+                    newFileList.push(fileInput.files[index]);
+                });
+                const dataTransfer = new DataTransfer();
+                newFileList.forEach((file) => dataTransfer.items.add(file));
+                fileInput.files = dataTransfer.files;
+            }
+        });
+    </script>
 </body>
 </html>

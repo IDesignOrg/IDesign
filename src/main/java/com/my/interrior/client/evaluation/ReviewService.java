@@ -60,14 +60,16 @@ public class ReviewService {
 	// 후기 업로드
 	@Transactional
 	public void uploadFileAndCreateReview(String title, String category, String content, String starRating,
-			MultipartFile[] files) throws IOException {
+			MultipartFile[] files, MultipartFile mainPhoto) throws IOException {
 
 		List<String> fileUrls = new ArrayList<>();
 		for (MultipartFile file : files) {
 			String fileUrl = uploadFile(file);
 			fileUrls.add(fileUrl);
 		}
-
+		
+		// 썸네일 사진 업로드
+	    String mainPhotoUrl = uploadFile(mainPhoto);
 		// 작성자 id는 세션에서 가져옴
 		String userId = (String) session.getAttribute("UId");
 
@@ -94,6 +96,7 @@ public class ReviewService {
 		review.setRCategory(category);
 		review.setRContent(content);
 		review.setRStarRating(starRating);
+		review.setRMainPhoto(mainPhotoUrl);
 		review.setRProfile(profile); // 파일 URL을 프로필 이미지로 사용
 		review.setRViews(views);
 		review.setRWrittenTime(writtenTime);
@@ -117,10 +120,17 @@ public class ReviewService {
 	public Page<ReviewEntity> getAllReviews(Pageable pageable) {
 		return reviewRepository.findAll(pageable);
 	}
+	
+	// 페이징 처리된 후기 목록 가져오기(사진)
+	public List<ReviewPhotoEntity> getReviewPhotosByReviewNo(Long rNo) {
+	    return reviewPhotoRepository.findByReview_RNo(rNo);
+	}
 
+	// 후기 상세 페이지
 	public Optional<ReviewEntity> getReviewById(Long rNo) {
 		return reviewRepository.findById(rNo);
 	}
+	// 후기 상세 페이지(사진)
 	public List<ReviewPhotoEntity> getPhotosByReviewId(Long rNo) {
 	    // 1. 리뷰 번호(rNo)를 사용하여 리뷰 포토 엔티티(ReviewPhotoEntity)를 조회합니다.
 		 List<ReviewPhotoEntity> reviewPhotos = reviewPhotoRepository.findByReview_RNo(rNo);

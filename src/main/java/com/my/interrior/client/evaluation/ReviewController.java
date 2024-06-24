@@ -1,7 +1,9 @@
 package com.my.interrior.client.evaluation;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.mail.Multipart;
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 public class ReviewController {
 	
@@ -30,7 +35,9 @@ public class ReviewController {
 
     //후기 작성 만들기
 	@GetMapping("/review_write")
-	public String review() {
+	public String review(Model model, HttpSession session) {
+		String userid = (String)session.getAttribute("UID");
+		model.addAttribute("userid", userid);
 		return "client/review/review_write"; 
 	}
 	
@@ -42,9 +49,10 @@ public class ReviewController {
             @RequestParam("content") String content,
             @RequestParam("starRating") String starRating,
             @RequestParam("files") MultipartFile[] files,
+            @RequestParam("mainPhoto") MultipartFile mainPhoto,
             Model model) throws IOException {
         
-        reviewService.uploadFileAndCreateReview(title, category, content, starRating, files);
+        reviewService.uploadFileAndCreateReview(title, category, content, starRating, files, mainPhoto);
 
         return "redirect:/review_write";
     }
@@ -53,10 +61,15 @@ public class ReviewController {
 	@GetMapping("/auth/evaluation")
 	public String allReviews(Model model, Pageable pageable) {
 	    Page<ReviewEntity> reviews = reviewService.getAllReviews(PageRequest.of(pageable.getPageNumber(), PAGE_SIZE));
-
+	    
 	    model.addAttribute("reviews", reviews.getContent());
 	    model.addAttribute("currentPage", pageable.getPageNumber());
 	    model.addAttribute("totalPages", reviews.getTotalPages());
+	    for (ReviewEntity review : reviews.getContent()) {
+	        List<ReviewPhotoEntity> reviewPhotos = reviewService.getReviewPhotosByReviewNo(review.getRNo());
+	        System.out.println("사진은 : " + reviewPhotos);
+	        model.addAttribute("reviewPhotos_" + review.getRNo(), reviewPhotos);
+	    }
 	    return "client/review/reviewList";    
 	}
 	

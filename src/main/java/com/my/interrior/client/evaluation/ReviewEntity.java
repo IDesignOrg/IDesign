@@ -55,6 +55,10 @@ public class ReviewEntity {
 	@ManyToOne
 	@JoinColumn(name = "u_id", referencedColumnName = "u_id")
 	private UserEntity user;
+	
+	@JsonProperty("RMainPhoto")
+	@Column(name = "r_mainphoto")
+	private String RMainPhoto;
 
 	@JsonProperty("RProfile")
 	@Column(name = "r_profile")
