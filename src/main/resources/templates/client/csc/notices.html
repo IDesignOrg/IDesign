@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>csc</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+	여기는 고객센터입니다.(현재 통합검색 만드는 중)
+
+	<!--여기에는 통합 검색 만들기-->
+	<form action="/board/notice/search/" method="GET">
+
+		<input type="text" id="searchAll" name="searchAll" placeholder="제목을 입력해주세요." />
+		<button type="submit" id="searchBtn" onclick="searchBtn()">검색</button>
+	</form>
+
+	<!--이제 여기에 자주 묻는 질문, 문의사항, 공지사항 만들기-->
+	<!--먼저 문의사항, 공지사항을 만들고 통합 검색을 들어가자-->
+	<a href="/board/faq">자주 묻는 질문</a>
+	<a href="/board/inquiry">문의사항</a>
+	<a href="/board/notices">공지사항</a>
+
+	<table>
+		<tr th:each="notice : ${notices}">
+			<td th:text="${notice.notNo}"></td>
+			<td>
+				<a th:href="@{/board/notice/{no}(no=${notice.notNo})}" th:text="${notice.notTitle}"></a>
+			</td>
+			<td th:text="${notice.userEntity.UName}"></td>
+		</tr>
+	</table>
+
+	<nav aria-label="Page navigation">
+		<ul class="pagination">
+			<li class="page-item" th:class="${notices.first ? 'disabled' : ''}">
+				<a th:if="${!notices.first}" class="page-link"
+					th:href="@{/board/notices(page=${notices.number - 1}, size=${notices.size})}">이전</a>
+			</li>
+
+			<li th:each="pageNum : ${#numbers.sequence(0, notices.totalPages - 1)}"
+				th:class="${notices.number == pageNum ? 'page-item active' : 'page-item'}">
+				<a class="page-link" th:href="@{/board/notices(page=${pageNum}, size=${notices.size})}"
+					th:text="${pageNum + 1}"></a>
+			</li>
+
+			<li class="page-item" th:class="${notices.last ? 'disabled' : ''}">
+				<a th:if="${!notices.last}" class="page-link"
+					th:href="@{/board/notices(page=${notices.number + 1}, size=${notices.size})}">다음</a>
+			</li>
+		</ul>
+	</nav>
+
+	<!--
+		<script>
+			function searchBtn(){
+				var searchText = $('#searchAll').val();
+				$.ajax({
+					url:'/board/search',
+					type:'GET',
+					data:searchText,
+					success: function(res){
+						
+					}
+				});
+			}
+		</script>
+-->
+	<script>
+		function searchBtn() {
+			var searchText = $('#searchAll').val();
+
+			this.action = '/board/search/' + encodeURIComponent(searchText);
+		}
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>csc</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+	여기는 고객센터입니다.(현재 통합검색 만드는 중)
+
+	<!--여기에는 통합 검색 만들기-->
+	<form action="/board/inquiry/search/" method="GET">
+
+		<input type="text" id="searchAll" name="searchAll" placeholder="제목을 입력해주세요." />
+		<button type="submit" id="searchBtn" onclick="searchBtn()">검색</button>
+	</form>
+
+	<!--이제 여기에 자주 묻는 질문, 문의사항, 공지사항 만들기-->
+	<!--먼저 문의사항, 공지사항을 만들고 통합 검색을 들어가자-->
+	<a href="/board/faq">자주 묻는 질문</a>
+	<a href="/board/inquiry">문의사항</a>
+	<a href="/board/notices">공지사항</a>
+	<div>
+		<a th:href="@{/board/inquiry}">전체</a>
+		<a th:each="category : ${categories}" th:href="@{|/board/inquiry/category/${category}|}"
+			th:text="${category}"></a>
+	</div>
+	<a th:if="${session.UId} != null" th:href="@{/board/inquiry/write}">글 쓰기</a>
+	<table>
+		<tr th:each="inquiry : ${inquiries}">
+			<td th:text="${inquiry.inqNo}"></td>
+			<td>
+				<a th:href="@{/board/inquiry/{no}(no=${inquiry.inqNo})}" th:text="${inquiry.inqTitle}"
+					th:attr="data-user-id=${inquiry.userEntity.UId}"
+					onclick="checkAuthorization(event, this.getAttribute('data-user-id'))"></a>
+			</td>
+			<td th:text="${inquiry.inqCategory}"></td>
+			<td th:text="${inquiry.userEntity.UName}"></td>
+		</tr>
+	</table>
+
+	<nav aria-label="Page navigation">
+		<ul class="pagination">
+			<li class="page-item" th:class="${inquiries.first ? 'disabled' : ''}">
+				<a th:if="${!inquiries.first}" class="page-link"
+					th:href="@{/board/inquiry(page=${inquiries.number - 1}, size=${inquiries.size})}">이전</a>
+			</li>
+
+			<li th:each="pageNum : ${#numbers.sequence(0, inquiries.totalPages - 1)}"
+				th:class="${inquiries.number == pageNum ? 'page-item active' : 'page-item'}">
+				<a class="page-link" th:href="@{/board/inquiry(page=${pageNum}, size=${inquiries.size})}"
+					th:text="${pageNum + 1}"></a>
+			</li>
+
+			<li class="page-item" th:class="${inquiries.last ? 'disabled' : ''}">
+				<a th:if="${!inquiries.last}" class="page-link"
+					th:href="@{/board/inquiry(page=${inquiries.number + 1}, size=${inquiries.size})}">다음</a>
+			</li>
+		</ul>
+	</nav>
+
+	<!--
+		<script>
+			function searchBtn(){
+				var searchText = $('#searchAll').val();
+				$.ajax({
+					url:'/board/search',
+					type:'GET',
+					data:searchText,
+					success: function(res){
+						
+					}
+				});
+			}
+		</script>
+-->
+	<script>
+		function searchBtn() {
+			var searchText = $('#searchAll').val();
+
+			this.action = '/board/search/' + encodeURIComponent(searchText);
+		}
+
+	</script>
+	<script th:inline="javascript">
+		function checkAuthorization(event, authorUid) {
+			event.preventDefault(); // 링크의 기본 동작을 막음
+
+			var sessionUid = /*[[${session.UId}]]*/ null; // Thymeleaf 표현식을 통해 HttpSession의 UId 값을 가져옴
+			console.log("sessionUid의 값은: ", sessionUid);
+			console.log("authorUid의 값은: ", authorUid);
+			if (sessionUid !== null && sessionUid === authorUid) {
+				// 권한이 있는 경우 링크 이동
+				window.location.href = event.target.getAttribute('href');
+			} else {
+				// 권한이 없는 경우 알림창 표시
+				alert('권한이 없습니다.');
+			}
+		}
+
+	</script>
+</body>
+
+</html>

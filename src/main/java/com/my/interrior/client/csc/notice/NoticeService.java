@@ -18,4 +18,8 @@ public class NoticeService {
 		
 		return noticeRepository.findAll(pageable);
 	}
+	
+	public NoticeEntity getNoticeDetail(Long notNo) {
+		return noticeRepository.findBynotNo(notNo);
+	}
 }
