@@ -2,9 +2,10 @@ import * as THREE from "./lib/three.module.js";
 import { OrbitControls } from "./lib/OrbitControls.js";
 import { WEBGL } from "./lib/webgl.js";
 import { Desk } from "./lib/objects/desk.js";
-import { Room } from "./lib/objects/room.js";
+import { Floor } from "./lib/objects/floor.js";
 import { deskName, floorName, shadowName } from "./lib/objects/objectNames.js";
 import { deskColor, floorColors, shadowColor } from "./lib/objects/colors.js";
+import { InitObjects } from "./lib/objects/sceneObjects.js";
 
 if (WEBGL.isWebGLAvailable()) {
   const btn = document.getElementById("hud-icon");
@@ -32,27 +33,21 @@ if (WEBGL.isWebGLAvailable()) {
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.update();
 
-  // for helper
-  const axesHelper = new THREE.AxesHelper(100);
-  scene.add(axesHelper);
+  const { initCube, initFloor, axeshelper } = new InitObjects();
+  scene.add(initCube);
+  scene.add(initFloor);
+  scene.add(axeshelper);
 
-  const initRoom = new Room({});
-  initRoom.name = floorName;
-
-  objects[initRoom.uuid] = initRoom;
-  scene.add(initRoom);
-
-  // 각 벽과 천장을 검색하여 불투명도를 설정할 수 있도록 함
   const wallsAndCeiling = [];
-  initRoom.children.forEach((child) => {
-    if (child.material && child.material instanceof THREE.MeshBasicMaterial) {
-      if (child.rotation.x !== -Math.PI / 2) {
-        // 바닥을 제외
-        child.material.transparent = true;
-        wallsAndCeiling.push(child);
-      }
-    }
-  });
+  // initRoom.children.forEach((child) => {
+  //   if (child.material && child.material instanceof THREE.MeshBasicMaterial) {
+  //     if (child.rotation.x !== -Math.PI / 2) {
+  //       // 바닥을 제외
+  //       child.material.transparent = true;
+  //       wallsAndCeiling.push(child);
+  //     }
+  //   }
+  // });
 
   function updateOpacity() {
     const cameraDirection = new THREE.Vector3();
@@ -82,10 +77,6 @@ if (WEBGL.isWebGLAvailable()) {
   };
 
   const createDesk = (x, z, object, color, condition) => {
-    if (objects.hasOwnProperty(shadowName)) {
-      scene.remove(objects[shadowName]);
-      delete objects[shadowName];
-    }
     const desk = new Desk({
       x,
       z,
@@ -111,6 +102,7 @@ if (WEBGL.isWebGLAvailable()) {
 
   // 새로운 방 생성 함수
   const createRoom = (intersects, color, isShadow) => {
+    return;
     let nearestFloor;
     let position;
 
@@ -205,13 +197,21 @@ if (WEBGL.isWebGLAvailable()) {
     }
   };
 
-  const getMousePoint = (event) => {
+  const getRaycaster = (event) => {
+    // 마우스 포인트 계산
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    // Raycaster 설정
+    return raycaster.setFromCamera(mouse, camera);
+  };
+
+  const getIntersects = (event) => {
     event.preventDefault();
 
     // 마우스 포인트 계산
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
     // Raycaster 설정
     raycaster.setFromCamera(mouse, camera);
 
@@ -219,14 +219,39 @@ if (WEBGL.isWebGLAvailable()) {
     return raycaster.intersectObjects(scene.children, true);
   };
 
+  const createFloor = (intersects, floorColor, isShadow, event) => {
+    // console.log(camera.position);
+
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    console.log(mouse);
+    const floor = new Floor({ x: mouse.x, y: mouse.y, z: 0, floorColor });
+    scene.add(floor);
+    objects[shadowName] = floor;
+    return;
+    const { x, y, z } = camera.position;
+    const cameraDistance = new THREE.Vector3();
+    const target = new THREE.Vector3(x, y, z);
+    const a = getRaycaster(event);
+    console.log("a = ", a);
+    // cameraDistance.subVectors(camera.position, target);
+    if (intersects.length > 0) {
+    } else {
+    }
+  };
+
   const creator = (event, shadowName, color) => {
-    const intersects = getMousePoint(event);
+    if (objects.hasOwnProperty(shadowName)) {
+      scene.remove(objects[shadowName]);
+      delete objects[shadowName];
+    }
     if (selectedObject === floorName) {
-      const roomColor = event.type === "mousemove" ? shadowColor : color;
-      const isShadow = event.type === "mousemove";
-      createRoom(intersects, roomColor, isShadow);
+      const floorColor = shadowName ? shadowColor : color;
+      // const isShadow = event.type === "mousemove";
+      createFloor(intersects, floorColor, shadowName, event);
       return;
     }
+    const intersects = getIntersects(event);
     if (intersects.length < 1) {
       return;
     }
@@ -236,6 +261,7 @@ if (WEBGL.isWebGLAvailable()) {
     );
     if (!clickedObject) return;
     const intersect = clickedObject.object;
+    console.log(clickedObject.point.x, clickedObject.point.z);
     createDesk(
       clickedObject.point.x,
       clickedObject.point.z,
