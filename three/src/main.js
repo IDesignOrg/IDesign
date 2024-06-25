@@ -3,9 +3,17 @@ import { OrbitControls } from "./lib/OrbitControls.js";
 import { WEBGL } from "./lib/webgl.js";
 import { Desk } from "./lib/objects/desk.js";
 import { Floor } from "./lib/objects/floor.js";
-import { deskName, floorName, shadowName } from "./lib/objects/objectNames.js";
+import {
+  deskName,
+  floorName,
+  shadowName,
+  groundName,
+} from "./lib/objects/objectNames.js";
 import { deskColor, floorColors, shadowColor } from "./lib/objects/colors.js";
 import { InitObjects } from "./lib/objects/sceneObjects.js";
+
+const dx = [0, 0, -1, 1];
+const dy = [-1, 1, 0, 0];
 
 if (WEBGL.isWebGLAvailable()) {
   const btn = document.getElementById("hud-icon");
@@ -33,8 +41,8 @@ if (WEBGL.isWebGLAvailable()) {
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.update();
 
-  const { initCube, initFloor, axeshelper } = new InitObjects();
-  scene.add(initCube);
+  const { initGround, initFloor, axeshelper } = new InitObjects();
+  scene.add(initGround);
   scene.add(initFloor);
   scene.add(axeshelper);
 
@@ -197,15 +205,6 @@ if (WEBGL.isWebGLAvailable()) {
     }
   };
 
-  const getRaycaster = (event) => {
-    // 마우스 포인트 계산
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-    // Raycaster 설정
-    return raycaster.setFromCamera(mouse, camera);
-  };
-
   const getIntersects = (event) => {
     event.preventDefault();
 
@@ -216,28 +215,66 @@ if (WEBGL.isWebGLAvailable()) {
     raycaster.setFromCamera(mouse, camera);
 
     // 평면과의 교차점 계산
+
     return raycaster.intersectObjects(scene.children, true);
   };
 
-  const createFloor = (intersects, floorColor, isShadow, event) => {
-    // console.log(camera.position);
+  const getSize = (object) => {
+    // return { x: 20, y: 1, z: 20 };
+    const boundingBox = new THREE.Box3().setFromObject(object);
 
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-    console.log(mouse);
-    const floor = new Floor({ x: mouse.x, y: mouse.y, z: 0, floorColor });
-    scene.add(floor);
-    objects[shadowName] = floor;
-    return;
-    const { x, y, z } = camera.position;
-    const cameraDistance = new THREE.Vector3();
-    const target = new THREE.Vector3(x, y, z);
-    const a = getRaycaster(event);
-    console.log("a = ", a);
-    // cameraDistance.subVectors(camera.position, target);
-    if (intersects.length > 0) {
+    // 크기 계산
+    const size = new THREE.Vector3();
+    boundingBox.getSize(size);
+    return size;
+  };
+
+  const createFloor = (intersects, floorColor, isShadow, event) => {
+    let selectedObject = intersects.find(
+      (obj) => obj.object.name === floorName
+    );
+    if (selectedObject) {
+      const size = getSize(selectedObject.object);
+      let x = selectedObject.point.x > 0 ? 1 : -1;
+      let z = selectedObject.point.z > 0 ? 1 : -1;
+      const y = isShadow ? 0.1 : 0;
+
+      const cx = x;
+      const cy = z;
+
+      x = (selectedObject.object.position.x + size.x / 2) * x;
+      z = (selectedObject.object.position.z + size.z / 2) * z;
+
+      // console.log(
+      //   `cx+cz = ${cx + cy} px = ${selectedObject.point.x} pz = ${
+      //     selectedObject.point.z
+      //   } cx = ${cx} cz = ${cy}`
+      // );
+      console.log(size);
+      const floor = new Floor({ x, y, z, floorColor });
+      objects[shadowName] = floor;
+      scene.add(floor);
     } else {
+      selectedObject = intersects.find((obj) => obj.object.name === groundName);
     }
+
+    if (isShadow) {
+    }
+    //  { x, z } = selectedObject.point;
+
+    // console.log(scene.child.forEach())
+
+    // scene.add(floor);
+    // objects[shadowName] = floor;
+    // return;
+    // const { x, y, z } = camera.position;
+    // const cameraDistance = new THREE.Vector3();
+    // const target = new THREE.Vector3(x, y, z);
+    // const a = getRaycaster(event);
+    // // cameraDistance.subVectors(camera.position, target);
+    // if (intersects.length > 0) {
+    // } else {
+    // }
   };
 
   const creator = (event, shadowName, color) => {
@@ -245,13 +282,14 @@ if (WEBGL.isWebGLAvailable()) {
       scene.remove(objects[shadowName]);
       delete objects[shadowName];
     }
+    const intersects = getIntersects(event);
+
     if (selectedObject === floorName) {
       const floorColor = shadowName ? shadowColor : color;
       // const isShadow = event.type === "mousemove";
       createFloor(intersects, floorColor, shadowName, event);
       return;
     }
-    const intersects = getIntersects(event);
     if (intersects.length < 1) {
       return;
     }
@@ -261,7 +299,6 @@ if (WEBGL.isWebGLAvailable()) {
     );
     if (!clickedObject) return;
     const intersect = clickedObject.object;
-    console.log(clickedObject.point.x, clickedObject.point.z);
     createDesk(
       clickedObject.point.x,
       clickedObject.point.z,
