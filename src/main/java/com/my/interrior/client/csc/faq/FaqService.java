@@ -33,4 +33,9 @@ public class FaqService {
 	public Page<FaqEntity> getFaqsByCategory(String category, PageRequest pageable){
 		return faqRepository.findByfaqCategory(category, pageable);
 	}
+	
+	public Page<FaqEntity> getFaqsByKeyword(String keyword, Pageable pageable){
+		System.out.println("pageble의 값은 : " + pageable);
+		return faqRepository.findByfaqTitleContaining(keyword, pageable);
+	}
 }

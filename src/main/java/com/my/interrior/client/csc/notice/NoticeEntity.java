@@ -38,6 +38,9 @@ public class NoticeEntity {
 	@DateTimeFormat(pattern = "yyyy.MM.dd")
 	private LocalDate notRegisteredDate;
 	
+	@Column(nullable = false)
+	private String notAuthor;
+	
 	@ManyToOne
 	@JoinColumn(name = "u_no")
 	@JsonProperty("UNo")
