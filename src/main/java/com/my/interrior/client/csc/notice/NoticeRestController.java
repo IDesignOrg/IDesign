@@ -11,12 +11,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class NoticeRestController {
 
-	private final NoticeService noticeService;
+//	private final NoticeService noticeService;
 	
-	@GetMapping("/auth/notices")
-	public Page<NoticeEntity> showNotices(@RequestParam(defaultValue = "0") int page,
-										  @RequestParam(defaultValue = "10") int size){
-		
-		return noticeService.getNotices(page, size);
-	}
+//	@GetMapping("/auth/notices")
+//	public Page<NoticeEntity> showNotices(@RequestParam(defaultValue = "0") int page,
+//										  @RequestParam(defaultValue = "10") int size){
+//		
+//		return noticeService.getNotices(page, size);
+//	}
 }
