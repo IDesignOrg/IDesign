@@ -1,10 +1,11 @@
 import * as THREE from "../three.module";
 import { Floor } from "./floor";
+import { groundName, wrapperName } from "./objectNames";
 
 class InitObjects {
   constructor() {
     return {
-      initCube: this.createInitCube(),
+      initGround: this.createGround(),
       initFloor: this.createInitFloor(),
       axeshelper: this.createAxesHelper(),
     };
@@ -13,12 +14,17 @@ class InitObjects {
   createAxesHelper = () => {
     return new THREE.AxesHelper(1000);
   };
-  createInitCube = () => {
-    const geometry = new THREE.BoxGeometry(1000, 1000, 1000);
-    const material = new THREE.MeshBasicMaterial({ color: "white" });
-    const cube = new THREE.Mesh(geometry, material);
-    cube.position.set(0, 0, 0);
-    return cube;
+  createGround = () => {
+    const initGround = new Floor({
+      x: 0,
+      y: -1,
+      z: 0,
+      width: 1000,
+      length: 1000,
+      floorColor: "white",
+    });
+    initGround.name = groundName;
+    return initGround;
   };
 
   createInitFloor = () => {
