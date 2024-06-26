@@ -12,9 +12,9 @@
 	여기는 고객센터입니다.(현재 통합검색 만드는 중)
 
 	<!--여기에는 통합 검색 만들기-->
-	<form action="/board/notice/search/" method="GET">
+	<form action="/board/notice/search" method="GET">
 
-		<input type="text" id="searchAll" name="searchAll" placeholder="제목을 입력해주세요." />
+		<input type="text" id="keyword" name="keyword" placeholder="제목을 입력해주세요." />
 		<button type="submit" id="searchBtn" onclick="searchBtn()">검색</button>
 	</form>
 
@@ -41,10 +41,14 @@
 					th:href="@{/board/notices(page=${notices.number - 1}, size=${notices.size})}">이전</a>
 			</li>
 
+			<!-- 페이지 번호 링크 -->
 			<li th:each="pageNum : ${#numbers.sequence(0, notices.totalPages - 1)}"
 				th:class="${notices.number == pageNum ? 'page-item active' : 'page-item'}">
-				<a class="page-link" th:href="@{/board/notices(page=${pageNum}, size=${notices.size})}"
+				<a th:if="${param!=null}" class="page-link"
+					th:href="@{/board/notice/search(page=${pageNum}, size=${notices.size}, keyword=${param.keyword})}"
 					th:text="${pageNum + 1}"></a>
+				<a th:if="${param==null}" class="page-link"
+					th:href="@{/board/notices(page=${pageNum}, size=${notices.size})}" th:text="${pageNum + 1}"></a>
 			</li>
 
 			<li class="page-item" th:class="${notices.last ? 'disabled' : ''}">
@@ -53,29 +57,6 @@
 			</li>
 		</ul>
 	</nav>
-
-	<!--
-		<script>
-			function searchBtn(){
-				var searchText = $('#searchAll').val();
-				$.ajax({
-					url:'/board/search',
-					type:'GET',
-					data:searchText,
-					success: function(res){
-						
-					}
-				});
-			}
-		</script>
--->
-	<script>
-		function searchBtn() {
-			var searchText = $('#searchAll').val();
-
-			this.action = '/board/search/' + encodeURIComponent(searchText);
-		}
-	</script>
 </body>
 
 </html>

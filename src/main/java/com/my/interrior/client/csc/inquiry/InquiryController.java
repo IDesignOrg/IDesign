@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -73,4 +74,20 @@ public class InquiryController {
 		
 		return "client/csc/inquiryDetail";
 	}
+	
+	@GetMapping("/board/inquiry/search")
+	public String getInquirySearch(@RequestParam("keyword") String keyword,
+			@RequestParam(name = "page", defaultValue = "0") int page,
+			@RequestParam(name = "size", defaultValue = "10") int size,
+			Model model) {
+		
+		Pageable pageable = PageRequest.of(page, size);
+		Page<InquiryEntity> inqs = inquiryService.getInqByKeyword(keyword, pageable);
+		model.addAttribute("categories", inquiryService.getAllCategories());
+		model.addAttribute("inquiries", inqs);
+		model.addAttribute("param", keyword);
+		
+		return "client/csc/inquiry";
+	}
+	
 }

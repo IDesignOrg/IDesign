@@ -32,4 +32,7 @@ public class InquiryService {
 	public InquiryEntity getDetailByinqNo(Long inqNo) {
 		return inquiryRepository.findByinqNo(inqNo);
 	}
+	public Page<InquiryEntity> getInqByKeyword(String keyword, Pageable pageable){
+		return inquiryRepository.findByinqTitleContaining(keyword, pageable);
+	}
 }

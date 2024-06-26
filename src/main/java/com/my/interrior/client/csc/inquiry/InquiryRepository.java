@@ -15,4 +15,5 @@ public interface InquiryRepository extends JpaRepository<InquiryEntity, Long>{
 	List<String> findAllCategory();
 	Page<InquiryEntity> findByinqCategory(String category, Pageable pageable);
 	InquiryEntity findByinqNo(Long inqNo);
+	Page<InquiryEntity> findByinqTitleContaining(String keyword, Pageable pageable);
 }
