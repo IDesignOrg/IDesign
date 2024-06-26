@@ -22,4 +22,7 @@ public class NoticeService {
 	public NoticeEntity getNoticeDetail(Long notNo) {
 		return noticeRepository.findBynotNo(notNo);
 	}
+	public Page<NoticeEntity> getNoticeByKeyword(String keyword, Pageable pageable){
+		return noticeRepository.findBynotTitleContaining(keyword, pageable);
+	}
 }

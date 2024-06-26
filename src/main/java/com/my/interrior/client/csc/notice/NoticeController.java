@@ -2,12 +2,16 @@ package com.my.interrior.client.csc.notice;
 
 import java.time.LocalDate;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
@@ -54,5 +58,19 @@ public class NoticeController {
 		
 	}
 	
+	@GetMapping("/board/notice/search")
+	public String getNoticesByKeyword(@RequestParam("keyword") String keyword,
+			@RequestParam(name = "page", defaultValue = "0") int page,
+			@RequestParam(name = "size", defaultValue = "10") int size,
+			Model model) {
+		
+		Pageable pageable = PageRequest.of(page, size);
+		
+		Page<NoticeEntity> notices = noticeService.getNoticeByKeyword(keyword, pageable);
+		model.addAttribute("notices", notices);
+		model.addAttribute("param", keyword);
+		
+		return "client/csc/notices";
+	}
 	
 }
