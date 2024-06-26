@@ -10,17 +10,18 @@
 
 <body>
 	여기는 고객센터입니다.(현재 통합검색 만드는 중)
-	
+
 	<!--여기에는 통합 검색 만들기-->
-	<form action = "/board/search/" method="GET">
-		
-	<input type = "text" id = "searchAll" name = "searchAll" placeholder="제목을 입력해주세요."/>
-	<button type = "submit" id = "searchBtn" onclick = "searchBtn()">검색</button>	
+	<form action="/board/faq/search" method="GET">
+		<input type="text" id="keyword" name="keyword" placeholder="제목을 입력해주세요." />
+		<button type="submit" id="searchBtn">검색</button>
 	</form>
-	
+
+
 	<!--이제 여기에 자주 묻는 질문, 문의사항, 공지사항 만들기-->
+	<!--먼저 문의사항, 공지사항을 만들고 통합 검색을 들어가자-->
 	<a href="/board/faq">자주 묻는 질문</a>
-	<a href="#">문의사항</a>
+	<a href="/board/inquiry">문의사항</a>
 	<a href="/board/notices">공지사항</a>
 	<div>
 		<a th:href="@{/board/faq}">전체</a>
@@ -44,10 +45,14 @@
 					th:href="@{/board/faq(page=${faqs.number - 1}, size=${faqs.size})}">이전</a>
 			</li>
 
+			<!-- 페이지 번호 링크 -->
 			<li th:each="pageNum : ${#numbers.sequence(0, faqs.totalPages - 1)}"
 				th:class="${faqs.number == pageNum ? 'page-item active' : 'page-item'}">
-				<a class="page-link" th:href="@{/board/faq(page=${pageNum}, size=${faqs.size})}"
+				<a th:if="${param!=null}" class="page-link"
+					th:href="@{/board/faq/search(page=${pageNum}, size=${faqs.size}, keyword=${param.keyword})}"
 					th:text="${pageNum + 1}"></a>
+				<a th:if="${param==null}" class="page-link"
+					th:href="@{/board/faq(page=${pageNum}, size=${faqs.size})}" th:text="${pageNum + 1}"></a>
 			</li>
 
 			<li class="page-item" th:class="${faqs.last ? 'disabled' : ''}">
@@ -56,29 +61,6 @@
 			</li>
 		</ul>
 	</nav>
-
-<!--
-		<script>
-			function searchBtn(){
-				var searchText = $('#searchAll').val();
-				$.ajax({
-					url:'/board/search',
-					type:'GET',
-					data:searchText,
-					success: function(res){
-						
-					}
-				});
-			}
-		</script>
--->
-<script>
-	function searchBtn(){
-		var searchText = $('#searchAll').val();
-		
-		this.action = '/board/search/' + encodeURIComponent(searchText);
-	}
-</script>
 </body>
 
 </html>
