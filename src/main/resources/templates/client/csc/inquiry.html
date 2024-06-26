@@ -12,10 +12,10 @@
 	여기는 고객센터입니다.(현재 통합검색 만드는 중)
 
 	<!--여기에는 통합 검색 만들기-->
-	<form action="/board/inquiry/search/" method="GET">
+	<form action="/board/inquiry/search" method="GET">
 
-		<input type="text" id="searchAll" name="searchAll" placeholder="제목을 입력해주세요." />
-		<button type="submit" id="searchBtn" onclick="searchBtn()">검색</button>
+		<input type="text" id="keyword" name="keyword" placeholder="제목을 입력해주세요." />
+		<button type="submit" id="searchBtn">검색</button>
 	</form>
 
 	<!--이제 여기에 자주 묻는 질문, 문의사항, 공지사항 만들기-->
@@ -49,10 +49,14 @@
 					th:href="@{/board/inquiry(page=${inquiries.number - 1}, size=${inquiries.size})}">이전</a>
 			</li>
 
+			<!-- 페이지 번호 링크 -->
 			<li th:each="pageNum : ${#numbers.sequence(0, inquiries.totalPages - 1)}"
 				th:class="${inquiries.number == pageNum ? 'page-item active' : 'page-item'}">
-				<a class="page-link" th:href="@{/board/inquiry(page=${pageNum}, size=${inquiries.size})}"
+				<a th:if="${param!=null}" class="page-link"
+					th:href="@{/board/inquiry/search(page=${pageNum}, size=${inquiries.size}, keyword=${param.keyword})}"
 					th:text="${pageNum + 1}"></a>
+				<a th:if="${param==null}" class="page-link"
+					th:href="@{/board/inquiry(page=${pageNum}, size=${inquiry.size})}" th:text="${pageNum + 1}"></a>
 			</li>
 
 			<li class="page-item" th:class="${inquiries.last ? 'disabled' : ''}">
@@ -77,14 +81,6 @@
 			}
 		</script>
 -->
-	<script>
-		function searchBtn() {
-			var searchText = $('#searchAll').val();
-
-			this.action = '/board/search/' + encodeURIComponent(searchText);
-		}
-
-	</script>
 	<script th:inline="javascript">
 		function checkAuthorization(event, authorUid) {
 			event.preventDefault(); // 링크의 기본 동작을 막음

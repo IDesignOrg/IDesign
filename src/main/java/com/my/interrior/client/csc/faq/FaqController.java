@@ -79,13 +79,14 @@ public class FaqController {
 		System.out.println("faqs의 값은?(카테고리별 페이지)" + faqs);
 		model.addAttribute("faqs", faqs);
 		model.addAttribute("categories", faqService.getAllCategories());
+		model.addAttribute("encodedCategory", encodedCategory);
 
 		return "client/csc/csc";
 	}
 
 	@GetMapping("/board/faq/search")
-	public String faqSearch(@RequestParam(name = "page", defaultValue = "0") int page,
-			@RequestParam(name = "size", defaultValue = "10") int size, @RequestParam("keyword") String keyword,
+	public String faqSearch(@RequestParam(name = "page", required = false, defaultValue = "0") int page,
+			@RequestParam(name = "size", required = false, defaultValue = "10") int size, @RequestParam("keyword") String keyword,
 			Model model) throws SQLException{
 		System.out.println("keyword의 값은: " + keyword);
 		Pageable pageable = PageRequest.of(page, size);

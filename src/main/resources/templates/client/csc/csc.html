@@ -45,10 +45,14 @@
 					th:href="@{/board/faq(page=${faqs.number - 1}, size=${faqs.size})}">이전</a>
 			</li>
 
+			<!-- 페이지 번호 링크 -->
 			<li th:each="pageNum : ${#numbers.sequence(0, faqs.totalPages - 1)}"
 				th:class="${faqs.number == pageNum ? 'page-item active' : 'page-item'}">
-				<a class="page-link" th:href="@{/board/faq(page=${pageNum}, size=${faqs.size})}"
+				<a th:if="${param!=null}" class="page-link"
+					th:href="@{/board/faq/search(page=${pageNum}, size=${faqs.size}, keyword=${param.keyword})}"
 					th:text="${pageNum + 1}"></a>
+				<a th:if="${param==null}" class="page-link"
+					th:href="@{/board/faq(page=${pageNum}, size=${faqs.size})}" th:text="${pageNum + 1}"></a>
 			</li>
 
 			<li class="page-item" th:class="${faqs.last ? 'disabled' : ''}">
