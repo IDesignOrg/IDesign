@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>csc</title>
+</head>
+
+<body>
+	<form id="notWrite" action="/board/notice/write" method="POST">
+		제목: <input type="text" id="notTitle" name="notTitle" />
+		
+		내용: <textarea id="notContent" name="notContent"></textarea>
+		<button type="submit">전송하기</button>
+	</form>
+
+
+</body>
+
+</html>
