@@ -2,24 +2,32 @@ import * as THREE from "./lib/three.module.js";
 import { OrbitControls } from "./lib/OrbitControls.js";
 import { WEBGL } from "./lib/webgl.js";
 import { Desk } from "./lib/objects/desk.js";
-import { Floor } from "./lib/objects/floor.js";
+import { Room } from "./lib/objects/Room.js";
 import {
   deskName,
   floorName,
   shadowName,
   groundName,
-} from "./lib/objects/objectNames.js";
-import { deskColor, floorColors, shadowColor } from "./lib/objects/colors.js";
+  ceilingName,
+} from "./lib/objectConf/objectNames.js";
+import {
+  deskColor,
+  floorColors,
+  shadowColor,
+} from "./lib/objectConf/colors.js";
 import { InitObjects } from "./lib/objects/sceneObjects.js";
+import { Floor } from "./lib/objects/floor.js";
 
 const dx = [0, 0, -1, 1];
 const dy = [-1, 1, 0, 0];
 
 if (WEBGL.isWebGLAvailable()) {
+  const visibleArr = [ceilingName];
   const btn = document.getElementById("hud-icon");
   let selectedObject = null;
 
   const objects = {};
+  let doneMoving = false;
 
   const scene = new THREE.Scene();
   const mouse = new THREE.Vector2();
@@ -32,7 +40,7 @@ if (WEBGL.isWebGLAvailable()) {
     1000
   );
   camera.position.z = 10;
-  camera.position.y = 10;
+  camera.position.y = 5;
   camera.position.x = 10;
   camera.lookAt(0, 0, 0);
   const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -41,44 +49,54 @@ if (WEBGL.isWebGLAvailable()) {
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.update();
 
-  const { initGround, initFloor, axeshelper } = new InitObjects();
-  scene.add(initGround);
-  scene.add(initFloor);
-  scene.add(axeshelper);
-
+  const { axesHelper, initRoom } = new InitObjects();
+  // const { floor } = new Floor({});
+  scene.add(axesHelper);
+  scene.add(initRoom);
   const wallsAndCeiling = [];
-  // initRoom.children.forEach((child) => {
-  //   if (child.material && child.material instanceof THREE.MeshBasicMaterial) {
-  //     if (child.rotation.x !== -Math.PI / 2) {
-  //       // 바닥을 제외
-  //       child.material.transparent = true;
-  //       wallsAndCeiling.push(child);
-  //     }
-  //   }
-  // });
+  initRoom.children.forEach((child) => {
+    if (child.material && child.material instanceof THREE.MeshBasicMaterial) {
+      if (child.rotation.x !== -Math.PI / 2) {
+        // 바닥을 제외
+        child.material.transparent = true;
+        wallsAndCeiling.push(child);
+      }
+    }
+  });
 
   function updateOpacity() {
-    const cameraDirection = new THREE.Vector3();
-    camera.getWorldDirection(cameraDirection);
+    return;
+    wallsAndCeiling.forEach((plane) => {
+      const planeCenter = new THREE.Vector3();
+      plane.geometry.computeBoundingBox();
+      plane.geometry.boundingBox.getCenter(planeCenter);
+      plane.localToWorld(planeCenter);
 
-    wallsAndCeiling.forEach((wall) => {
-      const wallNormal = new THREE.Vector3();
-      wall.getWorldDirection(wallNormal);
+      const direction = new THREE.Vector3()
+        .subVectors(planeCenter, camera.position)
+        .normalize();
+      raycaster.set(camera.position, direction);
 
-      const angle = wallNormal.angleTo(cameraDirection);
-      const maxAngle = Math.PI / 2; // 90 degrees
+      const intersects = raycaster.intersectObjects(wallsAndCeiling);
 
-      if (angle > maxAngle) {
-        wall.material.opacity = 0;
+      let isBlocked = false;
+      for (let i = 0; i < intersects.length; i++) {
+        if (intersects[i].object !== plane) {
+          isBlocked = true;
+          break;
+        }
+      }
+
+      if (isBlocked) {
+        plane.material.opacity = 0.1; // 벽을 투명하게
       } else {
-        wall.material.opacity = 1 - angle / maxAngle;
+        plane.material.opacity = 1.0; // 벽을 불투명하게
       }
     });
   }
-
   const animate = () => {
     requestAnimationFrame(animate);
-
+    // initRoom.updateVisibility(camera);
     controls.update();
     updateOpacity();
     renderer.render(scene, camera);
@@ -106,103 +124,6 @@ if (WEBGL.isWebGLAvailable()) {
       objects[desk.uuid] = desk;
     }
     scene.add(desk);
-  };
-
-  // 새로운 방 생성 함수
-  const createRoom = (intersects, color, isShadow) => {
-    return;
-    let nearestFloor;
-    let position;
-
-    if (intersects.length === 0) {
-      // intersects의 길이가 0일 때는 화면 중심으로 새로운 방 생성
-      nearestFloor = initRoom.children.find(
-        (child) => child.name === floorName
-      );
-      position = new THREE.Vector3(0, 0, 0); // 화면 중심
-    } else {
-      nearestFloor = intersects.find(
-        (intersect) => intersect.object.name === floorName
-      );
-      if (nearestFloor) {
-        position = nearestFloor.point;
-      } else {
-        // intersections 배열에 floor 객체가 없는 경우, 첫 번째 교차점 사용
-        nearestFloor = intersects[0];
-        position = nearestFloor.point;
-      }
-    }
-
-    if (nearestFloor) {
-      const floor = nearestFloor;
-      if (!floor.position) return;
-
-      // 동서남북 방향으로 방 생성
-      const directions = [
-        { x: 1, z: 0 },
-        { x: -1, z: 0 },
-        { x: 0, z: 1 },
-        { x: 0, z: -1 },
-      ];
-
-      let closestDistance = Infinity;
-      let closestDirection = null;
-      let closestWall = null;
-
-      // 마우스와 가장 가까운 방향 찾기
-      directions.forEach((direction) => {
-        const newX =
-          floor.position.x +
-          (direction.x * floor.geometry.parameters.width) / 2;
-        const newZ =
-          floor.position.z +
-          (direction.z * floor.geometry.parameters.height) / 2;
-        const distance = Math.sqrt(
-          Math.pow(newX - mouse.x, 2) + Math.pow(newZ - mouse.y, 2)
-        );
-
-        if (distance < closestDistance) {
-          closestDistance = distance;
-          closestDirection = direction;
-          closestWall = new THREE.Vector3(newX, 0, newZ);
-        }
-      });
-
-      const newX =
-        floor.position.x + closestDirection.x * floor.geometry.parameters.width;
-      const newZ =
-        floor.position.z +
-        closestDirection.z * floor.geometry.parameters.height;
-      const newPosition = new THREE.Vector3(newX, 0, newZ);
-
-      // 새로운 위치에 바닥이 없는 경우에만 방 생성
-      const newIntersects = raycaster.intersectObjects(scene.children, true);
-      const existingFloor = newIntersects.find(
-        (intersect) =>
-          intersect.object.name === floorName &&
-          intersect.point.distanceTo(newPosition) < 1
-      );
-
-      if (!existingFloor) {
-        const newRoom = new Room({
-          floorColor: color,
-          wallColor: color,
-          ceilingColor: color,
-        });
-        newRoom.position.copy(closestWall);
-        newRoom.name = floorName;
-        if (isShadow) {
-          if (objects.hasOwnProperty("shadow")) {
-            scene.remove(objects["shadow"]);
-            delete objects["shadow"];
-          }
-          objects["shadow"] = newRoom;
-        } else {
-          objects[newRoom.uuid] = newRoom;
-        }
-        scene.add(newRoom);
-      }
-    }
   };
 
   const getIntersects = (event) => {
@@ -245,13 +166,8 @@ if (WEBGL.isWebGLAvailable()) {
       x = (selectedObject.object.position.x + size.x / 2) * x;
       z = (selectedObject.object.position.z + size.z / 2) * z;
 
-      // console.log(
-      //   `cx+cz = ${cx + cy} px = ${selectedObject.point.x} pz = ${
-      //     selectedObject.point.z
-      //   } cx = ${cx} cz = ${cy}`
-      // );
       console.log(size);
-      const floor = new Floor({ x, y, z, floorColor });
+      const floor = new Room({ x, y, z, floorColor });
       objects[shadowName] = floor;
       scene.add(floor);
     } else {
@@ -260,21 +176,6 @@ if (WEBGL.isWebGLAvailable()) {
 
     if (isShadow) {
     }
-    //  { x, z } = selectedObject.point;
-
-    // console.log(scene.child.forEach())
-
-    // scene.add(floor);
-    // objects[shadowName] = floor;
-    // return;
-    // const { x, y, z } = camera.position;
-    // const cameraDistance = new THREE.Vector3();
-    // const target = new THREE.Vector3(x, y, z);
-    // const a = getRaycaster(event);
-    // // cameraDistance.subVectors(camera.position, target);
-    // if (intersects.length > 0) {
-    // } else {
-    // }
   };
 
   const creator = (event, shadowName, color) => {
