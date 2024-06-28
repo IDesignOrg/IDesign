@@ -1,8 +1,10 @@
-import * as THREE from "./lib/three.module.js";
-import { OrbitControls } from "./lib/OrbitControls.js";
+import * as THREE from "./lib/three/three.module.js";
+import { OrbitControls } from "./lib/three/OrbitControls.js";
 import { WEBGL } from "./lib/webgl.js";
-import { Desk } from "./lib/objects/desk.js";
-import { Room } from "./lib/objects/Room.js";
+import { Desk } from "./lib/three/objects/desk.js";
+import { Room } from "./lib/three/objects/Room.js";
+
+import { InitObjects } from "./lib/three/objects/sceneObjects.js";
 import {
   deskName,
   floorName,
@@ -10,14 +12,13 @@ import {
   groundName,
   ceilingName,
   resizerName,
-} from "./lib/objectConf/objectNames.js";
+} from "./lib/three/objectConf/objectNames.js";
 import {
   deskColor,
   floorColors,
   shadowColor,
-} from "./lib/objectConf/colors.js";
-import { InitObjects } from "./lib/objects/sceneObjects.js";
-import { Floor } from "./lib/objects/floor.js";
+} from "./lib/three/objectConf/colors.js";
+// import { Floor } from "./lib/objects/floor.js";
 
 export const threeJS = () => {
   const btn = document.getElementById("hud-icon");
