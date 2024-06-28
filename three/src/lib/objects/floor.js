@@ -20,7 +20,6 @@ class Floor {
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.name = floorName;
     floor.rotation.x = Math.PI / 2;
-    // floor.rotation.z = Math.PI / 4;
     floor.position.set(x, y, z);
 
     return floor;

@@ -8,6 +8,7 @@ import {
 import { Floor } from "./floor.js";
 import { Ceiling } from "./ceiling.js";
 import { Wall } from "./wall.js";
+import { Resizer } from "./resizer.js";
 
 class Room {
   constructor({
@@ -22,7 +23,7 @@ class Room {
 
     const floor = new Floor({ x, y, z, width, length });
     room.add(floor);
-    const ceil = new Ceiling({ x, z });
+    const ceil = new Ceiling({ x, z, rotationY: -Math.PI / 1 });
     room.add(ceil);
     const westwall = new Wall({
       x,
@@ -30,7 +31,6 @@ class Room {
       y: ceilingHeight / 2 + y,
       width,
       length: ceilingHeight,
-      color: "red",
     });
     const eastwall = new Wall({
       x,
@@ -39,7 +39,6 @@ class Room {
       width,
       length: ceilingHeight,
       rotationY: -Math.PI / 1,
-      color: "blue",
     });
     const southwall = new Wall({
       x: x - width / 2,
@@ -48,7 +47,6 @@ class Room {
       width: length,
       length: ceilingHeight,
       rotationY: -Math.PI / 2,
-      color: "green",
     });
     const northwall = new Wall({
       x: x + width / 2,
@@ -57,7 +55,6 @@ class Room {
       width: length,
       length: ceilingHeight,
       rotationY: Math.PI / 2,
-      color: "yellow",
     });
 
     room.add(westwall);
@@ -65,6 +62,9 @@ class Room {
     room.add(southwall);
     room.add(northwall);
 
+    const resizer = new Resizer({ width, length, floor });
+
+    room.add(resizer);
     return room;
   }
 }
