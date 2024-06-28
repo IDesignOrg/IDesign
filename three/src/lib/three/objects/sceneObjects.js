@@ -1,6 +1,6 @@
-import * as THREE from "../three.module";
+import { groundName } from "../objectConf/objectNames";
+import * as THREE from "../three.module.js";
 import { Room } from "./Room";
-import { groundName, wrapperName } from "../objectConf/objectNames";
 
 class InitObjects {
   constructor() {
