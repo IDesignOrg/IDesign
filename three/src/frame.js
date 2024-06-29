@@ -4,16 +4,16 @@ document.addEventListener("DOMContentLoaded", (event) => {
   const btns = document.getElementById("frame-btns");
 
   const maxZoom = 5;
-  const minZoom = 0.01;
+  const minZoom = 0.05;
   const zoomSensitivity = 0.005;
   const cameraOffset = {
     x: window.innerWidth / 2,
     y: window.innerHeight / 2,
   };
-  let cameraZoom = 1;
+  let cameraZoom = 1; //init camera zoom
   let reqId = null;
-  let isReqRunning = true;
-  let isDragging = false;
+  let isReqRunning = true; // is requestFrame running ?
+  let isDragging = false; // inf canvas drag and drop
   let dragStart = { x: 0, y: 0 };
   let lastMousePos = { x: 0, y: 0 };
 
@@ -21,24 +21,16 @@ document.addEventListener("DOMContentLoaded", (event) => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Save the current state
     ctx.save();
-
-    // Apply transformations
     ctx.translate(canvas.width / 2, canvas.height / 2);
     ctx.scale(cameraZoom, cameraZoom);
     ctx.translate(
       -canvas.width / 2 + cameraOffset.x,
       -canvas.height / 2 + cameraOffset.y
     );
-
-    // Draw the red square
     ctx.fillStyle = "red";
     ctx.fillRect(-250, -250, 500, 500);
-    // Restore the original state
     ctx.restore();
     if (isReqRunning) {
       reqId = requestAnimationFrame(drawStart);
@@ -103,9 +95,11 @@ document.addEventListener("DOMContentLoaded", (event) => {
     if (!btn) return;
     const { name } = btn;
     if (!reqId) {
+      isReqRunning = true;
       reqId = requestAnimationFrame(drawStart);
       return;
     }
+    isReqRunning = false;
     cancelAnimationFrame(reqId);
 
     switch (name) {
