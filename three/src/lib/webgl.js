@@ -12,6 +12,7 @@ const WEBGL = {
   },
 
   isWebGL2Available: function () {
+    ㅎ;
     try {
       var canvas = document.createElement("canvas");
       return !!(window.WebGL2RenderingContext && canvas.getContext("webgl2"));
