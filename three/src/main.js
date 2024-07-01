@@ -1,3 +1,4 @@
+import { TwoDigitStart } from "./PlaneThree.js";
 import { startFrame } from "./frame.js";
 import { WEBGL } from "./lib/webgl.js";
 import { threeJS } from "./three.js";
@@ -22,7 +23,9 @@ import { threeJS } from "./three.js";
 // import { Floor } from "./lib/objects/floor.js";
 
 if (WEBGL.isWebGLAvailable()) {
-  startFrame();
+  TwoDigitStart();
+  console.log("start!!");
+  // startFrame();
   // threeJS();
 } else {
   const warning = WEBGL.getWebGLErrorMessage();
