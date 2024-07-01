@@ -8,5 +8,15 @@ export function IndexArray(arr) {
         return target[property];
       }
     },
+
+    set(target, property, receiver) {
+      if (property < 0) {
+        target[target.length + property] = receiver;
+        return true;
+      } else {
+        target[property] = receiver;
+        return true;
+      }
+    },
   });
 }
