@@ -2,7 +2,7 @@ import * as THREE from "./lib/three/three.module.js";
 import { OrbitControls } from "./lib/three/OrbitControls.js";
 import { WEBGL } from "./lib/webgl.js";
 import { Desk } from "./lib/three/objects/desk.js";
-import { Room } from "./lib/three/objects/Room.js";
+// import { Room } from "./lib/three/objects/Room.js";
 
 import { InitObjects } from "./lib/three/objects/sceneObjects.js";
 import {
