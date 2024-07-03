@@ -28,6 +28,7 @@ export const TwoDigitStart = () => {
   };
 
   const objects = {};
+  const coordinates = {};
 
   const mouse = new THREE.Vector2();
   const raycaster = new THREE.Raycaster();
@@ -84,22 +85,52 @@ export const TwoDigitStart = () => {
     raycaster.setFromCamera(mouse, camera);
 
     // 평면과의 교차점 계산
-
     return raycaster.intersectObjects(scene.children, true);
   };
 
+  const updateCircles = ({ points, floor }) => {
+    const parent = floor.parent;
+    if (!parent) return;
+    const circles = parent.getObjectByName("circleGroup");
+    parent.remove(circles);
+    const new_circles = new Circles({ points });
+    new_circles.name = "circleGroup";
+    parent.add(new_circles);
+  };
+
+  const updateFloorCoords = ({ object, background }) => {
+    //object = grop object..
+    const floor = object.children.find((obj) => obj.name === "floor");
+    const coordsArr = getCoordsFromVectex(floor);
+    const originPoint = coordsArr[0];
+    if (!floor || !originPoint) return;
+    const points = [
+      new THREE.Vector3(originPoint.x, 0, originPoint.z),
+      new THREE.Vector3(background.point.x, 0, originPoint.z),
+      new THREE.Vector3(background.point.x, 0, background.point.z),
+      new THREE.Vector3(originPoint.x, 0, background.point.z),
+    ];
+    updateCircles({ points, floor });
+    // console.log(floor, coordsArr);
+    // const points =
+    const shape = new THREE.Shape();
+    shape.moveTo(points[0].x, -points[0].z);
+    for (let i = 1; i < points.length; i++) {
+      shape.lineTo(points[i].x, -points[i].z);
+    }
+    shape.lineTo(points[0].x, -points[0].z);
+
+    const geometry = new THREE.ShapeGeometry(shape);
+    floor.geometry.dispose(); // 기존의 geometry를 메모리에서 해제
+    floor.geometry = geometry; // 새로운 geometry를 할당
+  };
+
   const createObject = ({ name, points }) => {
-    const room = new D2Room({ points });
+    let room = new D2Room({ points });
     room.name = name;
     const circleGroup = new Circles({ points });
+    circleGroup.name = "circleGroup";
     room.add(circleGroup);
-    const id = name === "shadow" ? "shadow" : room.uuid;
-
-    objects[id] = {
-      coords: points,
-      obj: room,
-      name: name,
-    };
     scene.add(room);
   };
 
@@ -116,10 +147,8 @@ export const TwoDigitStart = () => {
 
       case isCreating.isSelect && isCreating.isDragging:
         // not shadow. create real object
-        points = [...objects["shadow"].coords];
-        const name = roomName;
-        createObject({ name, points });
-        scene.remove(scene.children.find((obj) => obj.name === "shadow"));
+        const obj = scene.getObjectByName("shadow");
+        obj.name = "room";
         isCreating = {
           isSelect: false,
           isDragging: false,
@@ -127,7 +156,7 @@ export const TwoDigitStart = () => {
         return;
 
       case isCreating.isSelect:
-        // create shadow for dragging
+        // create shadow via dragging
         const raycaster = getIntersects(event);
         const background = raycaster.find(
           (obj) => obj.object.name === "background"
@@ -157,14 +186,40 @@ export const TwoDigitStart = () => {
     }
   };
 
+  const changingSize = (event) => {
+    console.log("draggin");
+    const { changingObject } = isChangingObject; //will be 'floor'
+    if (!changingObject) return;
+    const raycaster = getIntersects(event);
+    const background = raycaster.find(
+      (obj) => obj.object.name === "background"
+    );
+    if (!background) return;
+    // const object = objects[changingObject.object.uuid];
+  };
+
+  /* return array */
+  const getCoordsFromVectex = (obj) => {
+    const positionAttribute = obj.geometry.attributes.position;
+    const coordinates = [];
+    for (let i = 0; i < positionAttribute.count; i++) {
+      const vertex = new THREE.Vector3();
+      vertex.fromBufferAttribute(positionAttribute, i);
+      coordinates.push({ x: vertex.x, y: 0, z: -vertex.y });
+    }
+
+    return coordinates;
+  };
+
   const onMouseMove = (event) => {
     const raycaster = getIntersects(event);
     switch (true) {
       case isChangingObject.isDBClick &&
         isChangingObject.isDragging &&
         isChangingObject.isHover:
-        console.log("dragging...");
+        changingSize(event);
         return;
+
       case isChangingObject.isDBClick:
         const circle = raycaster.find((obj) => obj.object.name === "circle");
         if (!circle) {
@@ -189,19 +244,11 @@ export const TwoDigitStart = () => {
           (obj) => obj.object.name === "background"
         );
         if (!background) return;
+        const points = [];
+        const obj = scene.getObjectByName("shadow");
+        if (!obj) return;
 
-        //   const originPoint = background.point;
-        const originPoint = { ...objects["shadow"].coords[0] };
-
-        const points = [
-          new THREE.Vector3(originPoint.x, 0, originPoint.z),
-          new THREE.Vector3(background.point.x, 0, originPoint.z),
-          new THREE.Vector3(background.point.x, 0, background.point.z),
-          new THREE.Vector3(originPoint.x, 0, background.point.z),
-        ];
-
-        scene.remove(objects["shadow"].obj);
-        createObject({ name: "shadow", points });
+        updateFloorCoords({ object: obj, background });
         return;
 
       case isDragging:
@@ -225,7 +272,6 @@ export const TwoDigitStart = () => {
   const onDoubleClick = (event) => {
     const raycaster = getIntersects(event);
     const floor = raycaster.find((obj) => obj.object.name === "floor");
-    // console.log(floor);
     if (!floor) return;
     const circleGroup = floor.object.parent.children.find(
       (obj) => obj.name === "circleGroup"
@@ -241,19 +287,6 @@ export const TwoDigitStart = () => {
   };
 
   const onMouseUp = () => {
-    // if (
-    //   isChangingObject.isDBClick &&
-    //   isChangingObject.isHover &&
-    //   isChangingObject.isDragging
-    // ) {
-    //   isChangingObject = {
-    //     isDBClick: false,
-    //     isHover: false,
-    //     isDragging: false,
-    //     changingObject: null,
-    //   };
-    // }
-    //   if(Object(isChangingObject).values())
     if (
       isChangingObject.isDBClick &&
       isChangingObject.isDragging &&

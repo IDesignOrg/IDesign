@@ -1,7 +1,23 @@
 import * as THREE from "../three.module.js";
 
-export class Floor {
-  constructor({ points }) {}
+export class D2Floor {
+  constructor({ points }) {
+    const shape = new THREE.Shape();
+    // z축의 기준으로 반대방향
+    // 왜인지는 모름...
+    shape.moveTo(points[0].x, -points[0].z); // z축을 y축으로 사용하여 평면 도형 정의
+    for (let i = 1; i < points.length; i++) {
+      shape.lineTo(points[i].x, -points[i].z);
+    }
+    shape.lineTo(points[0].x, -points[0].z); // 마지막 점을 처음 점에 연결
+
+    const geometry = new THREE.ShapeGeometry(shape);
+    const material = new THREE.MeshBasicMaterial({
+      color: "green",
+      side: THREE.DoubleSide,
+    });
+    return new THREE.Mesh(geometry, material);
+  }
 }
 
 // import { floorName } from "../objectConf/objectNames.js";
