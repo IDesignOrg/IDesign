@@ -1,5 +1,6 @@
 import { floorName, roomName } from "../objectConf/objectNames";
 import * as THREE from "../three.module.js";
+import { D2Floor } from "./floor.js";
 import { D3Wall } from "./wall.js";
 
 export class D3Room {
@@ -21,21 +22,22 @@ export class D3Room {
 export class D2Room {
   constructor({ points }) {
     const roomGroup = new THREE.Group();
-    const shape = new THREE.Shape();
-    // z축의 기준으로 반대방향
-    // 왜인지는 모름...
-    shape.moveTo(points[0].x, -points[0].z); // z축을 y축으로 사용하여 평면 도형 정의
-    for (let i = 1; i < points.length; i++) {
-      shape.lineTo(points[i].x, -points[i].z);
-    }
-    shape.lineTo(points[0].x, -points[0].z); // 마지막 점을 처음 점에 연결
+    const mesh = new D2Floor({ points });
+    // const shape = new THREE.Shape();
+    // // z축의 기준으로 반대방향
+    // // 왜인지는 모름...
+    // shape.moveTo(points[0].x, -points[0].z); // z축을 y축으로 사용하여 평면 도형 정의
+    // for (let i = 1; i < points.length; i++) {
+    //   shape.lineTo(points[i].x, -points[i].z);
+    // }
+    // shape.lineTo(points[0].x, -points[0].z); // 마지막 점을 처음 점에 연결
 
-    const geometry = new THREE.ShapeGeometry(shape);
-    const material = new THREE.MeshBasicMaterial({
-      color: "green",
-      side: THREE.DoubleSide,
-    });
-    const mesh = new THREE.Mesh(geometry, material);
+    // const geometry = new THREE.ShapeGeometry(shape);
+    // const material = new THREE.MeshBasicMaterial({
+    //   color: "green",
+    //   side: THREE.DoubleSide,
+    // });
+    // const mesh = new THREE.Mesh(geometry, material);
     mesh.name = "floor";
     mesh.rotation.x = -Math.PI / 2; // 평면을 바닥과 수평하게 회전
     roomGroup.add(mesh);
