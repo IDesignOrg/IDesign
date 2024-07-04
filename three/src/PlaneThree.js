@@ -1,7 +1,9 @@
+import { getCoordsFromVectex } from "./lib/calculater.js";
 import { floorColors } from "./lib/three/objectConf/colors";
 import { floorName, roomName } from "./lib/three/objectConf/objectNames";
 import { D2Room } from "./lib/three/objects/Room.js";
 import { Circles } from "./lib/three/objects/circles.js";
+import { D2Floor } from "./lib/three/objects/floor.js";
 import * as THREE from "./lib/three/three.module.js";
 // import { OrbitControls } from "./lib/three/OrbitControls.js";
 export const TwoDigitStart = () => {
@@ -24,7 +26,8 @@ export const TwoDigitStart = () => {
     isDBClick: false,
     isHover: false, //for mouse pointer and for clicked circle changer
     isDragging: false, //is changer circle moving ?
-    changingObject: null, // changing object...
+    changingObjectId: null, // change object...
+    circleIdx: null,
   };
 
   const objects = {};
@@ -54,14 +57,14 @@ export const TwoDigitStart = () => {
   scene.add(gridHelper);
 
   // 큐브 추가 (예시)
-  const geometry = new THREE.BoxGeometry(30, 100, 50);
-  const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-  const cube = new THREE.Mesh(geometry, material);
-  //   cube.rotation.x = Math.PI / 2;
-  //   cube.rotation.y = -Math.PI / 2;
-  //   cube.rotation.x = Math.PI / 2;
-  cube.position.set(0, 0, 0);
-  scene.add(cube);
+  // const geometry = new THREE.PlaneGeometry(30, 100, 50);
+  // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+  // const cube = new THREE.Mesh(geometry, material);
+  // //   cube.rotation.x = Math.PI / 2;
+  // //   cube.rotation.y = -Math.PI / 2;
+  // //   cube.rotation.x = Math.PI / 2;
+  // cube.position.set(0, 0, 0);
+  // scene.add(cube);
 
   const planeGeometry = new THREE.PlaneGeometry(2000, 2000);
   const planeMaterial = new THREE.MeshBasicMaterial({
@@ -127,6 +130,11 @@ export const TwoDigitStart = () => {
 
   const createObject = ({ name, points }) => {
     let room = new D2Room({ points });
+    console.log(room);
+    objects[room.id] = room;
+    // objects[room.room.id] = room;
+
+    // room = room.room;
     room.name = name;
     const circleGroup = new Circles({ points });
     circleGroup.name = "circleGroup";
@@ -134,14 +142,49 @@ export const TwoDigitStart = () => {
     scene.add(room);
   };
 
+  const getClickedCircleIndex = ({ background, changingObjectId }) => {
+    let idx = null;
+    const floor = scene
+      .getObjectById(changingObjectId)
+      .children.find((obj) => obj.name === "floor");
+    if (!floor) return;
+    const originPoints = getCoordsFromVectex(floor);
+    const { point } = background;
+    for (let i = 0; i < originPoints.length; i++) {
+      if (
+        Math.abs(originPoints[i].x - point.x) <= 5 &&
+        Math.abs(originPoints[i].z - point.z) <= 5
+      ) {
+        idx = i;
+        break;
+      }
+    }
+
+    return idx;
+  };
+
   const onMouseDown = (event) => {
     let points;
+    const raycaster = getIntersects(event);
+    const background = raycaster.find(
+      (obj) => obj.object.name === "background"
+    );
+    if (!background) return;
     switch (true) {
-      case isChangingObject.isDBClick && isChangingObject.isHover:
+      // case isChangingObject.isDBClick && isChangingObject.isHover:
+
+      case isChangingObject.isDBClick:
         // 오브젝트의 넓이를 드래그(circle)을 통해 옮기고 있는지
+        const { changingObjectId } = isChangingObject;
+        const circleIdx = getClickedCircleIndex({
+          background,
+          changingObjectId,
+        });
+        if (!circleIdx) return;
         isChangingObject = {
           ...isChangingObject,
           isDragging: true,
+          circleIdx,
         };
         return;
 
@@ -157,10 +200,10 @@ export const TwoDigitStart = () => {
 
       case isCreating.isSelect:
         // create shadow via dragging
-        const raycaster = getIntersects(event);
-        const background = raycaster.find(
-          (obj) => obj.object.name === "background"
-        );
+
+        // const background = raycaster.find(
+        //   (obj) => obj.object.name === "background"
+        // );
         if (!background) return;
         points = [
           new THREE.Vector3(background.point.x, 0, background.point.z),
@@ -186,38 +229,42 @@ export const TwoDigitStart = () => {
     }
   };
 
-  const changingSize = (event) => {
-    console.log("draggin");
-    const { changingObject } = isChangingObject; //will be 'floor'
-    if (!changingObject) return;
-    const raycaster = getIntersects(event);
+  const changingSize = (event, raycaster) => {
+    // const background =
+    const { circleIdx } = isChangingObject;
     const background = raycaster.find(
       (obj) => obj.object.name === "background"
     );
     if (!background) return;
-    // const object = objects[changingObject.object.uuid];
+    const { changingObjectId } = isChangingObject; //
+    // const room = objects[changingObjectId];
+    const room = scene.getObjectById(changingObjectId);
+    const points = new THREE.Vector3(background.point.x, 0, background.point.z);
+    room.updateFloor({ points, circleIdx });
+    return;
   };
 
   /* return array */
-  const getCoordsFromVectex = (obj) => {
-    const positionAttribute = obj.geometry.attributes.position;
-    const coordinates = [];
-    for (let i = 0; i < positionAttribute.count; i++) {
-      const vertex = new THREE.Vector3();
-      vertex.fromBufferAttribute(positionAttribute, i);
-      coordinates.push({ x: vertex.x, y: 0, z: -vertex.y });
-    }
+  // const getCoordsFromVectex = (obj) => {
+  //   const positionAttribute = obj.geometry.attributes.position;
+  //   const coordinates = [];
+  //   for (let i = 0; i < positionAttribute.count; i++) {
+  //     const vertex = new THREE.Vector3();
+  //     vertex.fromBufferAttribute(positionAttribute, i);
+  //     coordinates.push({ x: vertex.x, y: 0, z: -vertex.y });
+  //   }
 
-    return coordinates;
-  };
+  //   return coordinates;
+  // };
 
   const onMouseMove = (event) => {
     const raycaster = getIntersects(event);
     switch (true) {
-      case isChangingObject.isDBClick &&
-        isChangingObject.isDragging &&
-        isChangingObject.isHover:
-        changingSize(event);
+      // case isChangingObject.isDBClick &&
+      //   isChangingObject.isDragging &&
+      //   isChangingObject.isHover:
+      case isChangingObject.isDBClick && isChangingObject.isDragging:
+        changingSize(event, raycaster);
         return;
 
       case isChangingObject.isDBClick:
@@ -225,15 +272,15 @@ export const TwoDigitStart = () => {
         if (!circle) {
           //   오브젝트(room)의 체인징 원에 커서를 안올려놨을 경우
           document.body.style.cursor = "default";
-          isChangingObject = {
-            ...isChangingObject,
-            isHover: false,
-          };
+          // isChangingObject = {
+          //   ...isChangingObject,
+          //   isHover: false,
+          // };
         } else {
           //   오브젝트(room)의 체인징 원에 커서를 올려놨을 경우
           isChangingObject = {
             ...isChangingObject,
-            isHover: true,
+            // isHover: true,
           };
           document.body.style.cursor = "pointer";
         }
@@ -244,7 +291,6 @@ export const TwoDigitStart = () => {
           (obj) => obj.object.name === "background"
         );
         if (!background) return;
-        const points = [];
         const obj = scene.getObjectByName("shadow");
         if (!obj) return;
 
@@ -281,20 +327,18 @@ export const TwoDigitStart = () => {
 
     isChangingObject = {
       ...isChangingObject,
-      changingObject: floor,
+      changingObjectId: floor.object.parent.id,
       isDBClick: true,
+      example: floor,
     };
   };
 
   const onMouseUp = () => {
-    if (
-      isChangingObject.isDBClick &&
-      isChangingObject.isDragging &&
-      isChangingObject.isHover
-    ) {
+    if (isChangingObject.isDBClick && isChangingObject.isDragging) {
       isChangingObject = {
         ...isChangingObject,
         isDragging: false,
+        circleIdx: null,
       };
     }
     isDragging = false;

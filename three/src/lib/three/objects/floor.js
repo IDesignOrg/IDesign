@@ -16,6 +16,7 @@ export class D2Floor {
       color: "green",
       side: THREE.DoubleSide,
     });
+
     return new THREE.Mesh(geometry, material);
   }
 }
