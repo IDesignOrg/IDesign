@@ -6,7 +6,7 @@ export class Circles {
     circleGroup.visible = false;
     circleGroup.name = "circleGroup";
     points.forEach((point) => {
-      const geometry = new THREE.CircleGeometry(5, 32);
+      const geometry = new THREE.CircleGeometry(2.5, 32);
       const material = new THREE.MeshBasicMaterial({
         color: "red",
         side: THREE.DoubleSide,
