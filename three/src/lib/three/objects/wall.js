@@ -1,4 +1,4 @@
-import * as THREE from "../three.module.js";
+import { THREE } from "../../../three.js";
 
 const wallHeight = 50;
 const wallDepth = 5;
@@ -7,11 +7,24 @@ const colors = ["red", "blue", "black", "green"];
 export class D3Wall {
   constructor({ points }) {
     const walls = new THREE.Group();
-
+    walls.name = "walls";
     // wall.add(points.)
-    walls.add(wallCreator(points));
-    // const array = wallCreator(points);
-    return walls;
+    return D3WallCreator(points);
+  }
+}
+
+export class D2Wall extends THREE.Group {
+  constructor({ points }) {
+    const walls = super();
+    walls.name = "walls";
+    const material = new THREE.LineBasicMaterial({
+      color: 0x0000ff,
+      linewidth: 5,
+    });
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const line = new THREE.Line(geometry, material);
+    line.name = "walls";
+    return line;
   }
 }
 
@@ -28,15 +41,19 @@ const calculateDistance = (p1, p2) => {
   return Math.sqrt(dx * dx + dz * dz);
 };
 
-const wallCreator = (points) => {
+const D3WallCreator = (points) => {
   const walls = new THREE.Group();
+  walls.name = "walls";
   for (let i = 0; i < points.length; i++) {
     const currentPoint = points[i];
-    const nextPoint = points[(i + 1) % 4];
+    const nextPoint = points[(i + 1) % points.length];
     const angle = calculateAngle(currentPoint, nextPoint);
     const width = calculateDistance(currentPoint, nextPoint) + wallDepth;
     const wall = new THREE.BoxGeometry(width, wallHeight, wallDepth);
-    const material = new THREE.MeshBasicMaterial({ color: colors[i] });
+    const material = new THREE.MeshBasicMaterial({
+      color: colors[i % points.length],
+      side: THREE.BackSide,
+    });
     const cube = new THREE.Mesh(wall, material);
     cube.position.set(
       (currentPoint.x + nextPoint.x) / 2,

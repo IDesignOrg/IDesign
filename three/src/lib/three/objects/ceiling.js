@@ -1,4 +1,4 @@
-import * as THREE from "../three.module.js";
+import { THREE } from "../../../three.js";
 import { ceilingColor } from "../objectConf/colors.js";
 import {
   ceilingHeight,

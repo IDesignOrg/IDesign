@@ -1,92 +1,93 @@
-import { getCoordsFromVectex } from "../../calculater.js";
+import { THREE } from "../../../three.js";
+import {
+  getCoordsFromVectex,
+  getStraightLineX,
+  getStraightLineZ,
+} from "../../calculater.js";
 import { floorName, roomName } from "../objectConf/objectNames";
-import * as THREE from "../three.module.js";
 import { Circles } from "./circles.js";
 import { D2Floor } from "./floor.js";
-import { D3Wall } from "./wall.js";
+import { D2Wall, D3Wall } from "./wall.js";
 
-export class D3Room {
-  constructor({ points, name = roomName }) {
-    const room = new THREE.Group();
-    room.name = name;
-
-    const floor = createPlaneFromPoints(points);
-    floor.name = floorName;
-    room.add(floor);
-
-    const walls = new Wall({ points });
+export class D3Room extends THREE.Group {
+  constructor({ object }) {
+    const room = super();
+    room.name = "room";
+    const floor = object.children.find((obj) => obj.name === "floor");
+    if (!floor) return;
+    const points = getCoordsFromVectex(floor);
+    const newFloor = new D2Floor({ points });
+    room.add(newFloor);
+    const walls = new D3Wall({ points });
     room.add(walls);
 
     return room;
   }
 }
 
+// export class D3Room extends THREE.Group {
+//   constructor({ points, name = roomName }) {
+//     const room = super();
+//     room.name = name;
+
+//     const floor = createPlaneFromPoints(points);
+//     floor.name = floorName;
+//     room.add(floor);
+
+//     const walls = new Wall({ points });
+//     room.add(walls);
+
+//     return room;
+//   }
+// }
+
 export class D2Room extends THREE.Group {
   constructor({ points }) {
     const roomGroup = super();
     roomGroup.updateFloor = this.updateFloor;
     const mesh = new D2Floor({ points });
-    mesh.name = "floor";
-    mesh.rotation.x = -Math.PI / 2; // 평면을 바닥과 수평하게 회전
+    const walls = new D2Wall({ points });
+    roomGroup.add(walls);
     roomGroup.add(mesh);
     return roomGroup;
   }
 
+  updateWalls = ({ points }) => {
+    const newWalls = new D2Wall({ points });
+    this.remove(this.getObjectByName("walls"));
+    this.add(newWalls);
+  };
+
+  drawShadow = ({ points }) => {
+    const newFloor = new D2Floor({ points });
+    const newCircleGroup = new Circles({ points });
+    this.updateWalls({ points });
+    this.remove(this.getObjectByName("circleGroup"));
+    this.remove(this.getObjectByName("floor"));
+    this.add(newCircleGroup);
+    this.add(newFloor);
+  };
+
   updateFloor = ({ points, circleIdx }) => {
     const floor = this.children.find((obj) => obj.name === "floor");
     const originPoints = getCoordsFromVectex(floor);
-    // getStraightLine({ originPoints, points, index: circleIdx });
     originPoints[circleIdx] = new THREE.Vector3(
       getStraightLineX({ originPoints, points, index: circleIdx }),
       0,
       getStraightLineZ({ originPoints, points, index: circleIdx })
     );
-    // console.log(
-    //   getStraightLineX({ originPoints, points, index: circleIdx }),
-    //   getStraightLineZ({ originPoints, points, index: circleIdx })
-    // );
-    // originPoints[circleIdx] = points;
-    // checkAngleAndSnap({ index: circleIdx, points: originPoints });
     const mesh = new D2Floor({ points: originPoints });
-    mesh.name = "floor";
+    mesh.position.y = 1;
     mesh.rotation.x = -Math.PI / 2;
     const newCircleGroup = new Circles({ points: originPoints });
     newCircleGroup.visible = true;
+    this.updateWalls({ points });
     this.remove(this.getObjectByName("circleGroup"));
     this.remove(floor);
     this.add(newCircleGroup);
     this.add(mesh);
   };
 }
-
-const getStraightLineZ = ({ originPoints, points, index }) => {
-  const prevIndex = (index - 1 + originPoints.length) % originPoints.length;
-  const nextIndex = (index + 1) % originPoints.length;
-  const tolerance = 10;
-  if (Math.abs(originPoints[prevIndex].z - points.z) <= tolerance) {
-    return originPoints[prevIndex].z;
-  }
-  if (Math.abs(originPoints[nextIndex].z - points.z) <= tolerance) {
-    return originPoints[nextIndex].z;
-  }
-  return points.z;
-};
-
-const getStraightLineX = ({ originPoints, points, index }) => {
-  const prevIndex = (index - 1 + originPoints.length) % originPoints.length;
-  const nextIndex = (index + 1) % originPoints.length;
-  const tolerance = 10;
-
-  if (Math.abs(originPoints[prevIndex].x - points.x) <= tolerance) {
-    return originPoints[prevIndex].x;
-  }
-
-  if (Math.abs(originPoints[nextIndex].x - points.x) <= tolerance) {
-    return originPoints[nextIndex].x;
-  }
-
-  return points.x;
-};
 
 // function getAngle(p1, p2) {
 //   const dx = p2.x - p1.x;
