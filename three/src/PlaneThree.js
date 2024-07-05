@@ -114,8 +114,6 @@ export const TwoDigitStart = () => {
       new THREE.Vector3(originPoint.x, 0, background.point.z),
     ];
     updateCircles({ points, floor });
-    // console.log(floor, coordsArr);
-    // const points =
     const shape = new THREE.Shape();
     shape.moveTo(points[0].x, -points[0].z);
     for (let i = 1; i < points.length; i++) {
@@ -130,7 +128,6 @@ export const TwoDigitStart = () => {
 
   const createObject = ({ name, points }) => {
     let room = new D2Room({ points });
-    console.log(room);
     objects[room.id] = room;
     // objects[room.room.id] = room;
 
@@ -159,7 +156,6 @@ export const TwoDigitStart = () => {
         break;
       }
     }
-
     return idx;
   };
 
@@ -180,7 +176,7 @@ export const TwoDigitStart = () => {
           background,
           changingObjectId,
         });
-        if (!circleIdx) return;
+        if (circleIdx === null) return;
         isChangingObject = {
           ...isChangingObject,
           isDragging: true,
@@ -244,25 +240,9 @@ export const TwoDigitStart = () => {
     return;
   };
 
-  /* return array */
-  // const getCoordsFromVectex = (obj) => {
-  //   const positionAttribute = obj.geometry.attributes.position;
-  //   const coordinates = [];
-  //   for (let i = 0; i < positionAttribute.count; i++) {
-  //     const vertex = new THREE.Vector3();
-  //     vertex.fromBufferAttribute(positionAttribute, i);
-  //     coordinates.push({ x: vertex.x, y: 0, z: -vertex.y });
-  //   }
-
-  //   return coordinates;
-  // };
-
   const onMouseMove = (event) => {
     const raycaster = getIntersects(event);
     switch (true) {
-      // case isChangingObject.isDBClick &&
-      //   isChangingObject.isDragging &&
-      //   isChangingObject.isHover:
       case isChangingObject.isDBClick && isChangingObject.isDragging:
         changingSize(event, raycaster);
         return;
@@ -272,15 +252,10 @@ export const TwoDigitStart = () => {
         if (!circle) {
           //   오브젝트(room)의 체인징 원에 커서를 안올려놨을 경우
           document.body.style.cursor = "default";
-          // isChangingObject = {
-          //   ...isChangingObject,
-          //   isHover: false,
-          // };
         } else {
           //   오브젝트(room)의 체인징 원에 커서를 올려놨을 경우
           isChangingObject = {
             ...isChangingObject,
-            // isHover: true,
           };
           document.body.style.cursor = "pointer";
         }
