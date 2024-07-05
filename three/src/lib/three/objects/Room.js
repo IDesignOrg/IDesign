@@ -22,7 +22,6 @@ export class D3Room {
 }
 
 export class D2Room extends THREE.Group {
-  room = null;
   constructor({ points }) {
     const roomGroup = super();
     roomGroup.updateFloor = this.updateFloor;
@@ -30,7 +29,6 @@ export class D2Room extends THREE.Group {
     mesh.name = "floor";
     mesh.rotation.x = -Math.PI / 2; // 평면을 바닥과 수평하게 회전
     roomGroup.add(mesh);
-    // this.room = roomGroup;
     return roomGroup;
   }
 
@@ -68,7 +66,7 @@ const getStraightLineZ = ({ originPoints, points, index }) => {
   if (Math.abs(originPoints[prevIndex].z - points.z) <= tolerance) {
     return originPoints[prevIndex].z;
   }
-  if (Math.abs(originPoints[prevIndex].z - points.z) <= tolerance) {
+  if (Math.abs(originPoints[nextIndex].z - points.z) <= tolerance) {
     return originPoints[nextIndex].z;
   }
   return points.z;
