@@ -1,4 +1,4 @@
-import * as THREE from "../three.module.js";
+import { THREE } from "../../../three.js";
 
 export class Circles {
   constructor({ points }) {

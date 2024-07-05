@@ -52,6 +52,13 @@
         top: 0;
         left: 0;
       }
+
+      #modeToggles {
+        position: fixed;
+        z-index: 1;
+        bottom: 10px;
+        left: 20px;
+      }
     </style>
 
     <!-- <script type="module" src="./src/main.js" defer></script> -->
@@ -63,6 +70,10 @@
       <button name="room">방만들기</button>
     </div>
     <canvas id="canvas" /> -->
+    <div id="modeToggles">
+      <button id="2D">2D</button>
+      <button id="3D">3D</button>
+    </div>
     <div id="hud-icon">
       <button>책상</button>
       <button>바닥</button>

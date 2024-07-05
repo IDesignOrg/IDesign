@@ -1,4 +1,4 @@
-import * as THREE from "../three.module.js";
+import { THREE } from "../../../three.js";
 
 export class D2Floor {
   constructor({ points }) {
@@ -17,7 +17,10 @@ export class D2Floor {
       side: THREE.DoubleSide,
     });
 
-    return new THREE.Mesh(geometry, material);
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.name = "floor";
+    mesh.rotation.x = -Math.PI / 2;
+    return mesh;
   }
 }
 
