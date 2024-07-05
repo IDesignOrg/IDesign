@@ -1,5 +1,5 @@
+import { THREE } from "../../../three.js";
 import { resizerName } from "../objectConf/objectNames";
-import * as THREE from "../three.module.js";
 
 class Resizer {
   constructor({ width, length, floor }) {
