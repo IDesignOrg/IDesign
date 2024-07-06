@@ -1,0 +1,11 @@
+@charset "EUC-KR";
+
+.width1200 {
+	margin: 100px auto;
+	width: 1200px;
+	text-align: center;
+}
+.review_photo{
+	width:200px;
+	height: 250px;
+}
