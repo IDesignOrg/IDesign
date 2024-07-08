@@ -76,6 +76,7 @@ public class ReviewController {
 	//후기 상세페이지
 	@GetMapping("/auth/evaluation/{rNo}")
 	public String reviewDetail(@PathVariable("rNo") Long rNo, Model model) {
+		//reviewService.updateHits(rNo);
 		Optional<ReviewEntity> review = reviewService.getReviewById(rNo);
 		if (review.isPresent()) {		
 			model.addAttribute("review", review.get());
