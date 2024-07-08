@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>이벤트 쿠폰 만들기</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	</head>
+	<body>
+		<form action = "/board/event/write" method = "post">
+			<input type = "text" id = "eventTitle" name = "eventTitle"/>
+			<textarea cols = "50" rows = "10" id = "eventContent" name = "eventContent"></textarea>
+			<input type = "file" id = "eventImg" name = "eventImg"/>
+			<input type = "submit" value = "이벤트 등록"/>
+		</form>
+	</body>
+</html>

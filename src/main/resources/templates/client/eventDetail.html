@@ -54,6 +54,7 @@
 			text-decoration: underline;
 		}
 	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 
 <body>
@@ -61,10 +62,16 @@
 		<div class="event-detail">
 			<h1 class="event-title" th:text="${event.eventTitle}"></h1>
 			<p class="event-content" th:text="${event.eventContent}"></p>
-			<p th:text="${event.eventImg}" class="event-img"></p>
-			<a href="/auth/event" class="back-link">이벤트 목록으로 돌아가기</a>
+			<img th:src="@{'/image/' + ${event.eventImg}}">
+			<button type="button" onclick="getCoupon()">쿠폰 발급받기</button>
 		</div>
+		<a href="/board/event" class="back-link">이벤트 목록으로 돌아가기</a>
 	</div>
+	<script>
+		function getCoupon() {
+
+		}
+	</script>
 </body>
 
 </html>
