@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Review List</title>
+    <link rel="stylesheet" href="/css/review.css" />
 </head>
 <body>
     <h1>Review List</h1>
@@ -33,9 +34,27 @@
         
         <a href="/review_write" th:if="${session.UId} != null">작성</a>
     </table>
+    <!--
     <div class="width1200">
-		<ul class="review"></ul>
+		<ul class="review" th:each="review : ${reviews}">
+			<li class="review_photo">
+				<a href="@{/auth/evaluation/{id}(id=${review.rNo})}">
+					<img class="mainImg" th:src="${review.RMainPhoto}">
+				</a>
+			</li>
+			<li class="review_title">
+				<label 타이틀
+			</li>
+			<li class="review_user">
+				프로필, 작성자
+			</li>
+			<li class="review_count">
+				별점 조회수
+			</li>
+			
+		</ul>
 	</div>
+	-->
 	
 	<div th:if="${totalPages > 1}">
 	        <ul class="pagination">

@@ -130,6 +130,10 @@ public class ReviewService {
 	public Optional<ReviewEntity> getReviewById(Long rNo) {
 		return reviewRepository.findById(rNo);
 	}
+	
+	//public int updateHits(Long rNo) {
+	//	return reviewRepository.updateHits(rNo);
+	//}
 	// 후기 상세 페이지(사진)
 	public List<ReviewPhotoEntity> getPhotosByReviewId(Long rNo) {
 	    // 1. 리뷰 번호(rNo)를 사용하여 리뷰 포토 엔티티(ReviewPhotoEntity)를 조회합니다.
