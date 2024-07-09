@@ -1,7 +1,7 @@
 import { THREE } from "../../../three.js";
 
 export class D2Floor {
-  constructor({ points }) {
+  constructor({ points, height }) {
     const shape = new THREE.Shape();
     // z축의 기준으로 반대방향
     // 왜인지는 모름...
@@ -14,12 +14,15 @@ export class D2Floor {
     const geometry = new THREE.ShapeGeometry(shape);
     const material = new THREE.MeshBasicMaterial({
       color: "green",
-      side: THREE.DoubleSide,
+      side: height ? THREE.BackSide : THREE.FrontSide,
     });
 
     const mesh = new THREE.Mesh(geometry, material);
     mesh.name = "floor";
     mesh.rotation.x = -Math.PI / 2;
+    if (height) {
+      mesh.position.y = height;
+    }
     return mesh;
   }
 }
