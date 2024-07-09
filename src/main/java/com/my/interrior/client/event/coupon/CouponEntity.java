@@ -12,14 +12,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Coupon")
+@Table(name = "coupon")
 @Getter
 @Setter
 public class CouponEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long couponId;
+    private Long couponNo;
 
     @Column(nullable = false, length = 50)
     private String couponName;
