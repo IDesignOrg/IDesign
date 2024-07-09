@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {
-    "build": "webpack",
-    "start": "webpack serve --open",
+    "build": "cross-env NODE_ENV=production webpack --progress",
+    "start": "webpack serve --progress",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
