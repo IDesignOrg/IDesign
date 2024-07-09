@@ -72,6 +72,7 @@ public class UserController {
 		try {
 			userEntity.setURegister(LocalDate.now());
 			userEntity.setUPw(passwordEncoder.encode(userEntity.getUPw()));
+			userEntity.setUPofile("https://storage.googleapis.com/idesign/static/blank-profile-picture-973460_640.png");
 			if (userEntity.getURegister() == null || userEntity.getUPw() == null)
 				return null;
 			// insert
