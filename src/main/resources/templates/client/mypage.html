@@ -1,87 +1,230 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
-    <title>My Page</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-</head>
-<body>
-<h1>My Page</h1>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>마이페이지</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #f8f9fa;
+			padding: 20px;
+			margin: 0;
+		}
 
-<form id="userInfoForm">
-    <p>ID:<input type="text" id="UId" th:value="${userInfo.UId}"/></p>
-    <p>Name: <input type="text" id="UName" th:value="${userInfo.UName}" /></p>
-    <p>Birth: <input type="text" id="UBirth" th:value="${userInfo.UBirth}" /></p>
-    <p>Email: <input type="email" id="UMail" th:value="${userInfo.UMail}" /></p>
-    <p>Phone: <input type="text" id="UTel" th:value="${userInfo.UTel}" /></p>
-	<input type="hidden" id="UPw" th:value="${userInfo.UPw}"/>	
-	<input type="hidden" id="UNo" th:value="${userInfo.UNo}"/>
-	<input type="hidden" id="URegister" th:value="${userInfo.URegister}"/>
-	<button type="button" onclick="updateUserInfo()">Update</button>
-	<button type="button" onclick="deleteUserInfo()">Delete</button>
-</form>
+		.container {
+			max-width: 800px;
+			margin: 0 auto;
+			background-color: #fff;
+			border-radius: 5px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			padding: 20px;
+		}
 
+		.tab {
+			overflow: hidden;
+			border-bottom: 1px solid #ccc;
+			margin-bottom: 20px;
+		}
 
-	
+		.tab button {
+			background-color: inherit;
+			border: none;
+			outline: none;
+			cursor: pointer;
+			padding: 10px 20px;
+			transition: 0.3s;
+			font-size: 18px;
+			margin-right: 10px;
+		}
 
+		.tab button.active {
+			background-color: #007bff;
+			color: white;
+			border-bottom: 2px solid #0056b3;
+		}
 
+		.tabcontent {
+			display: none;
+		}
 
-<a href="/">Home</a>
+		.tabcontent.active {
+			display: block;
+		}
 
-<script>
-    function updateUserInfo() {
-        var updatedUser = {
-            UId: $('#UId').val(),
-            UName: $('#UName').val(),
-            UBirth: $('#UBirth').val(),
-            UMail: $('#UMail').val(),
-            UTel: $('#UTel').val(),
-			UPw: $('#UPw').val(),
-			UNo: $('#UNo').val(),
-			URegister: $('#URegister').val()
-        };
-		
-	
-       $.ajax({
-    type: "PUT",
-    url: "/mypage/" + updatedUser.UId,
-    contentType: "application/json",
-    data: JSON.stringify(updatedUser),
-    success: function (response) {
-        // 성공적으로 업데이트된 사용자 정보를 받아와서 화면에 갱신하기
-        $('#UName').val(response.UName);
-        $('#UBirth').val(response.UBirth);
-        $('#UMail').val(response.UMail);
-        $('#UTel').val(response.UTel);
-		$('#UPw').val(response.UPw);
-		$('#UNo').val(response.UNo);
-		$('#URegister').val(response.URegister);
-    }
-});
+		.section {
+			margin-top: 20px;
+		}
 
-	
-}
+		.section-title {
+			font-size: 24px;
+			font-weight: bold;
+			color: #333;
+			margin-bottom: 10px;
+		}
 
-function deleteUserInfo(){
-		var deleteUser = $('#UId').val();
-		
-		
-		$.ajax({
-			type: "DELETE",
-			url: "/delete/" + deleteUser,
-			data: deleteUser,
-			success: function(response){
-				if(response == "success"){
-					alert("삭제가 완료되었습니다.");
-					window.location.href="/";
-				}else{
-					alert("삭제 실패.");
-					window.location.href="/";
-				}
+		.form-group {
+			margin-bottom: 15px;
+		}
+
+		.form-group p {
+			margin: 5px 0;
+		}
+
+		.form-group input[type="text"],
+		.form-group input[type="email"] {
+			width: calc(100% - 20px);
+			padding: 10px;
+			font-size: 16px;
+			border: 1px solid #ccc;
+			border-radius: 5px;
+		}
+
+		.form-group input[type="hidden"] {
+			display: none;
+		}
+
+		.form-group button {
+			padding: 10px 20px;
+			font-size: 16px;
+			background-color: #007bff;
+			color: #fff;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+
+		.form-group button:hover {
+			background-color: #0056b3;
+		}
+	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+		function openTab(evt, tabName) {
+			var i, tabcontent, tablinks;
+			tabcontent = document.getElementsByClassName("tabcontent");
+			for (i = 0; i < tabcontent.length; i++) {
+				tabcontent[i].style.display = "none";
 			}
-		});
-			
-	}	
-</script>
+			tablinks = document.getElementsByClassName("tablinks");
+			for (i = 0; i < tablinks.length; i++) {
+				tablinks[i].className = tablinks[i].className.replace(" active", "");
+			}
+			document.getElementById(tabName).style.display = "block";
+			evt.currentTarget.className += " active";
+
+			if (tabName === 'myCoupons') {
+				loadCoupons();
+			}
+		}
+
+		function loadCoupons() {
+			$.ajax({
+				type: 'GET',
+				url: '/my/coupons',
+				success: function (coupons) {
+					console.log('coupons까지 잘 가져옴: ', coupons);
+					displayCoupons(coupons);
+				},
+				error: function (xhr, status, error) {
+					alert(error);
+				}
+			});
+		}
+		function displayCoupons(coupons) {
+			var couponListDiv = document.getElementById("couponList");
+			couponListDiv.innerHTML = "";
+
+			coupons.forEach(function (coupon) {
+				var couponItem = document.createElement('div');
+				couponItem.classList.add('coupon-item');
+				couponItem.innerHTML = `
+				<p><strong>쿠폰 이름:</strong> ${coupon.couponName}</p>
+				<p><strong>할인율:</strong> ${coupon.couponDiscount}%</p>
+				<p><strong>사용 기한:</strong> ${coupon.couponStartAt} ~ ${coupon.couponEndAt}</p>
+				<hr>
+				`;
+				
+				couponListDiv.appendChild(couponItem);
+			});
+		}
+	</script>
+</head>
+
+<body>
+	<div class="container">
+		<div class="tab">
+			<button class="tablinks active" onclick="openTab(event, 'userInfo')">내 정보</button>
+			<button class="tablinks" onclick="openTab(event, 'myCoupons')">내 쿠폰함</button>
+			<button class="tablinks" onclick="openTab(event, 'paymentHistory')">결제 내역</button>
+			<button class="tablinks" onclick="openTab(event, 'deliveryManagement')">배송 관리</button>
+			<button class="tablinks" onclick="openTab(event, 'myPosts')">내가 작성한 글</button>
+		</div>
+
+		<!-- 탭 컨텐츠 -->
+		<div id="userInfo" class="tabcontent active">
+			<div class="section">
+				<h2 class="section-title">내 정보</h2>
+				<form id="userInfoForm">
+					<div class="form-group">
+						<p>ID: <input type="text" id="UId" th:value="${userInfo.UId}" readonly /></p>
+					</div>
+					<div class="form-group">
+						<p>Name: <input type="text" id="UName" th:value="${userInfo.UName}" /></p>
+					</div>
+					<div class="form-group">
+						<p>Birth: <input type="text" id="UBirth" th:value="${userInfo.UBirth}" /></p>
+					</div>
+					<div class="form-group">
+						<p>Email: <input type="email" id="UMail" th:value="${userInfo.UMail}" /></p>
+					</div>
+					<div class="form-group">
+						<p>Phone: <input type="text" id="UTel" th:value="${userInfo.UTel}" /></p>
+					</div>
+					<input type="hidden" id="UPw" th:value="${userInfo.UPw}" />
+					<input type="hidden" id="UNo" th:value="${userInfo.UNo}" />
+					<input type="hidden" id="URegister" th:value="${userInfo.URegister}" />
+					<div class="form-group">
+						<button type="button" onclick="updateUserInfo()">Update</button>
+						<button type="button" onclick="deleteUserInfo()">Delete</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div id="myCoupons" class="tabcontent">
+			<div class="section">
+				<h2 class="section-title">내 쿠폰함</h2>
+				<div id="couponList"></div>
+			</div>
+		</div>
+
+		<div id="paymentHistory" class="tabcontent">
+			<div class="section">
+				<h2 class="section-title">결제 내역</h2>
+				<!-- 결제 내역 컨텐츠 -->
+			</div>
+		</div>
+
+		<div id="deliveryManagement" class="tabcontent">
+			<div class="section">
+				<h2 class="section-title">배송 관리</h2>
+				<!-- 배송 관리 컨텐츠 -->
+			</div>
+		</div>
+
+		<div id="myPosts" class="tabcontent">
+			<div class="section">
+				<h2 class="section-title">내가 작성한 글</h2>
+				<!-- 내가 작성한 글 컨텐츠 -->
+			</div>
+		</div>
+	</div>
+
+	<script>
+		document.getElementById("userInfo").style.display = "block"; // 기본으로 첫 번째 탭을 보여줍니다.
+	</script>
 </body>
+
 </html>
