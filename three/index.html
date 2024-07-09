@@ -60,9 +60,18 @@
         left: 20px;
       }
     </style>
+    <!-- <script src="
+https://cdn.jsdelivr.net/npm/three-gltf-loader@1.111.0/index.min.js
+"></script> -->
 
-    <!-- <script type="module" src="./src/main.js" defer></script> -->
     <script src="./dist/bundle.js" defer></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@<version>/examples/jsm/"
+        }
+      }
+    </script>
     <!-- <script src="./src/main.js" type="module"></script> -->
   </head>
   <body>

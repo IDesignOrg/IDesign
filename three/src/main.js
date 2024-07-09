@@ -5,11 +5,13 @@ import {
   getClickedCircleIndex,
   getCoordsFromVectex,
 } from "./lib/calculater.js";
-import { D2Room } from "./lib/three/objects/Room.js";
-import { Circles } from "./lib/three/objects/circles.js";
 import { OrbitControls } from "./lib/three/OrbitControls.js";
-import { D3Shapes, create2DObject } from "./lib/three/geomentryFactory.js";
-
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import {
+  D2Shapes,
+  D3Shapes,
+  create2DObject,
+} from "./lib/three/geomentryFactory.js";
 const hudIcon = document.getElementById("hud-icon");
 const modeToggles = document.getElementById("modeToggles");
 
@@ -35,6 +37,8 @@ let isChangingObject = {
   changingObjectId: null, // change object...
   circleIdx: null, // 몇 번째 원을 통해 도형을 바꾸는지
 };
+const loader = new GLTFLoader();
+console.log(loader);
 let currentPosition = new THREE.Vector3();
 const mouse = new THREE.Vector2();
 const raycaster = new THREE.Raycaster();
@@ -71,7 +75,7 @@ scene.add(gridHelper);
 const planeGeometry = new THREE.PlaneGeometry(2000, 2000);
 const planeMaterial = new THREE.MeshBasicMaterial({
   color: "rgb(250,251,255)",
-  side: THREE.DoubleSide,
+  side: THREE.FrontSide,
 });
 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
 plane.position.set(0, -1, 0);
@@ -89,15 +93,15 @@ const getIntersects = (event) => {
   return raycaster.intersectObjects(scene.children, true);
 };
 
-const updateCircles = ({ points, floor }) => {
-  const parent = floor.parent;
-  if (!parent) return;
-  const circles = parent.getObjectByName("circleGroup");
-  parent.remove(circles);
-  const new_circles = new Circles({ points });
-  new_circles.name = "circleGroup";
-  parent.add(new_circles);
-};
+// const updateCircles = ({ points, floor }) => {
+//   const parent = floor.parent;
+//   if (!parent) return;
+//   const circles = parent.getObjectByName("circleGroup");
+//   parent.remove(circles);
+//   const new_circles = new Circles({ points });
+//   new_circles.name = "circleGroup";
+//   parent.add(new_circles);
+// };
 
 const updateShadows = ({ object, background }) => {
   //object = grop object..
@@ -115,22 +119,6 @@ const updateShadows = ({ object, background }) => {
     new THREE.Vector3(originPoint.x, 1, background.point.z),
   ];
   parent.drawShadow({ points });
-
-  // const coordsArr = getCoordsFromVectex(floor);
-  // const originPoint = coordsArr[0];
-  // if (!floor || !originPoint) return;
-  // updateCircles({ points, floor });
-  // const shape = new THREE.Shape();
-  // shape.moveTo(points[0].x, -points[0].z);
-  // for (let i = 1; i < points.length; i++) {
-  //   shape.lineTo(points[i].x, -points[i].z);
-  // }
-  // shape.lineTo(points[0].x, -points[0].z);
-
-  // const geometry = new THREE.ShapeGeometry(shape);
-  // floor.position.y = 1;
-  // floor.geometry.dispose(); // 기존의 geometry를 메모리에서 해제
-  // floor.geometry = geometry; // 새로운 geometry를 할당
 };
 
 const onMouseDown = (event) => {
@@ -310,7 +298,13 @@ const onCreate = (e) => {
 
 const create2DScene = () => {
   if (!scene) return;
-  // console.log(scene);
+  const D3Objects = [];
+  scene.children.forEach((obj) => {
+    if (obj.name === "background" || obj.name === "helper") return;
+    D3Objects.push(obj);
+    scene.add(D2Shapes({ object: obj }));
+  });
+  D3Objects.forEach((obj) => scene.remove(obj));
 };
 
 const create3DScene = () => {
@@ -407,7 +401,6 @@ animate();
 
 // if (WEBGL.isWebGLAvailable()) {
 //   TwoDigitStart();
-//   console.log("start!!");
 //   // startFrame();
 //   // threeJS();
 // } else {
