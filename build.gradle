@@ -26,7 +26,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     //Maria DB
-    implementation 'org.mariadb.jdbc:mariadb-java-client:2.3.0'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:3.2.0'
     // Spring Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
     //oauth2

@@ -1,9 +1,42 @@
-const path = require("path"); // 노드에서 제공하는 path 모듈을 활용
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
-module.exports = {
-  entry: "./src/main.js",
-  output: {
-    filename: "bundle.js",
-    path: path.resolve(__dirname, "dist"), // 의미: 현재 경로 하위에 dist폴더
-  },
+module.exports = (env, argv) => {
+  const isProduction = argv.mode === "production";
+
+  return {
+    entry: "./src/main.js",
+    output: {
+      filename: "bundle.js",
+      path: path.resolve(__dirname, "dist"),
+    },
+    module: {
+      rules: [
+        {
+          test: /\.js$/,
+          exclude: /node_modules/,
+          use: {
+            loader: "babel-loader",
+          },
+        },
+      ],
+    },
+    plugins: [
+      new CleanWebpackPlugin(),
+      new HtmlWebpackPlugin({
+        template: "./index.html",
+        filename: "index.html",
+      }),
+    ],
+    devServer: {
+      static: {
+        directory: path.resolve(__dirname, "dist"),
+      },
+      compress: true,
+      port: 9000,
+      open: true,
+    },
+    mode: isProduction ? "production" : "development",
+  };
 };
