@@ -20,7 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
         System.out.println("shshshshsh");
         registry.addInterceptor(interceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/auth/**","/","/login", "/board/**", "/static/**", "/css/**", "/js/**", "/include/**", "/image/**", "/logout"); //auth명시된건 패스시킨다
+                .excludePathPatterns("/auth/**","/","/login", "/board/**", "/static/**", "/css/**", "/js/**", "/include/**", "/image/**", "/logout", "/board/faq/search/**"); //auth명시된건 패스시킨다
 
 
 
