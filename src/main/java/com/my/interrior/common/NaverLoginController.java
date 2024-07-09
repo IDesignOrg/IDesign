@@ -74,12 +74,15 @@ public class NaverLoginController {
 	
 		String email = naverProfileResponse.getResponse().getEmail();
 		System.out.println("user의 email은: " + email);
+		String naverId = naverProfileResponse.getResponse().getId();
 		
-		UserEntity user = userService.checkUserByEmail(email);
-		System.out.println("user : " + user);
 		
-		if(user != null) {
-			session.setAttribute("UId", user.getUId());
+		UserEntity existingUser = userrepository.findByUId(naverId);
+		System.out.println("아이디 확인 : " + existingUser);
+		
+		if(existingUser != null) {
+			session.setAttribute("UId", naverId);
+			System.out.println("네이버 세션 등록 : " + naverId);
 			return "redirect:/";
 		}else {
 			UserEntity newUser = new UserEntity();
