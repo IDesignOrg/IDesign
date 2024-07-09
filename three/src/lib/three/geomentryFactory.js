@@ -1,11 +1,20 @@
 import { THREE } from "../../three.js";
+import { getCoordsFromVectex } from "../calculater.js";
 // import { scene } from "../../main.js";
 import { D2Room, D3Room } from "./objects/Room.js";
 import { Circles } from "./objects/circles.js";
 
 export const D3Shapes = ({ object, scene }) => {
-  // object is "room" Group... maybe..
   const room = new D3Room({ object });
+
+  return room;
+};
+
+export const D2Shapes = ({ object }) => {
+  // 아마 room
+  const floor = object.getObjectByName("floor");
+  const points = getCoordsFromVectex(floor);
+  const room = new D2Room({ points });
 
   return room;
 };

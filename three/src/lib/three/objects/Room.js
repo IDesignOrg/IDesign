@@ -20,7 +20,8 @@ export class D3Room extends THREE.Group {
     room.add(newFloor);
     const walls = new D3Wall({ points });
     room.add(walls);
-
+    const ceiling = new D2Floor({ points, height: 50 });
+    room.add(ceiling);
     return room;
   }
 }
@@ -56,6 +57,7 @@ export class D2Room extends THREE.Group {
     const newWalls = new D2Wall({ points });
     this.remove(this.getObjectByName("walls"));
     this.add(newWalls);
+    0;
   };
 
   drawShadow = ({ points }) => {
@@ -76,6 +78,7 @@ export class D2Room extends THREE.Group {
       0,
       getStraightLineZ({ originPoints, points, index: circleIdx })
     );
+    console.log("last moved points = ", originPoints);
     const mesh = new D2Floor({ points: originPoints });
     mesh.position.y = 1;
     mesh.rotation.x = -Math.PI / 2;
