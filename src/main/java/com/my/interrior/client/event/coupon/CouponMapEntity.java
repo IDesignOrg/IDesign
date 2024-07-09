@@ -30,7 +30,7 @@ public class CouponMapEntity {
     private UserEntity userEntity;
 
     @ManyToOne
-    @JoinColumn(name = "couponId")
+    @JoinColumn(name = "coupon_no")
     private CouponEntity couponEntity;
 
     @Column(nullable = false)
