@@ -12,6 +12,7 @@ import {
   D3Shapes,
   create2DObject,
 } from "./lib/three/geomentryFactory.js";
+
 const hudIcon = document.getElementById("hud-icon");
 const modeToggles = document.getElementById("modeToggles");
 
@@ -38,7 +39,7 @@ let isChangingObject = {
   circleIdx: null, // 몇 번째 원을 통해 도형을 바꾸는지
 };
 const loader = new GLTFLoader();
-console.log(loader);
+
 let currentPosition = new THREE.Vector3();
 const mouse = new THREE.Vector2();
 const raycaster = new THREE.Raycaster();
@@ -60,6 +61,39 @@ controls.enabled = false;
 // controls.update();
 
 // 기본적인 그리드 헬퍼 추가
+
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Ambient light
+ambientLight.position.set(0, 100, 0);
+scene.add(ambientLight);
+
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // Directional light
+directionalLight.position.set(0, 100, 0);
+scene.add(directionalLight);
+
+// const dirLight = new THREE.DirectionalLight(0xefefff, 1.5);
+// dirLight.position.set(10, 10, 10);
+// scene.add(dirLight);
+loader.load(
+  "./gltf/chair/chair.gltf",
+  (gltf) => {
+    const D3Object = gltf.scene;
+
+    // 모든 메시에 대해 재질 색상 변경
+    D3Object.traverse((child) => {
+      if (child.isMesh) {
+        console.log(child);
+        child.material.color.set("red");
+      }
+    });
+
+    scene.add(D3Object);
+  },
+  undefined,
+  (error) => {
+    console.error(error);
+  }
+);
+
 const axes = new THREE.AxesHelper(1000);
 axes.name = "helper";
 scene.add(axes);
@@ -92,16 +126,6 @@ const getIntersects = (event) => {
   // 평면과의 교차점 계산
   return raycaster.intersectObjects(scene.children, true);
 };
-
-// const updateCircles = ({ points, floor }) => {
-//   const parent = floor.parent;
-//   if (!parent) return;
-//   const circles = parent.getObjectByName("circleGroup");
-//   parent.remove(circles);
-//   const new_circles = new Circles({ points });
-//   new_circles.name = "circleGroup";
-//   parent.add(new_circles);
-// };
 
 const updateShadows = ({ object, background }) => {
   //object = grop object..
