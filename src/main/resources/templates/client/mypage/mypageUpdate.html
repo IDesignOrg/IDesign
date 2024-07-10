@@ -149,18 +149,14 @@
 				couponListDiv.appendChild(couponItem);
 			});
 		}
+		function updateUserInfo(){
+			window.location.href ='/mypage/mypageUpdate';
+		}
 	</script>
 </head>
 
 <body>
-	<div class="container">
-		<div class="tab">
-			<button class="tablinks active" onclick="openTab(event, 'userInfo')">내 정보</button>
-			<button class="tablinks" onclick="openTab(event, 'myCoupons')">내 쿠폰함</button>
-			<button class="tablinks" onclick="openTab(event, 'paymentHistory')">결제 내역</button>
-			<button class="tablinks" onclick="openTab(event, 'deliveryManagement')">배송 관리</button>
-			<button class="tablinks" onclick="openTab(event, 'myPosts')">내가 작성한 글</button>
-		</div>
+	
 
 		<!-- 탭 컨텐츠 -->
 		<div id="userInfo" class="tabcontent active">
@@ -168,13 +164,32 @@
 				<h2 class="section-title">내 정보</h2>
 				<form id="userInfoForm">
 					<div class="form-group">
-						<p>ID: <input type="text" id="UId" th:value="${userInfo.UId}" readonly /></p>
+						<p>profile</p>
+						<input type="file" id="imageInput" accept="image/*" onchange="previewImage(event)">
+						    <br><br>
+						    <img id="preview" src="${userInfo.UPofile}" alt="User Profile Image" style="display: none; max-width: 180px; max-height: 180px;">
+						    
+						    <script>
+						        function previewImage(event) {
+						            var input = event.target;
+						            var reader = new FileReader();
+						            
+						            reader.onload = function(){
+						                var dataURL = reader.result;
+						                var preview = document.getElementById('preview');
+						                preview.style.display = 'block';
+						                preview.src = dataURL;
+						            };
+						            
+						            reader.readAsDataURL(input.files[0]);
+						        }
+						    </script>
 					</div>
 					<div class="form-group">
 						<p>Name: <input type="text" id="UName" th:value="${userInfo.UName}" /></p>
 					</div>
 					<div class="form-group">
-						<p>Birth: <input type="text" id="UBirth" th:value="${userInfo.UBirth}" /></p>
+						<p>Birth:<br><input type="date" id="UBirth" name="UBirth" /><br></p>
 					</div>
 					<div class="form-group">
 						<p>Email: <input type="email" id="UMail" th:value="${userInfo.UMail}" /></p>
