@@ -77,7 +77,7 @@ public class NaverLoginController {
 		String naverId = naverProfileResponse.getResponse().getId();
 		
 		
-		UserEntity existingUser = userrepository.findByUId(naverId);
+		UserEntity existingUser = userrepository.findByUId("naver_"+naverId);
 		System.out.println("아이디 확인 : " + existingUser);
 		
 		if(existingUser != null) {
@@ -87,13 +87,13 @@ public class NaverLoginController {
 		}else {
 			UserEntity newUser = new UserEntity();
             newUser.setUMail(email);
-            newUser.setUName("naver-" + naverProfileResponse.getResponse().getNickname());
+            newUser.setUName(naverProfileResponse.getResponse().getNickname());
             newUser.setURegister(LocalDate.now());
             newUser.setUPw(""); // 비밀번호는 네이버 로그인에서는 사용되지 않으므로 빈 값
             newUser.setUPofile(naverProfileResponse.getResponse().getProfile_image());
             newUser.setUBirth(naverProfileResponse.getResponse().getBirthyear() + "-" + naverProfileResponse.getResponse().getBirthday());
             newUser.setUTel(naverProfileResponse.getResponse().getMobile());
-            newUser.setUId(naverProfileResponse.getResponse().getId());
+            newUser.setUId("naver_"+naverProfileResponse.getResponse().getId());
             userrepository.save(newUser);
 
             session.setAttribute("UId", newUser.getUId());

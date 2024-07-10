@@ -1,5 +1,6 @@
 package com.my.interrior.common;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
 import com.my.interrior.client.user.UserEntity;
+import com.my.interrior.client.user.UserRepository;
 import com.my.interrior.client.user.UserService;
 
 import jakarta.servlet.http.HttpSession;
@@ -26,6 +28,8 @@ public class GoogleLoginController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired UserRepository userRepository;
 	
 	//토큰, 사용자 정보 가져오기
 	@GetMapping(value="/auth/login/google")
@@ -55,18 +59,39 @@ public class GoogleLoginController {
         System.out.println("resultEntity2의 값은? : " + resultEntity2);
         
         String email=resultEntity2.getBody().getEmail(); 
+        String name = resultEntity2.getBody().getName();
+        String profile = resultEntity2.getBody().getPicture();
+        String uid = resultEntity2.getBody().getSub();
+        System.out.println("이메일 값 : " +email);
+        System.out.println("이름 값 : " +name);
+        System.out.println("프로필 사진 값 : " +profile);
+        System.out.println("아이디 값 : " + uid);
+
         
         System.out.println("내 이메일은 : " + email);
         //이메일을 통해 비교 후 데이터베이스의 이메일과 일치하면 로그인을, 아니면 회원가입으로 이동
-        UserEntity user = userService.checkUserByEmail(email);
+        UserEntity existingUser = userRepository.findByUId("Google_"+uid);
 
-        if(user != null) {
+        if(existingUser != null) {
         	
-        	session.setAttribute("UId", user.getUId());
+        	session.setAttribute("UId", existingUser.getUId());
         	
-        	return "/";
+        	return "redirect:/";
         }else {
-        	return "redirect:/auth/join";
+        	
+        	UserEntity newUser = new UserEntity();
+            newUser.setUMail(email);
+            newUser.setUName("");
+            newUser.setURegister(LocalDate.now());
+            newUser.setUPw("");
+            newUser.setUPofile("https://storage.googleapis.com/idesign/static/blank-profile-picture-973460_640.png");
+            newUser.setUBirth("");
+            newUser.setUTel("");
+            newUser.setUId("Google_"+uid);
+            session.setAttribute("UId", existingUser.getUId());
+            userRepository.save(newUser); // 새로운 사용자 저장
+            
+        	return "redirect:/";
         }
     }
 	
