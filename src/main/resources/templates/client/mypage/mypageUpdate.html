@@ -101,108 +101,49 @@
 	</style>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script>
-		function openTab(evt, tabName) {
-			var i, tabcontent, tablinks;
-			tabcontent = document.getElementsByClassName("tabcontent");
-			for (i = 0; i < tabcontent.length; i++) {
-				tabcontent[i].style.display = "none";
-			}
-			tablinks = document.getElementsByClassName("tablinks");
-			for (i = 0; i < tablinks.length; i++) {
-				tablinks[i].className = tablinks[i].className.replace(" active", "");
-			}
-			document.getElementById(tabName).style.display = "block";
-			evt.currentTarget.className += " active";
+		function previewImage(event) {
+            var input = event.target;
+            var reader = new FileReader();
 
-			if (tabName === 'myCoupons') {
-				loadCoupons();
-			}
-		}
+            reader.onload = function () {
+                var dataURL = reader.result;
+                var preview = document.getElementById('preview');
+                preview.style.display = 'block';
+                preview.src = dataURL;
+            };
 
-		function loadCoupons() {
-			$.ajax({
-				type: 'GET',
-				url: '/my/coupons',
-				success: function (coupons) {
-					console.log('coupons까지 잘 가져옴: ', coupons);
-					displayCoupons(coupons);
-				},
-				error: function (xhr, status, error) {
-					alert(error);
-				}
-			});
-		}
-		function displayCoupons(coupons) {
-			var couponListDiv = document.getElementById("couponList");
-			couponListDiv.innerHTML = "";
-
-			coupons.forEach(function (coupon) {
-				var couponItem = document.createElement('div');
-				couponItem.classList.add('coupon-item');
-				couponItem.innerHTML = `
-				<p><strong>쿠폰 이름:</strong> ${coupon.couponName}</p>
-				<p><strong>할인율:</strong> ${coupon.couponDiscount}%</p>
-				<p><strong>사용 기한:</strong> ${coupon.couponStartAt} ~ ${coupon.couponEndAt}</p>
-				<hr>
-				`;
-				
-				couponListDiv.appendChild(couponItem);
-			});
-		}
-		function updateUserInfo(){
-			window.location.href ='/mypage/mypageUpdate';
-		}
+            reader.readAsDataURL(input.files[0]);
+        }
+		
 	</script>
 </head>
 
 <body>
-	
-
 		<!-- 탭 컨텐츠 -->
-		<div id="userInfo" class="tabcontent active">
-			<div class="section">
-				<h2 class="section-title">내 정보</h2>
-				<form id="userInfoForm">
-					<div class="form-group">
-						<p>profile</p>
-						<input type="file" id="imageInput" accept="image/*" onchange="previewImage(event)">
-						    <br><br>
-						    <img id="preview" src="${userInfo.UPofile}" alt="User Profile Image" style="display: none; max-width: 180px; max-height: 180px;">
-						    
-						    <script>
-						        function previewImage(event) {
-						            var input = event.target;
-						            var reader = new FileReader();
-						            
-						            reader.onload = function(){
-						                var dataURL = reader.result;
-						                var preview = document.getElementById('preview');
-						                preview.style.display = 'block';
-						                preview.src = dataURL;
-						            };
-						            
-						            reader.readAsDataURL(input.files[0]);
-						        }
-						    </script>
-					</div>
-					<div class="form-group">
-						<p>Name: <input type="text" id="UName" th:value="${userInfo.UName}" /></p>
-					</div>
-					<div class="form-group">
-						<p>Birth:<br><input type="date" id="UBirth" name="UBirth" /><br></p>
-					</div>
-					<div class="form-group">
-						<p>Email: <input type="email" id="UMail" th:value="${userInfo.UMail}" /></p>
-					</div>
-					<div class="form-group">
-						<p>Phone: <input type="text" id="UTel" th:value="${userInfo.UTel}" /></p>
-					</div>
-					<input type="hidden" id="UPw" th:value="${userInfo.UPw}" />
-					<input type="hidden" id="UNo" th:value="${userInfo.UNo}" />
-					<input type="hidden" id="URegister" th:value="${userInfo.URegister}" />
-					<div class="form-group">
-						<button type="button" onclick="updateUserInfo()">Update</button>
-						<button type="button" onclick="deleteUserInfo()">Delete</button>
+		 <div id="userInfo" class="tabcontent active">
+        <div class="section">
+            <h2 class="section-title">내 정보</h2>
+            <form id="userInfoForm" action="/UpdateForUser" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <p>profile</p>
+                    <input type="file" id="file" name="file" accept="image/*" onchange="previewImage(event)">
+                    <br><br>
+                    <img id="preview" src="${userInfo.UPofile}" alt="User Profile Image" style="display: none; max-width: 180px; max-height: 180px;">
+                </div>
+                <div class="form-group">
+                    <p>Name: <input type="text" id="UName" name="UName" th:value="${userInfo.UName}" /></p>
+                </div>
+                <div class="form-group">
+                    <p>Birth:<br><input type="date" id="UBirth" name="UBirth" th:value="${userInfo.UBirth}" /><br></p>
+                </div>
+                <div class="form-group">
+                    <p>Email: <input type="email" id="UMail" name="UMail" th:value="${userInfo.UMail}" /></p>
+                </div>
+                <div class="form-group">
+                    <p>Phone: <input type="text" id="UTel" name="UTel" th:value="${userInfo.UTel}" /></p>
+                </div>
+                <div class="form-group">
+                    <button type="submit">Update</button>				
 					</div>
 				</form>
 			</div>

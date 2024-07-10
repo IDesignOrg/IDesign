@@ -81,8 +81,8 @@ public class NaverLoginController {
 		System.out.println("아이디 확인 : " + existingUser);
 		
 		if(existingUser != null) {
-			session.setAttribute("UId", naverId);
-			System.out.println("네이버 세션 등록 : " + naverId);
+			session.setAttribute("UId", existingUser.getUId());
+			System.out.println("네이버 세션 등록 : " + existingUser.getUId());
 			return "redirect:/";
 		}else {
 			UserEntity newUser = new UserEntity();
