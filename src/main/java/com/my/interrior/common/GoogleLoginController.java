@@ -88,8 +88,9 @@ public class GoogleLoginController {
             newUser.setUBirth("");
             newUser.setUTel("");
             newUser.setUId("Google_"+uid);
-            session.setAttribute("UId", existingUser.getUId());
             userRepository.save(newUser); // 새로운 사용자 저장
+            session.setAttribute("UId", newUser.getUId());
+            
             
         	return "redirect:/";
         }
