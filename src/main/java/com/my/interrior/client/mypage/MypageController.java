@@ -4,6 +4,7 @@ import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
 import jakarta.servlet.http.HttpSession;
 
+import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,13 +66,20 @@ public class MypageController {
     	model.addAttribute("userInfo",user);
     	return "client/mypage/mypageUpdate";
     }
-    @PostMapping("mypage/mypageUpdate")
+    @PostMapping("/UpdateForUser")
     public String mypageUpdate( @RequestParam("file") MultipartFile file,
             @RequestParam("UName") String UName,
             @RequestParam("UBirth") String UBirth,
             @RequestParam("UMail") String UMail,
-            @RequestParam("UTel") String UTel) {
+            @RequestParam("UTel") String UTel,
+            HttpSession session, Model model) throws IOException {
     	
+    	
+    	mypageService.updateUser(file, UName, UBirth, UMail, UTel);
+    	String  UId = (String) session.getAttribute("UId");
+    	UserEntity user = mypageService.getUserInfo(UId);
+
+        model.addAttribute("userInfo",user);
     	
     	return "client/mypage/mypage";
     }
