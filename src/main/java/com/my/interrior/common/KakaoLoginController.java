@@ -34,7 +34,7 @@ public class KakaoLoginController {
 		
 		
 		String kakaoId = "kakao_" + Long.toString((Integer) userInfo.get("id"));
-		UserEntity existingUser = userRepository.findByUId(kakaoId);
+		UserEntity existingUser = userRepository.findByUId("kakao_"+kakaoId);
         
         if (existingUser == null) {
             // 새로운 사용자 정보 설정
@@ -46,7 +46,7 @@ public class KakaoLoginController {
             newUser.setUPofile((String) userInfo.get("profile"));
             newUser.setUBirth(""); // 생일 정보는 카카오에서 따로 제공하지 않으므로 비워둠
             newUser.setUTel(""); // 전화번호 정보도 카카오에서 따로 제공하지 않으므로 비워둠
-            newUser.setUId(kakaoId);
+            newUser.setUId("kakao_"+kakaoId);
             
             userRepository.save(newUser); // 새로운 사용자 저장
             session.setAttribute("access_Token", access_Token);
