@@ -44,7 +44,7 @@ public class MypageService {
     	mypageRepository.deleteByUId(UId);
     	
     } 
-    
+   
     public String uploadFile(MultipartFile file) throws IOException {
 		// 세션값 받아오기
 		String userId = (String) session.getAttribute("UId");
