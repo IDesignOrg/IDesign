@@ -54,7 +54,7 @@ public class ReviewController {
         
         reviewService.uploadFileAndCreateReview(title, category, content, starRating, files, mainPhoto);
 
-        return "redirect:/review_write";
+        return "redirect:/review/reviewList";
     }
 	
 	//후기 페이지
@@ -67,7 +67,6 @@ public class ReviewController {
 	    model.addAttribute("totalPages", reviews.getTotalPages());
 	    for (ReviewEntity review : reviews.getContent()) {
 	        List<ReviewPhotoEntity> reviewPhotos = reviewService.getReviewPhotosByReviewNo(review.getRNo());
-	        System.out.println("사진은 : " + reviewPhotos);
 	        model.addAttribute("reviewPhotos_" + review.getRNo(), reviewPhotos);
 	    }
 	    return "client/review/reviewList";    
@@ -94,6 +93,19 @@ public class ReviewController {
 		
 		
 		return "client/review/reviewDetail";
+	}
+	@GetMapping("review/reviewUpdate/{rNo}")
+	public String reviewUpdate(Pageable pageable, Model model, @PathVariable("rNo") Long rNo) {
+		 Page<ReviewEntity> reviews = reviewService.getAllReviews(PageRequest.of(pageable.getPageNumber(), PAGE_SIZE));
+		 System.out.println("페이지 불러오기 : " + pageable.getPageNumber());
+		    model.addAttribute("reviews", rNo);
+		    model.addAttribute("currentPage", pageable.getPageNumber());
+		    model.addAttribute("totalPages", reviews.getTotalPages());
+		    for (ReviewEntity review : reviews.getContent()) {
+		        List<ReviewPhotoEntity> reviewPhotos = reviewService.getReviewPhotosByReviewNo(review.getRNo());
+		        model.addAttribute("reviewPhotos_" + review.getRNo(), reviewPhotos);
+		    }
+		    return "client/review/reviewUpdate"; 
 	}
 	
 }
