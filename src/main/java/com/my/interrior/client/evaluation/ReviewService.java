@@ -137,6 +137,7 @@ public class ReviewService {
 	public List<ReviewPhotoEntity> getPhotosByReviewId(Long rNo) {
 	    // 1. 리뷰 번호(rNo)를 사용하여 리뷰 포토 엔티티(ReviewPhotoEntity)를 조회합니다.
 		 List<ReviewPhotoEntity> reviewPhotos = reviewPhotoRepository.findByReview_RNo(rNo);
+		 
 		 System.out.println("백엔드 rno의 값 : " + rNo);
 		 System.out.println("백엔드 reviewphotos :" + reviewPhotos);
 	    

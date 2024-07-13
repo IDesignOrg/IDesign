@@ -25,20 +25,21 @@
 <body>
     <h1>Update Review</h1>
     <form action="/review_update" method="post" enctype="multipart/form-data">
-        <label for="title">리뷰 제목:</label>
-        <input type="text" id="title" name="title" placeholder="리뷰 제목" th:value="${userInfo.UName}"><br><br>
+        <div th:each="review : ${reviews}">
+		<label for="title">리뷰 제목:</label>
+        <input type="text" id="title" name="title" placeholder="리뷰 제목" th:value="${review.RTitle}"><br><br>
         
         <label for="category">리뷰 카테고리:</label>
-        <select id="category" name="category">
+        <select id="category" name="category" th:value="${review.RCategory}">
             <option value="타일">타일</option>
             <option value="벽지">벽지</option>
         </select><br><br>
         
         <label for="content">리뷰 내용:</label>
-        <textarea id="content" name="content" placeholder="리뷰 내용"></textarea><br><br>
+        <textarea id="content" name="content" placeholder="리뷰 내용" th:text="${review.RContent}"></textarea><br><br>
         
         <label for="starRating">별점:</label>
-        <select id="starRating" name="starRating">
+        <select id="starRating" name="starRating" th:value="${review.RStarRating}">
             <option value="1">1</option>
             <option value="1.5">1.5</option>
             <option value="2">2</option>
@@ -68,6 +69,7 @@
         </ul>
         
         <button type="submit">리뷰 수정 완료</button>
+		</div>
     </form>
     <script>
         const fileInput = document.getElementById('fileInput');
