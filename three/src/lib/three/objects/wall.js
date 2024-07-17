@@ -4,6 +4,9 @@ const wallHeight = 50;
 const wallDepth = 5;
 const colors = ["red", "blue", "black", "green"];
 
+const wallpaper = "../../../../public/img/wallpaper2.jpg";
+const texture = new THREE.TextureLoader().load(wallpaper);
+
 export class D3Wall extends THREE.Group {
   constructor({ points }) {
     const walls = super();
@@ -13,10 +16,11 @@ export class D3Wall extends THREE.Group {
       const nextPoint = points[(i + 1) % points.length];
       const angle = calculateAngle(currentPoint, nextPoint);
       const width = calculateDistance(currentPoint, nextPoint) + wallDepth;
-      const wall = new THREE.BoxGeometry(width, wallHeight, wallDepth);
+      const wall = new THREE.PlaneGeometry(width, wallHeight, wallDepth);
       const material = new THREE.MeshBasicMaterial({
-        color: colors[i % points.length],
-        side: THREE.BackSide,
+        // color: colors[i % points.length],
+        map: texture,
+        side: i % 2 == 0 ? THREE.FrontSide : THREE.BackSide,
       });
       const cube = new THREE.Mesh(wall, material);
       cube.position.set(
@@ -24,7 +28,7 @@ export class D3Wall extends THREE.Group {
         wallHeight / 2,
         (currentPoint.z + nextPoint.z) / 2
       );
-      cube.rotation.y = -angle;
+      cube.rotation.y = angle;
       walls.add(cube);
     }
     return walls;
