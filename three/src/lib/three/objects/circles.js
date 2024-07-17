@@ -1,3 +1,4 @@
+import { floorY } from "../../../main.js";
 import { THREE } from "../../../three.js";
 
 export class Circles {
@@ -13,8 +14,9 @@ export class Circles {
       });
       const circle = new THREE.Mesh(geometry, material);
       circle.name = "circle";
-      circle.position.set(point.x, 1, point.z);
+      circle.position.set(point.x, floorY + 1, point.z);
       circle.rotation.x = -Math.PI / 2;
+
       circleGroup.add(circle);
     });
 

@@ -20,7 +20,8 @@ export const D2Shapes = ({ object }) => {
 };
 
 export const create2DObject = ({ name, points, objectName }) => {
-  let room = new D2Room({ points });
+  let room = new D2Room({ points, name });
+
   room.name = name;
   const circleGroup = new Circles({ points });
   circleGroup.name = "circleGroup";

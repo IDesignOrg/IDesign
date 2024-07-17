@@ -1,3 +1,4 @@
+import { material } from "../../../main.js";
 import { THREE } from "../../../three.js";
 import {
   getCoordsFromVectex,
@@ -6,7 +7,7 @@ import {
 } from "../../calculater.js";
 import { floorName, roomName } from "../objectConf/objectNames";
 import { Circles } from "./circles.js";
-import { D2Floor } from "./floor.js";
+import { D2Floor, Shape } from "./floor.js";
 import { D2Wall, D3Wall } from "./wall.js";
 
 export class D3Room extends THREE.Group {
@@ -17,14 +18,40 @@ export class D3Room extends THREE.Group {
     if (!floor) return;
     const points = getCoordsFromVectex(floor);
     const newFloor = new D2Floor({ points });
+    newFloor.material = material;
     room.add(newFloor);
     const walls = new D3Wall({ points });
     room.add(walls);
     const ceiling = new D2Floor({ points, height: 50 });
     room.add(ceiling);
+    const chair = object.getObjectByName("chair");
+    if (chair) {
+      room.add(chair);
+    }
+    const center = calculateCenter(points);
+    const ambientLight = new THREE.AmbientLight(0xf0f0f0, 1.2); // Ambient light
+    ambientLight.name = "light1";
+    ambientLight.position.set(center.x, 50, center.z);
+    room.add(ambientLight);
+    console.log(room);
     return room;
   }
 }
+
+const calculateCenter = (points) => {
+  let centerX = 0;
+  let centerZ = 0;
+
+  points.forEach((point) => {
+    centerX += point.x;
+    centerZ += point.z;
+  });
+
+  centerX /= points.length;
+  centerZ /= points.length;
+
+  return new THREE.Vector3(centerX, 0, centerZ);
+};
 
 // export class D3Room extends THREE.Group {
 //   constructor({ points, name = roomName }) {
@@ -43,11 +70,21 @@ export class D3Room extends THREE.Group {
 // }
 
 export class D2Room extends THREE.Group {
-  constructor({ points }) {
+  constructor({ points, name }) {
+    console.log(name);
     const roomGroup = super();
     roomGroup.updateFloor = this.updateFloor;
-    const mesh = new D2Floor({ points });
+    const mesh = new D2Floor({ points, name });
     const walls = new D2Wall({ points });
+
+    const shape = new Shape({ points });
+    const geometry = new THREE.ShapeGeometry(shape);
+    var outlineMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    var outlineMesh = new THREE.Mesh(geometry, outlineMaterial);
+    outlineMesh.name = "floor-outline";
+    outlineMesh.rotation.x = -Math.PI / 2;
+    outlineMesh.scale.multiplyScalar(1.05);
+    roomGroup.add(outlineMesh);
     roomGroup.add(walls);
     roomGroup.add(mesh);
     return roomGroup;
@@ -59,11 +96,24 @@ export class D2Room extends THREE.Group {
     this.add(newWalls);
     0;
   };
+  updateFloorOutline = ({ points }) => {
+    this.remove(this.getObjectByName("floor-outline"));
+    const shape = new Shape({ points });
+    const geometry = new THREE.ShapeGeometry(shape);
+    var outlineMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    var outlineMesh = new THREE.Mesh(geometry, outlineMaterial);
+    outlineMesh.name = "floor-outline";
+    outlineMesh.rotation.x = -Math.PI / 2;
+    outlineMesh.position.y = 1;
+    // outlineMesh.scale.multiplyScalar(1);
 
+    this.add(outlineMesh);
+  };
   drawShadow = ({ points }) => {
-    const newFloor = new D2Floor({ points });
+    const newFloor = new D2Floor({ points, name: "shadow" });
     const newCircleGroup = new Circles({ points });
-    this.updateWalls({ points });
+    this.updateFloorOutline({ points });
+    // this.updateWalls({ points });
     this.remove(this.getObjectByName("circleGroup"));
     this.remove(this.getObjectByName("floor"));
     this.add(newCircleGroup);
@@ -71,20 +121,19 @@ export class D2Room extends THREE.Group {
   };
 
   updateFloor = ({ points, circleIdx }) => {
-    const floor = this.children.find((obj) => obj.name === "floor");
+    const floor = this.getObjectByName("floor");
     const originPoints = getCoordsFromVectex(floor);
     originPoints[circleIdx] = new THREE.Vector3(
       getStraightLineX({ originPoints, points, index: circleIdx }),
       0,
       getStraightLineZ({ originPoints, points, index: circleIdx })
     );
-    console.log("last moved points = ", originPoints);
     const mesh = new D2Floor({ points: originPoints });
     mesh.position.y = 1;
     mesh.rotation.x = -Math.PI / 2;
     const newCircleGroup = new Circles({ points: originPoints });
     newCircleGroup.visible = true;
-    this.updateWalls({ points });
+    this.updateFloorOutline({ points: originPoints });
     this.remove(this.getObjectByName("circleGroup"));
     this.remove(floor);
     this.add(newCircleGroup);
