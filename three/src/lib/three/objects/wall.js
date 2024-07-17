@@ -11,16 +11,20 @@ export class D3Wall extends THREE.Group {
   constructor({ points }) {
     const walls = super();
     walls.name = "walls";
+    console.log(points);
     for (let i = 0; i < points.length; i++) {
+      const wallGroup = super();
+
       const currentPoint = points[i];
       const nextPoint = points[(i + 1) % points.length];
+
       const angle = calculateAngle(currentPoint, nextPoint);
-      const width = calculateDistance(currentPoint, nextPoint) + wallDepth;
-      const wall = new THREE.PlaneGeometry(width, wallHeight, wallDepth);
+      const width = calculateDistance(currentPoint, nextPoint);
+      const wall = new THREE.PlaneGeometry(width, wallHeight);
       const material = new THREE.MeshBasicMaterial({
         // color: colors[i % points.length],
         map: texture,
-        side: i % 2 == 0 ? THREE.FrontSide : THREE.BackSide,
+        side: THREE.FrontSide,
       });
       const cube = new THREE.Mesh(wall, material);
       cube.position.set(
@@ -28,9 +32,22 @@ export class D3Wall extends THREE.Group {
         wallHeight / 2,
         (currentPoint.z + nextPoint.z) / 2
       );
-      cube.rotation.y = angle;
-      walls.add(cube);
+      cube.rotation.y = -angle;
+      wallGroup.add(cube);
+
+      // const wallSidesMaterial = new THREE.MeshBasicMaterial({
+      //   color: "rgb(55,55,55)",
+      //   side: THREE.DoubleSide,
+      // });
+      // const wallSideGeometry = new THREE.PlaneGeometry(wallDepth, wallHeight);
+      // const wallLeft = new THREE.Mesh(wallSideGeometry, wallSidesMaterial);
+      // wallLeft.position.set(currentPoint.x, wallHeight / 2, nextPoint.z);
+      // wallLeft.rotation.y = Math.PI / 1;
+      // wallGroup.add(wallLeft);
+      walls.add(wallGroup);
     }
+
+    walls.position.y = 2;
     return walls;
   }
 }
