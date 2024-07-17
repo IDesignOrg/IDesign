@@ -217,6 +217,7 @@ const updateShadows = ({ object, background }) => {
     new THREE.Vector3(background.point.x, floorY, background.point.z),
     new THREE.Vector3(originPoint.x, floorY, background.point.z),
   ];
+  console.log(points);
   parent.drawShadow({ points });
 };
 
