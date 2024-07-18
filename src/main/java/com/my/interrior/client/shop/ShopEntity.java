@@ -1,5 +1,9 @@
 package com.my.interrior.client.shop;
 
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -38,4 +42,7 @@ public class ShopEntity {
 	
 	@Column(nullable = false, name = "shop_sell")
     private String shopSell;
+	
+	@Column(name = "shop_write_time", nullable = false)
+	private LocalDateTime ShopWriteTime;
 }

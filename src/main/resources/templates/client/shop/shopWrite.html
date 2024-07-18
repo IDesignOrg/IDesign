@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 작성 페이지</title>
+    <link rel="stylesheet" href="/css/shop.css" />
+</head>
+<body>
+    <div class="container">
+        <form id="shop-form" action="/auth/shopWrite" method="post" enctype="multipart/form-data">
+            <div class="product-info">
+                <div class="left">
+                    <img id="main-image" src="https://via.placeholder.com/500" alt="상품 이미지">
+                    <input type="file" id="image-upload" style="display:none;" accept="image/*">
+                </div>
+                <div class="right">
+                    <input type="text" placeholder="상품 이름" id="product-name" name="shopTitle" required>
+                    <input type="number" placeholder="가격" id="product-price" name="shopPrice" required>
+                    <textarea placeholder="상품 설명" id="product-description" name="shopContent" required></textarea>
+					<label for="shop-category">카테고리 선택:</label>
+					                    <select id="shop-category" name="shopCategory">
+					                        <option value="디퓨저">디퓨저</option>
+					                        <option value="가구">가구</option>
+					                        <option value="벽지">벽지</option>
+					                        <option value="타일">타일</option>
+					                    </select>
+					<div id="options-container">
+                        <!-- 옵션 섹션이 여기 추가될 것입니다 -->
+                    </div>
+                    <button type="button" id="add-option-group">옵션 추가하기</button>
+                </div>
+            </div>
+            <div class="product-description">
+                <input type="file" id="description-image-upload" accept="image/*" multiple>
+                <div id="description-images">
+                    <img src="https://via.placeholder.com/700x400" alt="상품 설명 이미지">
+                </div>
+            </div>
+            <button type="submit">제출하기</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('main-image').addEventListener('click', function() {
+            document.getElementById('image-upload').click();
+        });
+
+        document.getElementById('image-upload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('main-image').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('description-image-upload').addEventListener('change', function(event) {
+            const files = event.target.files;
+            const imagesDiv = document.getElementById('description-images');
+            imagesDiv.innerHTML = '';
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.draggable = true;
+                    imagesDiv.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        document.getElementById('description-images').addEventListener('dragstart', function(event) {
+            event.dataTransfer.setData('text/plain', event.target.src);
+        });
+
+        document.getElementById('description-images').addEventListener('dragover', function(event) {
+            event.preventDefault();
+        });
+
+        document.getElementById('description-images').addEventListener('drop', function(event) {
+            event.preventDefault();
+            const data = event.dataTransfer.getData('text/plain');
+            const target = event.target;
+            if (target.tagName === 'IMG') {
+                const draggedImg = document.querySelector(`img[src="${data}"]`);
+                const targetSrc = target.src;
+                target.src = draggedImg.src;
+                draggedImg.src = targetSrc;
+            }
+        });
+
+        document.getElementById('add-option-group').addEventListener('click', function() {
+            const optionsContainer = document.getElementById('options-container');
+            const optionGroup = document.createElement('div');
+            optionGroup.classList.add('option-group');
+
+            const optionGroupHTML = `
+                <input type="text" placeholder="옵션 이름" class="option-name" name="optionName[]">
+                <button type="button" class="add-option">+</button>
+                <div class="options">
+                    <div class="option-wrapper">
+                        <input type="text" placeholder="옵션" class="option" name="option[]">
+                        <input type="number" placeholder="재고" class="stock" name="stock[]">
+                    </div>
+                </div>
+            `;
+
+            optionGroup.innerHTML = optionGroupHTML;
+            optionsContainer.appendChild(optionGroup);
+
+            optionGroup.querySelector('.add-option').addEventListener('click', function() {
+                const optionsDiv = this.nextElementSibling;
+                const newOptionWrapper = document.createElement('div');
+                newOptionWrapper.classList.add('option-wrapper');
+
+                const newOption = document.createElement('input');
+                newOption.type = 'text';
+                newOption.placeholder = '옵션';
+                newOption.classList.add('option');
+                newOption.name = 'option[]';
+
+                const newStock = document.createElement('input');
+                newStock.type = 'number';
+                newStock.placeholder = '재고';
+                newStock.classList.add('stock');
+                newStock.name = 'stock[]';
+
+                newOptionWrapper.appendChild(newOption);
+                newOptionWrapper.appendChild(newStock);
+                optionsDiv.appendChild(newOptionWrapper);
+            });
+        });
+    </script>
+</body>
+</html>

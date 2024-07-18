@@ -9,23 +9,18 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity(name="shop_option")
-public class ShopOption {
+public class ShopOptionEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long shopOptionNo;
 	
-	@Column(name = "shop_category")
-	private String category;
+	@Column(name="shop_option_name")
+	private String shopOptionName;
+
 	
-	@Column(name="shop_option_first")
-	private String shopOptionFirst;
-	
-	@Column(name ="shop_option_second")
-	private String shopOptionSecond;
-	
-	@Column(name="shop_option_third")
-	private String shopOptionThird;
+	@Column(name="shop_option_value")
+	private String shopOptionValue;
 	
 	@ManyToOne
 	@JoinColumn(name="shop_no")
