@@ -58,7 +58,7 @@ public class ShopController {
         // Shop 정보 저장
         shopService.shopWrite(shopTitle, shopPrice,  shopContent, shopMainPhotoUrl, descriptionImageUrls, shopCategory, optionNames, options, stocks, shopDiscountRate);
         System.out.println("확인");
-        return "client/review/auth/reviewList"; // 저장 후 목록 페이지로 리다이렉션
+        return "redirect:/shopWrite"; // 저장 후 목록 페이지로 리다이렉션
     }
     
     @GetMapping("/auth/shopList")
@@ -79,6 +79,6 @@ public class ShopController {
     	model.addAttribute("shopPhotos", shopPhoto);
     	List<ShopOptionEntity>shopOption = shopService.getShopOptionById(shopNo);
     	model.addAttribute("shopOption", shopOption);
-    	return "client/review/shopDetail";
+    	return "client/shop/shopDetail";
     }
 }
