@@ -22,6 +22,7 @@ public class ShopController {
 			@RequestParam("shopTitle") String shopTitle,
             @RequestParam("shopPrice") String shopPrice,
             @RequestParam("shopContent") String shopContent,
+            @RequestParam("shop-category")String shopCategory,
             @RequestParam("shopMainPhoto") MultipartFile shopMainPhoto, // GCS 사용으로 주석 처리
             @RequestParam("descriptionImages") MultipartFile[] descriptionImages, // GCS 사용으로 주석 처리
             @RequestParam("optionName[]") List<String> optionNames,
