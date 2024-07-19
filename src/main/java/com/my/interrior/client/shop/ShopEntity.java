@@ -37,17 +37,14 @@ public class ShopEntity {
 	@Column(nullable = false, name = "shop_category")
     private String shopCategory;
 	
-	@Column(nullable = false, name = "shop_stock")
-    private String shopStock;
-	
 	@Column(nullable = false, name = "shop_discount")
     private String shopDiscont;
 	
 	@Column(nullable = false, name = "shop_hit")
-    private String shopHit;
+    private int shopHit;
 	
 	@Column(nullable = false, name = "shop_sell")
-    private String shopSell;
+    private int shopSell;
 	
 	@Column(name = "shop_write_time", nullable = false)
 	private LocalDateTime ShopWriteTime;
