@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.my.interrior.client.evaluation.ReviewPhotoEntity;
 
 public interface ShopPhotoRepository extends JpaRepository<ShopPhotoEntity, Long>{
-	List<ShopPhotoEntity> findByshopPhoto_shopNo(Long shopNo);
+	List<ShopPhotoEntity> findByshopEntity_shopNo(Long shopNo);
 }

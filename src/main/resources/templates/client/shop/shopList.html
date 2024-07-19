@@ -14,7 +14,7 @@
 		<div class="product-grid">
 
 			<div th:each="shop : ${shoplist}" class="product-item">
-				<a th:href="@{/product/{shopNo}(shopNo=${shop.shopNo})}" class="product-link">
+				<a th:href="@{/auth/shopDetail/{shopNo}(shopNo=${shop.shopNo})}" class="product-link">
 					<img th:src="${shop.shopMainPhoto}" th:alt="${shop.shopTitle}">
 					<div class="product-details">
 						<h2 th:text="${shop.shopTitle}"></h2>
