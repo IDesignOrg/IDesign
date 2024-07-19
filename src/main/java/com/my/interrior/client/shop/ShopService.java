@@ -3,6 +3,7 @@ package com.my.interrior.client.shop;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,5 +100,18 @@ public class ShopService {
     //샵 페이지 리스트
     public Page<ShopEntity> getAllShop(Pageable pageable){
     	return shopRepository.findAll(pageable);
+    }
+    
+    public Optional<ShopEntity> getShopById(Long shopNo){
+    	return shopRepository.findById(shopNo);
+    }
+    public List<ShopPhotoEntity>getShopPhotoById(Long shopNo){
+    	List<ShopPhotoEntity> shopPhoto = shopPhotoRepository.findByshopPhoto_shopNo(shopNo);
+    	
+    	return shopPhoto;
+    }
+    public List<ShopOptionEntity>getShopOptionById(Long shopNo){
+    	List<ShopOptionEntity> shopOption = shopOptionRepository.findbyshopOption_shopNo(shopNo);
+    	return shopOption;
     }
 }
