@@ -1,6 +1,7 @@
 package com.my.interrior.client.shop;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +20,10 @@ import jakarta.transaction.Transactional;
 public class ShopServeice {
 	@Autowired
 	private Storage storage;
+
 	@Autowired
-	private ShopEntity shopEntity;
-	@Autowired
-	private ShopPhotoEntity shopPhotoEntity;
-	@Autowired
-	private ShopOptionEntity shopOptionEntity;
+	private ShopRepository shopRepository;
+	
 	@Autowired
 	private HttpSession session;
 	
@@ -46,7 +45,11 @@ public class ShopServeice {
 		return String.format("https://storage.googleapis.com/%s/%s", bucketName, fileName);
 	}	
 	
-	//@Transactional
-	//public void shopWrite(String)
+	@Transactional
+	public void shopWrite(String shopTitle, String shopPrice, String shopContent, String shopMainPhotoUrl, 
+    List<String> descriptionImageUrls, List<String> optionNames, List<String> options, 
+    List<Integer> stocks) {
+		
+	}
 }
 	
