@@ -48,6 +48,10 @@ public class UserEntity {
     @JsonProperty("UMail")
     @Column(nullable = false, name = "u_mail")
     private String UMail;
+    
+    @JsonProperty("UPofile")
+    @Column(nullable = false, name = "u_profile")
+    private String UPofile;
 
     @JsonProperty("UBirth")
     @Column(nullable = false, name = "u_birth")
