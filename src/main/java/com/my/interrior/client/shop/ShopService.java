@@ -106,12 +106,12 @@ public class ShopService {
     	return shopRepository.findById(shopNo);
     }
     public List<ShopPhotoEntity>getShopPhotoById(Long shopNo){
-    	List<ShopPhotoEntity> shopPhoto = shopPhotoRepository.findByshopPhoto_shopNo(shopNo);
+    	List<ShopPhotoEntity> shopPhoto = shopPhotoRepository.findByShopEntity_ShopNo(shopNo);
     	
     	return shopPhoto;
     }
     public List<ShopOptionEntity>getShopOptionById(Long shopNo){
-    	List<ShopOptionEntity> shopOption = shopOptionRepository.findbyshopOption_shopNo(shopNo);
+    	List<ShopOptionEntity> shopOption = shopOptionRepository.findByShopEntity_ShopNo(shopNo);
     	return shopOption;
     }
 }
