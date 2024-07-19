@@ -3,6 +3,7 @@ package com.my.interrior.client.shop;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.my.interrior.client.evaluation.ReviewEntity;
 
 @Controller
 public class ShopController {
@@ -65,15 +68,17 @@ public class ShopController {
     	model.addAttribute("currentPage", pageable.getPageNumber());
     	model.addAttribute("totalPages", shops.getTotalPages());
     	
-    	for (ShopEntity shop : shops.getContent()) {
-            System.out.println("Shop No: " + shop.getShopNo());
-            System.out.println("Title: " + shop.getShopTitle());
-            System.out.println("Discount Rate: " + shop.getShopDiscont());
-            System.out.println("Price: " + shop.getShopPrice());
-            System.out.println("Image URL: " + shop.getShopMainPhoto());
-            System.out.println(); // 개행
-        }
-    	
     	return "client/shop/shopList";
+    }
+    
+    @GetMapping("/auth/shopDetail/{shopNo}")
+    public String shopDetail(@PathVariable("shopNo") Long shopNo, Model model) {
+    	Optional<ShopEntity> shops = shopService.getShopById(shopNo);
+    	model.addAttribute("shops", shops.get());
+    	List<ShopPhotoEntity> shopPhoto = shopService.getShopPhotoById(shopNo);
+    	model.addAttribute("shopPhotos", shopPhoto);
+    	List<ShopOptionEntity>shopOption = shopService.getShopOptionById(shopNo);
+    	model.addAttribute("shopOption", shopOption);
+    	return "client/review/shopDetail";
     }
 }
