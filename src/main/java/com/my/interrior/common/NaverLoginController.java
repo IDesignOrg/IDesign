@@ -1,5 +1,7 @@
 package com.my.interrior.common;
 
+import java.time.LocalDate;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.my.interrior.client.user.UserEntity;
+import com.my.interrior.client.user.UserRepository;
 import com.my.interrior.client.user.UserService;
 
 import jakarta.servlet.http.HttpSession;
@@ -27,6 +30,9 @@ public class NaverLoginController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private UserRepository userrepository;
 	
 	private static final String TOKEN_REQUEST_URL = "https://nid.naver.com/oauth2.0/token";
 
@@ -68,14 +74,30 @@ public class NaverLoginController {
 	
 		String email = naverProfileResponse.getResponse().getEmail();
 		System.out.println("user의 email은: " + email);
+		String naverId = naverProfileResponse.getResponse().getId();
 		
-		UserEntity user = userService.checkUserByEmail(email);
 		
-		if(user != null) {
-			session.setAttribute("UId", user.getUId());
+		UserEntity existingUser = userrepository.findByUId("naver_"+naverId);
+		System.out.println("아이디 확인 : " + existingUser);
+		
+		if(existingUser != null) {
+			session.setAttribute("UId", existingUser.getUId());
+			System.out.println("네이버 세션 등록 : " + existingUser.getUId());
 			return "redirect:/";
 		}else {
-			return "redirect:/auth/join";
+			UserEntity newUser = new UserEntity();
+            newUser.setUMail(email);
+            newUser.setUName(naverProfileResponse.getResponse().getNickname());
+            newUser.setURegister(LocalDate.now());
+            newUser.setUPw(""); // 비밀번호는 네이버 로그인에서는 사용되지 않으므로 빈 값
+            newUser.setUPofile(naverProfileResponse.getResponse().getProfile_image());
+            newUser.setUBirth(naverProfileResponse.getResponse().getBirthyear() + "-" + naverProfileResponse.getResponse().getBirthday());
+            newUser.setUTel(naverProfileResponse.getResponse().getMobile());
+            newUser.setUId("naver_"+naverProfileResponse.getResponse().getId());
+            userrepository.save(newUser);
+
+            session.setAttribute("UId", newUser.getUId());
+            return "redirect:/";
 		}
 		
 		
