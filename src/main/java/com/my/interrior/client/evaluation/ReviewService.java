@@ -84,7 +84,7 @@ public class ReviewService {
 		int views = 0;
 
 		// 임시 프로필 string값
-		String profile = "https://storage.googleapis.com/idesign/static/blank-profile-picture-973460_640.png";
+		
 
 		// 리뷰 저장
 		ReviewEntity review = new ReviewEntity();
@@ -97,7 +97,6 @@ public class ReviewService {
 		review.setRContent(content);
 		review.setRStarRating(starRating);
 		review.setRMainPhoto(mainPhotoUrl);
-		review.setRProfile(profile); // 파일 URL을 프로필 이미지로 사용
 		review.setRViews(views);
 		review.setRWrittenTime(writtenTime);
 		review.setUser(userEntity);
@@ -138,6 +137,7 @@ public class ReviewService {
 	public List<ReviewPhotoEntity> getPhotosByReviewId(Long rNo) {
 	    // 1. 리뷰 번호(rNo)를 사용하여 리뷰 포토 엔티티(ReviewPhotoEntity)를 조회합니다.
 		 List<ReviewPhotoEntity> reviewPhotos = reviewPhotoRepository.findByReview_RNo(rNo);
+		 
 		 System.out.println("백엔드 rno의 값 : " + rNo);
 		 System.out.println("백엔드 reviewphotos :" + reviewPhotos);
 	    

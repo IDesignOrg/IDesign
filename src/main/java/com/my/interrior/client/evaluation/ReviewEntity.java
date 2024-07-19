@@ -60,8 +60,4 @@ public class ReviewEntity {
 	@Column(name = "r_mainphoto")
 	private String RMainPhoto;
 
-	@JsonProperty("RProfile")
-	@Column(name = "r_profile")
-	private String RProfile;
-	
 }

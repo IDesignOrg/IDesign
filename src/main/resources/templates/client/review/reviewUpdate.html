@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>Review Update</title>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<style>
+    #fileList {
+        list-style: none;
+        padding: 0;
+    }
+    #fileList li {
+        margin: 5px 0;
+        padding: 10px;
+        border: 1px solid #ccc;
+        background-color: #f9f9f9;
+    }
+    .preview-image {
+        max-width: 100px;
+        max-height: 100px;
+        margin-right: 10px;
+    }
+</style>
+</head>
+<body>
+    <h1>Update Review</h1>
+    <form action="/review_update" method="post" enctype="multipart/form-data">
+        <div th:each="review : ${reviews}">
+		<label for="title">리뷰 제목:</label>
+        <input type="text" id="title" name="title" placeholder="리뷰 제목" th:value="${review.RTitle}"><br><br>
+        
+        <label for="category">리뷰 카테고리:</label>
+        <select id="category" name="category" th:value="${review.RCategory}">
+            <option value="타일">타일</option>
+            <option value="벽지">벽지</option>
+        </select><br><br>
+        
+        <label for="content">리뷰 내용:</label>
+        <textarea id="content" name="content" placeholder="리뷰 내용" th:text="${review.RContent}"></textarea><br><br>
+        
+        <label for="starRating">별점:</label>
+        <select id="starRating" name="starRating" th:value="${review.RStarRating}">
+            <option value="1">1</option>
+            <option value="1.5">1.5</option>
+            <option value="2">2</option>
+            <option value="2.5">2.5</option>
+            <option value="3">3</option>
+            <option value="3.5">3.5</option>
+            <option value="4">4</option>
+            <option value="4.5">4.5</option>
+            <option value="5">5</option>
+        </select><br><br>
+        
+        <label for="mainphoto">썸네일 사진 업로드:</label>
+        <input type="file" id="mainPhotoUp" name="mainPhoto" accept=".jpg, .png, .jpeg"><br><br>
+        
+        <label for="files">사진 업로드:</label>
+        <input type="file" id="fileInput" name="files" accept=".jpg,.png,.jpeg" multiple><br><br>
+        
+        <!--사진 리스트-->
+        <label>맨 아래부터 1,2,3</label>
+        <ul id="fileList">
+            <div th:each="photo : ${reviewPhoto}">
+                <li>
+                    <img th:src="${photo.RpPhoto}" alt="Review Photo" class="preview-image">
+                    <span th:text="${photo.RpPhoto}"></span>
+                </li>
+            </div>
+        </ul>
+        
+        <button type="submit">리뷰 수정 완료</button>
+		</div>
+    </form>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        let existingFiles = [];
+
+        function updateExistingFiles() {
+            existingFiles = Array.from(fileList.querySelectorAll('li')).map((listItem, index) => ({
+                name: listItem.querySelector('span').textContent,
+                url: listItem.querySelector('img').src,
+                index: index
+            }));
+        }
+
+        function renderFileList() {
+            fileList.innerHTML = '';
+            existingFiles.forEach((file) => {
+                const listItem = document.createElement('li');
+                const img = document.createElement('img');
+                img.src = file.url;
+                img.className = 'preview-image';
+                const span = document.createElement('span');
+                span.textContent = file.name;
+                listItem.appendChild(img);
+                listItem.appendChild(span);
+                listItem.setAttribute('data-index', file.index);
+                fileList.appendChild(listItem);
+            });
+        }
+
+        fileInput.addEventListener('change', (event) => {
+            Array.from(event.target.files).forEach((file) => {
+                const listItem = document.createElement('li');
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.className = 'preview-image';
+                const span = document.createElement('span');
+                span.textContent = file.name;
+                listItem.appendChild(img);
+                listItem.appendChild(span);
+                listItem.setAttribute('data-index', existingFiles.length); // 새로운 파일은 기존 파일 이후로 인덱싱
+                fileList.appendChild(listItem);
+                existingFiles.push({ name: file.name, url: URL.createObjectURL(file) }); // 새로운 파일을 목록에 추가
+            });
+        });
+
+        new Sortable(fileList, {
+            animation: 150,
+            onEnd: () => {
+                const newFileList = [];
+                fileList.querySelectorAll('li').forEach((listItem) => {
+                    const index = listItem.getAttribute('data-index');
+                    newFileList.push(existingFiles[index]);
+                });
+                existingFiles.length = 0;
+                newFileList.forEach((file) => existingFiles.push(file));
+                const dataTransfer = new DataTransfer();
+                existingFiles.forEach((file, index) => {
+                    if (index >= fileInput.files.length) {
+                        dataTransfer.items.add(new File([file], file.name));
+                    } else {
+                        dataTransfer.items.add(fileInput.files[index]);
+                    }
+                });
+                fileInput.files = dataTransfer.files;
+            }
+        });
+
+        updateExistingFiles();
+        renderFileList();
+    </script>
+</body>
+</html>

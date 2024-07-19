@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>상품 상세 페이지</title>
+	<link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+	<div class="container">
+		<div class="product-detail">
+			<!-- 왼쪽: 상품 사진 -->
+			<div class="left">
+				<img th:src="${shops.shopMainPhoto}" alt="메인 사진" class="main-image">
+
+			</div>
+
+			<!-- 오른쪽: 상품 정보 -->
+			<div class="right">
+				<h1 th:text="${shop.shopTitle}"></h1>
+				<p class="product-price" th:text="'₩' + ${shop.shopPrice}"></p>
+				<p class="product-discount" th:text="'할인율: ' + ${shop.shopDiscountRate} + '%'"></p>
+				<p class="product-description" th:text="${shop.shopContent}"></p>
+				<label>카테고리:</label>
+				<p th:text="${shop.shopCategory}"></p>
+
+				<h3>옵션</h3>
+				<div class="options">
+					<c:forEach var="optionGroup" items="${shop.optionGroups}">
+						<div class="option-group">
+							<h4 th:text="${optionGroup.name}"></h4>
+							<ul>
+								<c:forEach var="option" items="${optionGroup.options}">
+									<li>
+										<span th:text="${option.name}"></span> -
+										<span th:text="'재고: ' + ${option.stock}"></span>
+									</li>
+								</c:forEach>
+							</ul>
+						</div>
+					</c:forEach>
+				</div>
+			</div>
+		</div>
+		<div class="shop_content">
+			<div class="description-images">
+				<c:forEach var="image" items="${shopPhotos}">
+					<img th:src="${shopPhotos.shopPhotoUrl}" alt="상품 설명 이미지" class="description-image">
+				</c:forEach>
+			</div>
+		</div>
+
+		<!-- 뒤로가기 버튼 -->
+		<a href="#" onclick="history.back()">뒤로가기</a>
+	</div>
+</body>
+
+</html>

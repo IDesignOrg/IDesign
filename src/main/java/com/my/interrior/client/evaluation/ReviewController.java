@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.my.interrior.client.user.UserEntity;
+import com.my.interrior.client.user.UserRepository;
+
 import jakarta.mail.Multipart;
 import jakarta.servlet.http.HttpSession;
 
@@ -32,6 +35,9 @@ public class ReviewController {
 
     @Autowired
     private ReviewRepository reviewRepository;
+    
+    @Autowired
+    private UserRepository userRepository;
 
     //후기 작성 만들기
 	@GetMapping("/review_write")
@@ -54,7 +60,7 @@ public class ReviewController {
         
         reviewService.uploadFileAndCreateReview(title, category, content, starRating, files, mainPhoto);
 
-        return "redirect:/review_write";
+        return "client/review/reviewList";
     }
 	
 	//후기 페이지
@@ -67,7 +73,6 @@ public class ReviewController {
 	    model.addAttribute("totalPages", reviews.getTotalPages());
 	    for (ReviewEntity review : reviews.getContent()) {
 	        List<ReviewPhotoEntity> reviewPhotos = reviewService.getReviewPhotosByReviewNo(review.getRNo());
-	        System.out.println("사진은 : " + reviewPhotos);
 	        model.addAttribute("reviewPhotos_" + review.getRNo(), reviewPhotos);
 	    }
 	    return "client/review/reviewList";    
@@ -94,6 +99,32 @@ public class ReviewController {
 		
 		
 		return "client/review/reviewDetail";
+	}
+	@GetMapping("review/reviewUpdate/{rNo}")
+	public String reviewUpdate(Pageable pageable, Model model, @PathVariable("rNo") Long rNo) {
+		Optional<ReviewEntity> review = reviewService.getReviewById(rNo);
+		 System.out.println("rno 의 값 : " +rNo);
+		 System.out.println("reviews 의 값 : " + review);
+		    model.addAttribute("reviews", review.get());
+		    
+		    List<ReviewPhotoEntity> reviewPhoto = reviewService.getPhotosByReviewId(rNo);
+			if(review.isPresent()) {
+				model.addAttribute("reviewPhoto", reviewPhoto);
+				System.out.println("reviewPhoto : " + reviewPhoto);
+			}
+		    return "client/review/reviewUpdate"; 
+	}
+	@PostMapping("/review_update")
+	public String reviewUpdate(
+			@RequestParam("title") String title,
+            @RequestParam("category") String category,
+            @RequestParam("content") String content,
+            @RequestParam("starRating") String starRating,
+            @RequestParam("files") MultipartFile[] files,
+            @RequestParam("mainPhoto") MultipartFile mainPhoto,
+            Model model) throws IOException {
+		reviewService.uploadFileAndCreateReview(title, category, content, starRating, files, mainPhoto);
+		return "client/review/reviewList";
 	}
 	
 }
