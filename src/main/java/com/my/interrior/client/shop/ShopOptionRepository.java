@@ -5,5 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ShopOptionRepository extends JpaRepository<ShopOptionEntity, Long>{
-	List<ShopOptionEntity> findByshopEntity_shopNo(Long shopNo);
+
+	List<ShopOptionEntity> findByShopEntity_ShopNo(Long shopNo);
+
 }
