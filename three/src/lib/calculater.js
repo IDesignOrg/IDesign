@@ -12,6 +12,21 @@ export const getCoordsFromVectex = (obj) => {
   return coordinates;
 };
 
+export const calculateCenter = (points) => {
+  let centerX = 0;
+  let centerZ = 0;
+
+  points.forEach((point) => {
+    centerX += point.x;
+    centerZ += point.z;
+  });
+
+  centerX /= points.length;
+  centerZ /= points.length;
+
+  return new THREE.Vector3(centerX, 0, centerZ);
+};
+
 export const getClickedCircleIndex = ({ background, floor }) => {
   let idx = null;
   const originPoints = getCoordsFromVectex(floor);

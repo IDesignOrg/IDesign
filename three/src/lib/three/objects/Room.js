@@ -1,6 +1,7 @@
 import { material } from "../../../main.js";
 import { THREE } from "../../../three.js";
 import {
+  calculateCenter,
   getCoordsFromVectex,
   getStraightLineX,
   getStraightLineZ,
@@ -8,7 +9,7 @@ import {
 import { floorName, roomName } from "../objectConf/objectNames";
 import { Circles } from "./circles.js";
 import { D2Floor, Shape } from "./floor.js";
-import { D2Wall, D3Wall } from "./wall.js";
+import { D2Wall, D3Wall, calculateAngle, wallHeight } from "./wall.js";
 
 export class D3Room extends THREE.Group {
   constructor({ object }) {
@@ -18,6 +19,7 @@ export class D3Room extends THREE.Group {
     if (!floor) return;
     const points = getCoordsFromVectex(floor);
     const newFloor = new D2Floor({ points });
+    // room.add(new wallDepth({ points }));
     newFloor.material = material;
     room.add(newFloor);
     const walls = new D3Wall({ points });
@@ -33,25 +35,55 @@ export class D3Room extends THREE.Group {
     ambientLight.name = "light1";
     ambientLight.position.set(center.x, 50, center.z);
     room.add(ambientLight);
-    console.log(room);
     return room;
   }
 }
 
-const calculateCenter = (points) => {
-  let centerX = 0;
-  let centerZ = 0;
+class wallDepth extends THREE.Group {
+  constructor({ points }) {
+    const group = super();
+    const height = wallHeight;
+    const wallLength = 5; // 벽의 길이
+    for (let i = 0; i < points.length; i++) {
+      const currentPoint = points[i];
+      const angle = calculateAngle(
+        currentPoint,
+        points[(i + 1) % points.length]
+      );
+      const newCoordinates = getNewCoordinates(currentPoint, angle, wallLength);
 
-  points.forEach((point) => {
-    centerX += point.x;
-    centerZ += point.z;
-  });
+      // Plane 생성
+      const wallGeometry = new THREE.PlaneGeometry(wallLength, height);
+      const wallMaterial = new THREE.MeshBasicMaterial({
+        color: 0xaaaaaa,
+        side: THREE.BackSide,
+      });
 
-  centerX /= points.length;
-  centerZ /= points.length;
+      const wall = new THREE.Mesh(wallGeometry, wallMaterial);
 
-  return new THREE.Vector3(centerX, 0, centerZ);
-};
+      // Plane의 위치 설정 (currentPoint에서 바깥쪽으로 wallLength/2만큼 이동)
+      const centerX =
+        currentPoint.x - Math.cos(angle + Math.PI / 4) * (wallLength / 2);
+      const centerZ =
+        currentPoint.z - Math.sin(angle + Math.PI / 4) * (wallLength / 2);
+
+      wall.position.set(centerX, height / 2, centerZ);
+
+      // Plane의 회전 설정
+      wall.rotation.y = -(angle + Math.PI / 4);
+
+      group.add(wall);
+    }
+    return group;
+  }
+}
+
+function getNewCoordinates(currentPoint, angle, distance) {
+  const angleOffset = Math.PI / 4; // 45도 각도
+  const newX = currentPoint.x + Math.cos(angle + angleOffset) * distance;
+  const newZ = currentPoint.z + Math.sin(angle + angleOffset) * distance;
+  return { x: newX, z: newZ };
+}
 
 // export class D3Room extends THREE.Group {
 //   constructor({ points, name = roomName }) {
