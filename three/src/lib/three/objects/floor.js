@@ -11,6 +11,7 @@ export class D2Floor {
     const mesh = new THREE.Mesh(geometry, material);
     mesh.name = "floor";
     mesh.renderOrder = 1;
+
     mesh.rotation.x = -Math.PI / 2;
     mesh.position.y = 2;
     if (height) {
