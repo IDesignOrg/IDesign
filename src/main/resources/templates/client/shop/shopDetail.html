@@ -14,41 +14,30 @@
 			<!-- 왼쪽: 상품 사진 -->
 			<div class="left">
 				<img th:src="${shops.shopMainPhoto}" alt="메인 사진" class="main-image">
-
 			</div>
 
 			<!-- 오른쪽: 상품 정보 -->
 			<div class="right">
-				<h1 th:text="${shop.shopTitle}"></h1>
-				<p class="product-price" th:text="'₩' + ${shop.shopPrice}"></p>
-				<p class="product-discount" th:text="'할인율: ' + ${shop.shopDiscountRate} + '%'"></p>
-				<p class="product-description" th:text="${shop.shopContent}"></p>
+				<h1 th:text="${shops.shopTitle}"></h1>
+				<p class="product-price" th:text="'₩' + ${shops.shopPrice}"></p>
+				<p class="product-discount" th:text="'할인율: ' + ${shops.shopDiscont} + '%'"></p>
+				<p class="product-description" th:text="${shops.shopContent}"></p>
 				<label>카테고리:</label>
-				<p th:text="${shop.shopCategory}"></p>
+				<p th:text="${shops.shopCategory}"></p>
 
 				<h3>옵션</h3>
-				<div class="options">
-					<c:forEach var="optionGroup" items="${shop.optionGroups}">
-						<div class="option-group">
-							<h4 th:text="${optionGroup.name}"></h4>
-							<ul>
-								<c:forEach var="option" items="${optionGroup.options}">
-									<li>
-										<span th:text="${option.name}"></span> -
-										<span th:text="'재고: ' + ${option.stock}"></span>
-									</li>
-								</c:forEach>
-							</ul>
-						</div>
-					</c:forEach>
+				<div class="options" th:each="option : ${shopOption}">
+					<select>
+						<option selected value disabled th:text="${option.shopOptionName}"></option>
+						<option th:each="options : ${shopOption}" th:value="${option.shopOptionValue}" th:text="${option.shopOptionValue}"></option>
+					</select>
 				</div>
 			</div>
 		</div>
 		<div class="shop_content">
 			<div class="description-images">
-				<c:forEach var="image" items="${shopPhotos}">
-					<img th:src="${shopPhotos.shopPhotoUrl}" alt="상품 설명 이미지" class="description-image">
-				</c:forEach>
+				<img th:each="image : ${shopPhotos}" th:src="${image.shopPhotoUrl}" alt="상품 설명 이미지"
+					class="description-image">
 			</div>
 		</div>
 
