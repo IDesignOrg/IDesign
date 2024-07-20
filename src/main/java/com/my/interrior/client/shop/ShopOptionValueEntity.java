@@ -10,19 +10,23 @@ import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity(name="shop_option")
+@Entity
 @Getter
 @Setter
-public class ShopOptionEntity {
+public class ShopOptionValueEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long shopOptionNo;
+	private Long shopOptionValueNo;
 	
-	@Column(name="shop_option_name")
-	private String shopOptionName;
-
+	@Column(name="shop_option_value")
+	private String shopOptionValue;
+	
+	@Column(name="shop_option_price")
+	private int shopOptionPrice;
+	
 	@ManyToOne
-	@JoinColumn(name="shop_no")
-	private ShopEntity shopEntity;
+	@JoinColumn(name="shop_option_no")
+	private ShopOptionEntity shopOptionEntity;
+
 }
