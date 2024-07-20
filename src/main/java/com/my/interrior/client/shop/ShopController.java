@@ -30,6 +30,7 @@ public class ShopController {
         return "client/shop/shopWrite";
     }
     
+    //shop작성 
     @PostMapping("/shopWrite")
     public String shopWrite(
             @RequestParam("shopTitle") String shopTitle,
@@ -41,7 +42,7 @@ public class ShopController {
             @RequestParam("optionName[]") List<String> optionNames,
             @RequestParam("shopDiscountRate") String shopDiscountRate,
             @RequestParam("option[]") List<String> options,
-            @RequestParam("stock[]") List<Integer> stocks) throws IOException {
+            @RequestParam("stock[]") List<String> stocks) throws IOException {
     	System.out.println("우선 보내긴");
         // Main Photo 업로드
         String shopMainPhotoUrl = shopService.uploadFile(shopMainPhoto, shopTitle);
@@ -56,9 +57,9 @@ public class ShopController {
         // Shop 정보 저장
         shopService.shopWrite(shopTitle, shopPrice,  shopContent, shopMainPhotoUrl, descriptionImageUrls, shopCategory, optionNames, options, stocks, shopDiscountRate);
         System.out.println("확인");
-        return "client/review/auth/reviewList"; // 저장 후 목록 페이지로 리다이렉션
+        return "client/shop/shopList";
     }
-    
+    //shop 리스트 
     @GetMapping("/auth/shopList")
     public String shopList(Model model, Pageable pageable) {
     	Page<ShopEntity> shops = shopService.getAllShop(PageRequest.of(pageable.getPageNumber(), PAGE_SIZE));
@@ -68,7 +69,7 @@ public class ShopController {
     	
     	return "client/shop/shopList";
     }
-    
+    //shop디테일 
     @GetMapping("/auth/shopDetail/{shopNo}")
     public String shopDetail(@PathVariable("shopNo") Long shopNo, Model model) {
     	Optional<ShopEntity> shops = shopService.getShopById(shopNo);
@@ -77,6 +78,9 @@ public class ShopController {
     	model.addAttribute("shopPhotos", shopPhoto);
     	List<ShopOptionEntity>shopOption = shopService.getShopOptionById(shopNo);
     	model.addAttribute("shopOption", shopOption);
-    	return "client/review/shopDetail";
+    	
+    	
+    	
+    	return "client/shop/shopDetail";
     }
 }
