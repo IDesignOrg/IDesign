@@ -10,7 +10,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
+@Entity(name="shop_option_value")
 @Getter
 @Setter
 public class ShopOptionValueEntity {

@@ -35,6 +35,9 @@ public class ShopService {
     
     @Autowired
     private ShopPhotoRepository shopPhotoRepository;
+    
+    @Autowired
+    private ShopOptionValueRepository shopOptionValueRepository;
 
     @Autowired
     private HttpSession session;
@@ -61,7 +64,7 @@ public class ShopService {
     @Transactional
     public void shopWrite(String shopTitle, String shopPrice, String shopContent, String shopMainPhotoUrl, 
                           List<String> descriptionImageUrls, String shopCategory, List<String> optionNames, 
-                          List<String> options, List<String> stocks, String shopDiscountRate) {
+                          List<String> options, List<String> price, String shopDiscountRate) {
         // ShopEntity 저장
     	System.out.println("서비스 들어오긴");
         ShopEntity shopEntity = new ShopEntity();
@@ -86,25 +89,38 @@ public class ShopService {
        for( int i = 0; i < optionNames.size(); i++) {
     	   String optionName = optionNames.get(i);
     	   String[] optionValues = options.get(i).split(";");
-    	   String[] optionStocks = stocks.get(i).split(";");
+    	   String[] optionPrice = price.get(i).split(";");
     	   //들어갔는지 확
+    	   
+    	   
     	   System.out.println("옵션 이름 : " + optionName);
     	   for(String value : optionValues) {
     		   System.out.println("옵션값들 : " + value);
     	   }
-    	   for(String stock : optionStocks) {
-    		  System.out.println("재고 값들 : " + stock);
+    	   for(String priceq : optionPrice) {
+    		  System.out.println("재고 값들 : " + priceq);
     	   }
+    	  ShopOptionEntity optionEntity = new ShopOptionEntity();
+ 		  optionEntity.setShopEntity(shopEntity);
+ 		  optionEntity.setShopOptionName(optionName);
+    	   
     	  for(int j = 0; j < optionValues.length; j++) {
     		  String value = optionValues[j].trim();
+    		  
     		  System.out.println("들어갈 value의 값 : " + value);
-    		  String stock = optionStocks[j].trim();
-    		  int stockInt =Integer.parseInt(stock);
-    		  System.out.println("들어갈 stockInt의 값 : " + stockInt);
-    		  ShopOptionEntity optionEntity = new ShopOptionEntity();
-    		  optionEntity.setShopEntity(shopEntity);
-    		  optionEntity.setShopOptionName(optionName);
+    		  
+    		  String priceq = optionPrice[j].trim();
+    		  int priceInt =Integer.parseInt(priceq);
+    		  
+    		  System.out.println("들어갈 stockInt의 값 : " + priceInt);
+    		  
+    		  
+    		  ShopOptionValueEntity valueEntity = new ShopOptionValueEntity();
+    		  valueEntity.setShopOptionValue(value);
+    		  valueEntity.setShopOptionPrice(priceInt);
+    		  valueEntity.setShopOptionEntity(optionEntity);
     		  shopOptionRepository.save(optionEntity);
+    		  shopOptionValueRepository.save(valueEntity);
     	  }
        }
 
@@ -143,6 +159,15 @@ public class ShopService {
     }
     public List<ShopOptionEntity>getShopOptionById(Long shopNo){
     	List<ShopOptionEntity> shopOption = shopOptionRepository.findByShopEntity_ShopNo(shopNo);
+    	
     	return shopOption;
     }
+    public List<String>getShopOptionValueByshopOptionNo(List<Long> shopOptionNo){
+    List<String>shopOptionValues = shopOptionValueRepository.findByShopOptionEntity_shopOptionNo(shopOptionNo);
+    return shopOptionValues;
+    }
+    public List<ShopOptionEntity> getAllShopOptions(){
+    	return shopOptionRepository.findAll();
+    }
+   
 }
