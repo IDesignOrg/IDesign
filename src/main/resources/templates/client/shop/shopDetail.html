@@ -30,7 +30,7 @@
 				<div class="options" th:each="option : ${shopOption}">
 					<select>
 						<option selected value disabled th:text="${option.shopOptionName}">Select an option</option>
-						<option th:each="value : ${option.shopOptionValue}" th:value="${value}" th:text="${value}">
+						<option th:each="value : ${option.shopOptionValue}" th:value="${value.shopOptionValues}" th:text="${value}">
 						</option>
 					</select>
 				</div>
