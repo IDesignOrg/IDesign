@@ -91,7 +91,7 @@ export class RotationController extends THREE.Group {
     const outerRadius = 20;
     const thetaSegments = 30;
     const phiSegments = 8;
-    const thetaStart = Math.PI;
+    const thetaStart = 1;
     const thetaLength = Math.PI * 2;
 
     // controllerBackground
@@ -108,13 +108,13 @@ export class RotationController extends THREE.Group {
       side: THREE.DoubleSide,
       transparent: true,
       opacity: 0.5,
-      depthWrite: false, // 깊이 쓰기를 비활성화
-      depthTest: false, // 깊이 테스트를 비활성화
+      depthWrite: false,
+      depthTest: false,
     });
     const ring = new THREE.Mesh(RingGeometry, ringMaterial);
     ring.name = "controllerBackground";
     ring.rotation.x = -Math.PI / 2;
-    ring.renderOrder = 1; // background는 작은 renderOrder 값
+    ring.renderOrder = 1;
     this.setScale({ object: ring, cameraZoom });
     this.add(ring);
 
@@ -125,40 +125,46 @@ export class RotationController extends THREE.Group {
       outerRadius,
       thetaSegments,
       phiSegments,
-      thetaStart * 2,
+      thetaStart,
       thetaLengthRinged
     );
     const ringedMaterial = new THREE.MeshBasicMaterial({
       color: "red",
       side: THREE.DoubleSide,
-      depthWrite: false, // 깊이 쓰기를 비활성화
-      depthTest: false, // 깊이 테스트를 비활성화
+      depthWrite: false,
+      depthTest: false,
     });
     const controllerRing = new THREE.Mesh(RingedGeometry, ringedMaterial);
     controllerRing.name = "controllerRing";
     controllerRing.rotation.x = -Math.PI / 2;
-    // controllerRing.rotation.z = Math.PI / 4;
-    controllerRing.renderOrder = 2; // ring은 큰 renderOrder 값
-    // controllerRing.visible = false;
+    controllerRing.renderOrder = 2;
+    controllerRing.visible = true; // 테스트를 위해 true로 설정
     this.setScale({ object: controllerRing, cameraZoom });
     this.add(controllerRing);
+  };
+
+  onMouseUp = () => {
+    this.isDragging = false;
+  };
+
+  onMouseDown = () => {
+    this.isDragging = true;
   };
 
   onHover = ({ points }) => {
     const controllerRing = this.getObjectByName("controllerRing");
     const ring = this.getObjectByName("controllerBackground");
-    // console.log();
+
     // 마우스 위치 (points)에서 ring의 중심까지의 벡터 계산
-    const dx = points.x - ring.position.x;
-    const dy = ring.position.z - points.z;
-    // console.log(Math.atan2(180, -180));
+    const dx = points.x - this.position.x;
+    const dz = points.z - this.position.z;
 
     // 각도 계산 (atan2 사용)
-    const angle = Math.atan2(dy, dx);
-    console.log(angle, points);
-    // console.log(ring.position, points, angle);
+    const angle = Math.atan2(dz, dx) + Math.PI / 2; // rotation.x가 -Math.PI / 2이기 때문에 보정
+    console.log("angle = ", angle);
+
     // controllerRing의 rotation.z 업데이트
-    controllerRing.rotation.z = angle - 0.49;
+    controllerRing.rotation.z = -angle;
     document.body.style.cursor = "pointer";
   };
 
@@ -168,8 +174,8 @@ export class RotationController extends THREE.Group {
   };
 
   setPosition = (point) => {
-    this.position.set(0, RotationControllerY, 0);
-    // this.position.set(point.x, point.y, point.z);
+    console.log("point = ", point);
+    this.position.set(point.x, RotationControllerY, point.z);
   };
 }
 
@@ -316,7 +322,11 @@ const onMouseDown = (event) => {
           const circleGroup = parent.getObjectByName("circleGroup");
           if (!circleGroup) break;
           const controller = scene.getObjectByName("rotationController");
-          controller.setPosition(center.x, RotationControllerY, center.z);
+          controller.setPosition({
+            x: center.x,
+            y: RotationControllerY,
+            z: center.z,
+          });
           controller.visible = true;
           circleGroup.visible = true;
           isChangingObject = {
