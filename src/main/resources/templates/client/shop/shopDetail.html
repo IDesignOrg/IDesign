@@ -26,13 +26,22 @@
 				<p th:text="${shops.shopCategory}"></p>
 
 				<h3>옵션</h3>
+				<form action="/cart" method="post" id="cartForm">
+				<input type="hidden" name="shopNo" th:value="${shops.shopNo}">
 				<div class="options" th:each="option : ${shopOption}">
-					<select>
-						<option selected value disabled th:text="${option.shopOptionName}"></option>
-						<option th:each="options : ${shopOption}" th:value="${option.shopOptionValue}" th:text="${option.shopOptionValue}"></option>
-					</select>
-				</div>
-
+                        <label th:text="${option.shopOptionName}"></label>
+                        <select name="options[__${option.shopOptionNo}__]" required>
+                            <option selected disabled>Select an option</option>
+                            <option th:each="value : ${option.shopOptionValues}" 
+                                    th:value="${value.shopOptionValue}" 
+                                    th:text="${value.shopOptionValue}">
+                            </option>
+                        </select>
+                    </div>
+				 <label for="quantity">수량:</label>
+                 <input type="number" id="quantity" name="quantity" value="1" min="1">
+                 <button type="submit">장바구니에 담기</button>
+				</form>
 			</div>
 		</div>
 		<div class="shop_content">
