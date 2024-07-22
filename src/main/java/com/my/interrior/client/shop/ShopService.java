@@ -17,6 +17,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
+import com.my.interrior.client.cart.CartEntity;
+import com.my.interrior.client.cart.CartRepository;
+import com.my.interrior.client.user.UserEntity;
+import com.my.interrior.client.user.UserRepository;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
@@ -38,6 +42,12 @@ public class ShopService {
     
     @Autowired
     private ShopOptionValueRepository shopOptionValueRepository;
+    
+    @Autowired
+    private CartRepository cartRepository;
+    
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private HttpSession session;
@@ -165,12 +175,24 @@ public class ShopService {
     	
     	return shopOption;
     }
-    public List<String>getShopOptionValueByshopOptionNo(List<Long> shopOptionNo){
-    List<String>shopOptionValues = shopOptionValueRepository.findByShopOptionEntity_shopOptionNo(shopOptionNo);
-    return shopOptionValues;
-    }
+
     public List<ShopOptionEntity> getAllShopOptions(){
     	return shopOptionRepository.findAll();
+    }
+    
+    public void inCart(List<String> options, Long shopNo, int quantity){
+    	
+    	String inCarts = String.join(";", options);
+    	ShopEntity shopNO = shopRepository.findById(shopNo).orElseThrow(() -> new RuntimeException("Shop not found with id: " + shopNo));;
+    	String userId = (String) session.getAttribute("UId");
+    	
+    	UserEntity userEntity = userRepository.findByUId(userId);
+    	CartEntity cartEntity = new CartEntity();
+    	cartEntity.setQuantity(quantity);
+    	cartEntity.setUserEntity(userEntity);
+    	cartEntity.setOptionValue(inCarts);
+    	cartEntity.setShopEntity(shopNO);
+    	cartRepository.save(cartEntity);
     }
    
 }

@@ -3,6 +3,7 @@ package com.my.interrior.client.shop;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ public class ShopController {
 	
     @Autowired
     private ShopService shopService;
+    
     
     @GetMapping("/shopWrite")
     public String shopWrite() {
@@ -78,39 +80,29 @@ public class ShopController {
     	model.addAttribute("shops", shops.get());
     	List<ShopPhotoEntity> shopPhoto = shopService.getShopPhotoById(shopNo);
     	model.addAttribute("shopPhotos", shopPhoto);
-    	List<ShopOptionEntity> shopOptions = shopService.getAllShopOptions();
+    	List<ShopOptionEntity> shopOptions = shopService.getShopOptionById(shopNo);
     	model.addAttribute("shopOption", shopOptions);
-    	
-    	
-    	//색깔, 크기만 리스트로 가져옴 service에서는 findByshopEntity_shopNo(shopNo)
-    	/*List<ShopOptionEntity> shopOptions = shopService.getShopOptionById(shopNo);
-    	
-    	List<String>shopOptionName = new ArrayList<>();
-    	List<Long> shopOptionNo = new ArrayList<>();
-    	
-    	for(ShopOptionEntity optionName : shopOptions) {
-    		shopOptionName.add(optionName.getShopOptionName());
-    	}
-    	model.addAttribute("optionName", shopOptionName);
-    	
-    	for(ShopOptionEntity optionNo : shopOptions) {
-    		shopOptionNo.add(optionNo.getShopOptionNo());
-    	}
-    	model.addAttribute("optionNo", shopOptionNo);
-    	
-    	//색깔, 크기만 모델에 담음 뿌릴 때는 포이치문으로 ㄱ
-    	//shopOptionName들만 가져옴.
-    	//List<String> shopOptionName = shopOPtions.getShopOptionName();
-    	//List<Long> shopOptionNo = shopOPtions.getShopOptionNo();
-    	//model.addAttribute("shopOptionName", shopOptionName);
-    	//shopOptionNo는 List형식ß
-    	//repository에서는 List<String> findByshopOptionEntity_shopOptionNo(List<Long> shopOptionNo)
-    	List<ShopOptionValueEntity> shopOptionValues = shopService.getShopOptionValueByshopOptionNo(shopOptionNo);
-    	//다크, 딥다크, 로우다크등 가져옴
-    	//model.addAttribute("shopOptionValues", shopOptionValues);*/
-    	
-    	
-    	
+	
     	return "client/shop/shopDetail";
+    }
+    @PostMapping("/cart")
+    public String goCart(
+    		@RequestParam("shopNo") Long shopNo,
+    		@RequestParam Map<String, String> options,
+    		@RequestParam("quantity") int quantity) {
+    	
+    	List<String> selectedOptions = new ArrayList<>();
+        for (Map.Entry<String, String> entry : options.entrySet()) {
+            if (entry.getKey().startsWith("options[")) {
+                selectedOptions.add(entry.getValue());
+            }
+        }
+    	
+    	shopService.inCart(selectedOptions, shopNo, quantity);
+    	
+    	
+    	
+    	
+    	return "client/shop/shopList";
     }
 }
