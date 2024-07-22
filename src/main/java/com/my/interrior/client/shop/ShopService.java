@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.glassfish.jaxb.runtime.v2.runtime.output.StAXExStreamWriterOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -34,6 +35,9 @@ public class ShopService {
     
     @Autowired
     private ShopPhotoRepository shopPhotoRepository;
+    
+    @Autowired
+    private ShopOptionValueRepository shopOptionValueRepository;
 
     @Autowired
     private HttpSession session;
@@ -56,10 +60,11 @@ public class ShopService {
         return String.format("https://storage.googleapis.com/%s/%s", bucketName, fileName);
     }
     
+    // 여기 다시 고쳐야함shopoption, shopoptionvalue Entity 참
     @Transactional
     public void shopWrite(String shopTitle, String shopPrice, String shopContent, String shopMainPhotoUrl, 
                           List<String> descriptionImageUrls, String shopCategory, List<String> optionNames, 
-                          List<String> options, List<Integer> stocks, String shopDiscountRate) {
+                          List<String> options, List<String> price, String shopDiscountRate) {
         // ShopEntity 저장
     	System.out.println("서비스 들어오긴");
         ShopEntity shopEntity = new ShopEntity();
@@ -76,17 +81,59 @@ public class ShopService {
         shopEntity.setShopWriteTime(LocalDateTime.now());
 
         shopRepository.save(shopEntity);
+        
+        for(String option : options) {
+     	   System.out.println(option);
+        }
+        
+       for( int i = 0; i < optionNames.size(); i++) {
+    	   String optionName = optionNames.get(i);
+    	   String[] optionValues = options.get(i).split(";");
+    	   String[] optionPrice = price.get(i).split(";");
+    	   //들어갔는지 확
+    	   
+    	   
+    	   System.out.println("옵션 이름 : " + optionName);
+    	   for(String value : optionValues) {
+    		   System.out.println("옵션값들 : " + value);
+    	   }
+    	   for(String priceq : optionPrice) {
+    		  System.out.println("재고 값들 : " + priceq);
+    	   }
+    	  ShopOptionEntity optionEntity = new ShopOptionEntity();
+ 		  optionEntity.setShopEntity(shopEntity);
+ 		  optionEntity.setShopOptionName(optionName);
+    	   
+    	  for(int j = 0; j < optionValues.length; j++) {
+    		  String value = optionValues[j].trim();
+    		  
+    		  System.out.println("들어갈 value의 값 : " + value);
+    		  
+    		  String priceq = optionPrice[j].trim();
+    		  int priceInt =Integer.parseInt(priceq);
+    		  
+    		  System.out.println("들어갈 stockInt의 값 : " + priceInt);
+    		  
+    		  
+    		  ShopOptionValueEntity valueEntity = new ShopOptionValueEntity();
+    		  valueEntity.setShopOptionValue(value);
+    		  valueEntity.setShopOptionPrice(priceInt);
+    		  valueEntity.setShopOptionEntity(optionEntity);
+    		  shopOptionRepository.save(optionEntity);
+    		  shopOptionValueRepository.save(valueEntity);
+    	  }
+       }
 
 
         // ShopOptionEntity 저장
-        for (int i = 0; i < optionNames.size(); i++) {
+        /*for (int i = 0; i < optionNames.size(); i++) {
             ShopOptionEntity optionEntity = new ShopOptionEntity();
             optionEntity.setShopEntity(shopEntity);
             optionEntity.setShopOptionName(optionNames.get(i));
             optionEntity.setShopOptionValue(options.get(i));
             optionEntity.setShopOptionStock(stocks.get(i));
             shopOptionRepository.save(optionEntity);
-        }
+        }*/
 
         // Description Images URL 저장
         for (String url : descriptionImageUrls) {
@@ -106,12 +153,24 @@ public class ShopService {
     	return shopRepository.findById(shopNo);
     }
     public List<ShopPhotoEntity>getShopPhotoById(Long shopNo){
-    	List<ShopPhotoEntity> shopPhoto = shopPhotoRepository.findByshopEntity_shopNo(shopNo);
+
+    	List<ShopPhotoEntity> shopPhoto = shopPhotoRepository.findByShopEntity_ShopNo(shopNo);
+
     	
     	return shopPhoto;
     }
     public List<ShopOptionEntity>getShopOptionById(Long shopNo){
-    	List<ShopOptionEntity> shopOption = shopOptionRepository.findByshopEntity_shopNo(shopNo);
+
+    	List<ShopOptionEntity> shopOption = shopOptionRepository.findByShopEntity_ShopNo(shopNo);
+    	
     	return shopOption;
     }
+    public List<String>getShopOptionValueByshopOptionNo(List<Long> shopOptionNo){
+    List<String>shopOptionValues = shopOptionValueRepository.findByShopOptionEntity_shopOptionNo(shopOptionNo);
+    return shopOptionValues;
+    }
+    public List<ShopOptionEntity> getAllShopOptions(){
+    	return shopOptionRepository.findAll();
+    }
+   
 }
