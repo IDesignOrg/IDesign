@@ -14,7 +14,6 @@
 			<!-- 왼쪽: 상품 사진 -->
 			<div class="left">
 				<img th:src="${shops.shopMainPhoto}" alt="메인 사진" class="main-image">
-
 			</div>
 
 			<!-- 오른쪽: 상품 정보 -->
@@ -27,24 +26,28 @@
 				<p th:text="${shops.shopCategory}"></p>
 
 				<h3>옵션</h3>
+				<form action="/cart" method="post" id="cartForm">
+				<input type="hidden" name="shopNo" th:value="${shops.shopNo}">
 				<div class="options" th:each="option : ${shopOption}">
-					<select>
-						<option selected value disabled th:text="${option.shopOptionName}">Select an option</option>
-						<option th:each="value : ${option.shopOptionValue}" th:value="${value}" th:text="${value}">
-						</option>
-					</select>
-				</div>
-
+                        <label th:text="${option.shopOptionName}"></label>
+                        <select name="options[__${option.shopOptionNo}__]" required>
+                            <option selected disabled>Select an option</option>
+                            <option th:each="value : ${option.shopOptionValues}" 
+                                    th:value="${value.shopOptionValue}" 
+                                    th:text="${value.shopOptionValue}">
+                            </option>
+                        </select>
+                    </div>
+				 <label for="quantity">수량:</label>
+                 <input type="number" id="quantity" name="quantity" value="1" min="1">
+                 <button type="submit">장바구니에 담기</button>
+				</form>
 			</div>
 		</div>
 		<div class="shop_content">
 			<div class="description-images">
-				
-				<img th:each="image : ${shopPhotos}" 
-				     th:src="${image.shopPhotoUrl}" 
-				     alt="상품 설명 이미지" 
-				     class="description-image">
-
+				<img th:each="image : ${shopPhotos}" th:src="${image.shopPhotoUrl}" alt="상품 설명 이미지"
+					class="description-image">
 			</div>
 		</div>
 

@@ -3,6 +3,7 @@ package com.my.interrior.client.shop;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ public class ShopController {
     @Autowired
     private ShopService shopService;
     
+    
     @GetMapping("/shopWrite")
     public String shopWrite() {
         return "client/shop/shopWrite";
@@ -42,7 +44,7 @@ public class ShopController {
             @RequestParam("optionName[]") List<String> optionNames,
             @RequestParam("shopDiscountRate") String shopDiscountRate,
             @RequestParam("option[]") List<String> options,
-            @RequestParam("stock[]") List<String> stocks) throws IOException {
+            @RequestParam("price[]") List<String> price) throws IOException {
     	System.out.println("우선 보내긴");
         // Main Photo 업로드
         String shopMainPhotoUrl = shopService.uploadFile(shopMainPhoto, shopTitle);
@@ -55,7 +57,7 @@ public class ShopController {
         }
         
         // Shop 정보 저장
-        shopService.shopWrite(shopTitle, shopPrice,  shopContent, shopMainPhotoUrl, descriptionImageUrls, shopCategory, optionNames, options, stocks, shopDiscountRate);
+        shopService.shopWrite(shopTitle, shopPrice,  shopContent, shopMainPhotoUrl, descriptionImageUrls, shopCategory, optionNames, options, price, shopDiscountRate);
         System.out.println("확인");
 
         return "client/shop/shopList";
@@ -78,9 +80,29 @@ public class ShopController {
     	model.addAttribute("shops", shops.get());
     	List<ShopPhotoEntity> shopPhoto = shopService.getShopPhotoById(shopNo);
     	model.addAttribute("shopPhotos", shopPhoto);
-    	List<ShopOptionEntity>shopOption = shopService.getShopOptionById(shopNo);
-    	model.addAttribute("shopOption", shopOption);
-
+    	List<ShopOptionEntity> shopOptions = shopService.getShopOptionById(shopNo);
+    	model.addAttribute("shopOption", shopOptions);
+	
     	return "client/shop/shopDetail";
+    }
+    @PostMapping("/cart")
+    public String goCart(
+    		@RequestParam("shopNo") Long shopNo,
+    		@RequestParam Map<String, String> options,
+    		@RequestParam("quantity") int quantity) {
+    	
+    	List<String> selectedOptions = new ArrayList<>();
+        for (Map.Entry<String, String> entry : options.entrySet()) {
+            if (entry.getKey().startsWith("options[")) {
+                selectedOptions.add(entry.getValue());
+            }
+        }
+    	
+    	shopService.inCart(selectedOptions, shopNo, quantity);
+    	
+    	
+    	
+    	
+    	return "client/shop/shopList";
     }
 }
