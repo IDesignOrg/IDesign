@@ -88,17 +88,12 @@ public class ShopController {
     @PostMapping("/cart")
     public String goCart(
     		@RequestParam("shopNo") Long shopNo,
-    		@RequestParam Map<String, String> options,
+    		@RequestParam("options") List<Long> optionValueIds,
     		@RequestParam("quantity") int quantity) {
     	
-    	List<String> selectedOptions = new ArrayList<>();
-        for (Map.Entry<String, String> entry : options.entrySet()) {
-            if (entry.getKey().startsWith("options[")) {
-                selectedOptions.add(entry.getValue());
-            }
-        }
     	
-    	shopService.inCart(selectedOptions, shopNo, quantity);
+    	
+    	shopService.inCart(optionValueIds, shopNo, quantity);
     	
     	
     	
