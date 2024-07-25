@@ -4,11 +4,10 @@ import { THREE } from "../../../three";
 export const RotationControllerY = 3;
 
 export class RotationController extends THREE.Group {
-  constructor({ cameraZoom }) {
+  constructor() {
     super();
     this.name = "rotationController";
     this.createBackground();
-    console.log(this);
   }
 
   createBackground = () => {
