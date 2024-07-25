@@ -144,4 +144,55 @@ public class ReviewService {
 	    // 2. 조회된 리뷰 포토 목록을 반환합니다.
 	    return reviewPhotos;
 	}
+	@Transactional
+	public void updateReview(Long rNo, String title, String category, String content, String starRating,
+			MultipartFile[] files, MultipartFile mainPhoto) throws IOException {
+		
+	    // 썸네일 사진 업로드 없을시에 null값
+	    String mainPhotoUrl = null;
+	    if(!mainPhoto.isEmpty()) {
+	    	mainPhotoUrl = uploadFile(mainPhoto);
+	    }
+
+	    // 리뷰 조회 또는 새로 생성
+	    ReviewEntity review;
+	    review = reviewRepository.findById(rNo).orElse(null);
+
+	    // 리뷰 정보 설정
+	    review.setRTitle(title);
+	    review.setRCategory(category);
+	    review.setRContent(content);
+	    review.setRStarRating(starRating);
+	    if(mainPhotoUrl != null) {
+	    	review.setRMainPhoto(mainPhotoUrl);
+	    }
+	    // 리뷰 저장
+	    reviewRepository.save(review);
+	    
+	    List<String> fileUrls = new ArrayList<>();
+	    for (MultipartFile file : files) {
+	        if (!file.isEmpty()) {
+	            String fileUrl = uploadFile(file);
+	            fileUrls.add(fileUrl);
+	        }
+	    }
+
+	    // 기존 리뷰 사진 삭제
+	    if (rNo != null && !fileUrls.isEmpty()) {
+	        reviewPhotoRepository.deleteByReviewRNo(rNo);
+	    }
+
+	    // 새로운 리뷰 사진 저장
+	    if (!fileUrls.isEmpty()) {
+	        List<ReviewPhotoEntity> reviewPhotos = new ArrayList<>();
+	        for (String fileUrl : fileUrls) {
+	            ReviewPhotoEntity reviewPhoto = new ReviewPhotoEntity();
+	            reviewPhoto.setRpPhoto(fileUrl);
+	            reviewPhoto.setReview(review);
+	            reviewPhotos.add(reviewPhoto);
+	        }
+	        reviewPhotoRepository.saveAll(reviewPhotos);
+	    }
+		
+	}
 }

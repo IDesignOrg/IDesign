@@ -116,6 +116,7 @@ public class ReviewController {
 	}
 	@PostMapping("/review_update")
 	public String reviewUpdate(
+			@RequestParam("rNo") Long rNo,
 			@RequestParam("title") String title,
             @RequestParam("category") String category,
             @RequestParam("content") String content,
@@ -123,8 +124,8 @@ public class ReviewController {
             @RequestParam("files") MultipartFile[] files,
             @RequestParam("mainPhoto") MultipartFile mainPhoto,
             Model model) throws IOException {
-		reviewService.uploadFileAndCreateReview(title, category, content, starRating, files, mainPhoto);
-		return "client/review/reviewList";
+		reviewService.updateReview(rNo, title, category, content, starRating, files, mainPhoto);
+		return "redirect:/auth/evaluation";
 	}
 	
 }
