@@ -12,35 +12,48 @@ export const getCoordsFromVectex = (obj) => {
   return coordinates;
 };
 
-export const calculateCenter = (points) => {
-  let centerX = 0;
-  let centerZ = 0;
-
+export function calculateCenter(points) {
+  let sumX = 0,
+    sumY = 0,
+    sumZ = 0;
   points.forEach((point) => {
-    centerX += point.x;
-    centerZ += point.z;
+    sumX += point.x;
+    sumY += point.y;
+    sumZ += point.z;
   });
+  const count = points.length;
+  return {
+    x: sumX / count,
+    y: sumY / count,
+    z: sumZ / count,
+  };
+}
 
-  centerX /= points.length;
-  centerZ /= points.length;
-
-  return new THREE.Vector3(centerX, 0, centerZ);
-};
-
-export const getClickedCircleIndex = ({ background, floor }) => {
-  let idx = null;
-  const originPoints = getCoordsFromVectex(floor);
-  const { point } = background;
-  for (let i = 0; i < originPoints.length; i++) {
+export const getClickedCircleIndex = ({ background, floor, cg, object }) => {
+  // console.log("ewqewqewqeq");
+  const children = cg.children;
+  const position = object.position;
+  for (let i = 0; i < children.length; i++) {
     if (
-      Math.abs(originPoints[i].x - point.x) <= 5 &&
-      Math.abs(originPoints[i].z - point.z) <= 5
+      Math.abs(children[i].position.x - position.x) <= 5 &&
+      Math.abs(children[i].position.z - position.z) <= 5
     ) {
-      idx = i;
-      break;
+      return i;
     }
   }
-  return idx;
+  return null;
+  // let idx = null;
+  // const originPoints = getCoordsFromVectex(floor);
+  // const { point } = background;
+  // for (let i = 0; i < originPoints.length; i++) {
+  //   if (
+  //     Math.abs(originPoints[i].x - point.x) <= 5 &&
+  //     Math.abs(originPoints[i].z - point.z) <= 5
+  //   ) {
+  //     idx = i;
+  //     break;
+  //   }
+  // return idx;
 };
 
 export const getStraightLineZ = ({ originPoints, points, index }) => {
