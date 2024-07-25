@@ -1,4 +1,8 @@
-import { material } from "../../../main.js";
+import {
+  RotationController,
+  RotationControllerY,
+  material,
+} from "../../../main.js";
 import { THREE } from "../../../three.js";
 import {
   calculateCenter,
@@ -9,7 +13,9 @@ import {
 import { floorName, roomName } from "../objectConf/objectNames";
 import { Circles } from "./circles.js";
 import { D2Floor, Shape } from "./floor.js";
+import { ShadowLines } from "./shadowLines.js";
 import { D2Wall, D3Wall, calculateAngle, wallHeight } from "./wall.js";
+import { uuidv4 } from "../../uuid.js";
 
 export class D3Room extends THREE.Group {
   constructor({ object }) {
@@ -39,137 +45,122 @@ export class D3Room extends THREE.Group {
   }
 }
 
-class wallDepth extends THREE.Group {
-  constructor({ points }) {
-    const group = super();
-    const height = wallHeight;
-    const wallLength = 5; // 벽의 길이
-    for (let i = 0; i < points.length; i++) {
-      const currentPoint = points[i];
-      const angle = calculateAngle(
-        currentPoint,
-        points[(i + 1) % points.length]
-      );
-      const newCoordinates = getNewCoordinates(currentPoint, angle, wallLength);
-
-      // Plane 생성
-      const wallGeometry = new THREE.PlaneGeometry(wallLength, height);
-      const wallMaterial = new THREE.MeshBasicMaterial({
-        color: 0xaaaaaa,
-        side: THREE.BackSide,
-      });
-
-      const wall = new THREE.Mesh(wallGeometry, wallMaterial);
-
-      // Plane의 위치 설정 (currentPoint에서 바깥쪽으로 wallLength/2만큼 이동)
-      const centerX =
-        currentPoint.x - Math.cos(angle + Math.PI / 4) * (wallLength / 2);
-      const centerZ =
-        currentPoint.z - Math.sin(angle + Math.PI / 4) * (wallLength / 2);
-
-      wall.position.set(centerX, height / 2, centerZ);
-
-      // Plane의 회전 설정
-      wall.rotation.y = -(angle + Math.PI / 4);
-
-      group.add(wall);
-    }
-    return group;
-  }
-}
-
-function getNewCoordinates(currentPoint, angle, distance) {
-  const angleOffset = Math.PI / 4; // 45도 각도
-  const newX = currentPoint.x + Math.cos(angle + angleOffset) * distance;
-  const newZ = currentPoint.z + Math.sin(angle + angleOffset) * distance;
-  return { x: newX, z: newZ };
-}
-
-// export class D3Room extends THREE.Group {
-//   constructor({ points, name = roomName }) {
-//     const room = super();
-//     room.name = name;
-
-//     const floor = createPlaneFromPoints(points);
-//     floor.name = floorName;
-//     room.add(floor);
-
-//     const walls = new Wall({ points });
-//     room.add(walls);
-
-//     return room;
-//   }
-// }
-
 export class D2Room extends THREE.Group {
-  constructor({ points, name }) {
-    console.log(name);
-    const roomGroup = super();
-    roomGroup.updateFloor = this.updateFloor;
-    const mesh = new D2Floor({ points, name });
-    const walls = new D2Wall({ points });
+  lines = null;
+  clickedPoints = null;
 
-    const shape = new Shape({ points });
-    const geometry = new THREE.ShapeGeometry(shape);
-    var outlineMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    var outlineMesh = new THREE.Mesh(geometry, outlineMaterial);
-    outlineMesh.name = "floor-outline";
-    outlineMesh.rotation.x = -Math.PI / 2;
-    outlineMesh.scale.multiplyScalar(1.05);
-    roomGroup.add(outlineMesh);
-    roomGroup.add(walls);
-    roomGroup.add(mesh);
-    return roomGroup;
+  constructor({ points }) {
+    super();
+    this.name = "shadow";
+    this.clickedPoints = points[0];
+    this.drawLines(points);
+    this.userData = {};
   }
 
-  updateWalls = ({ points }) => {
-    const newWalls = new D2Wall({ points });
-    this.remove(this.getObjectByName("walls"));
-    this.add(newWalls);
-    0;
-  };
-  updateFloorOutline = ({ points }) => {
-    this.remove(this.getObjectByName("floor-outline"));
-    const shape = new Shape({ points });
-    const geometry = new THREE.ShapeGeometry(shape);
-    var outlineMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    var outlineMesh = new THREE.Mesh(geometry, outlineMaterial);
-    outlineMesh.name = "floor-outline";
-    outlineMesh.rotation.x = -Math.PI / 2;
-    outlineMesh.position.y = 1;
-    // outlineMesh.scale.multiplyScalar(1);
-
-    this.add(outlineMesh);
-  };
-  drawShadow = ({ points }) => {
-    const newFloor = new D2Floor({ points, name: "shadow" });
-    const newCircleGroup = new Circles({ points });
-    this.updateFloorOutline({ points });
-    // this.updateWalls({ points });
-    this.remove(this.getObjectByName("circleGroup"));
-    this.remove(this.getObjectByName("floor"));
-    this.add(newCircleGroup);
-    this.add(newFloor);
+  getShadowPoints = () => {
+    const shadow = this.getObjectByName("shadowLines");
+    const points = [];
+    const positions = shadow.geometry.attributes.position.array;
+    for (let i = 0; i < positions.length; i += 3) {
+      points.push(
+        new THREE.Vector3(positions[i], positions[i + 1], positions[i + 2])
+      );
+    }
+    points.pop();
+    return points;
   };
 
-  updateFloor = ({ points, circleIdx }) => {
-    const floor = this.getObjectByName("floor");
-    const originPoints = getCoordsFromVectex(floor);
-    originPoints[circleIdx] = new THREE.Vector3(
-      getStraightLineX({ originPoints, points, index: circleIdx }),
-      0,
-      getStraightLineZ({ originPoints, points, index: circleIdx })
+  createRoom = ({ cameraZoom }) => {
+    if (this.getObjectByName("floor")) {
+      this.remove(this.getObjectByName("floor"));
+    }
+    const box = new THREE.Box3();
+    box.setFromCenterAndSize(
+      new THREE.Vector3(1, 1, 1),
+      new THREE.Vector3(2, 1, 3)
     );
-    const mesh = new D2Floor({ points: originPoints });
-    mesh.position.y = 1;
-    mesh.rotation.x = -Math.PI / 2;
-    const newCircleGroup = new Circles({ points: originPoints });
-    newCircleGroup.visible = true;
-    this.updateFloorOutline({ points: originPoints });
-    this.remove(this.getObjectByName("circleGroup"));
-    this.remove(floor);
-    this.add(newCircleGroup);
-    this.add(mesh);
+
+    // const helper = new THREE.Box3Helper(box, 0xffff00);
+    // this.add(helper);
+    const points = this.getShadowPoints();
+    // console.log("createRoom points = ", points);
+    const center = calculateCenter(points);
+    this.position.set(center.x, center.y, center.z);
+    const floor = new D2Floor({ points, center });
+    this.userData = {
+      ...this.userData,
+      center,
+      points,
+    };
+    if (!this.getObjectByName("circleGroup")) {
+      this.createDots({ center });
+    }
+    const shadowLines = this.getObjectByName("shadowLines");
+    // console.log(shadowLines);
+    shadowLines.position.set(-center.x, center.y, -center.z);
+    this.add(floor);
+    const rotationController = new RotationController({ cameraZoom });
+    rotationController.visible = false;
+    // rotationController.position.set(0, 10, 0);
+    this.add(rotationController);
+  };
+
+  positioningChildren = () => {
+    return;
+    let center = calculateCenter(this.getShadowPoints());
+    center = {
+      x: -center.x,
+      y: center.y,
+      z: -center.z,
+    };
+    console.log("center = ", center);
+    this.children.forEach((child) => {
+      if (child.name === "rotationController") {
+        child.position.set(center.x, center.y, center.z);
+        console.log(child.position);
+      } else {
+        child.position.set(center.x, center.y, center.z);
+      }
+    });
+  };
+
+  createDots = ({ center }) => {
+    const points = this.getShadowPoints();
+    const circleGroup = new Circles({ center, points });
+    circleGroup.name = "circleGroup";
+    this.add(circleGroup);
+  };
+
+  drawLines = (points) => {
+    points.push(new THREE.Vector3(points[0].x, points[0].y, points[0].z));
+    const shadow = this.getObjectByName("shadowLines");
+    if (shadow) {
+      this.remove(shadow);
+    }
+    const line = new ShadowLines({ points });
+    line.name = "shadowLines";
+    this.add(line);
+    // console.log(this);
+  };
+
+  updateLines = ({ points, circleIdx }) => {
+    const circleGroup = this.getObjectByName("circleGroup");
+    const originPoints = this.getShadowPoints();
+    const x = getStraightLineX({ originPoints, points, index: circleIdx });
+    const z = getStraightLineZ({ originPoints, points, index: circleIdx });
+    circleGroup.children[circleIdx].position.set(x, points.y, z);
+    let newPoints = circleGroup.children.map((circle) => circle.position);
+
+    this.drawLines(newPoints);
+  };
+
+  onClick = () => {
+    const controller = this.getObjectByName("rotationController");
+    controller.visible = true;
+  };
+
+  onMouseUp = ({ cameraZoom }) => {
+    this.createRoom({ cameraZoom });
   };
 }
 

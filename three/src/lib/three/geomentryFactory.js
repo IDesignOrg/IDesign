@@ -10,7 +10,7 @@ export const D3Shapes = ({ object, scene }) => {
   return room;
 };
 
-export const D2Shapes = ({ object }) => {
+export const D2Shapes = ({ object, cameraZooom }) => {
   // 아마 room
   const floor = object.getObjectByName("floor");
   const points = getCoordsFromVectex(floor);
@@ -19,7 +19,7 @@ export const D2Shapes = ({ object }) => {
   return room;
 };
 
-export const create2DObject = ({ name, points, objectName }) => {
+export const create2DObject = ({ name, points, cameraZooom }) => {
   let room = new D2Room({ points, name });
 
   room.name = name;

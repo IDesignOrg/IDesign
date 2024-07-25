@@ -1,22 +1,22 @@
 import { THREE } from "../../../three.js";
-
+import { calculateCenter } from "../../calculater.js";
 export class D2Floor {
-  constructor({ points, height }) {
+  constructor({ points, height, center }) {
+    console.log("받은 floor points = ", points);
     const shape = new Shape({ points });
     const geometry = new THREE.ShapeGeometry(shape);
-    let material;
-    material = new THREE.MeshLambertMaterial({
+    let material = new THREE.MeshLambertMaterial({
       side: height ? THREE.BackSide : THREE.FrontSide,
     });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.name = "floor";
     mesh.renderOrder = 1;
-
     mesh.rotation.x = -Math.PI / 2;
-    mesh.position.y = 2;
+    mesh.position.set(-center.x, center.y, -center.z);
     if (height) {
       mesh.position.y = height;
     }
+
     return mesh;
   }
 }
