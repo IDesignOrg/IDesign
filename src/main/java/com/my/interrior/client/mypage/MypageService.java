@@ -3,6 +3,7 @@ package com.my.interrior.client.mypage;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
+import com.my.interrior.client.gcs.GCSFileDeleter;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
 
@@ -34,6 +35,9 @@ public class MypageService {
     
     @Value("${spring.cloud.gcp.storage.bucket}")
 	private String bucketName;
+    
+    @Autowired
+    private GCSFileDeleter gcsFileDeleter;
 
     public UserEntity getUserInfo(String UId) {
 
@@ -60,14 +64,19 @@ public class MypageService {
     @Transactional
     public void updateUser(MultipartFile file, String UName, String UBirth,
     		String UMail, String UTel) throws IOException {
-    	String profile = uploadFile(file);
+    	String profile = null;
+    	if(file != null) {
+    		profile = uploadFile(file);
+    	}
     	String userId = (String) session.getAttribute("UId");
     	
     	UserEntity userEntity = userRepository.findByUId(userId);
     	
     	
     	userEntity.setUName(UName);
-    	userEntity.setUPofile(profile);
+    	if(profile != null) {
+    		userEntity.setUPofile(profile);
+    	}
     	userEntity.setUBirth(UBirth);
     	userEntity.setUMail(UMail);
     	userEntity.setUTel(UTel);
