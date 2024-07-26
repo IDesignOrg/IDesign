@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
+import com.my.interrior.client.gcs.GCSFileDeleter;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
 
@@ -38,6 +39,8 @@ public class ReviewService {
 	private ReviewPhotoRepository reviewPhotoRepository;
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private GCSFileDeleter gcsFileDeleter;
 
 	// 버킷 이름 가져오기
 	@Value("${spring.cloud.gcp.storage.bucket}")
@@ -179,7 +182,11 @@ public class ReviewService {
 
 	    // 기존 리뷰 사진 삭제
 	    if (rNo != null && !fileUrls.isEmpty()) {
-	        reviewPhotoRepository.deleteByReviewRNo(rNo);
+	        List<ReviewPhotoEntity> reviewPhotoDel = reviewPhotoRepository.findByReview_RNo(rNo);
+	        for(ReviewPhotoEntity photo : reviewPhotoDel) {
+	        	gcsFileDeleter.deleteFile(photo.getRpPhoto());
+	        	reviewPhotoRepository.delete(photo);
+	        }
 	    }
 
 	    // 새로운 리뷰 사진 저장
