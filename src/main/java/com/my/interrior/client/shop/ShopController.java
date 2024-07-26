@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class ShopController {
@@ -88,21 +91,28 @@ public class ShopController {
     @PostMapping("/cart")
     public String goCart(
     		@RequestParam("shopNo") Long shopNo,
-    		@RequestParam Map<String, String> options,
-    		@RequestParam("quantity") int quantity) {
+    		@RequestParam("options") List<Long> optionValueIds,
+    		@RequestParam("quantity") int quantity, HttpSession session) {
     	
-    	List<String> selectedOptions = new ArrayList<>();
-        for (Map.Entry<String, String> entry : options.entrySet()) {
-            if (entry.getKey().startsWith("options[")) {
-                selectedOptions.add(entry.getValue());
-            }
-        }
+    	String userId = (String) session.getAttribute("UId");
     	
-    	shopService.inCart(selectedOptions, shopNo, quantity);
+    	if(userId == null) {
+    		return "redirect:/auth/login";
+    	}
     	
-    	
-    	
-    	
+    	shopService.inCart(optionValueIds, shopNo, quantity);
+
     	return "client/shop/shopList";
+    }
+    
+    @GetMapping("/shop/shopUpdate/{shopNo}")
+    public String shopUpdate(Pageable pageable, Model model, @PathVariable("shopNo") Long shopNo) {
+    	Optional<ShopEntity> shop = shopService.getShopById(shopNo);
+    	System.out.println("shopNo의 값 : " + shopNo);
+    	model.addAttribute("shops", shop);
+    	
+    	List<ShopPhotoEntity> shopPhotos = shopService.getShopPhotoById(shopNo);
+    	model.addAttribute("shopPhoto", shopPhotos);
+    	return "client/shop/shopUpdate";
     }
 }

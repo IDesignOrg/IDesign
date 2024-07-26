@@ -1,6 +1,8 @@
 package com.my.interrior.client.cart;
 
-import com.my.interrior.client.interrior.InterriorEntity;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.my.interrior.client.shop.ShopEntity;
 import com.my.interrior.client.user.UserEntity;
 import jakarta.persistence.*;
@@ -17,11 +19,11 @@ public class CartEntity {
     @Column(name = "c_no")
     private Long CNo;
     
-    @Column(name = "option_value")
-    private String optionValue;
-    
     @Column(name = "quantity")
     private int quantity;
+    
+    @OneToMany(mappedBy = "cartEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CartOptionEntity> cartOptions;
 
     @ManyToOne
     @JoinColumn(name = "u_id")
