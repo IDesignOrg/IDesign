@@ -10,10 +10,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.my.interrior.admin.coupon.CouponService;
+import com.my.interrior.client.event.coupon.CouponEntity;
+import com.my.interrior.client.event.coupon.CouponMapEntity;
 import com.my.interrior.client.shop.ShopEntity;
 import com.my.interrior.client.shop.ShopOptionValueEntity;
 import com.my.interrior.client.shop.ShopOptionValueService;
 import com.my.interrior.client.shop.ShopService;
+import com.my.interrior.client.user.UserEntity;
+import com.my.interrior.client.user.UserService;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +32,8 @@ public class CartController {
 	private final ShopService shopService;
 	private final CartOptionService cartOptionService;
 	private final ShopOptionValueService shopOptionValueService;
+	private final CouponService couponService;
+	private final UserService userService;
 	private static int count = 0;
 	
 	//cart의 loadMyCarts()랑 이거랑 연관돼있음.
@@ -51,15 +58,6 @@ public class CartController {
 
 		List<ShopEntity> shopEntities = shopService.getCartsFromShop(shopNos);
 
-		//카트 가격들
-//		List<String> shopPrices = shopEntities.stream()
-//								.map(price -> price.getShopPrice())
-//								.collect(Collectors.toList());
-//		System.out.println("shopPrices: " + shopPrices);
-		
-		
-		
-		
 		//이제 옵션 값들을 가져와야함 c_no를 사용하면 될 듯
 		//여기에는 u_id에 해당하는 c_no가 여러 개 들어가있음.
 		List<Long> cartNos = cartEntities.stream()
@@ -99,11 +97,24 @@ public class CartController {
 			}
 		}
 		
+		//내가 가지고 있는 쿠폰 넣기
+		UserEntity userEntity = userService.checkLogin(userId);
+		Long userNo = userEntity.getUNo();
+		List<CouponMapEntity> coupons = couponService.getCouponNumberByUserNo(userNo);
+		
+		List<Long> couponNos = coupons.stream()
+								.map(coupon -> coupon.getCouponEntity().getCouponNo())
+								.collect(Collectors.toList());
+		
+		List<CouponEntity> couponEntities = couponService.getCouponEntitiesBycouponNos(couponNos);
+		
+		
+		
 		NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.KOREA);
 		String formattedTotal = numberFormat.format(total);
 		//여기에는 shop_option_value에 해당하는 값들이 객체로 들어있음.
 //		List<ShopOptionValueEntity> shopOptionValues = shopOptionValueService.getShopOptionValues(options);
-
+		model.addAttribute("couponEntities", couponEntities);
 		model.addAttribute("total", formattedTotal);
 		model.addAttribute("cartEntities", cartEntities);
 		model.addAttribute("cartOptions", cartOptions);
