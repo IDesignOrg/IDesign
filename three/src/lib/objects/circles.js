@@ -1,5 +1,5 @@
-import { floorY } from "../../../main.js";
-import { THREE } from "../../../three.js";
+import { floorY } from "../../main";
+import { THREE } from "../loader/three";
 
 export class Circles {
   constructor({ points, center }) {
