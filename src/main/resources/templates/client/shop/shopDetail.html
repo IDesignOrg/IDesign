@@ -41,20 +41,6 @@
 					<label for="quantity">수량:</label>
 					<input type="number" id="quantity" name="quantity" value="1" min="1">
 					<button type="submit">장바구니에 담기</button>
-					<input type="hidden" name="shopNo" th:value="${shops.shopNo}">
-					<div class="options" th:each="option : ${shopOption}">
-						<label th:text="${option.shopOptionName}"></label>
-						<select name="options[__${option.shopOptionNo}__]" required>
-							<option selected disabled>Select an option</option>
-							<option th:each="value : ${option.shopOptionValues}"
-								th:value="${value.shopOptionValue} + ':' + ${value.shopOptionPrice}"
-								th:text="${value.shopOptionValue} + ' (₩' + ${value.shopOptionPrice} + ')'">
-                            </option>
-                        </select>
-                    </div>
-				 <label for=" quantity">수량:</label>
-								<input type="number" id="quantity" name="quantity" value="1" min="1">
-								<button type="submit">장바구니에 담기</button>
 				</form>
 			</div>
 		</div>
@@ -69,27 +55,27 @@
 		<a href="#" onclick="history.back()">뒤로가기</a>
 	</div>
 	<script>
-		$(document).ready(function(){
-			$('#cartForm').on('submit', function(event){
+		$(document).ready(function () {
+			$('#cartForm').on('submit', function (event) {
 				event.preventDefault();
-				
+
 				$.ajax({
-					type:'POST',
-					url:'/auth/cart',
-					data:$(this).serialize(),
-					success:function(res){
+					type: 'POST',
+					url: '/auth/cart',
+					data: $(this).serialize(),
+					success: function (res) {
 						//장바구니로 이동? ㄴㄴ?
 
-						if(confirm(res)){
-							window.location.href='/my/cart';
+						if (confirm(res)) {
+							window.location.href = '/my/cart';
 						}
 					},
 					//로그인 페이지로 이동? ㄴㄴ?
-					error:function(xhr, status, error){
-						if(xhr.status == 401){
+					error: function (xhr, status, error) {
+						if (xhr.status == 401) {
 							var msg = xhr.responseText;
-								if(confirm(msg)){
-									window.location.href='/auth/login';
+							if (confirm(msg)) {
+								window.location.href = '/auth/login';
 							}
 						}
 					}
