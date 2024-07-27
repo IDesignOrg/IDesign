@@ -1,8 +1,7 @@
-import { THREE } from "../../../three.js";
-import { calculateCenter } from "../../calculater.js";
+import { THREE } from "../loader/three";
+
 export class D2Floor {
   constructor({ points, height, center }) {
-    console.log("받은 floor points = ", points);
     const shape = new Shape({ points });
     const geometry = new THREE.ShapeGeometry(shape);
     let material = new THREE.MeshLambertMaterial({
@@ -21,7 +20,7 @@ export class D2Floor {
   }
 }
 
-export class Shape extends THREE.Shape {
+class Shape extends THREE.Shape {
   constructor({ points }) {
     const shape = super();
     shape.moveTo(points[0].x, -points[0].z); // z축을 y축으로 사용하여 평면 도형 정의

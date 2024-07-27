@@ -1,34 +1,21 @@
 "use strict";
 
-import { THREE } from "./three.js";
-import {
-  calculateCenter,
-  getClickedCircleIndex,
-  getCoordsFromVectex,
-} from "./lib/calculater.js";
-import { OrbitControls } from "./lib/three/OrbitControls.js";
+import { calculateCenter, getClickedCircleIndex } from "./lib/calculater.js";
+import { OrbitControls } from "./lib/loader/OrbitControls.js";
 
-import {
-  D2Shapes,
-  D3Shapes,
-  create2DObject,
-} from "./lib/three/geomentryFactory.js";
-import { chairCreator, createDesk } from "./lib/gltfObjects/ObjectFactory.js";
+import { D2Shapes, D3Shapes } from "./lib/three/geomentryFactory.js";
+// import { chairCreator, createDesk } from "./lib/gltfObjects/ObjectFactory.js";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { OutlinePass } from "three/examples/jsm/postprocessing/OutlinePass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader.js";
-import { D2Room } from "./lib/three/objects/Room.js";
-import { D2Floor } from "./lib/three/objects/floor.js";
-// import { RotationController } from "./lib/three/objects/RotationController.js";
+import { D2Room } from "./lib/objects/Room.js";
+import { THREE } from "./lib/loader/three.js";
 
-// const wallpaper = "../public/img/wallpaper.png";
+export const floorY = 3;
+
 const wallpaper = "../public/img/wallpaper.png";
-// const wallpaper = new Image();
-
-export const floorY = 2;
-let zzzzz = [];
 
 const hudIcon = document.getElementById("hud-icon");
 const modeToggles = document.getElementById("modeToggles");
@@ -38,9 +25,9 @@ let D3Walls = [];
 // zoom in/out & drag and drop
 let isDragging = false;
 let previousMousePosition = { x: 0, y: 0 };
-export const maxZoom = 500;
-export const minZoom = 5;
-let cameraZoom = 250;
+export const maxZoom = 1000;
+export const minZoom = 20;
+let cameraZoom = 500;
 
 // create object
 let isCreating = {
@@ -80,53 +67,54 @@ const composer = new EffectComposer(renderer);
 const renderPass = new RenderPass(scene, camera);
 composer.addPass(renderPass);
 
-//
-//
-//
-//
-//
-const gro = new THREE.Group();
-gro.position.set(10, 2, 10);
-const pg = new THREE.PlaneGeometry(50, 50);
-const m = new THREE.MeshBasicMaterial({
-  color: 0xffff00,
-  side: THREE.DoubleSide,
-});
-const p = new THREE.Mesh(pg, m);
-// p.position.set(10, 2, 10);
-p.position.y = 2;
-p.rotation.x = Math.PI / 2;
-gro.add(p);
-scene.add(gro);
+// //
+// //
+// //
+// //
+// //
+// const gro = new THREE.Group();
+// gro.position.set(10, 2, 10);
+// const pg = new THREE.PlaneGeometry(50, 50);
+// const m = new THREE.MeshBasicMaterial({
+//   color: 0xffff00,
+//   side: THREE.DoubleSide,
+// });
+// const p = new THREE.Mesh(pg, m);
+// // p.position.set(10, 2, 10);
+// p.position.y = 2;
+// p.rotation.x = Math.PI / 2;
+// gro.add(p);
+// scene.add(gro);
 
-const pg2 = new THREE.PlaneGeometry(51, 51);
-const m2 = new THREE.MeshBasicMaterial({
-  color: "red",
-  side: THREE.DoubleSide,
-});
-const p2 = new THREE.Mesh(pg2, m2);
-p2.position.set(10, 2, 10);
-p2.position.y = 2;
-p2.rotation.x = Math.PI / 2;
-scene.add(p2);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+// const pg2 = new THREE.PlaneGeometry(51, 51);
+// const m2 = new THREE.MeshBasicMaterial({
+//   color: "red",
+//   side: THREE.DoubleSide,
+// });
+// const p2 = new THREE.Mesh(pg2, m2);
+// p2.position.set(10, 2, 10);
+// p2.position.y = 2;
+// p2.rotation.x = Math.PI / 2;
+// scene.add(p2);
+// //
+// //
+// //
+// //
+// //
+// //
+// //
+// //
+// //
+// //
+// //
+// //
 
 export class RotationController extends THREE.Group {
   constructor({ cameraZoom = 250 }) {
     super();
     this.name = "rotationController";
     this.isDragging = false;
+    this.visible = false;
     this.init(cameraZoom);
   }
 
@@ -194,15 +182,15 @@ export class RotationController extends THREE.Group {
     this.isDragging = true;
   };
 
-  onMouseMove = ({ points }) => {
+  onMouseMove = ({ points, room }) => {
     const dx = points.x - this.position.x;
     const dz = points.z - this.position.z;
 
     // 각도 계산 (atan2 사용)
     const angle = Math.atan2(dz, dx) + Math.PI / 2; // rotation.x가 -Math.PI / 2이기 때문에 보정
     if (this.isDragging) {
-      this.rotation({ angle });
-      return;
+      this.rotation({ angle, room });
+      // return;
     }
     const controllerRing = this.getObjectByName("controllerRing");
 
@@ -212,11 +200,15 @@ export class RotationController extends THREE.Group {
     controllerRing.rotation.z = -angle;
     document.body.style.cursor = "pointer";
   };
+  setPosition = (center) => {
+    this.position.set(center.x, center.y, center.z);
+  };
 
-  rotation = ({ angle }) => {
-    const floor = this.parent.getObjectByName("floor");
-    const copy = floor.position.clone();
-    this.parent.rotation.y = angle;
+  rotation = ({ angle, room }) => {
+    // const floor = this.parent.getObjectByName("floor");
+    // const copy = floor.position.clone();
+    room.userData.rotation = angle;
+    room.rotation.y = angle;
   };
 
   setScale = ({ object, cameraZoom }) => {
@@ -303,6 +295,10 @@ texture.repeat.set(50, 50); // 이미지 반복 횟수 설정 (필요에 따라 
 // Material 생성
 export const material = new THREE.MeshBasicMaterial({ map: texture });
 
+const rotationController = new RotationController({ cameraZoom });
+
+scene.add(rotationController);
+
 const planeGeometry = new THREE.PlaneGeometry(2000, 2000);
 const planeMaterial = new THREE.MeshBasicMaterial({
   color: "rgb(250,251,255)",
@@ -344,8 +340,6 @@ const updateShadows = ({ object, background }) => {
     new THREE.Vector3(background.point.x, floorY, background.point.z),
     new THREE.Vector3(object.clickedPoints.x, floorY, background.point.z),
   ];
-  console.log("last point = ", points);
-  zzzzz = [...points];
   object.drawLines(points);
   // const floor = object.getObjectByName("floor");
   // if (!floor) return;
@@ -405,12 +399,16 @@ const onMouseDown = (event) => {
           circleIdx: clickedIdx,
           name,
         };
+
         return;
 
       case "floor":
         //
         room = object.parent;
-        room.onClick();
+        const center = calculateCenter(room.getShadowPoints());
+        const controller = scene.getObjectByName("rotationController");
+        controller.setPosition(center);
+        controller.visible = true;
         isChangingObject = {
           ...isChangingObject,
           changingObjectId: room.id,
@@ -420,9 +418,17 @@ const onMouseDown = (event) => {
         break;
     }
   } else if (isChangingObject.isDBClick && objectArr.length > 0) {
-    const { object } = objectArr[0];
-    const room = object.parent.parent;
-    const rotationController = room.getObjectByName("rotationController");
+    // let controller = objectArr.find((obj) =>
+    //   obj.object.name.incldues("controller")
+    // );
+    let controller = objectArr.find((obj) =>
+      obj.object.name.includes("controller")
+    );
+    if (!controller) return;
+    controller = controller.object;
+    if (controller.name !== "rotationController")
+      controller = controller.parent;
+    const rotationController = controller;
     rotationController.onMouseDown();
     return;
   } else if (isCreating.isSelect) {
@@ -434,11 +440,8 @@ const onMouseDown = (event) => {
           // 만들기 종료
           const obj = scene.getObjectByName("shadow");
 
-          // floor.material = material;
           obj.name = "room";
           obj.createRoom({ cameraZoom });
-          // const zz = new D2Floor({ points: zzzzz });
-          // scene.add(zz);
           isCreating = {
             isSelect: false,
             isDragging: false,
@@ -525,9 +528,9 @@ const onMouseMove = (event) => {
   if (!background) return;
   const arr = getIntersectsArray(raycaster);
 
-  if (arr.length > 0) {
+  if (arr.length > 0 && controls.enabled == false) {
     document.body.style.cursor = "pointer";
-  } else if (arr.length === 0) {
+  } else if (arr.length === 0 || controls.enabled) {
     document.body.style.cursor = "default";
   }
 
@@ -561,83 +564,38 @@ const onMouseMove = (event) => {
     room.updateLines({ points, circleIdx: isChangingObject.circleIdx });
   } else if (isChangingObject.isDBClick) {
     const room = scene.getObjectById(isChangingObject.changingObjectId);
-    const rotationController = room.getObjectByName("rotationController");
     const points = new THREE.Vector3(
       background.point.x,
       floorY,
       background.point.z
     );
-    // console.log(arr);
     if (
       !rotationController.isDragging &&
       arr.length > 0 &&
-      arr[0].object.name.includes("controller")
+      arr.find((ob) => ob.object.name.includes("controller"))
     ) {
       rotationController.onMouseMove({ points });
     } else if (rotationController.isDragging) {
-      rotationController.onMouseMove({ points });
+      rotationController.onMouseMove({ points, room });
     }
   }
-  // if (isDragging) {
-  //   // 화면 옮기기
-  //   const deltaMove = {
-  //     x: event.clientX - previousMousePosition.x,
-  //     y: event.clientY - previousMousePosition.y,
-  //   };
-
-  //   // 카메라 위치 업데이트
-  //   camera.position.x -= deltaMove.x / (maxZoom / cameraZoom); // 마우스 이동 속도와 동일하게 업데이트
-  //   camera.position.z -= deltaMove.y / (maxZoom / cameraZoom); // 마우스 이동 속도와 동일하게 업데이트
-  //   camera.lookAt(camera.position.x, 0, camera.position.z);
-
-  //   previousMousePosition = { x: event.clientX, y: event.clientY };
-  //   return;
-  // }
-
-  // if (isChangingObject.isDBClick) {
-  //   console.log("zzzzz");
-  //   if (xx) {
-  //     return;
-  //   }
-  //   let controller = raycaster.find((obj) =>
-  //     obj.object.name.includes("controller")
-  //   );
-
-  //   if (!controller) return;
-  //   controller = controller.object;
-  //   if (controller.parent) {
-  //     controller = controller.parent;
-  //   }
-  //   let changingObject;
-  //   if (controller.isDragging) {
-  //     changingObject = scene.getObjectById(isChangingObject.changingObjectId);
-  //   }
-  //   controller.onMouseMove({
-  //     object: changingObject,
-  //     points: {
-  //       x: background.point.x,
-  //       y: RotationControllerY,
-  //       z: background.point.z,
-  //     },
-  //   });
-  //   controller.getObjectByName("controllerRing").visible = true;
-  // }
 };
-
-const onDoubleClick = (event) => {};
 
 const onMouseUp = () => {
   if (controls.enabled) return;
   if (isChangingObject.isDragging) {
-    console.log("up!!");
-
     const room = scene.getObjectById(isChangingObject.changingObjectId);
     room.onMouseUp({ cameraZoom });
+
     isChangingObject = {
       ...isChangingObject,
       isDragging: false,
       circleIdx: null,
     };
+  }
+  const controller = scene.getObjectByName("rotationController");
+  if (controller.isDragging) {
+    controller.onMouseUp();
   }
   isDragging = false;
 };
@@ -661,17 +619,18 @@ const onCreateBtnClick = async (e) => {
   };
 
   const { id } = btn;
-  if (id === "chair") {
-    const chair = await chairCreator();
-    chair.name = "shadow";
-    chair.visible = false;
-    scene.add(chair);
-  } else if (id === "desk") {
-    const desk = await createDesk();
-    desk.name = "shadow";
-    desk.visible = false;
-    scene.add(desk);
-  }
+
+  // if (id === "chair") {
+  //   const chair = await chairCreator();
+  //   chair.name = "shadow";
+  //   chair.visible = false;
+  //   scene.add(chair);
+  // } else if (id === "desk") {
+  //   const desk = await createDesk();
+  //   desk.name = "shadow";
+  //   desk.visible = false;
+  //   scene.add(desk);
+  // }
 
   isCreating = {
     ...isCreating,
@@ -684,9 +643,10 @@ const create2DScene = () => {
   if (!scene) return;
   const D3Objects = [];
   scene.children.forEach((obj) => {
-    if (obj.name === "background" || obj.name === "helper") return;
-    D3Objects.push(obj);
-    scene.add(D2Shapes({ object: obj }));
+    if (obj.name === "room") {
+      D3Objects.push(obj);
+      scene.add(D2Shapes({ object: obj, cameraZoom }));
+    }
   });
   D3Objects.forEach((obj) => scene.remove(obj));
 };
@@ -695,10 +655,12 @@ const create3DScene = () => {
   if (!scene) return;
   const D3Objects = [];
   const D2Objects = [];
+  scene.getObjectByName("rotationController").visible = false;
   scene.children.forEach((obj) => {
-    if (obj.name === "background" || obj.name === "helper") return;
-    D2Objects.push(obj);
-    D3Objects.push(D3Shapes({ object: obj, scene }));
+    if (obj.name === "room") {
+      D2Objects.push(obj);
+      D3Objects.push(D3Shapes({ object: obj, scene }));
+    }
   });
   D2Objects.forEach((obj) => scene.remove(obj));
   D3Objects.forEach((obj) => {
@@ -732,17 +694,16 @@ const onChangeMode = (e) => {
       camera.lookAt(50, 50, 50);
       camera.position.set(50, 50, 50);
       controls.enabled = true;
-      // create3DScene();
+      return;
+      create3DScene();
       return;
   }
 };
 
-// 이벤트 리스너 추가
 window.addEventListener("mousedown", onMouseDown);
 window.addEventListener("mousemove", onMouseMove);
 window.addEventListener("mouseup", onMouseUp);
 window.addEventListener("wheel", onWheel);
-window.addEventListener("dblclick", onDoubleClick);
 
 hudIcon.addEventListener("click", onCreateBtnClick);
 modeToggles.addEventListener("click", onChangeMode);
