@@ -38,7 +38,7 @@ export class Arrow {
     group.rotation.z = -angle;
 
     const text = new Text({ text: `${width}mm` });
-    console.log(text);
+
     // let measure = new THREE.Vector3();
     // let box = text.getSize(measure);
     // console.log(text);
