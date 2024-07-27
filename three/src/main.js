@@ -711,7 +711,7 @@ const onSave = async () => {
   };
 
   const data = await axios.post("127.0.0.1/uri", { ...reqData });
-  console.log(data);
+  console.error(data);
 };
 
 window.addEventListener("mousedown", onMouseDown);
