@@ -89,7 +89,6 @@ public class ShopController {
     	return "client/shop/shopDetail";
     }
     
-    
     @GetMapping("/shop/shopUpdate/{shopNo}")
     public String shopUpdate(Pageable pageable, Model model, @PathVariable("shopNo") Long shopNo) {
     	Optional<ShopEntity> shop = shopService.getShopById(shopNo);
