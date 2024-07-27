@@ -1,5 +1,6 @@
 "use strict";
 
+import axios from "axios";
 import { calculateCenter, getClickedCircleIndex } from "./lib/calculater.js";
 import { OrbitControls } from "./lib/loader/OrbitControls.js";
 
@@ -17,6 +18,8 @@ export const floorY = 3;
 
 const wallpaper = "../public/img/wallpaper.png";
 
+const save = document.getElementById("save");
+console.log(save);
 const hudIcon = document.getElementById("hud-icon");
 const modeToggles = document.getElementById("modeToggles");
 
@@ -700,12 +703,24 @@ const onChangeMode = (e) => {
   }
 };
 
+const onSave = async () => {
+  const reqData = {
+    id: "example_userID",
+    project_id: new Date().getTime(),
+    data: {},
+  };
+
+  const data = await axios.post("127.0.0.1/uri", { ...reqData });
+  console.log(data);
+};
+
 window.addEventListener("mousedown", onMouseDown);
 window.addEventListener("mousemove", onMouseMove);
 window.addEventListener("mouseup", onMouseUp);
 window.addEventListener("wheel", onWheel);
 
 hudIcon.addEventListener("click", onCreateBtnClick);
+save.addEventListener("click", onSave);
 modeToggles.addEventListener("click", onChangeMode);
 // 애니메이션 루프
 
