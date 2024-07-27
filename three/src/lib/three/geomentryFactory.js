@@ -1,20 +1,22 @@
-import { THREE } from "../../three.js";
-import { getCoordsFromVectex } from "../calculater.js";
-// import { scene } from "../../main.js";
-import { D2Room, D3Room } from "./objects/Room.js";
-import { Circles } from "./objects/circles.js";
+import { D2Room, D3Room } from "../objects/Room";
+import { Circles } from "../objects/circles";
 
 export const D3Shapes = ({ object, scene }) => {
+  console.log(object);
   const room = new D3Room({ object });
 
   return room;
 };
 
-export const D2Shapes = ({ object, cameraZooom }) => {
+export const D2Shapes = ({ object, cameraZoom }) => {
   // 아마 room
-  const floor = object.getObjectByName("floor");
-  const points = getCoordsFromVectex(floor);
+  console.log(object);
+  const points = object.userData.points;
   const room = new D2Room({ points });
+  room.createRoom({ cameraZoom });
+  room.userData = {
+    ...object.userData,
+  };
 
   return room;
 };

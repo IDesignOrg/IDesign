@@ -1,42 +1,47 @@
+import { RotationController, material } from "../../main.js";
+
+import { Circles } from "./circles.js";
+import { D2Floor } from "./floor.js";
+import { ShadowLines } from "./shadowLines.js";
+import { D3Wall } from "./wall.js";
+import { Arrow } from "./Arrow.js";
+import { THREE } from "../loader/three.js";
 import {
-  RotationController,
-  RotationControllerY,
-  material,
-} from "../../../main.js";
-import { THREE } from "../../../three.js";
-import {
+  calculateArea,
   calculateCenter,
-  getCoordsFromVectex,
+  calculateDistance,
   getStraightLineX,
   getStraightLineZ,
-} from "../../calculater.js";
-import { floorName, roomName } from "../objectConf/objectNames";
-import { Circles } from "./circles.js";
-import { D2Floor, Shape } from "./floor.js";
-import { ShadowLines } from "./shadowLines.js";
-import { D2Wall, D3Wall, calculateAngle, wallHeight } from "./wall.js";
-import { uuidv4 } from "../../uuid.js";
+  calculateAngle,
+} from "../calculater.js";
 
 export class D3Room extends THREE.Group {
   constructor({ object }) {
     const room = super();
+    room.userData = {
+      ...object.userData,
+    };
+    const center = room.userData.center;
+    console.log(center);
+    room.position.set(center.x, center.y, center.z);
     room.name = "room";
     const floor = object.children.find((obj) => obj.name === "floor");
     if (!floor) return;
-    const points = getCoordsFromVectex(floor);
-    const newFloor = new D2Floor({ points });
+    const points = room.userData.points;
+    // const points = getCoordsFromVectex(floor);
+    const newFloor = new D2Floor({ points, center });
     // room.add(new wallDepth({ points }));
     newFloor.material = material;
     room.add(newFloor);
-    const walls = new D3Wall({ points });
+    const walls = new D3Wall({ points, center });
     room.add(walls);
-    const ceiling = new D2Floor({ points, height: 50 });
+    const ceiling = new D2Floor({ points, height: 50, center });
     room.add(ceiling);
     const chair = object.getObjectByName("chair");
     if (chair) {
       room.add(chair);
     }
-    const center = calculateCenter(points);
+    // const center = calculateCenter(points);
     const ambientLight = new THREE.AmbientLight(0xf0f0f0, 1.2); // Ambient light
     ambientLight.name = "light1";
     ambientLight.position.set(center.x, 50, center.z);
@@ -74,22 +79,20 @@ export class D2Room extends THREE.Group {
     if (this.getObjectByName("floor")) {
       this.remove(this.getObjectByName("floor"));
     }
-    const box = new THREE.Box3();
-    box.setFromCenterAndSize(
-      new THREE.Vector3(1, 1, 1),
-      new THREE.Vector3(2, 1, 3)
-    );
 
     // const helper = new THREE.Box3Helper(box, 0xffff00);
     // this.add(helper);
     const points = this.getShadowPoints();
+    const area = calculateArea(points);
     // console.log("createRoom points = ", points);
     const center = calculateCenter(points);
+
     this.position.set(center.x, center.y, center.z);
     const floor = new D2Floor({ points, center });
     this.userData = {
       ...this.userData,
       center,
+      area,
       points,
     };
     if (!this.getObjectByName("circleGroup")) {
@@ -101,27 +104,30 @@ export class D2Room extends THREE.Group {
     this.add(floor);
     const rotationController = new RotationController({ cameraZoom });
     rotationController.visible = false;
+    this.addArrow();
     // rotationController.position.set(0, 10, 0);
     this.add(rotationController);
   };
 
-  positioningChildren = () => {
-    return;
-    let center = calculateCenter(this.getShadowPoints());
-    center = {
-      x: -center.x,
-      y: center.y,
-      z: -center.z,
-    };
-    console.log("center = ", center);
-    this.children.forEach((child) => {
-      if (child.name === "rotationController") {
-        child.position.set(center.x, center.y, center.z);
-        console.log(child.position);
-      } else {
-        child.position.set(center.x, center.y, center.z);
-      }
-    });
+  addArrow = () => {
+    const points = this.getShadowPoints();
+
+    for (let i = 0; i < points.length; i++) {
+      // if (i !== 0) continue;
+      const arrowGroup = new THREE.Group();
+      const currentPoint = points[i];
+      const nextPoint = points[(i + 1) % points.length];
+      const width = calculateDistance(currentPoint, nextPoint);
+      const angle = calculateAngle(currentPoint, nextPoint);
+      const position = new THREE.Vector3(
+        (currentPoint.x + nextPoint.x) / 2 - this.position.x,
+        currentPoint.y,
+        (currentPoint.z + nextPoint.z) / 2 - this.position.z
+      );
+      const arrow = new Arrow({ width, angle, position });
+      arrowGroup.add(arrow);
+      this.add(arrowGroup);
+    }
   };
 
   createDots = ({ center }) => {
@@ -152,11 +158,6 @@ export class D2Room extends THREE.Group {
     let newPoints = circleGroup.children.map((circle) => circle.position);
 
     this.drawLines(newPoints);
-  };
-
-  onClick = () => {
-    const controller = this.getObjectByName("rotationController");
-    controller.visible = true;
   };
 
   onMouseUp = ({ cameraZoom }) => {

@@ -1,4 +1,4 @@
-import { THREE } from "../../../three.js";
+import { THREE } from "../loader/three";
 
 export class ShadowLines extends THREE.Line {
   constructor({ points }) {

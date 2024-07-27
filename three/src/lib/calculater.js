@@ -1,4 +1,4 @@
-import { THREE } from "../three.js";
+import { THREE } from "./loader/three.js";
 
 export const getCoordsFromVectex = (obj) => {
   const positionAttribute = obj.geometry.attributes.position;
@@ -11,6 +11,19 @@ export const getCoordsFromVectex = (obj) => {
 
   return coordinates;
 };
+
+export function calculateArea(points) {
+  let area = 0;
+  const n = points.length;
+
+  for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n;
+    area += points[i].x * points[j].z;
+    area -= points[j].x * points[i].z;
+  }
+
+  return Math.abs(area) / 2;
+}
 
 export function calculateCenter(points) {
   let sumX = 0,
@@ -42,18 +55,6 @@ export const getClickedCircleIndex = ({ background, floor, cg, object }) => {
     }
   }
   return null;
-  // let idx = null;
-  // const originPoints = getCoordsFromVectex(floor);
-  // const { point } = background;
-  // for (let i = 0; i < originPoints.length; i++) {
-  //   if (
-  //     Math.abs(originPoints[i].x - point.x) <= 5 &&
-  //     Math.abs(originPoints[i].z - point.z) <= 5
-  //   ) {
-  //     idx = i;
-  //     break;
-  //   }
-  // return idx;
 };
 
 export const getStraightLineZ = ({ originPoints, points, index }) => {
@@ -83,4 +84,15 @@ export const getStraightLineX = ({ originPoints, points, index }) => {
   }
 
   return points.x;
+};
+
+export const calculateAngle = (p1, p2) => {
+  return Math.atan2(p2.z - p1.z, p2.x - p1.x);
+};
+
+export const calculateDistance = (p1, p2) => {
+  const dx = p2.x - p1.x;
+
+  const dz = p2.z - p1.z;
+  return Math.sqrt(dx * dx + dz * dz);
 };
