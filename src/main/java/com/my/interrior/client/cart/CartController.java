@@ -34,6 +34,7 @@ public class CartController {
 	private final ShopOptionValueService shopOptionValueService;
 	private final CouponService couponService;
 	private final UserService userService;
+
 	private static int count = 0;
 	
 	//cart의 loadMyCarts()랑 이거랑 연관돼있음.
@@ -85,6 +86,7 @@ public class CartController {
 //		System.out.println("shopEntities: " + shopEntities);
 		
 		int total = 0;
+
 		//합계 구하기
 		for(int i = 1; i <= count; i++){
 			if(shopOptionValues.get(i - 1).getShopOptionPrice() != 0) {
