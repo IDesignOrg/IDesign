@@ -1,16 +1,25 @@
 // import { FontLoader } from "../loader/FontLoader/FontLoader.js";
 // import { loadedFont } from "../loader/FontLoader/FontLoader";
+import { MILLPerWidth } from "../../main";
 import { THREE } from "../loader/three";
 import { Text } from "./text";
 // import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 export class Arrow {
-  constructor({ width, angle, position }) {
+  constructor({ width, angle, position, cameraZoom }) {
     const group = new THREE.Group();
+    group.name = "MILLI";
+
+    const text = new Text({
+      text: `${(width / MILLPerWidth).toFixed(2)}mm`,
+      angle,
+      cameraZoom,
+      position,
+    });
     const shape = new THREE.Shape();
-    const arrowWidth = 5;
-    const arrowHeight = 10;
-    const shaftWidth = width - arrowHeight * 2;
-    const shaftHeight = 5;
+    const arrowWidth = 2;
+    const arrowHeight = 2;
+    const shaftWidth = width - arrowHeight * 5;
+    const shaftHeight = 1;
 
     // 좌우 화살표 그리기
     shape.moveTo(-shaftWidth / 2, shaftHeight / 2);
@@ -29,7 +38,7 @@ export class Arrow {
 
     const geometry = new THREE.ShapeGeometry(shape);
     const material = new THREE.MeshBasicMaterial({
-      color: 0x00ff00,
+      color: "black",
       side: THREE.DoubleSide,
     });
     const mesh = new THREE.Mesh(geometry, material);
@@ -37,11 +46,6 @@ export class Arrow {
     group.rotation.x = -Math.PI / 2;
     group.rotation.z = -angle;
 
-    const text = new Text({ text: `${width}mm` });
-
-    // let measure = new THREE.Vector3();
-    // let box = text.getSize(measure);
-    // console.log(text);
     group.add(text);
     group.add(mesh);
 
