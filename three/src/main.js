@@ -15,6 +15,7 @@ import { D2Room } from "./lib/objects/Room.js";
 import { THREE } from "./lib/loader/three.js";
 
 export const floorY = 3;
+export const MILLPerWidth = 0.1;
 
 const wallpaper = "../public/img/wallpaper.png";
 
@@ -69,48 +70,6 @@ controls.enabled = false;
 const composer = new EffectComposer(renderer);
 const renderPass = new RenderPass(scene, camera);
 composer.addPass(renderPass);
-
-// //
-// //
-// //
-// //
-// //
-// const gro = new THREE.Group();
-// gro.position.set(10, 2, 10);
-// const pg = new THREE.PlaneGeometry(50, 50);
-// const m = new THREE.MeshBasicMaterial({
-//   color: 0xffff00,
-//   side: THREE.DoubleSide,
-// });
-// const p = new THREE.Mesh(pg, m);
-// // p.position.set(10, 2, 10);
-// p.position.y = 2;
-// p.rotation.x = Math.PI / 2;
-// gro.add(p);
-// scene.add(gro);
-
-// const pg2 = new THREE.PlaneGeometry(51, 51);
-// const m2 = new THREE.MeshBasicMaterial({
-//   color: "red",
-//   side: THREE.DoubleSide,
-// });
-// const p2 = new THREE.Mesh(pg2, m2);
-// p2.position.set(10, 2, 10);
-// p2.position.y = 2;
-// p2.rotation.x = Math.PI / 2;
-// scene.add(p2);
-// //
-// //
-// //
-// //
-// //
-// //
-// //
-// //
-// //
-// //
-// //
-// //
 
 export class RotationController extends THREE.Group {
   constructor({ cameraZoom = 250 }) {
@@ -261,23 +220,6 @@ gridHelper.name = "helper";
 gridHelper.position.y = -1;
 scene.add(gridHelper);
 
-// const box = new THREE.Box3();
-// box.setFromCenterAndSize(
-//   new THREE.Vector3(1, 1, 1),
-//   new THREE.Vector3(2, 1, 3)
-// );
-
-// const helper = new THREE.Box3Helper(box, 0xffff00);
-// scene.add(helper);
-//
-
-//
-//
-//
-
-// const rotationController = new RotationController({ cameraZoom });
-// scene.add(rotationController);
-
 // Texture 로드
 const texture = new THREE.TextureLoader().load(
   wallpaper,
@@ -344,21 +286,6 @@ const updateShadows = ({ object, background }) => {
     new THREE.Vector3(object.clickedPoints.x, floorY, background.point.z),
   ];
   object.drawLines(points);
-  // const floor = object.getObjectByName("floor");
-  // if (!floor) return;
-  // const coordsArr = getCoordsFromVectex(floor);
-  // const originPoint = coordsArr[0];
-  // if (!originPoint) return;
-  // const parent = floor.parent;
-  // if (!parent) return;
-  // const points = [
-  //   new THREE.Vector3(originPoint.x, floorY, originPoint.z),
-  //   new THREE.Vector3(background.point.x, floorY, originPoint.z),
-  //   new THREE.Vector3(background.point.x, floorY, background.point.z),
-  //   new THREE.Vector3(originPoint.x, floorY, background.point.z),
-  // ];
-  // parent.userData.points = points;
-  // parent.drawShadow({ points });
 };
 
 const onMouseDown = (event) => {
@@ -397,7 +324,6 @@ const onMouseDown = (event) => {
         isChangingObject = {
           ...isChangingObject,
           changingObjectId: room.id,
-          // isDBClick: true,
           isDragging: true,
           circleIdx: clickedIdx,
           name,
@@ -711,7 +637,7 @@ const onSave = async () => {
   };
 
   const data = await axios.post("127.0.0.1/uri", { ...reqData });
-  console.error(data);
+  console.log(data);
 };
 
 window.addEventListener("mousedown", onMouseDown);
