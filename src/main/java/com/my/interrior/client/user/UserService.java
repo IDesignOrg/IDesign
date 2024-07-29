@@ -35,7 +35,7 @@ public class UserService {
         return UserId;
 
     }
-    
+
     public UserEntity checkUserByEmail(String email) {
     	UserEntity user = userRepository.findByUMail(email);
     	
