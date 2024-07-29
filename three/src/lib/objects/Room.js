@@ -14,6 +14,7 @@ import {
   getStraightLineZ,
   calculateAngle,
 } from "../calculater.js";
+import { Text } from "./text.js";
 
 export class D3Room extends THREE.Group {
   constructor({ object }) {
@@ -83,7 +84,11 @@ export class D2Room extends THREE.Group {
     // const helper = new THREE.Box3Helper(box, 0xffff00);
     // this.add(helper);
     const points = this.getShadowPoints();
-    const area = calculateArea(points);
+    const area = new Text({ text: String(calculateArea(points) + " m2") });
+    area.rotation.x = -Math.PI / 2;
+    area.position.y = 10;
+    this.add(area);
+
     // console.log("createRoom points = ", points);
     const center = calculateCenter(points);
 
@@ -104,27 +109,36 @@ export class D2Room extends THREE.Group {
     this.add(floor);
     const rotationController = new RotationController({ cameraZoom });
     rotationController.visible = false;
-    this.addArrow();
+    this.addArrow({ cameraZoom });
     // rotationController.position.set(0, 10, 0);
     this.add(rotationController);
   };
 
-  addArrow = () => {
+  addArrow = ({ cameraZoom }) => {
     const points = this.getShadowPoints();
 
     for (let i = 0; i < points.length; i++) {
-      // if (i !== 0) continue;
       const arrowGroup = new THREE.Group();
       const currentPoint = points[i];
       const nextPoint = points[(i + 1) % points.length];
       const width = calculateDistance(currentPoint, nextPoint);
       const angle = calculateAngle(currentPoint, nextPoint);
-      const position = new THREE.Vector3(
-        (currentPoint.x + nextPoint.x) / 2 - this.position.x,
+      const offset = 10;
+      const midX = (currentPoint.x + nextPoint.x) / 2;
+      const midZ = (currentPoint.z + nextPoint.z) / 2;
+      const adjustedPosition = new THREE.Vector3(
+        midX - offset * Math.sin(angle),
         currentPoint.y,
-        (currentPoint.z + nextPoint.z) / 2 - this.position.z
+        midZ + offset * Math.cos(angle)
       );
-      const arrow = new Arrow({ width, angle, position });
+
+      const position = new THREE.Vector3(
+        adjustedPosition.x - this.position.x,
+        adjustedPosition.y,
+        adjustedPosition.z - this.position.z
+      );
+
+      const arrow = new Arrow({ width, angle, position, cameraZoom });
       arrowGroup.add(arrow);
       this.add(arrowGroup);
     }
@@ -164,146 +178,3 @@ export class D2Room extends THREE.Group {
     this.createRoom({ cameraZoom });
   };
 }
-
-// function getAngle(p1, p2) {
-//   const dx = p2.x - p1.x;
-//   const dz = p2.z - p1.z;
-//   return Math.atan2(dz, dx) * (180 / Math.PI);
-// }
-// const checkAngleAndSnap = ({ index, points }) => {
-//   const prevIndex = (index - 1 + points.length) % points.length;
-//   const nextIndex = (index + 1) % points.length;
-
-//   const anglePrev = getAngle(points[prevIndex], points[index]);
-//   const angleNext = getAngle(points[index], points[nextIndex]);
-//   if (Math.abs(anglePrev - 90) < 5) {
-//     snapToAngle(points[prevIndex], points[index], 90);
-//   } else if (Math.abs(anglePrev - 180) < 5) {
-//     snapToAngle(points[prevIndex], points[index], 180);
-//   }
-//   if (Math.abs(angleNext - 90) < 5) {
-//     snapToAngle(points[index], points[nextIndex], 90);
-//     // snapToAngle(points[index], points[nextIndex], 90);
-//   } else if (Math.abs(angleNext - 180) < 5) {
-//     snapToAngle(points[index], points[nextIndex], 180);
-//     // snapToAngle(points[index], points[nextIndex], 180);
-//   }
-// };
-
-// function snapToAngle(p1, p2, angle) {
-//   const dx = p2.x - p1.x;
-//   const dz = p2.z - p1.z;
-//   const distance = Math.sqrt(dx * dx + dz * dz);
-//   const radian = angle * (Math.PI / 180);
-
-//   p2.x = p1.x + Math.cos(radian) * distance;
-//   p2.z = p1.z + Math.sin(radian) * distance;
-// }
-
-// const getCoordsFromVectex = (obj) => {
-//   const positionAttribute = obj.geometry.attributes.position;
-//   const coordinates = [];
-//   for (let i = 0; i < positionAttribute.count; i++) {
-//     const vertex = new THREE.Vector3();
-//     vertex.fromBufferAttribute(positionAttribute, i);
-//     coordinates.push(new THREE.Vector3(vertex.x, 1, -vertex.y));
-//   }
-
-//   return coordinates;
-// };
-
-// // for 3d
-// const createPlaneFromPoints = (points) => {
-//   const shape = new THREE.Shape();
-//   /*
-//     z축 기준으로 반대방향
-//     why...?
-//      */
-//   shape.moveTo(points[0].x, -points[0].z); // z축을 y축으로 사용하여 평면 도형 정의
-//   for (let i = 1; i < points.length; i++) {
-//     shape.lineTo(points[i].x, -points[i].z);
-//   }
-//   shape.lineTo(points[0].x, -points[0].z); // 마지막 점을 처음 점에 연결
-
-//   const geometry = new THREE.ShapeGeometry(shape);
-//   const material = new THREE.MeshBasicMaterial({
-//     color: "green",
-//     side: THREE.DoubleSide,
-//   });
-//   const mesh = new THREE.Mesh(geometry, material);
-//   mesh.rotation.x = -Math.PI / 2;
-//   return mesh;
-// };
-
-// import * as THREE from "../three.module.js";
-// import { roomName } from "../objectConf/objectNames.js";
-// import {
-//   ceilingHeight,
-//   planeLength,
-//   planeWidth,
-// } from "../objectConf/length.js";
-// import { Floor } from "./floor.js";
-// import { Ceiling } from "./ceiling.js";
-// import { Wall } from "./wall.js";
-// import { Resizer } from "./resizer.js";
-
-// class Room {
-//   constructor({
-//     x = 0,
-//     y = 0,
-//     z = 0,
-//     width = planeWidth,
-//     length = planeLength,
-//   }) {
-//     const room = new THREE.Group();
-//     room.name = roomName;
-
-//     const floor = new Floor({ x, y, z, width, length });
-//     room.add(floor);
-//     const ceil = new Ceiling({ x, z, rotationY: -Math.PI / 1 });
-//     room.add(ceil);
-//     const westwall = new Wall({
-//       x,
-//       z: z + length / 2,
-//       y: ceilingHeight / 2 + y,
-//       width,
-//       length: ceilingHeight,
-//     });
-//     const eastwall = new Wall({
-//       x,
-//       z: z - length / 2,
-//       y: ceilingHeight / 2 + y,
-//       width,
-//       length: ceilingHeight,
-//       rotationY: -Math.PI / 1,
-//     });
-//     const southwall = new Wall({
-//       x: x - width / 2,
-//       z: z,
-//       y: ceilingHeight / 2 + y,
-//       width: length,
-//       length: ceilingHeight,
-//       rotationY: -Math.PI / 2,
-//     });
-//     const northwall = new Wall({
-//       x: x + width / 2,
-//       z: z,
-//       y: ceilingHeight / 2 + y,
-//       width: length,
-//       length: ceilingHeight,
-//       rotationY: Math.PI / 2,
-//     });
-
-//     room.add(westwall);
-//     room.add(eastwall);
-//     room.add(southwall);
-//     room.add(northwall);
-
-//     const resizer = new Resizer({ width, length, floor });
-
-//     room.add(resizer);
-//     return room;
-//   }
-// }
-
-// export { Room };
