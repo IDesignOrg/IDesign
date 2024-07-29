@@ -119,6 +119,8 @@ public class CartController {
 		model.addAttribute("couponEntities", couponEntities);
 		model.addAttribute("total", formattedTotal);
 		model.addAttribute("cartEntities", cartEntities);
+		model.addAttribute("cartSize", cartEntities.size());
+		System.out.println("cartSize는 : " + cartEntities.size());
 		model.addAttribute("cartOptions", cartOptions);
 		// shop_option_value 테이블이 전부 들어가있음.
 		model.addAttribute("shopOptionValues", shopOptionValues);
