@@ -438,7 +438,7 @@
 			}
 			
 			var discountedAmount = 0;
-			var couponNo = 0;
+
 			$(document).ready(function () {
 				applyCoupon();
 
@@ -455,11 +455,23 @@
 					var finalPayText = $('#finalPay').text();
 					var price = parseInt(finalPayText.replace(/[^\d]/g, ''), 10);
 					console.log("amount: ", price);
+					var finalPayText = $('#finalPay').text();
+					var price = parseInt(finalPayText.replace(/[^\d]/g, ''), 10);
+					console.log("amount: ", price);
 
 					var firstProductTitle = $('.product-title').first().text();
 					cartSize = parseInt(cartSize);
 					var shopTitle = firstProductTitle;
+					var firstProductTitle = $('.product-title').first().text();
+					cartSize = parseInt(cartSize);
+					var shopTitle = firstProductTitle;
 
+					if (cartSize > 1) {
+						shopTitle += " 외 " + (cartSize - 1) + "건";
+					}
+
+					var IMP = window.IMP;
+					IMP.init("imp64382832");
 					if (cartSize > 1) {
 						shopTitle += " 외 " + (cartSize - 1) + "건";
 					}
@@ -518,15 +530,8 @@
 										buyerTel: res.buyer_tel,
 										message: message
 									})
-								}),
-								//주문 내역 저장
-								$.ajax({
-									url:'/save/ordered',
-									type:'POST'
 								})
-							).done(function (paymentRes, shipmentRes, orderedRes) {
-								$.when(
-									
+							).done(function (paymentRes, shipmentRes) {
 								$.ajax({
 									url: '/payment/info',
 									type: 'POST',
@@ -534,35 +539,15 @@
 									data: JSON.stringify({
 										paymentInfo: paymentRes[0],
 										shipmentInfo: shipmentRes[0]
-									})
-								}),
-								
-								$.ajax({
-									//쿠폰 처리 쓴 쿠폰 확인은 쓴 날짜로 함
-									// 안 썼을 때는 쿠폰에 date가 null임
-									url:'/coupon/clear',
-									type:'PATCH',
-									data:{
-										couponNo:couponNo
+									}),
+									//여기 원래 안 썼었음.하.............
+									success:function(res){
+										window.location.href="/payment/info";
 									}
-								}),
-								$.ajax({
-									//장바구니 전부 삭제
-									url:'/delete/all/cart',
-									type:'DELETE'
-								})
-								).done(function(res1, response, res2){
-									
-									window.location.href = "/payment/info";
-									
-								}).fail(function(jqXHR, textStatus, errorThrown){
-									//실패 시
-									console.log("쿠폰 변경 실패:", textStatus, errorThrown);
 								});
 								//이제 여기서 장바구니 지우고 쿠폰 쓴 건 지워야됨.
 								//장바구니 지우는 건 둘째치고 /payment/info에서 쿠폰을 status를 활용해서
 								//구현해보자.(이미 사용한 쿠폰입니다.) 이런 식으로 ㄱㄱㄱ
-
 							}).fail(function (jqXHR, textStatus, errorThrown) {
 								console.log("요청 실패: ", textStatus, errorThrown);
 							});
@@ -580,13 +565,12 @@
 			function applyCoupon() {
 				var totalAmountText = document.getElementById('total').innerText;
 				var totalAmount = parseFloat(totalAmountText.replace(/[^\d]/g, ''));
+				var totalAmount = parseFloat(totalAmountText.replace(/[^\d]/g, ''));
 
 				var couponSelect = document.getElementById('coupon-select');
 				var selectedOption = couponSelect.options[couponSelect.selectedIndex];
 				var selectedValue = selectedOption.value;
 				couponNo = selectedOption.getAttribute('data-coupon-no');
-
-				console.log("couponNo: ", couponNo);
 
 				var discount = parseFloat(selectedValue);
 
@@ -596,10 +580,12 @@
 				if (!isNaN(discount)) {
 					var discountAmount = totalAmount * (discount / 100);
 					discountedAmount = totalAmount - discountAmount;
+					discountedAmount = totalAmount - discountAmount;
 
 					couponDiscountElement.innerText = formatCurrency(discountAmount);
 					finalPayElement.innerText = formatCurrency(discountedAmount);
 				} else {
+					discountedAmount = totalAmount;
 					discountedAmount = totalAmount;
 					couponDiscountElement.innerText = formatCurrency(0);
 					finalPayElement.innerText = formatCurrency(discountedAmount);
@@ -609,6 +595,9 @@
 			function sample4_execDaumPostcode() {
 				new daum.Postcode({
 					oncomplete: function (data) {
+						var roadAddr = data.roadAddress;
+						var extraRoadAddr = '';
+
 						var roadAddr = data.roadAddress;
 						var extraRoadAddr = '';
 
