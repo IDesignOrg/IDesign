@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.my.interrior.client.event.coupon.CouponEntity;
@@ -58,37 +59,41 @@ public class CouponRestController {
 			return ResponseEntity.ok("쿠폰 발급이 완료되었습니다. 마이페이지의 내 쿠폰함에서 확인해주세요.");
 		}
 	}
-	
+
 	@GetMapping("/my/coupons")
-	public ResponseEntity<List<CouponEntity>> showMyCoupons(HttpSession session){
+	public ResponseEntity<List<CouponEntity>> showMyCoupons(HttpSession session) {
 		String userId = (String) session.getAttribute("UId");
-		
+
 		UserEntity user = userRepository.findByUId(userId);
-		
+
 		List<CouponMapEntity> couponMapEntities = couponMap.findByuserEntity(user);
-		//여기가 마이페이지의 쿠폰인데 여기서 used인지 확인하고 썼으면 ㄴㄴ
+		// 여기가 마이페이지의 쿠폰인데 여기서 used인지 확인하고 썼으면 ㄴㄴ
 		List<CouponEntity> validCoupons = couponMapEntities.stream()
-										.filter(couponMap -> couponMap.getUsedDate() == null) // used_date가 null인 쿠폰만 가져오기
-										.map(CouponMapEntity::getCouponEntity) // CouponMapEntity에서 CouponEntity를 추출
-										.collect(Collectors.toList());
-		
+				.filter(couponMap -> couponMap.getUsedDate() == null) // used_date가 null인 쿠폰만 가져오기
+				.map(CouponMapEntity::getCouponEntity) // CouponMapEntity에서 CouponEntity를 추출
+				.collect(Collectors.toList());
+
 		return ResponseEntity.ok(validCoupons);
 	}
-	
+
 	@Transactional
-	@PatchMapping("/coupon/clear/{couponNo}")
-	public ResponseEntity<?> patchCoupon(@PathVariable("couponNo") Long couponNo) {
-		
-		CouponMapEntity coupon = couponService.getCouponBycouponNos(couponNo);
-		
-		coupon.setUsed(true);
-		coupon.setUsedDate(LocalDate.now());
-		
-		System.out.println("coupon의 값은? 변경되었을 때 : " + coupon);
-		
-		couponMap.save(coupon);
-		
-		return ResponseEntity.ok("success");
+	@PatchMapping("/coupon/clear")
+	public ResponseEntity<?> patchCoupon(@RequestParam(value = "couponNo", required = false) Long couponNo) {
+		if (couponNo == null) {
+			return ResponseEntity.ok("success");
+		} else {
+
+			CouponMapEntity coupon = couponService.getCouponBycouponNos(couponNo);
+
+			coupon.setUsed(true);
+			coupon.setUsedDate(LocalDate.now());
+
+			System.out.println("coupon의 값은? 변경되었을 때 : " + coupon);
+
+			couponMap.save(coupon);
+
+			return ResponseEntity.ok("success");
+		}
 	}
-	
+
 }
