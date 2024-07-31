@@ -8,4 +8,6 @@ public interface CartRepository extends JpaRepository<CartEntity, Long>{
 
 	List<CartEntity> findByUserEntity_UId(String UId);
 	int countByUserEntity_UId(String UId);
+	List<CartEntity> findByUserEntity_UNo(Long UNo);
+	void deleteAllByUserEntity_UNo(Long userNo);
 }
