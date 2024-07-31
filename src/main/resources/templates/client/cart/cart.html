@@ -371,14 +371,13 @@
 					<label for="coupon-select">쿠폰 선택:</label>
 					<select id="coupon-select" name="couponSelect" onchange="applyCoupon()">
 						<option value="">쿠폰을 선택하세요</option>
-						<!-- 쿠폰이 있는 경우 -->
 						<div th:if="${couponEntities != null}">
 							<div th:each="couponEntity : ${couponEntities}">
-								<option th:value="${couponEntity.couponDiscount}" th:text="${couponEntity.couponName}">
+								<option th:value="${couponEntity.couponDiscount}" th:text="${couponEntity.couponName}"
+									th:attr="data-coupon-no=${couponEntity.couponNo}">
 								</option>
 							</div>
 						</div>
-						<!-- 쿠폰이 없는 경우 -->
 						<div th:if="${couponEntities == null || #lists.isEmpty(couponEntities)}">
 							<option value="no">쿠폰이 없습니다.</option>
 						</div>
@@ -409,7 +408,7 @@
 
 		<script>
 			var discountedAmount = 0;
-
+			var couponNo = 0;
 			$(document).ready(function () {
 				applyCoupon();
 
@@ -491,6 +490,8 @@
 									})
 								})
 							).done(function (paymentRes, shipmentRes) {
+								$.when(
+									
 								$.ajax({
 									url: '/payment/info',
 									type: 'POST',
@@ -498,15 +499,29 @@
 									data: JSON.stringify({
 										paymentInfo: paymentRes[0],
 										shipmentInfo: shipmentRes[0]
-									}),
-									//여기 원래 안 썼었음.하.............
-									success:function(res){
-										window.location.href="/payment/info";
+									})
+								}),
+								$.ajax({
+									//쿠폰 처리 쓴 쿠폰 확인은 쓴 날짜로 함
+									// 안 썼을 때는 쿠폰에 date가 null임
+									url:'/coupon/clear/' + couponNo,
+									type:'PATCH',
+									data:{
+										couponNo:couponNo
 									}
+								})
+								).done(function(res1, response){
+									
+									window.location.href = "/payment/info";
+									
+								}).fail(function(jqXHR, textStatus, errorThrown){
+									//실패 시
+									console.log("쿠폰 변경 실패:", textStatus, errorThrown);
 								});
 								//이제 여기서 장바구니 지우고 쿠폰 쓴 건 지워야됨.
 								//장바구니 지우는 건 둘째치고 /payment/info에서 쿠폰을 status를 활용해서
 								//구현해보자.(이미 사용한 쿠폰입니다.) 이런 식으로 ㄱㄱㄱ
+
 							}).fail(function (jqXHR, textStatus, errorThrown) {
 								console.log("요청 실패: ", textStatus, errorThrown);
 							});
@@ -526,7 +541,11 @@
 				var totalAmount = parseFloat(totalAmountText.replace(/[^\d]/g, ''));
 
 				var couponSelect = document.getElementById('coupon-select');
-				var selectedValue = couponSelect.options[couponSelect.selectedIndex].value;
+				var selectedOption = couponSelect.options[couponSelect.selectedIndex];
+				var selectedValue = selectedOption.value;
+				couponNo = selectedOption.getAttribute('data-coupon-no');
+
+				console.log("couponNo: ", couponNo);
 
 				var discount = parseFloat(selectedValue);
 

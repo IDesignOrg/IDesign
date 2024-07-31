@@ -28,4 +28,8 @@ public class CouponService {
 	public List<CouponEntity> getCouponEntitiesBycouponNos(List<Long> couponNos){
 		return couponRepository.findByCouponNoIn(couponNos);
 	}
+	
+	public CouponMapEntity getCouponBycouponNos(Long couponNo) {
+		return couponMapRepository.findBycouponEntity_couponNo(couponNo);
+	}
 }
