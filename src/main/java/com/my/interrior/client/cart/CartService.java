@@ -71,4 +71,6 @@ public class CartService {
 	public int getAllCartsByUserId(String userId) {
 		return cartRepository.countByUserEntity_UId(userId);
 	}
+	
+
 }
