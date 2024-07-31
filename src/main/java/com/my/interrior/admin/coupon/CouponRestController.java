@@ -7,7 +7,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -64,11 +66,29 @@ public class CouponRestController {
 		UserEntity user = userRepository.findByUId(userId);
 		
 		List<CouponMapEntity> couponMapEntities = couponMap.findByuserEntity(user);
+		//여기가 마이페이지의 쿠폰인데 여기서 used인지 확인하고 썼으면 ㄴㄴ
+		List<CouponEntity> validCoupons = couponMapEntities.stream()
+										.filter(couponMap -> couponMap.getUsedDate() == null) // used_date가 null인 쿠폰만 가져오기
+										.map(CouponMapEntity::getCouponEntity) // CouponMapEntity에서 CouponEntity를 추출
+										.collect(Collectors.toList());
 		
-		List<CouponEntity> coupons = couponMapEntities.stream()
-				.map(CouponMapEntity::getCouponEntity)
-				.collect(Collectors.toList());
-		
-		return ResponseEntity.ok(coupons);
+		return ResponseEntity.ok(validCoupons);
 	}
+	
+	@Transactional
+	@PatchMapping("/coupon/clear/{couponNo}")
+	public ResponseEntity<?> patchCoupon(@PathVariable("couponNo") Long couponNo) {
+		
+		CouponMapEntity coupon = couponService.getCouponBycouponNos(couponNo);
+		
+		coupon.setUsed(true);
+		coupon.setUsedDate(LocalDate.now());
+		
+		System.out.println("coupon의 값은? 변경되었을 때 : " + coupon);
+		
+		couponMap.save(coupon);
+		
+		return ResponseEntity.ok("success");
+	}
+	
 }

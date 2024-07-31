@@ -125,13 +125,24 @@
 				url: '/my/coupons',
 				success: function (coupons) {
 					console.log('coupons까지 잘 가져옴: ', coupons);
-					displayCoupons(coupons);
+					if (coupons != null) {
+
+						displayCoupons(coupons);
+					} else {
+						thereIsNoCoupon();
+					}
 				},
 				error: function (xhr, status, error) {
 					alert(error);
 				}
 			});
 		}
+
+		function thereIsNoCoupon() {
+			var couponListDiv = document.getElementById("couponList");
+			couponListDiv.innerHTML = "가지고 있는 쿠폰이 없습니다.";
+		}
+
 		function displayCoupons(coupons) {
 			var couponListDiv = document.getElementById("couponList");
 			couponListDiv.innerHTML = "";
@@ -145,12 +156,12 @@
 				<p><strong>사용 기한:</strong> ${coupon.couponStartAt} ~ ${coupon.couponEndAt}</p>
 				<hr>
 				`;
-				
+
 				couponListDiv.appendChild(couponItem);
 			});
 		}
-		function updateUserInfo(){
-			window.location.href ='/mypage/mypageUpdate';
+		function updateUserInfo() {
+			window.location.href = '/mypage/mypageUpdate';
 		}
 	</script>
 </head>
