@@ -36,7 +36,7 @@ public class CartEntity {
     private List<CartOptionEntity> cartOptions;
 
     @ManyToOne
-    @JoinColumn(name = "u_id")
+    @JoinColumn(name = "u_no")
     private UserEntity userEntity;
 
     @ManyToOne

@@ -316,7 +316,11 @@
 		<div class="header">
 			<h1>장바구니</h1>
 		</div>
-		<div class="main-content">
+		<div th:if="${cartEntities == null}">
+			<p>장바구니가 비어있습니다.</p>
+			<button type = "button" onclick="goToShop()">쇼핑하러 가기</button>
+		</div>
+		<div class="main-content" th:unless = "cartEntities == null">
 			<input type="hidden" id="cart-size" th:value="${cartSize}" />
 			<div class="cart-item" th:each="cartEntity, iterStat : ${cartEntities}">
 				<img class="product-image" th:src="${cartEntity.shopEntity.shopMainPhoto}" alt="상품 이미지" />
@@ -407,6 +411,11 @@
 		</div>
 
 		<script>
+			
+			function goToShop(){
+				window.location.href="/auth/shopList";
+			}
+			
 			var discountedAmount = 0;
 			var couponNo = 0;
 			$(document).ready(function () {
@@ -501,16 +510,22 @@
 										shipmentInfo: shipmentRes[0]
 									})
 								}),
+								
 								$.ajax({
 									//쿠폰 처리 쓴 쿠폰 확인은 쓴 날짜로 함
 									// 안 썼을 때는 쿠폰에 date가 null임
-									url:'/coupon/clear/' + couponNo,
+									url:'/coupon/clear',
 									type:'PATCH',
 									data:{
 										couponNo:couponNo
 									}
+								}),
+								$.ajax({
+									//장바구니 전부 삭제
+									url:'/delete/all/cart',
+									type:'DELETE'
 								})
-								).done(function(res1, response){
+								).done(function(res1, response, res2){
 									
 									window.location.href = "/payment/info";
 									
