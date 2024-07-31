@@ -14,11 +14,13 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "couponMap")
 @Getter
 @Setter
+@ToString
 public class CouponMapEntity {
 
     @Id
