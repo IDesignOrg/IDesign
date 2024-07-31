@@ -321,6 +321,11 @@
 			<button type = "button" onclick="goToShop()">쇼핑하러 가기</button>
 		</div>
 		<div class="main-content" th:unless = "cartEntities == null">
+		<div th:if="${cartEntities == null}">
+			<p>장바구니가 비어있습니다.</p>
+			<button type = "button" onclick="goToShop()">쇼핑하러 가기</button>
+		</div>
+		<div class="main-content" th:unless = "cartEntities == null">
 			<input type="hidden" id="cart-size" th:value="${cartSize}" />
 			<div class="cart-item" th:each="cartEntity, iterStat : ${cartEntities}">
 			<input type = "hidden" id = "cart-no" th:value="${cartEntity.CNo}"/>
@@ -417,26 +422,6 @@
 			
 			function goToShop(){
 				window.location.href="/auth/shopList";
-			}
-			
-			//장바구니 선택 삭제
-			function removeItem(button){
-				var CNo = button.closest('.cart-item').querySelector('#cart-no').value;
-				console.log('CNo의 값은', CNo);
-				$.ajax({
-					url:'/delete/cart',
-					type:'DELETE',
-					data:{
-						CNo: CNo
-					},
-					success: function(res){
-						alert('삭제가 완료되었습니다.');
-						window.location.href='/my/cart'; // 리다이렉트
-					},
-					error: function(xhr, status, error){
-						console.log("에러 발생: ", error);
-					}
-				});
 			}
 			
 			var discountedAmount = 0;
@@ -545,16 +530,22 @@
 										shipmentInfo: shipmentRes[0]
 									})
 								}),
+								
 								$.ajax({
 									//쿠폰 처리 쓴 쿠폰 확인은 쓴 날짜로 함
 									// 안 썼을 때는 쿠폰에 date가 null임
-									url:'/coupon/clear/' + couponNo,
+									url:'/coupon/clear',
 									type:'PATCH',
 									data:{
 										couponNo:couponNo
 									}
+								}),
+								$.ajax({
+									//장바구니 전부 삭제
+									url:'/delete/all/cart',
+									type:'DELETE'
 								})
-								).done(function(res1, response){
+								).done(function(res1, response, res2){
 									
 									window.location.href = "/payment/info";
 									
