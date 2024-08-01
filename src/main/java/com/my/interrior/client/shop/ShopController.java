@@ -50,12 +50,12 @@ public class ShopController {
             @RequestParam("price[]") List<String> price) throws IOException {
     	System.out.println("우선 보내긴");
         // Main Photo 업로드
-        String shopMainPhotoUrl = shopService.uploadFile(shopMainPhoto, shopTitle);
+        String shopMainPhotoUrl = shopService.uploadFile(shopMainPhoto);
         
         // Description Images 업로드
         List<String> descriptionImageUrls = new ArrayList<>();
         for (MultipartFile file : descriptionImages) {
-            String url = shopService.uploadFile(file, shopTitle);
+            String url = shopService.uploadFile(file);
             descriptionImageUrls.add(url);
         }
         
@@ -123,11 +123,27 @@ public class ShopController {
     	return "client/shop/shopUpdate";
     }
 
-    @GetMapping("/auth/shopReview/{shopNo}")
+    @GetMapping("/shopReview/{shopNo}")
     public String shopReview(Model model, @PathVariable("shopNo") Long shopNo) {
     	Optional<ShopEntity> shops = shopService.getShopById(shopNo);
     	model.addAttribute("shops", shops.get());
     	return "client/shop/shopReview";
+    }
+    
+    @PostMapping("/shopReview")
+    public String shopReview(
+    		@RequestParam("shopNo") Long shopNo,
+            @RequestParam("starpoint") double starpoint,
+            @RequestParam("shopContent") String shopContent,
+            @RequestParam("descriptionImages") MultipartFile[] descriptionImages,
+            RedirectAttributes redirectAttributes) {
+    	try {
+            shopService.shopReviewWrite(shopNo, starpoint, shopContent, descriptionImages);
+            redirectAttributes.addFlashAttribute("message", "리뷰가 성공적으로 작성되었습니다.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "리뷰 작성 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    return "redirect:/client/shop/shopList";
     }
 
 }

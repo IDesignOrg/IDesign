@@ -5,92 +5,132 @@
 	<meta charset="UTF-8">
 	<title>Star Rating</title>
 	<style>
-		.star-rating {
-			direction: rtl;
-			font-size: 2em;
-			unicode-bidi: bidi-override;
-			display: inline-flex;
+		.starpoint_wrap {
+			display: inline-block;
 		}
 
-		.star-rating input {
-			display: none;
-		}
-
-		.star-rating label {
-			color: #ccc;
-			cursor: pointer;
+		.starpoint_box {
 			position: relative;
+			background: url(https://ido-archive.github.io/svc/etc/element/img/sp_star.png) 0 0 no-repeat;
+			font-size: 0;
 		}
 
-		.star-rating .full {
-			color: #f5b301;
-		}
-
-		.star-rating .half {
+		.starpoint_box .starpoint_bg {
+			display: block;
 			position: absolute;
-			overflow: hidden;
-			color: #f5b301;
-		}
-
-		.star-rating .half::before {
-			content: '★';
-			position: absolute;
+			top: 0;
 			left: 0;
-			color: #f5b301;
+			height: 18px;
+			background: url(https://ido-archive.github.io/svc/etc/element/img/sp_star.png) 0 -20px no-repeat;
+			pointer-events: none;
+		}
+
+		.starpoint_box .label_star {
+			display: inline-block;
+			width: 10px;
+			height: 18px;
+			box-sizing: border-box;
+		}
+
+		.starpoint_box .star_radio {
+			opacity: 0;
+			width: 0;
+			height: 0;
+			position: absolute;
+		}
+
+		.starpoint_box .star_radio:nth-of-type(1):hover~.starpoint_bg,
+		.starpoint_box .star_radio:nth-of-type(1):checked~.starpoint_bg {
+			width: 10%;
+		}
+
+		.starpoint_box .star_radio:nth-of-type(2):hover~.starpoint_bg,
+		.starpoint_box .star_radio:nth-of-type(2):checked~.starpoint_bg {
+			width: 20%;
+		}
+
+		.starpoint_box .star_radio:nth-of-type(3):hover~.starpoint_bg,
+		.starpoint_box .star_radio:nth-of-type(3):checked~.starpoint_bg {
+			width: 30%;
+		}
+
+		.starpoint_box .star_radio:nth-of-type(4):hover~.starpoint_bg,
+		.starpoint_box .star_radio:nth-of-type(4):checked~.starpoint_bg {
+			width: 40%;
+		}
+
+		.starpoint_box .star_radio:nth-of-type(5):hover~.starpoint_bg,
+		.starpoint_box .star_radio:nth-of-type(5):checked~.starpoint_bg {
 			width: 50%;
 		}
 
-		.star-rating input:checked~label.full,
-		.star-rating input:checked~label.half::before {
-			color: #f5b301;
+		.starpoint_box .star_radio:nth-of-type(6):hover~.starpoint_bg,
+		.starpoint_box .star_radio:nth-of-type(6):checked~.starpoint_bg {
+			width: 60%;
 		}
 
-		.star-rating input:hover~label.full,
-		.star-rating input:hover~label.half::before,
-		.star-rating label.full:hover,
-		.star-rating label.full:hover~label.full,
-		.star-rating label.full:hover~label.half::before,
-		.star-rating label.half:hover::before,
-		.star-rating label.half:hover~label.full,
-		.star-rating label.half:hover~label.half::before {
-			color: #f5b301;
+		.starpoint_box .star_radio:nth-of-type(7):hover~.starpoint_bg,
+		.starpoint_box .star_radio:nth-of-type(7):checked~.starpoint_bg {
+			width: 70%;
+		}
+
+		.starpoint_box .star_radio:nth-of-type(8):hover~.starpoint_bg,
+		.starpoint_box .star_radio:nth-of-type(8):checked~.starpoint_bg {
+			width: 80%;
+		}
+
+		.starpoint_box .star_radio:nth-of-type(9):hover~.starpoint_bg,
+		.starpoint_box .star_radio:nth-of-type(9):checked~.starpoint_bg {
+			width: 90%;
+		}
+
+		.starpoint_box .star_radio:nth-of-type(10):hover~.starpoint_bg,
+		.starpoint_box .star_radio:nth-of-type(10):checked~.starpoint_bg {
+			width: 100%;
+		}
+
+		.blind {
+			position: absolute;
+			clip: rect(0 0 0 0);
+			margin: -1px;
+			width: 1px;
+			height: 1px;
+			overflow: hidden;
 		}
 	</style>
 </head>
 
 <body>
-	<form id="shopReview" action="/shopReview" method="post" enctype="multipart/form-data">
-		<!--별점 관련-->
-		<div class="star-rating">
-			<input type="radio" id="star5" name="rating" value="5" />
-			<label for="star5" class="full" title="5 stars">★</label>
-
-			<input type="radio" id="star4.5" name="rating" value="4.5" />
-			<label for="star4.5" class="half" title="4.5 stars">★</label>
-
-			<input type="radio" id="star4" name="rating" value="4" />
-			<label for="star4" class="full" title="4 stars">★</label>
-
-			<input type="radio" id="star3.5" name="rating" value="3.5" />
-			<label for="star3.5" class="half" title="3.5 stars">★</label>
-
-			<input type="radio" id="star3" name="rating" value="3" />
-			<label for="star3" class="full" title="3 stars">★</label>
-
-			<input type="radio" id="star2.5" name="rating" value="2.5" />
-			<label for="star2.5" class="half" title="2.5 stars">★</label>
-
-			<input type="radio" id="star2" name="rating" value="2" />
-			<label for="star2" class="full" title="2 stars">★</label>
-
-			<input type="radio" id="star1.5" name="rating" value="1.5" />
-			<label for="star1.5" class="half" title="1.5 stars">★</label>
-
-			<input type="radio" id="star1" name="rating" value="1" />
-			<label for="star1" class="full" title="1 star">★</label>
-
-			<input type="radio" id="star0.5" name="rating" value="0.5" />
-			<label for="star0.5" class="half" title="0.5 stars">★</label>
+	
+		<img th:src="${shops.shopMainPhoto}" alt="메인 사진" class="main-image">
+		<h1 th:text="${shops.shopTitle}"></h1>
+		<form id="shopReview" action="/shopReview" method="post" enctype="multipart/form-data">
+			<input type="hidden" id="shopNo" name="shopNo" th:value="${shops.shopNo}">
+			<!--별점 관련-->
+		<div class="starpoint_wrap">
+			<div class="starpoint_box">
+				<label for="starpoint_1" class="label_star" title="0.5"><span class="blind">0.5점</span></label>
+				<label for="starpoint_2" class="label_star" title="1"><span class="blind">1점</span></label>
+				<label for="starpoint_3" class="label_star" title="1.5"><span class="blind">1.5점</span></label>
+				<label for="starpoint_4" class="label_star" title="2"><span class="blind">2점</span></label>
+				<label for="starpoint_5" class="label_star" title="2.5"><span class="blind">2.5점</span></label>
+				<label for="starpoint_6" class="label_star" title="3"><span class="blind">3점</span></label>
+				<label for="starpoint_7" class="label_star" title="3.5"><span class="blind">3.5점</span></label>
+				<label for="starpoint_8" class="label_star" title="4"><span class="blind">4점</span></label>
+				<label for="starpoint_9" class="label_star" title="4.5"><span class="blind">4.5점</span></label>
+				<label for="starpoint_10" class="label_star" title="5"><span class="blind">5점</span></label>
+				<input type="radio" name="starpoint" id="starpoint_1" class="star_radio" value="0.5">
+				<input type="radio" name="starpoint" id="starpoint_2" class="star_radio" value="1">
+				<input type="radio" name="starpoint" id="starpoint_3" class="star_radio" value="1.5">
+				<input type="radio" name="starpoint" id="starpoint_4" class="star_radio" value="2">
+				<input type="radio" name="starpoint" id="starpoint_5" class="star_radio" value="2.5">
+				<input type="radio" name="starpoint" id="starpoint_6" class="star_radio" value="3">
+				<input type="radio" name="starpoint" id="starpoint_7" class="star_radio" value="3.5">
+				<input type="radio" name="starpoint" id="starpoint_8" class="star_radio" value="4">
+				<input type="radio" name="starpoint" id="starpoint_9" class="star_radio" value="4.5">
+				<input type="radio" name="starpoint" id="starpoint_10" class="star_radio" value="5">
+				<span class="starpoint_bg"></span>
+			</div>
 		</div>
 		<div class="shopReviewContent">
 			<textarea placeholder="상품 설명" id="product-description" name="shopContent" required></textarea>

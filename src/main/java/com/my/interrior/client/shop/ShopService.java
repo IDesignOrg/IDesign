@@ -51,11 +51,20 @@ public class ShopService {
 	@Autowired
 	private HttpSession session;
 
+	@Autowired
+	private ShopReviewRepository shopReviewRepository;
+	
+	@Autowired
+	private ShopReviewPhotoRepository shopReviewPhotoRepository;
+
+	@Autowired
+	private UserRepository userRepository;
+
 	@Value("${spring.cloud.gcp.storage.bucket}")
 	private String bucketName;
 
 	// GCS 파일 업로드
-	public String uploadFile(MultipartFile file, String shopTitle) throws IOException {
+	public String uploadFile(MultipartFile file) throws IOException {
 		// 세션값 받아오기
 		String userId = (String) session.getAttribute("UId");
 		// 폴더 생성을 위해 user_ + 세션값으로 받기
@@ -153,7 +162,8 @@ public class ShopService {
 	public Page<ShopEntity> getAllShop(Pageable pageable) {
 		return shopRepository.findAll(pageable);
 	}
-	// 샵 검
+
+	// 샵 검색
 	public Page<ShopEntity> searchShops(String shopTitle, String shopCategory, Integer minPrice, Integer maxPrice,
 			Pageable pageable) {
 		List<ShopEntity> shops = shopRepository.findByShopTitleContainingAndShopCategoryContaining(shopTitle,
@@ -204,4 +214,38 @@ public class ShopService {
 		return shopOptionRepository.findAll();
 	}
 
+	public void shopReviewWrite(Long shopNo, double starpoint, String shopContent, MultipartFile[] descriptionImages) throws IOException  {
+		ShopReviewEntity shopReviewEntity = new ShopReviewEntity();
+		Optional<ShopEntity> ShopEntits = shopRepository.findById(shopNo);
+
+	    // ShopEntity가 존재하지 않으면 예외 처리
+	    if (!ShopEntits.isPresent()) {
+	        throw new RuntimeException("Shop not found with id: " + shopNo);
+	    }
+
+	    ShopEntity shopEntity = ShopEntits.get();
+		String userId = (String) session.getAttribute("UId");
+
+		// UserEntity 객체 조회
+		UserEntity userEntity = userRepository.findByUId(userId);
+		shopReviewEntity.setShopEntity(shopEntity);
+		shopReviewEntity.setShopReviewStarRating(starpoint);
+		shopReviewEntity.setShopReviewContent(shopContent);
+		shopReviewEntity.setUser(userEntity);
+		shopReviewEntity.setShopReviewCreated(LocalDateTime.now());
+		
+		shopReviewRepository.save(shopReviewEntity);
+		
+		
+        for (MultipartFile file : descriptionImages) {
+        	if (!file.isEmpty()) {
+        	ShopReviewPhotoEntity shopReviewPhoto = new ShopReviewPhotoEntity();
+            String url = uploadFile(file);
+            shopReviewPhoto.setShopReviewPhotoUrl(url);
+            shopReviewPhoto.setShopReviewEntity(shopReviewEntity);
+            shopReviewPhotoRepository.save(shopReviewPhoto);
+        	}
+        }
+        
+	}
 }
