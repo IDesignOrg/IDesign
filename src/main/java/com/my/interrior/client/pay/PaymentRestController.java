@@ -3,6 +3,8 @@ package com.my.interrior.client.pay;
 import java.io.IOException;
 import java.math.BigDecimal;
 
+import java.time.LocalDate;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -49,6 +51,8 @@ public class PaymentRestController {
 	@PostMapping("/save/payment")
 	public ResponseEntity<PayEntity> savePayment(@RequestBody PayEntity pay) throws Exception{
 
+		System.out.println("pay.getPaidAt(): " + pay.getPaidAt());
+		pay.setPaidAt(LocalDate.now());
 		paymentService.saveMyPayment(pay);
 		
 		return ResponseEntity.ok(pay);
