@@ -1,43 +1,41 @@
 package com.my.interrior.client.pay;
 
-import java.io.IOException;
-import java.math.BigDecimal;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.my.interrior.admin.coupon.CouponService;
 
-import com.siot.IamportRestClient.exception.IamportResponseException;
-
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
 public class PaymentController {
 
-	private final PaymentService paymentService;
+	private final CouponService couponService;
 	
-	@PostMapping("/payment/prepare")
-	public ResponseEntity<?> preparePayment(@ModelAttribute PrePaymentEntity request, @RequestParam("validation") int validation)
-				throws IamportResponseException, IOException {
+	@GetMapping("/payment/info")
+	public String goToInfo(Model model, HttpSession session) {
+
+		PaymentAndShipmentDTO.PaymentInfo paymentInfo = (PaymentAndShipmentDTO.PaymentInfo) session
+				.getAttribute("paymentRes");
+		PaymentAndShipmentDTO.ShipmentInfo shipmentInfo = (PaymentAndShipmentDTO.ShipmentInfo) session
+				.getAttribute("shipmentRes");
+
 		
-		BigDecimal amount = (BigDecimal) request.getAmount();
-		BigDecimal validate = BigDecimal.valueOf(validation);
-		System.out.println("amount의 값은: " + amount);
-		System.out.println("validate의 값은: " + validate);
-		if(amount.compareTo(validate) == 0) {
-			
-			request.setAmount(amount);
-			
-			paymentService.postPrepare(request);
-			
-			return ResponseEntity.ok("success");
-		}else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		System.out.println("paymentInfo: get에서 시작함" + paymentInfo);
+		System.out.println("shipmentInfo: get에서 시작함" + shipmentInfo);
+		
+		if (paymentInfo != null && shipmentInfo != null) {
+			System.out.println("둘 다 있어서 여기 안까지 들어옴");
+			model.addAttribute("paymentRes", paymentInfo);
+			model.addAttribute("shipmentRes", shipmentInfo);
+
+			// 세션에서 데이터 제거
+			session.removeAttribute("paymentRes");
+			session.removeAttribute("shipmentRes");
 		}
-		
+		return "client/pay/paymentInfo";
 	}
 }

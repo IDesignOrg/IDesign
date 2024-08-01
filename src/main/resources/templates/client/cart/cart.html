@@ -316,9 +316,14 @@
 		<div class="header">
 			<h1>장바구니</h1>
 		</div>
-		<div class="main-content">
+		<div th:if="${cartEntities == null}">
+			<p>장바구니가 비어있습니다.</p>
+			<button type = "button" onclick="goToShop()">쇼핑하러 가기</button>
+		</div>
+		<div class="main-content" th:unless = "cartEntities == null">
 			<input type="hidden" id="cart-size" th:value="${cartSize}" />
 			<div class="cart-item" th:each="cartEntity, iterStat : ${cartEntities}">
+			<input type = "hidden" id = "cart-no" th:value="${cartEntity.CNo}"/>
 				<img class="product-image" th:src="${cartEntity.shopEntity.shopMainPhoto}" alt="상품 이미지" />
 				<div class="product-details">
 					<p class="product-title" th:text="${cartEntity.shopEntity.shopTitle}"></p>
@@ -330,7 +335,7 @@
 						<p>옵션: <span th:text="${shopOptionValues[iterStat.index].shopOptionValue}"></span></p>
 					</div>
 				</div>
-				<button class="remove-button" onclick="removeItem()">삭제</button>
+				<button class="remove-button" onclick="removeItem(this)">삭제</button>
 			</div>
 		</div>
 		<div class="shipping-info">
@@ -371,14 +376,13 @@
 					<label for="coupon-select">쿠폰 선택:</label>
 					<select id="coupon-select" name="couponSelect" onchange="applyCoupon()">
 						<option value="">쿠폰을 선택하세요</option>
-						<!-- 쿠폰이 있는 경우 -->
 						<div th:if="${couponEntities != null}">
 							<div th:each="couponEntity : ${couponEntities}">
-								<option th:value="${couponEntity.couponDiscount}" th:text="${couponEntity.couponName}">
+								<option th:value="${couponEntity.couponDiscount}" th:text="${couponEntity.couponName}"
+									th:attr="data-coupon-no=${couponEntity.couponNo}">
 								</option>
 							</div>
 						</div>
-						<!-- 쿠폰이 없는 경우 -->
 						<div th:if="${couponEntities == null || #lists.isEmpty(couponEntities)}">
 							<option value="no">쿠폰이 없습니다.</option>
 						</div>
@@ -408,70 +412,159 @@
 		</div>
 
 		<script>
-			var discountedAmount = 0;
 			
-			$('.orderBtn').on("click", function () {
-				var cartSize = $('#cart-size').val();
-				var buyerName = $('#recipient-name').val();
-				var phone = $('#phone').val();
-				var email = $('#email').val();
-				var address = $('#sample4_roadAddress').val() + " " + $('#sample4_detailAddress').val();
-				var postcode = $('#sample4_postcode').val();
-				var shopTitle = $('.product-title').val();
-				var merchantUId = `payment-${crypto.randomUUID()}`;
-
-				var finalPayText = $('#finalPay').text();
-				var price = parseInt(finalPayText.replace(/[^\d]/g, ''), 10);
-				var amount = Math.ceil(discountedAmount);
-				console.log("amount: " , amount);
-
-				// 첫 번째 상품의 제목을 가져옴
-				var firstProductTitle = $('.product-title').first().text();
-				cartSize = parseInt(cartSize);
-				var shopTitle = firstProductTitle;
-
-				if (cartSize > 1) {
-					shopTitle += " 외 " + (cartSize - 1) + "건";
-				}
-				var IMP = window.IMP;
-				IMP.init("imp64382832");
-
-				// 사전 검증
+			function goToShop(){
+				window.location.href="/auth/shopList";
+			}
+			
+			//장바구니 선택 삭제
+			function removeItem(button){
+				var CNo = button.closest('.cart-item').querySelector('#cart-no').value;
+				console.log('CNo의 값은', CNo);
 				$.ajax({
-					url: '/payment/prepare',
-					type: 'POST',
-					data: {
-						merchant_uid: merchantUId,
-						amount: price,
-						validation: amount
+					url:'/delete/cart',
+					type:'DELETE',
+					data:{
+						CNo: CNo
 					},
-					success: function (response) {
-						// 사전 검증 성공 후 결제 요청 진행
-						IMP.request_pay({
-							pg: "html5_inicis",
-							pay_method: "card",
-							merchant_uid: merchantUId, // 주문 고유 번호
-							name: shopTitle,
-							amount: price, // 여기에 price 쓰면 됨.
-							buyer_email: email,
-							buyer_name: buyerName,
-							buyer_tel: phone,
-							buyer_addr: address,
-							buyer_postcode: postcode
-						}, function (res) {
-							if (res.success) {
-								console.log("성공: ", res);
-								console.log(res.imp_uid);
-							} else {
-								console.log("실패: ", res);
-							}
-						});
+					success: function(res){
+						alert('삭제가 완료되었습니다.');
+						window.location.href='/my/cart'; // 리다이렉트
 					},
-					error: function (xhr, status, error) {
-						// 사전 검증 실패 시 처리
-						console.log("사전 검증 실패: ", error);
-						alert("금액 바꾸지 마세요 제발.");
+					error: function(xhr, status, error){
+						console.log("에러 발생: ", error);
 					}
+				});
+			}
+			
+			var discountedAmount = 0;
+			var couponNo = 0;
+			$(document).ready(function () {
+				applyCoupon();
+
+				$('.orderBtn').on("click", function () {
+					var cartSize = $('#cart-size').val();
+					var buyerName = $('#recipient-name').val();
+					var phone = $('#phone').val();
+					var email = $('#email').val();
+					var address = $('#sample4_roadAddress').val() + " " + $('#sample4_detailAddress').val();
+					var postcode = $('#sample4_postcode').val();
+					var merchantUId = `payment-${Math.random().toString(36).substr(2, 9)}`; // 대체 UUID
+					var message = $('#message').val();
+
+					var finalPayText = $('#finalPay').text();
+					var price = parseInt(finalPayText.replace(/[^\d]/g, ''), 10);
+					console.log("amount: ", price);
+
+					var firstProductTitle = $('.product-title').first().text();
+					cartSize = parseInt(cartSize);
+					var shopTitle = firstProductTitle;
+
+					if (cartSize > 1) {
+						shopTitle += " 외 " + (cartSize - 1) + "건";
+					}
+
+					var IMP = window.IMP;
+					IMP.init("imp64382832");
+
+
+					// 날짜 형식 변환 함수
+					function formatDate(dateStr) {
+						var date = new Date(dateStr);
+						var year = date.getFullYear();
+						var month = ("0" + (date.getMonth() + 1)).slice(-2);
+						var day = ("0" + date.getDate()).slice(-2);
+						return `${year}-${month}-${day}`;
+					}
+
+					IMP.request_pay({
+						pg: "html5_inicis",
+						pay_method: "card",
+						merchant_uid: merchantUId,
+						name: shopTitle,
+						amount: "10",
+						buyer_email: email,
+						buyer_name: buyerName,
+						buyer_tel: phone,
+						buyer_addr: address,
+						buyer_postcode: postcode
+					}, function (res) {
+						if (res.success) {
+							$.when(
+								$.ajax({
+									url: '/save/payment',
+									type: 'POST',
+									contentType: 'application/json',
+									data: JSON.stringify({
+										merchantUId: res.merchant_uid,
+										cardName: res.card_name,
+										name: shopTitle,
+										paidAmount: res.paid_amount,
+										payMethod: res.pay_method,
+										paidAt: formatDate(res.paid_at),
+										status: res.status,
+										success: res.success
+									})
+								}),
+								$.ajax({
+									url: '/save/shipment',
+									type: 'POST',
+									contentType: 'application/json',
+									data: JSON.stringify({
+										buyerName: res.buyer_name,
+										buyerEmail: res.buyer_email,
+										buyerAddr: res.buyer_addr,
+										buyerPostcode: res.buyer_postcode,
+										buyerTel: res.buyer_tel,
+										message: message
+									})
+								})
+							).done(function (paymentRes, shipmentRes) {
+								$.when(
+									
+								$.ajax({
+									url: '/payment/info',
+									type: 'POST',
+									contentType: 'application/json',
+									data: JSON.stringify({
+										paymentInfo: paymentRes[0],
+										shipmentInfo: shipmentRes[0]
+									})
+								}),
+								
+								$.ajax({
+									//쿠폰 처리 쓴 쿠폰 확인은 쓴 날짜로 함
+									// 안 썼을 때는 쿠폰에 date가 null임
+									url:'/coupon/clear',
+									type:'PATCH',
+									data:{
+										couponNo:couponNo
+									}
+								}),
+								$.ajax({
+									//장바구니 전부 삭제
+									url:'/delete/all/cart',
+									type:'DELETE'
+								})
+								).done(function(res1, response, res2){
+									
+									window.location.href = "/payment/info";
+									
+								}).fail(function(jqXHR, textStatus, errorThrown){
+									//실패 시
+									console.log("쿠폰 변경 실패:", textStatus, errorThrown);
+								});
+								//이제 여기서 장바구니 지우고 쿠폰 쓴 건 지워야됨.
+								//장바구니 지우는 건 둘째치고 /payment/info에서 쿠폰을 status를 활용해서
+								//구현해보자.(이미 사용한 쿠폰입니다.) 이런 식으로 ㄱㄱㄱ
+
+							}).fail(function (jqXHR, textStatus, errorThrown) {
+								console.log("요청 실패: ", textStatus, errorThrown);
+							});
+						} else {
+							console.log("실패: ", res);
+						}
+					});
 				});
 			});
 
@@ -479,73 +572,55 @@
 				return new Intl.NumberFormat('ko-KR', {style: 'currency', currency: 'KRW'}).format(amount);
 			}
 
-			$(document).ready(function(){
-				applyCoupon();
-			});
-			// 쿠폰 사용 시
 			function applyCoupon() {
-				// 총 가격
 				var totalAmountText = document.getElementById('total').innerText;
-				var totalAmount = parseFloat(totalAmountText.replace(/[^\d]/g, '')); // ₩ 제거 후 숫자 변환
+				var totalAmount = parseFloat(totalAmountText.replace(/[^\d]/g, ''));
 
-				// 선택한 쿠폰 값
 				var couponSelect = document.getElementById('coupon-select');
-				var selectedValue = couponSelect.options[couponSelect.selectedIndex].value;
+				var selectedOption = couponSelect.options[couponSelect.selectedIndex];
+				var selectedValue = selectedOption.value;
+				couponNo = selectedOption.getAttribute('data-coupon-no');
 
-				// 할인율을 숫자로 변환
+				console.log("couponNo: ", couponNo);
+
 				var discount = parseFloat(selectedValue);
 
-				// 초기화
 				var couponDiscountElement = document.getElementById('couponDiscount');
 				var finalPayElement = document.getElementById('finalPay');
 
 				if (!isNaN(discount)) {
-					// 할인 금액 및 최종 결제 금액 계산
-					discountedAmount = totalAmount * (1 - discount / 100);
 					var discountAmount = totalAmount * (discount / 100);
+					discountedAmount = totalAmount - discountAmount;
 
-					// 요소 업데이트
 					couponDiscountElement.innerText = formatCurrency(discountAmount);
 					finalPayElement.innerText = formatCurrency(discountedAmount);
 				} else {
-					// 할인율이 없거나 유효하지 않을 경우 초기화
-					discountedAmount = totalAmount * 1;
+					discountedAmount = totalAmount;
 					couponDiscountElement.innerText = formatCurrency(0);
 					finalPayElement.innerText = formatCurrency(discountedAmount);
 				}
 			}
 
-			//본 예제에서는 도로명 주소 표기 방식에 대한 법령에 따라, 내려오는 데이터를 조합하여 올바른 주소를 구성하는 방법을 설명합니다.
 			function sample4_execDaumPostcode() {
 				new daum.Postcode({
 					oncomplete: function (data) {
-						// 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+						var roadAddr = data.roadAddress;
+						var extraRoadAddr = '';
 
-						// 도로명 주소의 노출 규칙에 따라 주소를 표시한다.
-						// 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
-						var roadAddr = data.roadAddress; // 도로명 주소 변수
-						var extraRoadAddr = ''; // 참고 항목 변수
-
-						// 법정동명이 있을 경우 추가한다. (법정리는 제외)
-						// 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
 						if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
 							extraRoadAddr += data.bname;
 						}
-						// 건물명이 있고, 공동주택일 경우 추가한다.
 						if (data.buildingName !== '' && data.apartment === 'Y') {
 							extraRoadAddr += (extraRoadAddr !== '' ? ', ' + data.buildingName : data.buildingName);
 						}
-						// 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
 						if (extraRoadAddr !== '') {
 							extraRoadAddr = ' (' + extraRoadAddr + ')';
 						}
 
-						// 우편번호와 주소 정보를 해당 필드에 넣는다.
 						document.getElementById('sample4_postcode').value = data.zonecode;
 						document.getElementById("sample4_roadAddress").value = roadAddr;
 						document.getElementById("sample4_jibunAddress").value = data.jibunAddress;
 
-						// 참고항목 문자열이 있을 경우 해당 필드에 넣는다.
 						if (roadAddr !== '') {
 							document.getElementById("sample4_extraAddress").value = extraRoadAddr;
 						} else {
@@ -553,12 +628,10 @@
 						}
 
 						var guideTextBox = document.getElementById("guide");
-						// 사용자가 '선택 안함'을 클릭한 경우, 예상 주소라는 표시를 해준다.
 						if (data.autoRoadAddress) {
 							var expRoadAddr = data.autoRoadAddress + extraRoadAddr;
 							guideTextBox.innerHTML = '(예상 도로명 주소 : ' + expRoadAddr + ')';
 							guideTextBox.style.display = 'block';
-
 						} else if (data.autoJibunAddress) {
 							var expJibunAddr = data.autoJibunAddress;
 							guideTextBox.innerHTML = '(예상 지번 주소 : ' + expJibunAddr + ')';
