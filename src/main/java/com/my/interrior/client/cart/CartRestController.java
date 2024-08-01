@@ -74,7 +74,7 @@ public class CartRestController {
 		return ResponseEntity.ok("success");
 	}
 	
-<<<<<<< HEAD
+
 	@Transactional
 	@DeleteMapping("/delete/cart")
 	public ResponseEntity<?> deleteCart(@RequestParam(value = "CNo", required = false) Long CNo){
@@ -89,7 +89,5 @@ public class CartRestController {
 		
 		return ResponseEntity.ok("success");
 	}
-=======
-	
->>>>>>> 07027e0a20e87bebb2286801847af93f4c26cd1c
+
 }

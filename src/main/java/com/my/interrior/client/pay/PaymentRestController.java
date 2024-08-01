@@ -2,10 +2,8 @@ package com.my.interrior.client.pay;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-<<<<<<< HEAD
+
 import java.time.LocalDate;
-=======
->>>>>>> 07027e0a20e87bebb2286801847af93f4c26cd1c
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,12 +50,9 @@ public class PaymentRestController {
 	//결제 정보 저장
 	@PostMapping("/save/payment")
 	public ResponseEntity<PayEntity> savePayment(@RequestBody PayEntity pay) throws Exception{
-<<<<<<< HEAD
+
 		System.out.println("pay.getPaidAt(): " + pay.getPaidAt());
 		pay.setPaidAt(LocalDate.now());
-=======
-
->>>>>>> 07027e0a20e87bebb2286801847af93f4c26cd1c
 		paymentService.saveMyPayment(pay);
 		
 		return ResponseEntity.ok(pay);
