@@ -99,4 +99,10 @@ public class ShopController {
     	model.addAttribute("shopPhoto", shopPhotos);
     	return "client/shop/shopUpdate";
     }
+    @GetMapping("/auth/shopReview/{shopNo}")
+    public String shopReview(Model model, @PathVariable("shopNo") Long shopNo) {
+    	Optional<ShopEntity> shops = shopService.getShopById(shopNo);
+    	model.addAttribute("shops", shops.get());
+    	return "client/shop/shopReview";
+    }
 }
