@@ -1,6 +1,7 @@
 package com.my.interrior.client.shop;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -26,8 +27,7 @@ public class ShopReviewEntity {
 	private Long shopReviewNo;
 	
 	@Column(name = "shop_review_created")
-	@DateTimeFormat(pattern="yyyy-MM-dd")
-	private LocalDate shopReviewCreated;
+    private LocalDateTime shopReviewCreated;
 	
 	@Column(columnDefinition = "TEXT" , name = "shop_review_content")
 	private String shopReviewContent;
@@ -38,4 +38,8 @@ public class ShopReviewEntity {
 	@ManyToOne
 	@JoinColumn(name = "u_Id", referencedColumnName = "u_id")
 	private UserEntity user;
+	
+	@ManyToOne
+	@JoinColumn(name = "shop_no")
+	private ShopEntity shopEntity;
 }
