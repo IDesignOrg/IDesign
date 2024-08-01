@@ -74,5 +74,18 @@ public class CartRestController {
 		return ResponseEntity.ok("success");
 	}
 	
-	
+	@Transactional
+	@DeleteMapping("/delete/cart")
+	public ResponseEntity<?> deleteCart(@RequestParam(value = "CNo", required = false) Long CNo){
+		
+		//delete from cart_option where c_no = (select c_no from cart where c_no = :CNo);
+//		CartEntity cart = cartRepository.findByCNo(CNo);
+//		
+//		Long cartNo = cart.getCNo();
+		
+		cartOptionRepository.deleteByCartEntity_CNo(CNo);
+		cartRepository.deleteByCNo(CNo);
+		
+		return ResponseEntity.ok("success");
+	}
 }
