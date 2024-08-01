@@ -1,6 +1,7 @@
 package com.my.interrior.client.shop;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.PageImpl;
 
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
@@ -47,12 +49,6 @@ public class ShopService {
 	private ShopOptionValueRepository shopOptionValueRepository;
 
 	@Autowired
-	private CartRepository cartRepository;
-
-	@Autowired
-	private UserRepository userRepository;
-
-	@Autowired
 	private HttpSession session;
 
 	@Value("${spring.cloud.gcp.storage.bucket}")
@@ -72,7 +68,7 @@ public class ShopService {
 		return String.format("https://storage.googleapis.com/%s/%s", bucketName, fileName);
 	}
 
-	// 여기 다시 고쳐야함shopoption, shopoptionvalue Entity 참
+	//
 	@Transactional
 	public void shopWrite(String shopTitle, String shopPrice, String shopContent, String shopMainPhotoUrl,
 			List<String> descriptionImageUrls, String shopCategory, List<String> optionNames, List<String> options,
@@ -157,14 +153,36 @@ public class ShopService {
 	public Page<ShopEntity> getAllShop(Pageable pageable) {
 		return shopRepository.findAll(pageable);
 	}
+	// 샵 검
+	public Page<ShopEntity> searchShops(String shopTitle, String shopCategory, Integer minPrice, Integer maxPrice,
+			Pageable pageable) {
+		List<ShopEntity> shops = shopRepository.findByShopTitleContainingAndShopCategoryContaining(shopTitle,
+				shopCategory);
+
+		BigDecimal minPriceBigDecimal = minPrice != null ? BigDecimal.valueOf(minPrice) : BigDecimal.ZERO;
+		BigDecimal maxPriceBigDecimal = maxPrice != null ? BigDecimal.valueOf(maxPrice)
+				: BigDecimal.valueOf(Long.MAX_VALUE);
+
+		List<ShopEntity> filteredShops = shops.stream().filter(shop -> {
+			BigDecimal price = new BigDecimal(shop.getShopPrice());
+			return price.compareTo(minPriceBigDecimal) >= 0 && price.compareTo(maxPriceBigDecimal) <= 0;
+		}).collect(Collectors.toList());
+
+		int start = (int) pageable.getOffset();
+		int end = Math.min((start + pageable.getPageSize()), filteredShops.size());
+		Page<ShopEntity> page = new PageImpl<>(filteredShops.subList(start, end), pageable, filteredShops.size());
+
+		return page;
+	}
 
 	public Optional<ShopEntity> getShopById(Long shopNo) {
 		return shopRepository.findById(shopNo);
 	}
 
-	public List<ShopEntity> getCartsFromShop(List<Long> shopNos){
+	public List<ShopEntity> getCartsFromShop(List<Long> shopNos) {
 		return shopRepository.findByShopNoIn(shopNos);
 	}
+
 	public List<ShopPhotoEntity> getShopPhotoById(Long shopNo) {
 
 		List<ShopPhotoEntity> shopPhoto = shopPhotoRepository.findByShopEntity_ShopNo(shopNo);
@@ -182,7 +200,5 @@ public class ShopService {
 	public List<ShopOptionEntity> getAllShopOptions() {
 		return shopOptionRepository.findAll();
 	}
-
-	
 
 }
