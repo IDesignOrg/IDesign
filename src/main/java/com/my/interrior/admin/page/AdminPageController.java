@@ -1,5 +1,7 @@
 package com.my.interrior.admin.page;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -76,5 +78,12 @@ public class AdminPageController {
 		System.out.println("리뷰의 수 : " + reviewCount);
 		model.addAttribute("reviewCount", reviewCount);
 		return "/admin/page/adminIndex";
+	}
+	@GetMapping("/admin/page/adminUsers")
+	public String adminUsers(Model model) {
+		List<UserEntity> users = adminPageService.findAllUsers();
+		model.addAttribute("users", users);
+		
+		return "/admin/page/adminUsers";
 	}
 }
