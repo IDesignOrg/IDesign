@@ -1,7 +1,5 @@
 package com.my.interrior.admin.page;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,7 +10,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.my.interrior.client.user.UserDTO;
 import com.my.interrior.client.user.UserEntity;
-import com.my.interrior.client.user.UserRepository;
 import com.my.interrior.client.user.UserService;
 
 import jakarta.servlet.http.HttpSession;
@@ -28,9 +25,6 @@ public class AdminPageController {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-	
-	@Autowired
-	private UserRepository userRepository;
 
 	@GetMapping("/auth/adminLogin")
 	public String AdminLogin() {
@@ -82,12 +76,5 @@ public class AdminPageController {
 		System.out.println("리뷰의 수 : " + reviewCount);
 		model.addAttribute("reviewCount", reviewCount);
 		return "/admin/page/adminIndex";
-	}
-	@GetMapping("/admin/page/adminUsers")
-	public String adminUsers(Model model) {
-		List<UserEntity> users = adminPageService.findAllUsers();
-		model.addAttribute("users", users);
-		
-		return"/admin/page/adminUsers";
 	}
 }
