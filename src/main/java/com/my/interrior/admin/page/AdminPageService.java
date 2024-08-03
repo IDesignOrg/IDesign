@@ -1,5 +1,7 @@
 package com.my.interrior.admin.page;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,5 +34,10 @@ public class AdminPageService {
 	public long getReviewCount() {
 		return reviewRepository.count();
 	}
+	
+	//전체 유저 정
+	public List<UserEntity> findAllUsers() {
+        return userRepository.findAll();
+    }
 	
 }

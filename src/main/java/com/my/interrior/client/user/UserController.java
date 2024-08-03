@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.my.interrior.common.GoogleApi;
 import com.my.interrior.common.KakaoApi;
 import com.my.interrior.common.NaverApi;
 
+import jakarta.persistence.Column;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -94,12 +96,18 @@ public class UserController {
 			String UId = userDTO.getUId();
 			String UPw = userDTO.getUPw();
 			UserEntity user = userService.checkLogin(UId);
+			Boolean Disabled = user.getDisabled();
 			System.out.println("user" + user);
-			if (user != null && passwordEncoder.matches(UPw, user.getUPw())) {
-				session.setAttribute("UId", user.getUId());
-				return "redirect:/";
-			} else {
-				model.addAttribute("loginError", "입력하신 정보를 확인하세요.");
+			if(Disabled ==false)
+				if (user != null && passwordEncoder.matches(UPw, user.getUPw())) {
+					session.setAttribute("UId", user.getUId());
+					return "redirect:/";
+				} else {
+					model.addAttribute("loginError", "입력하신 정보를 확인하세요.");
+					return "client/login";
+				}
+			else {
+				model.addAttribute("loginError", "비활성화된 계정입니다.");
 				return "client/login";
 			}
 		} catch (Exception e) {
