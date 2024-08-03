@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>회원 정보</title>
+	<link rel="stylesheet" href="/css/adminPage.css" />
+</head>
+
+<body>
+	<div class="sidebar">
+		<div class="logo">
+			<h2>관리자 페이지</h2>
+		</div>
+		<ul>
+			<li><a href="#">Account</a></li>
+			<li><a href="#">Activity</a></li>
+			<li><a href="#">Place</a></li>
+		</ul>
+	</div>
+	<div class="main-content">
+		<header>
+			<h1>회원 정보</h1>
+		</header>
+		<div class="table-container">
+			<table>
+				<thead>
+					<tr>
+						<th>이름</th>
+						<th>닉네임</th>
+						<th>EMail</th>
+						<th>가입일</th>
+						<th>게시물</th>
+						<th>댓글</th>
+						<th>삭제</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="user : ${users}">
+						<td th:text="${user.UId}"></td>
+						<td th:text="${user.UName}"></td>
+						<td th:text="${user.UMail}"></td>
+						<td th:text="${user.URegister}"></td>
+						<td>게시글</td>
+						<td>댓글</td>
+						<td><button class="delete-btn">삭제</button></td>>
+						<!-- 필요한 다른 필드들 -->
+					</tr>
+					<!-- 다른 데이터 행들 -->
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>
+
+</html>
