@@ -162,6 +162,9 @@ public class ShopService {
 		return shopRepository.findById(shopNo);
 	}
 
+	public ShopEntity getShopEntityByShopNo(Long shopNo){
+		return shopRepository.findByShopNo(shopNo);
+	}
 	public List<ShopEntity> getCartsFromShop(List<Long> shopNos){
 		return shopRepository.findByShopNoIn(shopNos);
 	}
