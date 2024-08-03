@@ -3,14 +3,18 @@ package com.my.interrior.client.pay;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+
+import com.my.interrior.admin.coupon.CouponService;
 
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 
 @Controller
+@RequiredArgsConstructor
 public class PaymentController {
 
+	private final CouponService couponService;
+	
 	@GetMapping("/payment/info")
 	public String goToInfo(Model model, HttpSession session) {
 
@@ -32,7 +36,6 @@ public class PaymentController {
 			session.removeAttribute("paymentRes");
 			session.removeAttribute("shipmentRes");
 		}
-		System.out.println("여기까지 잘 들어옴 이제 클라이언트로 넘어갈 시간");
 		return "client/pay/paymentInfo";
 	}
 }
