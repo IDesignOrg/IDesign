@@ -10,5 +10,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ShopRepository extends JpaRepository<ShopEntity, Long>{
 	List<ShopEntity> findByShopNoIn(List<Long> shopNos);
+
 	ShopEntity findByShopNo(Long shopNo);
+
+	List<ShopEntity> findByShopTitleContainingAndShopCategoryContaining(
+	        String shopTitle, String shopCategory
+	    );
+
 }
