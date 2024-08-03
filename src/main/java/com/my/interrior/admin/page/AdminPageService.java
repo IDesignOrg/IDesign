@@ -1,5 +1,6 @@
 package com.my.interrior.admin.page;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.my.interrior.client.evaluation.ReviewRepository;
 import com.my.interrior.client.shop.ShopRepository;
+import com.my.interrior.client.shop.ShopReviewRepository;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
 
@@ -22,6 +24,9 @@ public class AdminPageService {
 	@Autowired
 	private ReviewRepository reviewRepository;
 	
+	@Autowired
+	private ShopReviewRepository shopReviewRepository;
+	
 	//유저 카운트
 	public long getUserCount() {
         return userRepository.count();
@@ -35,8 +40,18 @@ public class AdminPageService {
 		return reviewRepository.count();
 	}
 	
-	public List<UserEntity> findAllUsers(){
-		return userRepository.findAll();
-	}
+	public List<UserWithPostAndCommentCount> findAllUsersWithCounts() {
+        List<UserEntity> users = userRepository.findAll();
+        List<UserWithPostAndCommentCount> userCounts = new ArrayList<>();
+
+        for (UserEntity user : users) {
+        	int postCount = reviewRepository.countByUser(user);
+        	int commentCount = shopReviewRepository.countByUser(user);
+        	UserWithPostAndCommentCount dto = new UserWithPostAndCommentCount(user, postCount, commentCount);
+        	userCounts.add(dto);
+        }
+
+        return userCounts;
+    }
 	
 }
