@@ -66,6 +66,10 @@ public class UserEntity {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate URegister;
     
+    @JsonProperty("Disabled")
+    @Column(nullable = false, name ="disabled")
+    private Boolean Disabled = false;
+    
     @OneToMany(mappedBy = "userEntity")
     private List<NoticeEntity> notices;
     
