@@ -5,18 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>관리자 페이지</title>
     <link rel="stylesheet" href="/css/adminPage.css" />
+    
 </head>
 <body>
-    <div class="sidebar">
-        <div class="logo">
-            <h2>관리자 페이지</h2>
-        </div>
-        <ul>
-            <li><a href="/admin/page/adminUsers">회원 정보</a></li>
-            <li><a href="#">Activity</a></li>
-            <li><a href="#">Place</a></li>
-        </ul>
-    </div>
+    <div th:insert="~{/admin/page/adminsidebar :: sidebar}"></div>
     <div class="main-content">
         <header>
             <h1>Dashboard</h1>

@@ -2,6 +2,7 @@ package com.my.interrior.client.shop;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -12,10 +13,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -108,6 +111,16 @@ public class ShopController {
     	model.addAttribute("shopPhotos", shopPhoto);
     	List<ShopOptionEntity> shopOptions = shopService.getShopOptionById(shopNo);
     	model.addAttribute("shopOption", shopOptions);
+    	
+    	List<ShopReviewEntity> shopReviews = shopService.getShopReviewsByShopNo(shopNo);
+        model.addAttribute("shopReviews", shopReviews);
+
+        Map<Long, List<ShopReviewPhotoEntity>> reviewPhotosMap = new HashMap<>();
+        for (ShopReviewEntity review : shopReviews) {
+            List<ShopReviewPhotoEntity> reviewPhotos = shopService.getShopReviewPhotosByReviewNo(review.getShopReviewNo());
+            reviewPhotosMap.put(review.getShopReviewNo(), reviewPhotos);
+        }
+        model.addAttribute("reviewPhotosMap", reviewPhotosMap);
 	
     	return "client/shop/shopDetail";
     }
@@ -122,14 +135,15 @@ public class ShopController {
     	model.addAttribute("shopPhoto", shopPhotos);
     	return "client/shop/shopUpdate";
     }
-
+    
+    //리뷰 작성
     @GetMapping("/shopReview/{shopNo}")
     public String shopReview(Model model, @PathVariable("shopNo") Long shopNo) {
     	Optional<ShopEntity> shops = shopService.getShopById(shopNo);
     	model.addAttribute("shops", shops.get());
     	return "client/shop/shopReview";
     }
-    
+    //리뷰 작성
     @PostMapping("/shopReview")
     public String shopReview(
     		@RequestParam("shopNo") Long shopNo,
@@ -144,6 +158,12 @@ public class ShopController {
             redirectAttributes.addFlashAttribute("error", "리뷰 작성 중 오류가 발생했습니다: " + e.getMessage());
         }
     return "redirect:/client/shop/shopList";
+    }
+    @DeleteMapping("/shopReview/{shopReviewNo}")
+    @ResponseBody
+    public String deleteShopReview(@PathVariable("shopReviewNo") Long shopReviewNo) {
+        shopService.deleteShopReview(shopReviewNo);
+        return "Review deleted successfully";
     }
 
 }
