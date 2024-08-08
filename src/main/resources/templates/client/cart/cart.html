@@ -648,8 +648,13 @@
 										buyerTel: res.buyer_tel,
 										message: message
 									})
+								}),
+								//주문 내역 저장
+								$.ajax({
+									url:'/save/ordered',
+									type:'POST'
 								})
-							).done(function (paymentRes, shipmentRes) {
+							).done(function (paymentRes, shipmentRes, orderedRes) {
 								$.when(
 									
 								$.ajax({
