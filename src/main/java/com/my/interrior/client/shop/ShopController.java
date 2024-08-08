@@ -159,11 +159,11 @@ public class ShopController {
         }
     return "redirect:/client/shop/shopList";
     }
+    //리뷰 삭제
     @DeleteMapping("/shopReview/{shopReviewNo}")
     @ResponseBody
     public String deleteShopReview(@PathVariable("shopReviewNo") Long shopReviewNo) {
         shopService.deleteShopReview(shopReviewNo);
         return "Review deleted successfully";
     }
-
 }

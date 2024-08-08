@@ -24,6 +24,7 @@ import com.google.cloud.storage.Storage;
 import com.my.interrior.client.cart.CartEntity;
 import com.my.interrior.client.cart.CartOptionEntity;
 import com.my.interrior.client.cart.CartRepository;
+import com.my.interrior.client.gcs.GCSFileDeleter;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
 
@@ -59,6 +60,9 @@ public class ShopService {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private GCSFileDeleter gcsFileDeleter;
 
 	@Value("${spring.cloud.gcp.storage.bucket}")
 	private String bucketName;
@@ -254,8 +258,23 @@ public class ShopService {
         }
         
 	}
+	@Transactional
 	public void deleteShopReview(Long shopReviewNo) {
+		List<ShopReviewPhotoEntity> shopReviewPhotoDel = shopReviewPhotoRepository.findByShopReviewEntityShopReviewNo(shopReviewNo);
+        for (ShopReviewPhotoEntity photo : shopReviewPhotoDel) {
+            System.out.println("photo : " + photo);
+            gcsFileDeleter.deleteFile(photo.getShopReviewPhotoUrl());
+        }
+        shopReviewPhotoRepository.deleteByShopReviewEntityShopReviewNo(shopReviewNo);
+        
+        System.out.println("Deleting review with ID: " + shopReviewNo);
         shopReviewRepository.deleteById(shopReviewNo);
+        System.out.println("Review deleted successfully.");
     }
+	
+	public ShopEntity getShopEntityByShopNo(Long shopNo){
+	      return shopRepository.findByShopNo(shopNo);
+	}
+	
 	
 }
