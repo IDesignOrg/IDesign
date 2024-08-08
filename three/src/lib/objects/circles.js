@@ -1,10 +1,12 @@
 import { floorY } from "../../main";
 import { THREE } from "../loader/three";
+import { circleGroupName, circleName } from "../objectConf/objectNames";
+import { circlesRenderOrder, roomY } from "../objectConf/renderOrders";
 
-export class Circles {
+export class Circles extends THREE.Group {
   constructor({ points, center }) {
-    const circleGroup = new THREE.Group();
-    circleGroup.name = "circleGroup";
+    super();
+    this.name = circleGroupName;
     points.forEach((point) => {
       const geometry = new THREE.CircleGeometry(2.5, 32);
       const material = new THREE.MeshBasicMaterial({
@@ -12,14 +14,12 @@ export class Circles {
         side: THREE.DoubleSide,
       });
       const circle = new THREE.Mesh(geometry, material);
-      circle.name = "circle";
-      circle.position.set(point.x, floorY + 1, point.z);
+      circle.name = circleName;
+      circle.position.set(point.x, roomY, point.z);
       circle.rotation.x = -Math.PI / 2;
 
-      circleGroup.add(circle);
-      circleGroup.position.set(-center.x, center.y, -center.z);
+      this.add(circle);
+      this.rednerOrder = circlesRenderOrder;
     });
-
-    return circleGroup;
   }
 }
