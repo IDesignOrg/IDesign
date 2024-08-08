@@ -146,6 +146,7 @@ gridHelper.position.y = -1;
 scene.add(gridHelper);
 
 const rotationController = new RotationController({ cameraZoom });
+rotationController.setScale({ object: rotationController, scaler: 6 });
 const moveController = new MoveController();
 scene.add(moveController);
 scene.add(rotationController);
@@ -501,12 +502,24 @@ const wheelThrottle = () => {
 };
 const wheelDebounce = () => {
   const scaler = (minZoom / maxZoom) * cameraZoom * 0.2;
-  console.log(scaler);
+  // console.log("scaler", scaler);
+  const rotationController = scene.getObjectByName(rotationConrollerName);
+  rotationController.setScale({
+    object: rotationController,
+    scaler: scaler * 5,
+  });
   const rooms = scene.children.filter((obj) => obj.name === "room");
   rooms.forEach((room) => {
     room.children.forEach((child) => {
       if (child.name === "area") {
         child.scale.set(scaler, scaler, scaler);
+        const box = new THREE.Box3();
+        box.setFromObject(child);
+        // console.log("box", box);
+        const width = box.max.x - box.min.x;
+        const height = box.max.y - box.min.y;
+        // const
+        child.position.set(-width / 2, child.position.y, -height / 2);
         child.visible = true;
       }
     });
