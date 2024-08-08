@@ -41,7 +41,7 @@ export class RotationController extends THREE.Group {
     ring.name = "controllerBackground";
     ring.rotation.x = -Math.PI / 2;
     ring.renderOrder = 1;
-    this.setScale({ object: ring, cameraZoom });
+    // this.setScale({ object: ring, cameraZoom });
     this.add(ring);
 
     // controllerRing
@@ -64,7 +64,7 @@ export class RotationController extends THREE.Group {
     controllerRing.name = "controllerRing";
     controllerRing.rotation.x = -Math.PI / 2;
     controllerRing.renderOrder = 2;
-    this.setScale({ object: controllerRing, cameraZoom });
+    // this.setScale({ object: controllerRing, cameraZoom });
     this.add(controllerRing);
   };
 
@@ -104,8 +104,7 @@ export class RotationController extends THREE.Group {
     // room.remove(room.getObjectByName("area"));
   };
 
-  setScale = ({ object, cameraZoom }) => {
-    const scaleAmount = cameraZoom * (minZoom / maxZoom);
-    object.scale.set(scaleAmount, scaleAmount, scaleAmount);
+  setScale = ({ object, scaler }) => {
+    object.scale.set(scaler, scaler, scaler);
   };
 }
