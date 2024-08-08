@@ -23,6 +23,6 @@ public class ShopReviewPhotoEntity {
 	private String shopReviewPhotoUrl;
 	
 	@ManyToOne
-	@JoinColumn(name = "shop_review_no")
+	@JoinColumn(name = "shop_review_no", referencedColumnName = "shopReviewNo")
 	private ShopReviewEntity shopReviewEntity;
 }

@@ -127,18 +127,22 @@
 					<p th:text="${review.shopReviewContent}"></p>
 					<p>별점: <span th:text="${review.shopReviewStarRating}"></span></p>
 					<p>작성자: <span th:text="${review.user.UName}"></span></p>
-					<p>작성일: <span th:text="${review.shopReviewCreated != null ? #temporals.format(review.shopReviewCreated, 'yyyy-MM-dd HH:mm') : 'N/A'}"></span></p>
+					<p>작성일: <span
+							th:text="${review.shopReviewCreated != null ? #temporals.format(review.shopReviewCreated, 'yyyy-MM-dd HH:mm') : 'N/A'}"></span>
+					</p>
 
 					<!-- 리뷰 사진 표시 -->
 					<div class="review-photos">
 						<div th:each="photo : ${reviewPhotosMap[review.shopReviewNo]}">
-							<img th:src="@{${photo.shopReviewPhotoUrl}}" alt="Review Photo" class="review-thumbnail" onclick="openModal(this)">
+							<img th:src="@{${photo.shopReviewPhotoUrl}}" alt="Review Photo" class="review-thumbnail"
+								onclick="openModal(this)">
 						</div>
 					</div>
 
 					<!-- 리뷰 삭제 버튼 -->
-					
-					<button type="button" th:if="${session.UId} == ${review.user.UId}" onclick="deleteReview([[${review.shopReviewNo}]])">삭제</button>
+
+					<button type="button" th:if="${session.UId} == ${review.user.UId}"
+						th:attr="onclick=|deleteReview(${review.shopReviewNo})|">삭제</button>
 				</div>
 			</div>
 		</div>
@@ -170,11 +174,11 @@
 				$.ajax({
 					type: "DELETE",
 					url: "/shopReview/" + reviewId,
-					success: function(response) {
+					success: function (response) {
 						alert(response);
 						location.reload();
 					},
-					error: function(xhr, status, error) {
+					error: function (xhr, status, error) {
 						alert("리뷰 삭제에 실패했습니다.");
 					}
 				});

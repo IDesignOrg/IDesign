@@ -3,22 +3,28 @@ package com.my.interrior.admin.page;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.my.interrior.client.csc.notice.NoticeEntity;
 import com.my.interrior.client.evaluation.ReviewEntity;
 import com.my.interrior.client.evaluation.ReviewRepository;
 import com.my.interrior.client.evaluation.ReviewService;
 import com.my.interrior.client.shop.ShopReviewEntity;
 import com.my.interrior.client.shop.ShopReviewRepository;
+import com.my.interrior.client.shop.ShopService;
 import com.my.interrior.client.user.UserDTO;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserService;
@@ -27,6 +33,8 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class AdminPageController {
+
+	private static final int PAGE_SIZE = 10;
 
 	@Autowired
 	private UserService userService;
@@ -39,12 +47,15 @@ public class AdminPageController {
 
 	@Autowired
 	private ReviewRepository reviewRepository;
-	
+
 	@Autowired
 	private ReviewService reviewService;
-	
+
 	@Autowired
 	private ShopReviewRepository shopReviewRepository;
+
+	@Autowired
+	private ShopService shopService;
 
 	@GetMapping("/auth/adminLogin")
 	public String AdminLogin() {
@@ -80,7 +91,7 @@ public class AdminPageController {
 		}
 	}
 
-	//인덱스 페이지
+	// 인덱스 페이지
 	@GetMapping("/admin/page/adminIndex")
 	public String adminIndex(HttpSession session, Model model) {
 		String adminId = (String) session.getAttribute("UID");
@@ -96,8 +107,7 @@ public class AdminPageController {
 		Long reviewCount = adminPageService.getReviewCount();
 		System.out.println("리뷰의 수 : " + reviewCount);
 		model.addAttribute("reviewCount", reviewCount);
-		
-		
+
 		return "/admin/page/adminIndex";
 	}
 
@@ -111,29 +121,50 @@ public class AdminPageController {
 		return "/admin/page/adminUsers"; // 뷰의 이름을 반환
 	}
 
-	//어드민 페이지 게시글 모달
+	// 어드민 페이지 게시글 모달
 	@GetMapping("/fetchPosts")
 	@ResponseBody
 	public List<ReviewEntity> fetchPosts(@RequestParam("userUNo") Long userUNo) {
 		// ReviewRepository에서 UNo 기준으로 데이터 가져오기
 		return reviewRepository.findByUserUNo(userUNo);
 	}
-	//어드민 페이지 모달 게시글
+
+	// 어드민 페이지 게시글 모달 삭제
 	@DeleteMapping("/deletePost")
 	public ResponseEntity<Void> deletePost(@RequestParam("rNo") Long rNo) {
 		reviewService.deleteReview(rNo);
-	    return ResponseEntity.ok().build();
+		return ResponseEntity.ok().build();
 	}
-	
-	//어드민 페이지 댓글 모달
+
+	// 어드민 페이지 댓글 모달
 	@GetMapping("/fetchComments")
 	@ResponseBody
-    public List<ShopReviewEntity> fetchComments(@RequestParam("userUNo") Long userUNo) {
-        return shopReviewRepository.findByUserUNo(userUNo);
-    }
-	//어드민 페이지 댓글 모달 삭제
+	public List<ShopReviewEntity> fetchComments(@RequestParam("userUNo") Long userUNo) {
+		return shopReviewRepository.findByUserUNo(userUNo);
+	}
+
+	// 어드민 페이지 댓글 모달 삭제
 	@DeleteMapping("/deleteComment")
-    public void deleteComment(@RequestParam("shopReviewNo") Long shopReviewNo) {
-        shopReviewRepository.deleteById(shopReviewNo);
-    }
+	public ResponseEntity<Void> deleteComment(@RequestParam("shopReviewNo") Long shopReviewNo) {
+		shopService.deleteShopReview(shopReviewNo);
+		return ResponseEntity.ok().build();
+	}
+
+	// 공지사항
+	@GetMapping("/admin/page/adminNotice")
+	public String adminNoticeList(Model model, Pageable pageable) {
+		Page<NoticeEntity> notices = adminPageService.getAllNotice(PageRequest.of(pageable.getPageNumber(), PAGE_SIZE));
+		model.addAttribute("notices", notices);
+		model.addAttribute("currentPage", pageable.getPageNumber());
+		model.addAttribute("totalPages", notices.getTotalPages());
+		return "/admin/page/adminNotice";
+	}
+
+	// 공지사항 삭제
+	@DeleteMapping("/deleteNotice")
+	@ResponseBody
+	public ResponseEntity<Void> deleteNotice(@RequestParam("noticeNo") Long noticeNo) {
+		adminPageService.deleteNotice(noticeNo);
+		return ResponseEntity.ok().build();
+	}
 }
