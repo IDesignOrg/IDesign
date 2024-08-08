@@ -1,5 +1,3 @@
-import { RotationController, material } from "../../main.js";
-
 import { Circles } from "./circles.js";
 import { D2Floor } from "./floor.js";
 import { ShadowLines } from "./shadowLines.js";
@@ -15,39 +13,39 @@ import {
   calculateAngle,
 } from "../calculater.js";
 import { Text } from "./text.js";
+import { RotationController } from "./rotationController.js";
+import { MoveController } from "./moveController.js";
+import {
+  areaRenderORder,
+  areaRenderOrder,
+  roomY,
+} from "../objectConf/renderOrders.js";
 
 export class D3Room extends THREE.Group {
   constructor({ object }) {
-    const room = super();
-    room.userData = {
-      ...object.userData,
-    };
-    const center = room.userData.center;
-    console.log(center);
-    room.position.set(center.x, center.y, center.z);
-    room.name = "room";
-    const floor = object.children.find((obj) => obj.name === "floor");
-    if (!floor) return;
-    const points = room.userData.points;
-    // const points = getCoordsFromVectex(floor);
-    const newFloor = new D2Floor({ points, center });
-    // room.add(new wallDepth({ points }));
-    newFloor.material = material;
-    room.add(newFloor);
-    const walls = new D3Wall({ points, center });
-    room.add(walls);
+    super();
+    this.name = "room";
+    this.userData = { ...object.userData };
+
+    const { center, points } = this.userData;
+    this.position.set(center.x, center.y, center.z);
+
+    const floor = object.getObjectByName("floor").clone();
+    this.add(floor);
+    console.log(points);
     const ceiling = new D2Floor({ points, height: 50, center });
-    room.add(ceiling);
-    const chair = object.getObjectByName("chair");
-    if (chair) {
-      room.add(chair);
-    }
-    // const center = calculateCenter(points);
-    const ambientLight = new THREE.AmbientLight(0xf0f0f0, 1.2); // Ambient light
-    ambientLight.name = "light1";
-    ambientLight.position.set(center.x, 50, center.z);
-    room.add(ambientLight);
-    return room;
+    ceiling.name = "ceiling";
+    this.add(ceiling);
+
+    const walls = new D3Wall({ points, center });
+    walls.name = "walls";
+    this.add(walls);
+
+    object.children.forEach((obj) => {
+      if (obj.name === "chair" || obj.name === "desk") {
+        // ...create object
+      }
+    });
   }
 }
 
@@ -64,61 +62,93 @@ export class D2Room extends THREE.Group {
   }
 
   getShadowPoints = () => {
-    const shadow = this.getObjectByName("shadowLines");
-    const points = [];
-    const positions = shadow.geometry.attributes.position.array;
-    for (let i = 0; i < positions.length; i += 3) {
-      points.push(
-        new THREE.Vector3(positions[i], positions[i + 1], positions[i + 2])
-      );
-    }
-    points.pop();
-    return points;
+    return this.userData.points;
   };
 
   createRoom = ({ cameraZoom }) => {
+    if (this.getObjectByName("arrow")) {
+      this.remove(this.getObjectByName("arrow"));
+    }
+
     if (this.getObjectByName("floor")) {
       this.remove(this.getObjectByName("floor"));
     }
 
-    // const helper = new THREE.Box3Helper(box, 0xffff00);
-    // this.add(helper);
-    const points = this.getShadowPoints();
-    const area = new Text({ text: String(calculateArea(points) + " m2") });
-    area.rotation.x = -Math.PI / 2;
-    area.position.y = 10;
-    this.add(area);
+    if (this.getObjectByName("area")) {
+      this.remove(this.getObjectByName("area"));
+    }
 
-    // console.log("createRoom points = ", points);
+    const points = this.userData.points;
+
     const center = calculateCenter(points);
-
-    this.position.set(center.x, center.y, center.z);
+    this.addArea();
+    this.position.set(center.x, roomY, center.z);
     const floor = new D2Floor({ points, center });
     this.userData = {
       ...this.userData,
       center,
-      area,
       points,
     };
-    if (!this.getObjectByName("circleGroup")) {
-      this.createDots({ center });
-    }
+
     const shadowLines = this.getObjectByName("shadowLines");
-    // console.log(shadowLines);
     shadowLines.position.set(-center.x, center.y, -center.z);
-    this.add(floor);
+
     const rotationController = new RotationController({ cameraZoom });
     rotationController.visible = false;
+    this.createDots({ points, center });
     this.addArrow({ cameraZoom });
-    // rotationController.position.set(0, 10, 0);
+    this.add(floor);
     this.add(rotationController);
+    // if (this.getObjectByName("moveController")) {
+    //   this.remove(this.getObjectByName("moveController"));
+    // }
+    // this.add(new MoveController());
+  };
+
+  setPosition = (center) => {
+    const prevCenter = this.userData.center;
+    const offset = {
+      x: center.x - prevCenter.x,
+      y: center.y,
+      z: center.z - prevCenter.z,
+    };
+    const newPoints = this.userData.points.map((point) => {
+      return {
+        x: point.x + offset.x,
+        y: prevCenter.y,
+        z: point.z + offset.z,
+      };
+    });
+    this.position.set(center.x, roomY, center.z);
+    this.userData = {
+      ...this.userData,
+      center,
+      points: newPoints,
+    };
+  };
+
+  addArea = (angle) => {
+    if (this.getObjectByName("area")) {
+      this.remove(this.getObjectByName("area"));
+    }
+    const points = this.userData.points;
+    const area = new Text({ text: String(calculateArea(points) + " m2") });
+    area.name = "area";
+    area.rotation.x = -Math.PI / 2;
+    area.position.y = roomY + 0.1;
+    area.renderOrder = areaRenderOrder;
+
+    if (angle) {
+    }
+    this.add(area);
   };
 
   addArrow = ({ cameraZoom }) => {
     const points = this.getShadowPoints();
-
+    const group = new THREE.Group();
+    group.name = "arrow";
     for (let i = 0; i < points.length; i++) {
-      const arrowGroup = new THREE.Group();
+      // const arrowGroup = new THREE.Group();
       const currentPoint = points[i];
       const nextPoint = points[(i + 1) % points.length];
       const width = calculateDistance(currentPoint, nextPoint);
@@ -139,19 +169,23 @@ export class D2Room extends THREE.Group {
       );
 
       const arrow = new Arrow({ width, angle, position, cameraZoom });
-      arrowGroup.add(arrow);
-      this.add(arrowGroup);
+      // arrowGroup.add(arrow);
+      group.add(arrow);
     }
+    this.add(group);
   };
 
-  createDots = ({ center }) => {
-    const points = this.getShadowPoints();
-    const circleGroup = new Circles({ center, points });
-    circleGroup.name = "circleGroup";
-    this.add(circleGroup);
+  createDots = ({ center, points }) => {
+    if (this.getObjectByName("circleGroup")) {
+      this.remove(this.getObjectByName("circleGroup"));
+    }
+    const circles = new Circles({ points });
+    circles.position.set(-center.x, points[0].y, -center.z);
+    this.add(circles);
   };
 
   drawLines = (points) => {
+    this.userData.points = [...points];
     points.push(new THREE.Vector3(points[0].x, points[0].y, points[0].z));
     const shadow = this.getObjectByName("shadowLines");
     if (shadow) {
@@ -159,19 +193,28 @@ export class D2Room extends THREE.Group {
     }
     const line = new ShadowLines({ points });
     line.name = "shadowLines";
+    line.position.set(0, 0, 0);
     this.add(line);
     // console.log(this);
   };
 
-  updateLines = ({ points, circleIdx }) => {
+  updateLines = ({ point, circleIdx }) => {
     const circleGroup = this.getObjectByName("circleGroup");
-    const originPoints = this.getShadowPoints();
-    const x = getStraightLineX({ originPoints, points, index: circleIdx });
-    const z = getStraightLineZ({ originPoints, points, index: circleIdx });
-    circleGroup.children[circleIdx].position.set(x, points.y, z);
-    let newPoints = circleGroup.children.map((circle) => circle.position);
+    circleGroup.children[circleIdx].position.set(point.x, point.y, point.z);
+    const newPoints = circleGroup.children.map((c) => c.position);
+    this.userData.points = [...newPoints];
+    const center = this.userData.center;
+    if (this.getObjectByName("shadowLines")) {
+      this.remove(this.getObjectByName("shadowLines"));
+    }
+    newPoints.push({ ...newPoints[0] });
+    const line = new ShadowLines({ points: newPoints });
 
-    this.drawLines(newPoints);
+    // line.position.copy(this.position);
+    line.position.set(-center.x, point.y, -center.z);
+    // line.position.set(0, 0, 0);
+    line.name = "shadowLines";
+    this.add(line);
   };
 
   onMouseUp = ({ cameraZoom }) => {

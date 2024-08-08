@@ -2,16 +2,11 @@ import { THREE } from "../loader/three";
 import { calculateAngle, calculateDistance } from "../calculater";
 
 export const wallHeight = 50;
-const wallDepth = 5;
-const colors = ["red", "blue", "black", "green"];
-
-const wallpaper = "../../../../public/img/wallpaper2.jpg";
-const texture = new THREE.TextureLoader().load(wallpaper);
 
 export class D3Wall extends THREE.Group {
   constructor({ points, center }) {
-    const walls = super();
-    walls.name = "walls";
+    super();
+    this.name = "walls";
     for (let i = 0; i < points.length; i++) {
       const currentPoint = points[i];
       const nextPoint = points[(i + 1) % points.length];
@@ -30,11 +25,10 @@ export class D3Wall extends THREE.Group {
         (currentPoint.z + nextPoint.z) / 2 - center.z
       );
       wall.rotation.y = -angle;
-      walls.add(wall);
+      this.add(wall);
     }
 
-    walls.position.y = 2;
-    return walls;
+    this.position.y = 2;
   }
 }
 
