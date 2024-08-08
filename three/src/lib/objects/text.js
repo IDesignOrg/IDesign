@@ -17,14 +17,11 @@ export class Text extends THREE.Mesh {
         bevelOffset: 0,
         bevelSegments: 5,
       });
-      //   textGeometry.computeBoundingSphere();
       textGeometry.computeBoundingBox();
       const boundingBox = textGeometry.boundingBox;
-      const textMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+      const textMaterial = new THREE.MeshBasicMaterial({ color: "black" });
       super(textGeometry, textMaterial);
       this.name = "text";
-
-      // Center the text geometry
       if (boundingBox) {
         const textWidth = boundingBox.max.x - boundingBox.min.x;
         const textHeight = boundingBox.max.y - boundingBox.min.y;

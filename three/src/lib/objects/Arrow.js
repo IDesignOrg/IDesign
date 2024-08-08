@@ -2,12 +2,13 @@
 // import { loadedFont } from "../loader/FontLoader/FontLoader";
 import { MILLPerWidth } from "../../main";
 import { THREE } from "../loader/three";
+import { MilliName } from "../objectConf/objectNames";
 import { Text } from "./text";
 // import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 export class Arrow {
   constructor({ width, angle, position, cameraZoom }) {
     const group = new THREE.Group();
-    group.name = "MILLI";
+    group.name = MilliName;
 
     const text = new Text({
       text: `${(width / MILLPerWidth).toFixed(2)}mm`,
