@@ -48,6 +48,9 @@ public class CartController {
 		String userId = (String) session.getAttribute("UId");
 
 		List<CartEntity> cartEntities = cartService.findAllCarts(userId);
+		// 주문 내역에 담기 위해 session에 잠깐 담아 둠
+		session.setAttribute("cartEntities", cartEntities);
+		
 		List<Integer> cartQuantity = new ArrayList<>();
 		for (int i = 0; i < cartEntities.size(); i++) {
 			cartQuantity.add(cartEntities.get(i).getQuantity());
