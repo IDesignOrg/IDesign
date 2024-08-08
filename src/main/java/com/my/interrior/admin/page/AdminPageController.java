@@ -16,6 +16,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.my.interrior.client.evaluation.ReviewEntity;
 import com.my.interrior.client.evaluation.ReviewRepository;
+import com.my.interrior.client.evaluation.ReviewService;
+import com.my.interrior.client.shop.ShopReviewEntity;
+import com.my.interrior.client.shop.ShopReviewRepository;
 import com.my.interrior.client.user.UserDTO;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserService;
@@ -36,6 +39,12 @@ public class AdminPageController {
 
 	@Autowired
 	private ReviewRepository reviewRepository;
+	
+	@Autowired
+	private ReviewService reviewService;
+	
+	@Autowired
+	private ShopReviewRepository shopReviewRepository;
 
 	@GetMapping("/auth/adminLogin")
 	public String AdminLogin() {
@@ -71,6 +80,7 @@ public class AdminPageController {
 		}
 	}
 
+	//인덱스 페이지
 	@GetMapping("/admin/page/adminIndex")
 	public String adminIndex(HttpSession session, Model model) {
 		String adminId = (String) session.getAttribute("UID");
@@ -78,17 +88,20 @@ public class AdminPageController {
 		Long userCount = adminPageService.getUserCount();
 		System.out.println("유저 수는 : " + userCount);
 		model.addAttribute("userCount", userCount);
-		// 상점 게시글 체크
+		// 상점 후기 체크
 		Long shopCount = adminPageService.getShopCount();
-		System.out.println("쇼핑몰 게시글 수는  : " + shopCount);
+		System.out.println("쇼핑몰 후기 수는  : " + shopCount);
 		model.addAttribute("shopCount", shopCount);
 		// 리뷰 수
 		Long reviewCount = adminPageService.getReviewCount();
 		System.out.println("리뷰의 수 : " + reviewCount);
 		model.addAttribute("reviewCount", reviewCount);
+		
+		
 		return "/admin/page/adminIndex";
 	}
 
+	// 회원정보 페이지
 	@GetMapping("/admin/page/adminUsers")
 	public String adminUsers(Model model) {
 		// findAllUsersWithCounts() 메서드는 UserWithPostAndCommentCount 리스트를 반환함
@@ -98,15 +111,29 @@ public class AdminPageController {
 		return "/admin/page/adminUsers"; // 뷰의 이름을 반환
 	}
 
+	//어드민 페이지 게시글 모달
 	@GetMapping("/fetchPosts")
 	@ResponseBody
 	public List<ReviewEntity> fetchPosts(@RequestParam("userUNo") Long userUNo) {
 		// ReviewRepository에서 UNo 기준으로 데이터 가져오기
 		return reviewRepository.findByUserUNo(userUNo);
 	}
+	//어드민 페이지 모달 게시글
 	@DeleteMapping("/deletePost")
 	public ResponseEntity<Void> deletePost(@RequestParam("rNo") Long rNo) {
-	    reviewRepository.deleteById(rNo);
+		reviewService.deleteReview(rNo);
 	    return ResponseEntity.ok().build();
 	}
+	
+	//어드민 페이지 댓글 모달
+	@GetMapping("/fetchComments")
+	@ResponseBody
+    public List<ShopReviewEntity> fetchComments(@RequestParam("userUNo") Long userUNo) {
+        return shopReviewRepository.findByUserUNo(userUNo);
+    }
+	//어드민 페이지 댓글 모달 삭제
+	@DeleteMapping("/deleteComment")
+    public void deleteComment(@RequestParam("shopReviewNo") Long shopReviewNo) {
+        shopReviewRepository.deleteById(shopReviewNo);
+    }
 }

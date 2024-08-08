@@ -210,7 +210,16 @@ public class ShopService {
 	public List<ShopOptionEntity> getAllShopOptions() {
 		return shopOptionRepository.findAll();
 	}
+	
+	public List<ShopReviewEntity> getShopReviewsByShopNo(Long shopNo) {
+        return shopReviewRepository.findByShopEntityShopNo(shopNo);
+    }
 
+    public List<ShopReviewPhotoEntity> getShopReviewPhotosByReviewNo(Long shopReviewNo) {
+        return shopReviewPhotoRepository.findByShopReviewEntityShopReviewNo(shopReviewNo);
+    }
+
+    //리뷰 작성
 	public void shopReviewWrite(Long shopNo, double starpoint, String shopContent, MultipartFile[] descriptionImages) throws IOException  {
 		ShopReviewEntity shopReviewEntity = new ShopReviewEntity();
 		Optional<ShopEntity> ShopEntits = shopRepository.findById(shopNo);
@@ -245,4 +254,8 @@ public class ShopService {
         }
         
 	}
+	public void deleteShopReview(Long shopReviewNo) {
+        shopReviewRepository.deleteById(shopReviewNo);
+    }
+	
 }
