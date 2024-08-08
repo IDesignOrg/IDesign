@@ -4,16 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+
+import com.my.interrior.client.csc.notice.NoticeEntity;
+import com.my.interrior.client.csc.notice.NoticeRepository;
 import com.my.interrior.client.evaluation.ReviewRepository;
 import com.my.interrior.client.shop.ShopRepository;
 import com.my.interrior.client.shop.ShopReviewRepository;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class AdminPageService {
+	
+	@Autowired
+	private NoticeRepository noticeRepository;
 	
 	@Autowired
 	private UserRepository userRepository;
@@ -26,6 +36,9 @@ public class AdminPageService {
 	
 	@Autowired
 	private ShopReviewRepository shopReviewRepository;
+	
+	@Autowired
+	private NoticeRepository noticerepository;
 	
 	//유저 카운트
 	public long getUserCount() {
@@ -52,6 +65,14 @@ public class AdminPageService {
         }
 
         return userCounts;
+    }
+	public Page<NoticeEntity> getAllNotice(Pageable pageable){
+		return noticerepository.findAll(pageable);
+	}
+	
+	@Transactional
+    public void deleteNotice(Long notNo) {
+        noticeRepository.deleteById(notNo);
     }
 	
 }
