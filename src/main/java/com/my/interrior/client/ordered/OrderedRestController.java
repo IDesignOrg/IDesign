@@ -29,6 +29,8 @@ public class OrderedRestController {
     
     @GetMapping("/my/ordered")
     public ResponseEntity<OrderedDTO> getOrdered(HttpSession session){
+    	//여기에 merchant_uid, cancel_request_amount, reason, refund_holder, refund_bank
+    	//등을 넣어줘야함.
     	OrderedDTO orderedDTO = new OrderedDTO();
     	List<OrderedEntity> orderedEntities = orderedService.getOrderedList(session);
     	List<Long> shopNo = orderedEntities.stream()
