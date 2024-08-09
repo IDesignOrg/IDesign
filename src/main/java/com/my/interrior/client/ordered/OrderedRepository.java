@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface OrderedRepository extends JpaRepository<OrderedEntity, Long>{
 
 	List<OrderedEntity> findByUserEntity_UId(String UId);
+	void deleteByMerchantUId(String merchantUId);
 }
