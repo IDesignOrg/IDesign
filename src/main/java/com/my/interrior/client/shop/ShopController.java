@@ -54,10 +54,12 @@ public class ShopController {
     	System.out.println("우선 보내긴");
         // Main Photo 업로드
         String shopMainPhotoUrl = shopService.uploadFile(shopMainPhoto);
+        String shopMainPhotoUrl = shopService.uploadFile(shopMainPhoto);
         
         // Description Images 업로드
         List<String> descriptionImageUrls = new ArrayList<>();
         for (MultipartFile file : descriptionImages) {
+            String url = shopService.uploadFile(file);
             String url = shopService.uploadFile(file);
             descriptionImageUrls.add(url);
         }
@@ -76,6 +78,31 @@ public class ShopController {
     	model.addAttribute("shoplist", shops.getContent());
     	model.addAttribute("currentPage", pageable.getPageNumber());
     	model.addAttribute("totalPages", shops.getTotalPages());
+    	
+    	return "client/shop/shopList";
+    }
+    @GetMapping("/auth/search")
+    public String shopList(
+    		@RequestParam(name = "shopTitle", required = false) String shopTitle,
+    	    @RequestParam(name = "shopCategory", required = false) String shopCategory,
+    	    @RequestParam(name = "minPrice", required = false) Integer minPrice,
+    	    @RequestParam(name = "maxPrice", required = false) Integer maxPrice,
+        Model model,
+        Pageable pageable
+    ) {
+        Page<ShopEntity> shops = shopService.searchShops(shopTitle, shopCategory, minPrice, maxPrice, PageRequest.of(pageable.getPageNumber(), PAGE_SIZE));
+       
+        model.addAttribute("shoplist", shops.getContent());
+        model.addAttribute("currentPage", pageable.getPageNumber());
+        model.addAttribute("totalPages", shops.getTotalPages());
+
+        // 검색 조건을 다시 view에 전달하여 검색 폼에 값이 유지되도록 합니다.
+        model.addAttribute("shopTitle", shopTitle);
+        model.addAttribute("shopCategory", shopCategory);
+        model.addAttribute("minPrice", minPrice);
+        model.addAttribute("maxPrice", maxPrice);
+        
+        return "client/shop/shopList";
     	
     	return "client/shop/shopList";
     }
