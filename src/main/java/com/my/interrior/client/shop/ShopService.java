@@ -2,6 +2,7 @@ package com.my.interrior.client.shop;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageImpl;
 
 import com.google.cloud.storage.BlobId;
@@ -57,6 +59,13 @@ public class ShopService {
 	
 	@Autowired
 	private ShopReviewPhotoRepository shopReviewPhotoRepository;
+	private HttpSession session;
+
+	@Autowired
+	private ShopReviewRepository shopReviewRepository;
+	
+	@Autowired
+	private ShopReviewPhotoRepository shopReviewPhotoRepository;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -68,6 +77,7 @@ public class ShopService {
 	private String bucketName;
 
 	// GCS 파일 업로드
+	public String uploadFile(MultipartFile file) throws IOException {
 	public String uploadFile(MultipartFile file) throws IOException {
 		// 세션값 받아오기
 		String userId = (String) session.getAttribute("UId");
@@ -81,6 +91,7 @@ public class ShopService {
 		return String.format("https://storage.googleapis.com/%s/%s", bucketName, fileName);
 	}
 
+	//
 	//
 	@Transactional
 	public void shopWrite(String shopTitle, String shopPrice, String shopContent, String shopMainPhotoUrl,
@@ -189,6 +200,28 @@ public class ShopService {
 		return page;
 	}
 
+	// 샵 검색
+	public Page<ShopEntity> searchShops(String shopTitle, String shopCategory, Integer minPrice, Integer maxPrice,
+			Pageable pageable) {
+		List<ShopEntity> shops = shopRepository.findByShopTitleContainingAndShopCategoryContaining(shopTitle,
+				shopCategory);
+
+		BigDecimal minPriceBigDecimal = minPrice != null ? BigDecimal.valueOf(minPrice) : BigDecimal.ZERO;
+		BigDecimal maxPriceBigDecimal = maxPrice != null ? BigDecimal.valueOf(maxPrice)
+				: BigDecimal.valueOf(Long.MAX_VALUE);
+
+		List<ShopEntity> filteredShops = shops.stream().filter(shop -> {
+			BigDecimal price = new BigDecimal(shop.getShopPrice());
+			return price.compareTo(minPriceBigDecimal) >= 0 && price.compareTo(maxPriceBigDecimal) <= 0;
+		}).collect(Collectors.toList());
+
+		int start = (int) pageable.getOffset();
+		int end = Math.min((start + pageable.getPageSize()), filteredShops.size());
+		Page<ShopEntity> page = new PageImpl<>(filteredShops.subList(start, end), pageable, filteredShops.size());
+
+		return page;
+	}
+
 	public Optional<ShopEntity> getShopById(Long shopNo) {
 		return shopRepository.findById(shopNo);
 	}
@@ -196,6 +229,7 @@ public class ShopService {
 	public List<ShopEntity> getCartsFromShop(List<Long> shopNos) {
 		return shopRepository.findByShopNoIn(shopNos);
 	}
+
 
 	public List<ShopPhotoEntity> getShopPhotoById(Long shopNo) {
 

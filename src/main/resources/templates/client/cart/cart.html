@@ -380,6 +380,8 @@
 							<div th:each="couponEntity : ${couponEntities}">
 								<option th:value="${couponEntity.couponDiscount}" th:text="${couponEntity.couponName}"
 									th:attr="data-coupon-no=${couponEntity.couponNo}">
+								<option th:value="${couponEntity.couponDiscount}" th:text="${couponEntity.couponName}"
+									th:attr="data-coupon-no=${couponEntity.couponNo}">
 								</option>
 							</div>
 						</div>
@@ -460,7 +462,16 @@
 					var firstProductTitle = $('.product-title').first().text();
 					cartSize = parseInt(cartSize);
 					var shopTitle = firstProductTitle;
+					var firstProductTitle = $('.product-title').first().text();
+					cartSize = parseInt(cartSize);
+					var shopTitle = firstProductTitle;
 
+					if (cartSize > 1) {
+						shopTitle += " 외 " + (cartSize - 1) + "건";
+					}
+
+					var IMP = window.IMP;
+					IMP.init("imp64382832");
 					if (cartSize > 1) {
 						shopTitle += " 외 " + (cartSize - 1) + "건";
 					}
@@ -597,6 +608,7 @@
 			function applyCoupon() {
 				var totalAmountText = document.getElementById('total').innerText;
 				var totalAmount = parseFloat(totalAmountText.replace(/[^\d]/g, ''));
+				var totalAmount = parseFloat(totalAmountText.replace(/[^\d]/g, ''));
 
 				var couponSelect = document.getElementById('coupon-select');
 				var selectedOption = couponSelect.options[couponSelect.selectedIndex];
@@ -613,10 +625,12 @@
 				if (!isNaN(discount)) {
 					var discountAmount = totalAmount * (discount / 100);
 					discountedAmount = totalAmount - discountAmount;
+					discountedAmount = totalAmount - discountAmount;
 
 					couponDiscountElement.innerText = formatCurrency(discountAmount);
 					finalPayElement.innerText = formatCurrency(discountedAmount);
 				} else {
+					discountedAmount = totalAmount;
 					discountedAmount = totalAmount;
 					couponDiscountElement.innerText = formatCurrency(0);
 					finalPayElement.innerText = formatCurrency(discountedAmount);
@@ -626,6 +640,9 @@
 			function sample4_execDaumPostcode() {
 				new daum.Postcode({
 					oncomplete: function (data) {
+						var roadAddr = data.roadAddress;
+						var extraRoadAddr = '';
+
 						var roadAddr = data.roadAddress;
 						var extraRoadAddr = '';
 
