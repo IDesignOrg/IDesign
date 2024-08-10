@@ -59,13 +59,6 @@ public class ShopService {
 	
 	@Autowired
 	private ShopReviewPhotoRepository shopReviewPhotoRepository;
-	private HttpSession session;
-
-	@Autowired
-	private ShopReviewRepository shopReviewRepository;
-	
-	@Autowired
-	private ShopReviewPhotoRepository shopReviewPhotoRepository;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -77,7 +70,6 @@ public class ShopService {
 	private String bucketName;
 
 	// GCS 파일 업로드
-	public String uploadFile(MultipartFile file) throws IOException {
 	public String uploadFile(MultipartFile file) throws IOException {
 		// 세션값 받아오기
 		String userId = (String) session.getAttribute("UId");
@@ -178,27 +170,6 @@ public class ShopService {
 		return shopRepository.findAll(pageable);
 	}
 
-	// 샵 검색
-	public Page<ShopEntity> searchShops(String shopTitle, String shopCategory, Integer minPrice, Integer maxPrice,
-			Pageable pageable) {
-		List<ShopEntity> shops = shopRepository.findByShopTitleContainingAndShopCategoryContaining(shopTitle,
-				shopCategory);
-
-		BigDecimal minPriceBigDecimal = minPrice != null ? BigDecimal.valueOf(minPrice) : BigDecimal.ZERO;
-		BigDecimal maxPriceBigDecimal = maxPrice != null ? BigDecimal.valueOf(maxPrice)
-				: BigDecimal.valueOf(Long.MAX_VALUE);
-
-		List<ShopEntity> filteredShops = shops.stream().filter(shop -> {
-			BigDecimal price = new BigDecimal(shop.getShopPrice());
-			return price.compareTo(minPriceBigDecimal) >= 0 && price.compareTo(maxPriceBigDecimal) <= 0;
-		}).collect(Collectors.toList());
-
-		int start = (int) pageable.getOffset();
-		int end = Math.min((start + pageable.getPageSize()), filteredShops.size());
-		Page<ShopEntity> page = new PageImpl<>(filteredShops.subList(start, end), pageable, filteredShops.size());
-
-		return page;
-	}
 
 	// 샵 검색
 	public Page<ShopEntity> searchShops(String shopTitle, String shopCategory, Integer minPrice, Integer maxPrice,
