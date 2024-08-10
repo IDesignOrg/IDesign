@@ -6,12 +6,16 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.my.interrior.client.user.UserEntity;
+import com.my.interrior.client.user.UserRepository;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
 
@@ -23,6 +27,9 @@ import lombok.RequiredArgsConstructor;
 public class CartRestController {
 	
 	private final CartService cartService;
+	private final CartRepository cartRepository;
+	private final UserRepository userRepository;
+	private final CartOptionRepository cartOptionRepository;
 	private final CartRepository cartRepository;
 	private final UserRepository userRepository;
 	private final CartOptionRepository cartOptionRepository;

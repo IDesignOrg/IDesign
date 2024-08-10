@@ -189,6 +189,7 @@
 			$('#cartForm').on('submit', function (event) {
 				event.preventDefault();
 
+
 				$.ajax({
 					type: 'POST',
 					url: '/auth/cart',
@@ -201,6 +202,8 @@
 					error: function (xhr, status, error) {
 						if (xhr.status == 401) {
 							var msg = xhr.responseText;
+							if (confirm(msg)) {
+								window.location.href = '/auth/login';
 							if (confirm(msg)) {
 								window.location.href = '/auth/login';
 							}
