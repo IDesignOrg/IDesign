@@ -45,24 +45,31 @@ body {
 
 /* 서브메뉴 기본적으로 숨기기 */
 .sidebar ul li ul {
-    display: block; /* 서브메뉴 기본적으로 숨기되, display는 block으로 유지 */
-    max-height: 0; /* 기본 높이를 0으로 설정 */
-    overflow: hidden; /* 내용이 넘치지 않도록 설정 */
-    background-color: #444; /* 서브메뉴 배경색 */
-    transition: max-height 0.3s ease-in-out; /* 애니메이션 설정 */
+	display: block;
+	/* 서브메뉴 기본적으로 숨기되, display는 block으로 유지 */
+	max-height: 0;
+	/* 기본 높이를 0으로 설정 */
+	overflow: hidden;
+	/* 내용이 넘치지 않도록 설정 */
+	background-color: #444;
+	/* 서브메뉴 배경색 */
+	transition: max-height 0.3s ease-in-out;
+	/* 애니메이션 설정 */
 }
 
 /* 마우스 오버 시 서브메뉴 표시 */
 .sidebar ul li:hover ul {
-    max-height: 500px; /* 서브메뉴가 펼쳐질 때의 최대 높이 설정 */
+	max-height: 500px;
+	/* 서브메뉴가 펼쳐질 때의 최대 높이 설정 */
 }
 
 /* 서브메뉴 링크 스타일링 */
 .sidebar ul li ul li a {
-    color: #fff; /* 서브메뉴 텍스트 색상 */
-    text-decoration: none;
-    padding: 8px 10px;
-    display: block;
+	color: #fff;
+	/* 서브메뉴 텍스트 색상 */
+	text-decoration: none;
+	padding: 8px 10px;
+	display: block;
 }
 
 
@@ -202,19 +209,93 @@ table th {
 }
 
 .recover-btn {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
+	background-color: #4CAF50;
+	color: white;
+	border: none;
+	padding: 5px 10px;
+	border-radius: 5px;
+	cursor: pointer;
 }
 
 .recover-btn:hover {
-    background-color: #45a049;
+	background-color: #45a049;
 }
 
 .recover-completed {
-    color: #888;
-    font-weight: bold;
+	color: #888;
+	font-weight: bold;
+}
+
+.activate-btn {
+	background-color: #4CAF50;
+	color: white;
+	border: none;
+	padding: 5px 10px;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.activate-btn:hover {
+	background-color: #45a049;
+}
+
+.deactivate-btn {
+	background-color: #ff4d4d;
+	color: white;
+	border: none;
+	padding: 5px 10px;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.deactivate-btn:hover {
+	background-color: #ff1a1a;
+}
+
+/* 쿠폰 발급 버튼 스타일 */
+.issue-coupon-btn {
+	background-color: #4CAF50;
+	/* 초록색 배경 */
+	color: white;
+	/* 텍스트 색상 */
+	border: none;
+	/* 테두리 제거 */
+	padding: 5px 10px;
+	/* 패딩 설정 */
+	border-radius: 5px;
+	/* 버튼 모서리 둥글게 */
+	cursor: pointer;
+	/* 마우스 커서 변경 */
+	transition: background-color 0.3s ease;
+	/* 배경색 전환 애니메이션 */
+}
+
+/* 쿠폰 발급 버튼에 마우스 오버 시 */
+.issue-coupon-btn:hover {
+	background-color: #45a049;
+	/* 더 진한 초록색 배경 */
+}
+
+/* 쿠폰 삭제 버튼 스타일 */
+.delete-coupon-btn {
+	background-color: #ff4d4d;
+	/* 빨간색 배경 */
+	color: white;
+	/* 텍스트 색상 */
+	border: none;
+	/* 테두리 제거 */
+	padding: 5px 10px;
+	/* 패딩 설정 */
+	border-radius: 5px;
+	/* 버튼 모서리 둥글게 */
+	cursor: pointer;
+	/* 마우스 커서 변경 */
+	transition: background-color 0.3s ease;
+	/* 배경색 전환 애니메이션 */
+}
+
+/* 쿠폰 삭제 버튼에 마우스 오버 시 */
+.delete-coupon-btn:hover {
+	background-color: #ff1a1a;
+	/* 더 진한 빨간색 배경 */
 }
