@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.my.interrior.client.csc.notice.NoticeEntity;
+import com.my.interrior.client.csc.recover.RecoveryEntity;
 import com.my.interrior.client.evaluation.ReviewEntity;
 import com.my.interrior.client.evaluation.ReviewRepository;
 import com.my.interrior.client.evaluation.ReviewService;
@@ -167,4 +168,47 @@ public class AdminPageController {
 		adminPageService.deleteNotice(noticeNo);
 		return ResponseEntity.ok().build();
 	}
+
+	@PostMapping("/deactivateUser")
+	public ResponseEntity<String> deactivateUser(@RequestParam("userUNo") Long userUNo) {
+		try {
+			// 사용자 비활성화 서비스 호출
+			boolean isDeactivated = userService.deactivateUser(userUNo);
+
+			if (isDeactivated) {
+				return ResponseEntity.ok("해당 유저는 비활성화 되었습니다.");
+			} else {
+				return ResponseEntity.status(400).body("유저 비활성화에 실패했습니다.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(500).body("서버 오류로 인해 유저 비활성화에 실패했습니다.");
+		}
+	}
+	
+	@GetMapping("/admin/page/adminRecovery")
+	public String adminRecovery(Model model, Pageable pageable) {
+		Page<RecoveryEntity> recovers = adminPageService.getAllRecovery(PageRequest.of(pageable.getPageNumber(), PAGE_SIZE));
+		model.addAttribute("recovers", recovers);
+		model.addAttribute("currentPage", pageable.getPageNumber());
+		model.addAttribute("totalPages", recovers.getTotalPages());
+		return "/admin/page/adminRecovery";
+	}
+	
+	@PostMapping("/processRecovery")
+    public String processRecovery(@RequestParam("recoverNo") Long recoverNo, Model model) {
+        try {
+            // 복구 요청 처리
+            adminPageService.processRecovery(recoverNo);
+
+            // 처리 후 성공 메시지 추가
+            model.addAttribute("message", "복구가 성공적으로 처리되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "복구 처리 중 오류가 발생했습니다. 다시 시도해 주세요.");
+        }
+
+        // 처리 후 복구 목록 페이지로 리다이렉트
+        return "redirect:/admin/page/adminRecovery";
+    }
 }
