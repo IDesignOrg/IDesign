@@ -19,8 +19,4 @@ public interface ShopRepository extends JpaRepository<ShopEntity, Long>{
 	Optional<ShopEntity> findById(Long shopNo);
 	ShopEntity findByShopNo(Long shopNo);
 
-	List<ShopEntity> findByShopTitleContainingAndShopCategoryContaining(
-	        String shopTitle, String shopCategory
-	    );
-	Optional<ShopEntity> findById(Long shopNo);
 }

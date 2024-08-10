@@ -23,6 +23,7 @@
 	<a href="/board/faq">자주 묻는 질문</a>
 	<a href="/board/inquiry">문의사항</a>
 	<a href="/board/notices">공지사항</a>
+	<a href="/board/recoverLogin">복구신청</a>
 	<div>
 		<a th:href="@{/board/faq}">전체</a>
 		<a th:each="category : ${categories}" th:href="@{|/board/faq/category/${category}|}" th:text="${category}"></a>

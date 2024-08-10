@@ -30,9 +30,7 @@ public class CartRestController {
 	private final CartRepository cartRepository;
 	private final UserRepository userRepository;
 	private final CartOptionRepository cartOptionRepository;
-	private final CartRepository cartRepository;
-	private final UserRepository userRepository;
-	private final CartOptionRepository cartOptionRepository;
+
 	
 	@PostMapping("/auth/cart")
     public ResponseEntity<String> goCart(
