@@ -1,5 +1,6 @@
 package com.my.interrior.client.ordered;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -22,6 +23,8 @@ import lombok.ToString;
 @ToString
 public class OrderedEntity {
 
+	//여기에 payment_user_mapping의 pay_no가 필요함
+	//pay_no로 merchant_uid 찾을 수 있음.
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long orderedNo;
@@ -36,4 +39,9 @@ public class OrderedEntity {
 	@ManyToOne
 	@JsonIgnore
 	private UserEntity userEntity;
+	
+	@Column(name = "merchant_uid")
+	private String merchantUId;
+	@Column(name = "quantity")
+	private int quantity;
 }

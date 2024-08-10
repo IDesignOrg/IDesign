@@ -28,10 +28,15 @@ public class OrderedService {
     	//자꾸 LazyException 걸림 cartEntity의 cartOptions() 때문.
 //        List<CartEntity> cartEntities = (List<CartEntity>) session.getAttribute("cartEntities");
         String userId = (String) session.getAttribute("UId");
+        String merchantUId = (String) session.getAttribute("merchantUId");
         List<CartEntity> cartEntities = cartRepository.findByUserEntity_UId(userId);
 
         UserEntity user = userRepository.findByUId(userId);
 
+        
+        
+        
+        System.out.println("merchantUIdInOrdered: " + merchantUId);
         for (CartEntity cartEntity : cartEntities) {
         	
         	//1. cartOptions 초기화 안 됨.
@@ -45,12 +50,23 @@ public class OrderedService {
             ordered.setShipmentState("배송 준비중");
             ordered.setOrderedDate(LocalDate.now());
             ordered.setUserEntity(user);
-            ordered.setShopNo(cartEntity.getShopEntity().getShopNo());
-
+            //u_no랑 shop_no를 비교해서 quantity 가져오기
+            Long userNo = user.getUNo();
+            Long shopNo = cartEntity.getShopEntity().getShopNo();
+            int quantity = cartEntity.getQuantity();
+            ordered.setShopNo(shopNo);
+            ordered.setMerchantUId(merchantUId);
+            ordered.setQuantity(quantity);
             System.out.println("ordered에는 : " + ordered);
-
+            
             orderedRepository.save(ordered);
         }
+        session.removeAttribute("merchantUId");
+    }
+    
+    @Transactional
+    public void deleteByMerchantUId(String merchantUId) {
+    	orderedRepository.deleteByMerchantUId(merchantUId);
     }
     
     public List<OrderedEntity> getOrderedList(HttpSession session){

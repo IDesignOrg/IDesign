@@ -135,7 +135,8 @@
 			margin: 20px 0;
 		}
 	</style>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+		integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 	<script>
 		function openTab(evt, tabName) {
 			var i, tabcontent, tablinks;
@@ -164,7 +165,7 @@
 				type: 'GET',
 				url: '/my/ordered',
 				success: function (orderedDTO) {
-						console.log("orderdDTO: ", orderedDTO);
+					console.log("orderdDTO: ", orderedDTO);
 					if (orderedDTO == null || orderedDTO.orderedEntities.length === 0) {
 						thereIsNoOrdered();
 					} else {
@@ -225,6 +226,7 @@
 		                    <p><strong>상품명:</strong> ${shop ? shop.shopTitle : '정보 없음'}</p>
 		                    <p><strong>카테고리:</strong> ${shop ? shop.shopCategory : '정보 없음'}</p>
 		                    <p><strong>가격:</strong> ${shop ? shop.shopPrice : '정보 없음'} 원</p>
+		                    <p><strong>수량:</strong> ${order ? order.quantity : '정보 없음'} 개</p>
 		                    <p><strong>상품 사진:</strong></p>
 		                    <img src="${shop ? shop.shopMainPhoto : '정보 없음'}" alt="${shop ? shop.shopTitle : '상품 이미지'}">
 		                </div>
@@ -233,6 +235,8 @@
 		                    <p><strong>배송 상태:</strong> ${order.shipmentState}</p>
 		                </div>
 		                <hr>
+						<input type = "hidden" data-merchant-uid = "${order.merchantUId}"/>
+						<button onclick="cancelPay(this)">환불하기</button>
 		            </div>
 		        `;
 
@@ -240,7 +244,21 @@
 			});
 		}
 
-
+		function cancelPay(button){
+			var merchantUId = $(button).siblings('input[type="hidden"]').data('merchant-uid');
+			console.log("merchant-uid: ", merchantUId);
+			$.ajax({
+				url:'/refund/payment',
+				type:'POST',
+				data:{
+					merchantUId: merchantUId
+				},
+				success:function(res){
+					alert("환불 처리가 완료되었습니다. 카드 승인 취소는 영업일 기준 최대 3-5일 소요됩니다. 취소 지연시, 해당 카드사로 문의하세요.");
+					window.location.href="/";
+				}
+			});
+		}
 		function displayCoupons(coupons) {
 			var couponListDiv = document.getElementById("couponList");
 			couponListDiv.innerHTML = "";
