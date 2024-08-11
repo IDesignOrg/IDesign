@@ -55,7 +55,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: "./index.html",
+      template: "./three.html",
       minify:
         process.env.NODE_ENV === "production"
           ? {
