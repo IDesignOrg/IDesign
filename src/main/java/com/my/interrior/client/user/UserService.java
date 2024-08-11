@@ -1,5 +1,7 @@
 package com.my.interrior.client.user;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -88,5 +90,28 @@ public class UserService {
         message.setReplyTo("dnlsemtmf@gmail.com");
         System.out.println("message"+message);
         mailSender.send(message);
+    }
+    public boolean deactivateUser(Long userUNo) {
+        try {
+            // 사용자 엔티티 조회
+            UserEntity user = userRepository.findById(userUNo).orElse(null);
+
+            if (user != null) {
+                // 비활성화 처리
+                user.setUDeactivated(true);
+                userRepository.save(user);
+                return true;
+            } else {
+                return false; // 사용자 없음
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false; // 오류 발생 시 false 반환
+        }
+    }
+    
+    public UserEntity findById(Long id) {
+        Optional<UserEntity> user = userRepository.findById(id);
+        return user.orElse(null); // 사용자가 존재하지 않으면 null 반환
     }
 }

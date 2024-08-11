@@ -32,4 +32,9 @@ public class CouponService {
 	public CouponMapEntity getCouponBycouponNos(Long couponNo) {
 		return couponMapRepository.findBycouponEntity_couponNo(couponNo);
 	}
+	
+	public CouponEntity findCouponById(Long couponNo) {
+        return couponRepository.findById(couponNo)
+                .orElseThrow(() -> new IllegalArgumentException("해당 쿠폰을 찾을 수 없습니다: " + couponNo));
+    }
 }
