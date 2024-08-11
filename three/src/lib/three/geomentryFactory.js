@@ -10,7 +10,6 @@ export const D3Shapes = ({ object, scene }) => {
 
 export const D2Shapes = ({ object, cameraZoom }) => {
   // 아마 room
-  console.log(object);
   const points = object.userData.points;
   const room = new D2Room({ points });
   room.createRoom({ cameraZoom });
