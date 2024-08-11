@@ -167,7 +167,7 @@ public class ShopService {
 
 	// 샵 페이지 리스트
 	public Page<ShopEntity> getAllShop(Pageable pageable) {
-		return shopRepository.findAll(pageable);
+		return shopRepository.findBySDeactivatedFalse(pageable);
 	}
 
 

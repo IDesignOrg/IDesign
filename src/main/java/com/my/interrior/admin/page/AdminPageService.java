@@ -20,10 +20,14 @@ import com.my.interrior.client.csc.recover.RecoveryRepository;
 import com.my.interrior.client.evaluation.ReviewRepository;
 import com.my.interrior.client.event.coupon.CouponEntity;
 import com.my.interrior.client.event.coupon.CouponMapEntity;
+import com.my.interrior.client.ordered.OrderedEntity;
+import com.my.interrior.client.ordered.OrderedRepository;
+import com.my.interrior.client.shop.ShopEntity;
 import com.my.interrior.client.shop.ShopRepository;
 import com.my.interrior.client.shop.ShopReviewRepository;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
+import com.my.interrior.client.user.UserService;
 
 import jakarta.transaction.Transactional;
 
@@ -59,6 +63,9 @@ public class AdminPageService {
 	
 	@Autowired
 	private CouponService couponService;
+	
+	@Autowired
+	private OrderedRepository orderedRepository;
 	
 	
 	//유저 카운트
@@ -142,5 +149,42 @@ public class AdminPageService {
         CouponEntity coupon = couponService.findCouponById(couponNo);
         coupon.setCouponState(state);
         couponRepository.save(coupon);
+    }
+    
+    @Transactional
+    public void recoveryUser(Long userUNo) {
+    	UserEntity user = userRepository.findByUNo(userUNo);
+    	
+    	user.setUDeactivated(false);
+    	userRepository.save(user);
+    	
+    }
+    //shop and counts
+    public List<ShopListAndOrderedDTO> getAllShopsAndCounts(){
+    	List<ShopEntity> shops = shopRepository.findAll();
+    	List<ShopListAndOrderedDTO> shopCounts = new ArrayList<>();
+    	
+    	for(ShopEntity shop : shops) {
+    		int orderedCount = orderedRepository.countByShopNo(shop.getShopNo());
+    		ShopListAndOrderedDTO dto = new ShopListAndOrderedDTO(shop, orderedCount);
+    		shopCounts.add(dto);
+    	}
+    	
+		return shopCounts;
+	}
+    // 구매내역
+    public Page<OrderedEntity> getAllOrdered(Pageable pageable){
+		return orderedRepository.findAll(pageable);
+	}
+    
+    @Transactional
+    public void toggleShopActivation(Long shopNo, boolean isDeactivated) {
+    	System.out.println("isDeactivated : " + isDeactivated);
+        ShopEntity shop = shopRepository.findById(shopNo)
+                .orElseThrow(() -> new IllegalArgumentException("해당 상점을 찾을 수 없습니다: " + shopNo));
+        
+        // 비활성화 처리
+        shop.setSDeactivated(isDeactivated);
+        shopRepository.save(shop);
     }
 }
