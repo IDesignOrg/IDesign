@@ -2,12 +2,11 @@ import { GLTFLoader } from "../loader/GLTFLoader.js";
 
 const loader = new GLTFLoader();
 
-export const chairCreator = () => {
+export const createChair = () => {
   return new Promise((res, rej) => {
     loader.load(
       "./gltf/chair/chair.gltf",
       (gltf) => {
-        console.log(gltf);
         res(gltf.scene);
       },
       undefined,
