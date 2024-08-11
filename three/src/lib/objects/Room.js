@@ -1,7 +1,7 @@
 import { Circles } from "./circles.js";
 import { D2Floor } from "./floor.js";
 import { ShadowLines } from "./shadowLines.js";
-import { D3Wall } from "./wall.js";
+import { D2Wall, D3Wall } from "./wall.js";
 import { Arrow } from "./Arrow.js";
 import { THREE } from "../loader/three.js";
 import {
@@ -16,10 +16,12 @@ import { Text } from "./text.js";
 import { RotationController } from "./rotationController.js";
 import { MoveController } from "./moveController.js";
 import {
-  areaRenderORder,
   areaRenderOrder,
+  arrowsRenderOrder,
+  arrowsY,
   roomY,
 } from "../objectConf/renderOrders.js";
+import { wallsName } from "../objectConf/objectNames.js";
 
 export class D3Room extends THREE.Group {
   constructor({ object }) {
@@ -88,10 +90,12 @@ export class D2Room extends THREE.Group {
       ...this.userData,
       center,
       points,
+      rotation: 0,
     };
 
     const shadowLines = this.getObjectByName("shadowLines");
     shadowLines.position.set(-center.x, center.y, -center.z);
+    shadowLines.visible = false;
 
     const rotationController = new RotationController({ cameraZoom });
     rotationController.visible = false;
@@ -99,10 +103,24 @@ export class D2Room extends THREE.Group {
     this.addArrow({ cameraZoom });
     this.add(floor);
     this.add(rotationController);
+    this.addWalls({ points });
+    console.log(points);
+    // this.rotation.y = -Math.PI / 2;
     // if (this.getObjectByName("moveController")) {
     //   this.remove(this.getObjectByName("moveController"));
     // }
     // this.add(new MoveController());
+  };
+
+  addWalls = ({ points }) => {
+    if (this.getObjectByName(wallsName)) {
+      this.remove(this.getObjectByName(wallsName));
+    }
+    const parentPosition = new THREE.Vector3();
+    this.getWorldPosition(parentPosition);
+
+    const walls = new D2Wall({ points, parentPosition });
+    this.add(walls);
   };
 
   setPosition = (center) => {
@@ -132,10 +150,11 @@ export class D2Room extends THREE.Group {
       this.remove(this.getObjectByName("area"));
     }
     const points = this.userData.points;
+
     const area = new Text({ text: String(calculateArea(points) + " m2") });
     area.name = "area";
     area.rotation.x = -Math.PI / 2;
-    area.position.y = roomY + 0.1;
+    area.position.y = roomY + 0.5;
     area.renderOrder = areaRenderOrder;
 
     if (angle) {
@@ -172,6 +191,8 @@ export class D2Room extends THREE.Group {
       // arrowGroup.add(arrow);
       group.add(arrow);
     }
+    group.renderOrder = arrowsRenderOrder;
+    group.position.y = arrowsY + 5;
     this.add(group);
   };
 
