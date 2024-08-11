@@ -1,8 +1,9 @@
 import { THREE } from "../loader/three.js";
 import { calculateAngle, calculateDistance } from "../calculater.js";
-import { wallMaterial } from "../../main";
-import { wallsName } from "../objectConf/objectNames";
+import { floorMaterial, wallMaterial } from "../../main";
+import { wallName, wallsName } from "../objectConf/objectNames";
 import { roomY } from "../objectConf/renderOrders.js";
+import { Shape } from "./floor.js";
 
 export const wallHeight = 50;
 
@@ -51,78 +52,51 @@ export class D3Wall extends THREE.Group {
 // }
 
 export class D2Wall extends THREE.Group {
-  constructor({ points, parentPosition }) {
+  constructor({ points, parentPosition, center }) {
     super();
-    this.name = "D2Wall";
-    this.wallWidth = 10; // 벽의 넓이
-
-    // 벽의 색상 배열 (각 벽마다 다르게 설정할 수 있음)
-    const colors = ["red", "blue", "green", "yellow"];
-
+    console.log(" p =", parentPosition);
+    this.name = wallsName;
     points.forEach((point, idx) => {
-      const currentPoint = new THREE.Vector3(point.x, 0, point.z);
-      const nextPoint = new THREE.Vector3(
-        points[(idx + 1) % points.length].x,
-        0,
-        points[(idx + 1) % points.length].z
-      );
+      const current = point;
+      const nextIdx = (1 + idx) % points.length;
+      const next = points[nextIdx];
 
-      const direction = this.getDirection(currentPoint, nextPoint);
-      const distance = currentPoint.distanceTo(nextPoint);
-
-      return;
-      const geometry = new THREE.PlaneGeometry(this.wallWidth, distance);
-      const material = new THREE.MeshBasicMaterial({
-        color: colors[idx % colors.length],
-        side: THREE.DoubleSide,
-      });
-      const plane = new THREE.Mesh(geometry, material);
-
-      const position = this.getPosition({
-        currentPoint,
-        nextPoint,
-        parentPosition,
-      });
-
-      plane.position.set(position.x, roomY + 1, position.z);
-      plane.rotation.x = -Math.PI / 2; // 벽이 수평으로 배치되도록
-      plane.rotation.z = -this.getAngle(currentPoint, nextPoint) + Math.PI / 2;
-
-      this.add(plane);
+      this.draw(current, next, idx, nextIdx);
     });
+    // this.rotation.x = -Math.PI / 2;
+    this.position.set(-center.x, center.y, -center.z);
   }
 
-  // 두 점 사이의 방향 벡터를 계산
-  getDirection(p1, p2) {
-    return new THREE.Vector3().subVectors(p2, p1).normalize();
-  }
+  draw = (current, nextPoint, idx, nextIdx) => {
+    const offset = 25;
+    // const offsetX =
+    const newPoints = [
+      { ...current },
+      {
+        x: current.x + (idx === 0 || idx === 3 ? -offset : offset),
+        y: current.y,
+        z: current.z + (idx === 1 || idx === 0 ? -offset : offset),
+      },
+      {
+        x: nextPoint.x + (nextIdx === 0 || nextIdx === 3 ? -offset : offset),
+        y: current.y,
+        z: nextPoint.z + (nextIdx === 1 || nextIdx === 0 ? -offset : offset),
+      },
+      {
+        ...nextPoint,
+      },
+    ];
 
-  // 벽의 오프셋을 계산
-  getOffset(direction, width) {
-    return new THREE.Vector3(-direction.z, 0, direction.x)
-      .normalize()
-      .multiplyScalar(width / 2);
-  }
-
-  // 벽의 위치를 계산
-  getPosition({ currentPoint, nextPoint, parentPosition }) {
-    const center = new THREE.Vector3(
-      (currentPoint.x + nextPoint.x) / 2,
-      0,
-      (currentPoint.z + nextPoint.z) / 2
-    );
-
-    // parentPosition을 기준으로 벽의 위치를 계산
-    const point = center.clone().sub(parentPosition);
-    const direction = this.getDirection(currentPoint, nextPoint);
-    const offset = this.getOffset(direction, this.wallWidth);
-
-    return point.add(offset);
-  }
-
-  // 두 점 사이의 각도 계산
-  getAngle(p1, p2) {
-    const direction = this.getDirection(p1, p2);
-    return Math.atan2(direction.z, direction.x);
-  }
+    const shape = new Shape({ points: newPoints });
+    const geometry = new THREE.ShapeGeometry(shape);
+    const material = new THREE.MeshBasicMaterial({ color: "red" });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.name = wallName;
+    mesh.userData = {
+      ...mesh.userData,
+      points: newPoints,
+    };
+    this.add(mesh);
+  };
 }
