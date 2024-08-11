@@ -63,7 +63,6 @@ export class D2Wall extends THREE.Group {
 
       this.draw(current, next, idx, nextIdx);
     });
-    // this.rotation.x = -Math.PI / 2;
     this.position.set(-center.x, center.y, -center.z);
   }
 
