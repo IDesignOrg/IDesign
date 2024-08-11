@@ -8,6 +8,6 @@ public class ThreeController {
 
 	@GetMapping("/auth/three")
 	public String goToThreeDashBoard() {
-		return "three/index";
+		return "three";
 	}
 }

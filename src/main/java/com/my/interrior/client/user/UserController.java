@@ -96,6 +96,10 @@ public class UserController {
 			UserEntity user = userService.checkLogin(UId);
 			System.out.println("user" + user);
 			if (user != null && passwordEncoder.matches(UPw, user.getUPw())) {
+				if (user.isUDeactivated()) {
+	                model.addAttribute("loginError", "비활성화된 아이디입니다.");
+	                return "client/login";
+	            }
 				session.setAttribute("UId", user.getUId());
 				return "redirect:/";
 			} else {
