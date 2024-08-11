@@ -191,19 +191,19 @@ const getIntersectsArray = (raycaster) => {
 };
 
 const updateShadows = ({ object, background }) => {
-  // const points = [
-  //   new THREE.Vector3(object.clickedPoints.x, roomY, object.clickedPoints.z),
-  //   new THREE.Vector3(background.point.x, roomY, object.clickedPoints.z),
-  //   new THREE.Vector3(background.point.x, roomY, background.point.z),
-  //   new THREE.Vector3(object.clickedPoints.x, roomY, background.point.z),
-  // ];
-  const y = roomY;
   const points = [
-    { x: 0, y, z: 0 },
-    { x: 100, y, z: 0 },
-    { x: 100, y, z: 100 },
-    { x: 0, y, z: 100 },
+    new THREE.Vector3(object.clickedPoints.x, roomY, object.clickedPoints.z),
+    new THREE.Vector3(background.point.x, roomY, object.clickedPoints.z),
+    new THREE.Vector3(background.point.x, roomY, background.point.z),
+    new THREE.Vector3(object.clickedPoints.x, roomY, background.point.z),
   ];
+  // const y = roomY;
+  // const points = [
+  //   { x: 0, y, z: 0 },
+  //   { x: 100, y, z: 0 },
+  //   { x: 100, y, z: 100 },
+  //   { x: 0, y, z: 100 },
+  // ];
   object.drawLines(points);
 };
 
