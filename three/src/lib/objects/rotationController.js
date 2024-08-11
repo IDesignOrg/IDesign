@@ -84,16 +84,12 @@ export class RotationController extends THREE.Group {
     const angle = Math.atan2(dz, dx) + Math.PI / 2; // rotation.x가 -Math.PI / 2이기 때문에 보정
     if (this.isDragging) {
       this.rotation({ angle, room });
-      // return;
     }
     const controllerRing = this.getObjectByName("controllerRing");
-
-    // 마우스 위치 (points)에서 ring의 중심까지의 벡터 계산
-
-    // controllerRing의 rotation.z 업데이트
     controllerRing.rotation.z = -angle;
     document.body.style.cursor = "pointer";
   };
+
   setPosition = (center) => {
     this.position.set(center.x, center.y, center.z);
   };
@@ -101,7 +97,9 @@ export class RotationController extends THREE.Group {
   rotation = ({ angle, room }) => {
     room.userData.rotation = angle;
     room.rotation.y = angle;
-    // room.remove(room.getObjectByName("area"));
+    const area = room.getObjectByName("area");
+    // area.rotation.z = -angle;
+    // area.position.set(0, area.position.y, 0);
   };
 
   setScale = ({ object, scaler }) => {
