@@ -47,6 +47,32 @@ dependencies {
 	implementation 'com.github.iamport:iamport-rest-client-java:0.2.21'
 }
 
+// Webpack 실행
+task webpackBuild(type: Exec) {
+    inputs.file("package-lock.json").withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs.dir("src").withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs.file("webpack.config.js")
+    outputs.dir("dist")
+    outputs.cacheIf { true }
+    commandLine "$projectDir/node_modules/.bin/webpack", "--display-error-details"
+}
+// Webpack dev server
+task webpackServer(type: Exec, dependsOn: webpackBuild) {
+    commandLine "$projectDir/node_modules/.bin/webpack-dev-server", "--config", "./webpack.config.js"
+}
+// Package Application as Zip
+task packageFrontend(type: Zip, dependsOn: webpackBuild) {
+    from 'dist/'
+    include '*'
+    archiveFileName.set("${rootProject.name}-frontend.zip")
+    destinationDirectory.set(file("${buildDir}"))
+}
+task cleanAll(type: Delete) {
+    delete 'build', 'dist'
+}
 test {
     useJUnitPlatform()
+}
+tasks.withType(JavaCompile) {
+    dependsOn cleanAll
 }
