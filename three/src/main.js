@@ -92,9 +92,9 @@ const composer = new EffectComposer(renderer);
 const renderPass = new RenderPass(scene, camera);
 composer.addPass(renderPass);
 
-const wallpaper = "../public/img/floor.jpg";
+const floorPaper = "../public/img/floor.jpg";
 const texture = new THREE.TextureLoader().load(
-  wallpaper,
+  floorPaper,
   function () {
     console.log("Texture loaded successfully");
   }, // onLoad
@@ -103,8 +103,12 @@ const texture = new THREE.TextureLoader().load(
     console.error("An error happened while loading the texture", err);
   } // onError
 );
-export const floorMaterial = new THREE.MeshBasicMaterial({ map: texture });
 
+const wallpaper = "../public/img/wallpaper.jpeg";
+const texture2 = new THREE.TextureLoader().load(wallpaper);
+export const wallMaterial = new THREE.MeshBasicMaterial({ map: texture2 });
+export const floorMaterial = new THREE.MeshBasicMaterial({ map: texture });
+// export const
 const light = new THREE.DirectionalLight(0xffffff, 1.5);
 light.position.set(200, 200, 200);
 scene.add(light);
@@ -187,11 +191,18 @@ const getIntersectsArray = (raycaster) => {
 };
 
 const updateShadows = ({ object, background }) => {
+  // const points = [
+  //   new THREE.Vector3(object.clickedPoints.x, roomY, object.clickedPoints.z),
+  //   new THREE.Vector3(background.point.x, roomY, object.clickedPoints.z),
+  //   new THREE.Vector3(background.point.x, roomY, background.point.z),
+  //   new THREE.Vector3(object.clickedPoints.x, roomY, background.point.z),
+  // ];
+  const y = roomY;
   const points = [
-    new THREE.Vector3(object.clickedPoints.x, roomY, object.clickedPoints.z),
-    new THREE.Vector3(background.point.x, roomY, object.clickedPoints.z),
-    new THREE.Vector3(background.point.x, roomY, background.point.z),
-    new THREE.Vector3(object.clickedPoints.x, roomY, background.point.z),
+    { x: 0, y, z: 0 },
+    { x: 100, y, z: 0 },
+    { x: 100, y, z: 100 },
+    { x: 0, y, z: 100 },
   ];
   object.drawLines(points);
 };
@@ -541,6 +552,7 @@ const onWheel = (event) => {
 };
 
 const onCreateBtnClick = async (e) => {
+  e.stopPropagation();
   const btn = e.target.closest("button");
   if (!btn) return;
   isCreating = {
@@ -621,9 +633,59 @@ const onSave = async () => {
     project_id: new Date().getTime(),
     data: {},
   };
+  console.log(scene);
 
-  const data = await axios.post("127.0.0.1/uri", { ...reqData });
-  console.log(data);
+  // const room = scene.getObjectByName("room");
+
+  // const data = {};
+
+  // function def(obj, parent) {
+  //   data[obj.id] = {
+  //     oid: obj.id,
+  //     parent: parent.id,
+  //     type: obj.name,
+  //     children:
+  //       obj.children.length === 0 || obj.children === null
+  //         ? null
+  //         : obj.children.map((c) => c.id),
+  //     rotation: obj.userData.rotation ? obj.userData.rotation : 0,
+  //     angle: obj.userData.rotation ? obj.userData.rotation : 0,
+  //     points: obj.userData.points,
+  //   };
+
+  //   if (obj.children.length === 0 || obj.children === null) {
+  //   } else {
+  //     obj.children.forEach((o) => def(o, obj));
+  //   }
+  // }
+
+  // def(room, scene);
+
+  // console.log(data);
+
+  // {
+  //   uuid: string,
+  //     project_id: string,
+  //     mod_dt: Date,
+  //     reg_dt: Date,
+  //   // 기타 데이터 저장에 필요한 것들(3D 관련x)
+  //     data: {
+  //     oid: string, //object id
+  //       type: string,
+  //       points: [
+  //         { x: float, y: float, z: float }, {
+  //           ...
+  //         } ...
+  //       ],
+  //       children: null or  string /* oid)*/ or {...data }, /* data항목과 일치함 */
+  //     parent:  null or  string  or {...data }, /* data항목과 일치함 */
+  //     rotation: float or Double, //아마 더블
+  //       angle: float or Double,
+  //       }
+  // }
+
+  // const data = await axios.post("127.0.0.1/uri", { ...reqData });
+  // console.log(data);
 };
 
 window.addEventListener("mousedown", onMouseDown);

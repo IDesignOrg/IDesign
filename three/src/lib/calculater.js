@@ -21,9 +21,6 @@ export const getCoordsFromVectex = (obj) => {
 };
 
 export function calculateArea(points) {
-  // const multipliWithNextZ = points.reduce((acc, current) => {
-  //   return acc + cu
-  // })
   const multipliWithNextZ = points.map((point, idx, arr) => {
     return point.x.toFixed(2) * arr[(idx + 1) % arr.length].z.toFixed(2);
   });
@@ -61,7 +58,6 @@ export function calculateCenter(points) {
 }
 
 export const getClickedCircleIndex = ({ background, floor, cg, object }) => {
-  // console.log("ewqewqewqeq");
   const children = cg.children;
   const position = object.position;
   for (let i = 0; i < children.length; i++) {

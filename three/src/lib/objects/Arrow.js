@@ -3,6 +3,7 @@
 import { MILLPerWidth } from "../../main";
 import { THREE } from "../loader/three";
 import { MilliName } from "../objectConf/objectNames";
+import { arrowsRenderOrder, arrowsY } from "../objectConf/renderOrders";
 import { Text } from "./text";
 // import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 export class Arrow {
@@ -39,11 +40,11 @@ export class Arrow {
 
     const geometry = new THREE.ShapeGeometry(shape);
     const material = new THREE.MeshBasicMaterial({
-      color: "black",
+      color: "rgb(134, 134, 134)",
       side: THREE.DoubleSide,
     });
     const mesh = new THREE.Mesh(geometry, material);
-    group.position.set(position.x, 10, position.z);
+    group.position.set(position.x, 0, position.z);
     group.rotation.x = -Math.PI / 2;
     group.rotation.z = -angle;
 
