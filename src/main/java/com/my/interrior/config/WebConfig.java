@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 //스프링부트를 쓰면 그레이들에 웹이라는 애 작성하면 알아서 찾는 애 알아서 설정해준다
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.my.interrior.interceptor.Interceptor;
@@ -27,11 +28,12 @@ public class WebConfig implements WebMvcConfigurer {
         System.out.println("shshshshsh");
         registry.addInterceptor(interceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/auth/**","/","/login", "/board/**", "/static/**", "/css/**", "/js/**", "/include/**", "/image/**", "/logout", "/board/faq/search/**"); //auth명시된건 패스시킨다
-
-
-
-
+                .excludePathPatterns("/auth/**","/","/login", "/board/**", "/static/**", "/css/**", "/js/**", "/include/**", "/image/**", "/logout", "/board/faq/search/**", "dist/**"); //auth명시된건 패스시킨다
     }
-
+    @Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		// `three` 디렉토리 내의 `public` 폴더에서 정적 파일을 서빙
+		registry.addResourceHandler("/dist/**")
+				.addResourceLocations("file:" + System.getProperty("user.dir") + "/three/dist/");
+	}
 }
