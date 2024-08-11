@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 //스프링부트를 쓰면 그레이들에 웹이라는 애 작성하면 알아서 찾는 애 알아서 설정해준다
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.my.interrior.interceptor.Interceptor;
@@ -32,6 +33,12 @@ public class WebConfig implements WebMvcConfigurer {
 
 
 
+    }
+    
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/public/**")
+                .addResourceLocations("classpath:/templates/three/public/");
     }
 
 }
