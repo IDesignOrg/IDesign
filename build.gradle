@@ -21,32 +21,64 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     // Thymeleaf
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    //Spring boot
+    // Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter-web'
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    //Maria DB
+    // Maria DB
     implementation 'org.mariadb.jdbc:mariadb-java-client:3.2.0'
     // Spring Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    //oauth2
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-	//google mail
-	implementation 'org.springframework.boot:spring-boot-starter-mail'
-	//webSocket
-	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    // OAuth2
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    // Google Mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    // WebSocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
     // Spring Boot Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-//    testImplementation 'org.springframework.security:spring-security-test'
-	implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter', version: '1.2.5.RELEASE'
-	// GCS starter
-	implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-storage', version: '1.2.5.RELEASE'
-	// GCS storage
-	// iamport 결제
-	implementation 'com.github.iamport:iamport-rest-client-java:0.2.21'
+    // Uncomment the line below if you need security test support
+    // testImplementation 'org.springframework.security:spring-security-test'
+    // Google Cloud Storage
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter', version: '1.2.5.RELEASE'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-storage', version: '1.2.5.RELEASE'
+    // IAMport 결제
+    implementation 'com.github.iamport:iamport-rest-client-java:0.2.21'
+}
+
+// Webpack 실행
+task webpackBuild(type: Exec) {
+    inputs.file("package-lock.json").withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs.dir("src").withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs.file("webpack.config.js")
+    outputs.dir("dist")
+    outputs.cacheIf { true }
+
+    commandLine "$projectDir/node_modules/.bin/webpack", "--display-error-details"
+}
+
+// Webpack dev server
+task webpackServer(type: Exec, dependsOn: webpackBuild) {
+    commandLine "$projectDir/node_modules/.bin/webpack-dev-server", "--config", "./webpack.config.js"
+}
+
+// Package Application as Zip
+task packageFrontend(type: Zip, dependsOn: webpackBuild) {
+    from 'dist/'
+    include '*'
+    archiveFileName.set("${rootProject.name}-frontend.zip")
+    destinationDirectory.set(file("${buildDir}"))
+}
+
+task cleanAll(type: Delete) {
+    delete 'build', 'dist'
 }
 
 test {
     useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile) {
+    dependsOn cleanAll
 }
