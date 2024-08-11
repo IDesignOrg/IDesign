@@ -72,6 +72,24 @@ body {
 	display: block;
 }
 
+/* .adminIndexIn 클래스 스타일링 */
+.adminIndexIn {
+	color: white;
+	/* 텍스트 색상을 흰색으로 설정 */
+	text-decoration: none;
+	/* 링크의 밑줄 제거 */
+	font-size: 24px;
+	/* 글꼴 크기 설정 */
+	font-weight: bold;
+	/* 글꼴을 굵게 설정 */
+}
+
+/* 마우스 오버 시 스타일 */
+.adminIndexIn:hover {
+	color: #f0f0f0;
+	/* 마우스 오버 시 약간 밝은 흰색으로 변경 */
+}
+
 
 .main-content {
 	flex-grow: 1;
@@ -298,4 +316,43 @@ table th {
 .delete-coupon-btn:hover {
 	background-color: #ff1a1a;
 	/* 더 진한 빨간색 배경 */
+}
+
+.toggle-shop-btn[data-active="true"] {
+	background-color: #ff4d4d;
+	/* 비활성화 상태 - 빨간색 배경 */
+	color: white;
+	border: none;
+	padding: 5px 10px;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+}
+
+.toggle-shop-btn[data-active="true"]:hover {
+	background-color: #ff1a1a;
+	/* 마우스 오버 시 더 진한 빨간색 */
+}
+
+/* 비활성화 버튼 스타일 */
+.toggle-shop-btn[data-active="false"] {
+	background-color: #4CAF50;
+	/* 활성화 상태 - 초록색 배경 */
+	color: white;
+	border: none;
+	padding: 5px 10px;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+}
+
+.toggle-shop-btn[data-active="false"]:hover {
+	background-color: #45a049;
+	/* 마우스 오버 시 더 진한 초록색 */
+}
+
+/* 기본 버튼 스타일을 유지하는 경우 (예: 색상이 명확하지 않을 때) */
+.toggle-shop-btn {
+	font-weight: bold;
+	/* 텍스트를 굵게 */
 }

@@ -1,8 +1,11 @@
 package com.my.interrior.admin.coupon;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.my.interrior.client.event.coupon.CouponEntity;
 import com.my.interrior.client.event.coupon.CouponMapEntity;
@@ -37,4 +40,20 @@ public class CouponService {
         return couponRepository.findById(couponNo)
                 .orElseThrow(() -> new IllegalArgumentException("해당 쿠폰을 찾을 수 없습니다: " + couponNo));
     }
+	
+	//만료 쿠폰
+	@Scheduled(cron = "0 0 0 * * *") // 매일 자정(00시)
+	@Transactional
+	public void expirationcoupon() {
+		//오늘 날짜 
+		LocalDate today = LocalDate.now();
+		//쿠폰 만료날(couponEndAt) == today and couponState == true 를 매일 자정 마다 찾는다.
+		List<CouponEntity> expiredCoupons = couponRepository.findByCouponEndAtBeforeAndCouponState(today, "true");
+		
+		for (CouponEntity coupon : expiredCoupons) {
+            coupon.setCouponState("false");
+        }
+		
+		couponRepository.saveAll(expiredCoupons);
+	}
 }
