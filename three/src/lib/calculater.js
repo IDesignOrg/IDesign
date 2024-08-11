@@ -1,4 +1,12 @@
+import { MILLPerWidth } from "../main.js";
 import { THREE } from "./loader/three.js";
+
+function sum(arr) {
+  return arr.reduce(
+    (accumulator, currentValue) => accumulator + currentValue,
+    0
+  );
+}
 
 export const getCoordsFromVectex = (obj) => {
   const positionAttribute = obj.geometry.attributes.position;
@@ -13,16 +21,23 @@ export const getCoordsFromVectex = (obj) => {
 };
 
 export function calculateArea(points) {
-  let area = 0;
-  const n = points.length;
+  const multipliWithNextZ = points.map((point, idx, arr) => {
+    return point.x.toFixed(2) * arr[(idx + 1) % arr.length].z.toFixed(2);
+  });
+  const multipliWithNextX = points.map((point, idx, arr) => {
+    return point.z.toFixed(2) * arr[(idx + 1) % arr.length].x.toFixed(2);
+  });
 
-  for (let i = 0; i < n; i++) {
-    const j = (i + 1) % n;
-    area += points[i].x * points[j].z;
-    area -= points[j].x * points[i].z;
-  }
+  const area = Math.floor(
+    Math.floor(
+      (sum(multipliWithNextX).toFixed(2) - sum(multipliWithNextZ).toFixed(2)) /
+        2
+    ) *
+      MILLPerWidth *
+      0.001
+  );
 
-  return Math.abs(area) / 2;
+  return Math.abs(area);
 }
 
 export function calculateCenter(points) {
@@ -43,7 +58,6 @@ export function calculateCenter(points) {
 }
 
 export const getClickedCircleIndex = ({ background, floor, cg, object }) => {
-  // console.log("ewqewqewqeq");
   const children = cg.children;
   const position = object.position;
   for (let i = 0; i < children.length; i++) {
