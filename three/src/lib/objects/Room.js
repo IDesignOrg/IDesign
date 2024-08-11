@@ -99,12 +99,31 @@ export class D2Room extends THREE.Group {
 
     const rotationController = new RotationController({ cameraZoom });
     rotationController.visible = false;
-    this.createDots({ points, center });
     this.addArrow({ cameraZoom });
     this.add(floor);
     this.add(rotationController);
-    this.addWalls({ points });
-    console.log(points);
+    this.addWalls({ points, center });
+    this.createDots({ points, center });
+    // console.log(points);
+    // console.log(this.position);
+    // [
+    //   { x: -25, y: 1, z: -25 },
+    //   {
+    //     x: 125,
+    //     y: 1,
+    //     z: -25,
+    //   },
+    //   {
+    //     x: 125,
+    //     y: 1,
+    //     z: 125,
+    //   },
+    //   {
+    //     x: -25,
+    //     y: 1,
+    //     z: 125,
+    //   },
+    // ];
     // this.rotation.y = -Math.PI / 2;
     // if (this.getObjectByName("moveController")) {
     //   this.remove(this.getObjectByName("moveController"));
@@ -112,14 +131,14 @@ export class D2Room extends THREE.Group {
     // this.add(new MoveController());
   };
 
-  addWalls = ({ points }) => {
+  addWalls = ({ points, center }) => {
     if (this.getObjectByName(wallsName)) {
       this.remove(this.getObjectByName(wallsName));
     }
     const parentPosition = new THREE.Vector3();
     this.getWorldPosition(parentPosition);
 
-    const walls = new D2Wall({ points, parentPosition });
+    const walls = new D2Wall({ points, parentPosition, center });
     this.add(walls);
   };
 
@@ -200,6 +219,7 @@ export class D2Room extends THREE.Group {
     if (this.getObjectByName("circleGroup")) {
       this.remove(this.getObjectByName("circleGroup"));
     }
+    const walls = this.getObjectByName(wallsName);
     const circles = new Circles({ points });
     circles.position.set(-center.x, points[0].y, -center.z);
     this.add(circles);
