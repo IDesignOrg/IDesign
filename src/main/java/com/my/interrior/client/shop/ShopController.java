@@ -1,6 +1,7 @@
 package com.my.interrior.client.shop;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -104,7 +105,16 @@ public class ShopController {
     }
     //shop디테일 
     @GetMapping("/auth/shopDetail/{shopNo}")
-    public String shopDetail(@PathVariable("shopNo") Long shopNo, Model model) {
+    public String shopDetail(@PathVariable("shopNo") Long shopNo, Model model, HttpSession session) {
+    	String pageKey = "viewedShop_" + shopNo;
+        LocalDateTime lastViewedTime = (LocalDateTime) session.getAttribute(pageKey);
+
+        if (lastViewedTime == null || lastViewedTime.isBefore(LocalDateTime.now().minusHours(1))) {
+            shopService.increaseViewCount(shopNo);
+
+            // 현재 시간을 세션에 저장
+            session.setAttribute(pageKey, LocalDateTime.now());
+        }
     	Optional<ShopEntity> shops = shopService.getShopById(shopNo);
     	model.addAttribute("shops", shops.get());
     	List<ShopPhotoEntity> shopPhoto = shopService.getShopPhotoById(shopNo);
