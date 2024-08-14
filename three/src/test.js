@@ -90,8 +90,8 @@ for (let i = 0; i < vertices.length; i++) {
 camera.position.z = 500;
 
 // Animation loop
-function animate() {
-  requestAnimationFrame(animate);
-  renderer.render(scene, camera);
-}
-animate();
+// function animate() {
+//   requestAnimationFrame(animate);
+//   renderer.render(scene, camera);
+// }
+// animate();
