@@ -106,6 +106,7 @@ public class KakaoLoginService {
 	        
 	        JsonParser parser = new JsonParser();
 	        JsonElement element = parser.parse(result);
+	        String nullProfile = "https://storage.googleapis.com/idesigns/static/static_blank-profile-picture-973460_640.png";
 	        
 	        JsonObject properties = element.getAsJsonObject().get("properties").getAsJsonObject();
 	        JsonObject kakao_account = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
@@ -114,6 +115,10 @@ public class KakaoLoginService {
 	        String profile = properties.getAsJsonObject().get("profile_image").getAsString();
 	        String email = kakao_account.getAsJsonObject().get("email").getAsString();
 	        int kakaoId = element.getAsJsonObject().get("id").getAsInt();
+	        
+	        if (profile == null || profile.isEmpty()) {
+	        	profile = nullProfile;
+	        }
 	        
 	        userInfo.put("id", kakaoId);
 	        userInfo.put("nickname", nickname);

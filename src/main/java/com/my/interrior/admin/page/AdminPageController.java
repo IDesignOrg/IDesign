@@ -35,6 +35,7 @@ import com.my.interrior.client.event.coupon.CouponEntity;
 import com.my.interrior.client.event.coupon.CouponMapEntity;
 import com.my.interrior.client.ordered.OrderedEntity;
 import com.my.interrior.client.ordered.OrderedRepository;
+import com.my.interrior.client.shop.ShopEntity;
 import com.my.interrior.client.shop.ShopRepository;
 import com.my.interrior.client.shop.ShopReviewEntity;
 import com.my.interrior.client.shop.ShopReviewRepository;
@@ -80,14 +81,12 @@ public class AdminPageController {
 	@Autowired
 	private CouponMapRepository couponMap;
 
-	@Autowired
-	private ShopRepository shopRepository;
-
 	@GetMapping("/auth/adminLogin")
 	public String AdminLogin() {
 		return "admin/page/adminLogin";
 	}
 
+	//어드민 로그인
 	@PostMapping("/auth/adminlogin")
 	public String adminjoin(@ModelAttribute UserDTO userDTO, HttpSession session, Model model) throws Exception {
 		try {
@@ -132,6 +131,9 @@ public class AdminPageController {
 		Long reviewCount = adminPageService.getReviewCount();
 		System.out.println("리뷰의 수 : " + reviewCount);
 		model.addAttribute("reviewCount", reviewCount);
+		//가장 높은 조회수를 가진 상점
+		Optional<ShopEntity> mostViewedShop = adminPageService.getMostViewedShop();
+        mostViewedShop.ifPresent(shop -> model.addAttribute("mostViewedShop", shop));
 
 		return "/admin/page/adminIndex";
 	}

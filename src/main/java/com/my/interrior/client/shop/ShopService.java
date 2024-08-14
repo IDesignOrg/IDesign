@@ -227,6 +227,12 @@ public class ShopService {
     public List<ShopReviewPhotoEntity> getShopReviewPhotosByReviewNo(Long shopReviewNo) {
         return shopReviewPhotoRepository.findByShopReviewEntityShopReviewNo(shopReviewNo);
     }
+    //조회수 증가
+    public void increaseViewCount(Long shopNo) {
+        ShopEntity shop = shopRepository.findByShopNo(shopNo);
+        shop.setShopHit(shop.getShopHit() + 1);
+        shopRepository.save(shop);
+    }
 
     //리뷰 작성
 	public void shopReviewWrite(Long shopNo, double starpoint, String shopContent, MultipartFile[] descriptionImages) throws IOException  {
