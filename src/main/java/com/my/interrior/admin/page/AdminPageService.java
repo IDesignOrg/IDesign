@@ -80,6 +80,10 @@ public class AdminPageService {
 	public long getReviewCount() {
 		return reviewRepository.count();
 	}
+	//가장 높은 조회수를 가진 상점
+	public Optional<ShopEntity> getMostViewedShop() {
+        return shopRepository.findTopByOrderByShopHitDesc();
+    }
 	
 	public List<UserWithPostAndCommentCount> findAllUsersWithCounts() {
         List<UserEntity> users = userRepository.findAll();
@@ -176,7 +180,7 @@ public class AdminPageService {
     public Page<OrderedEntity> getAllOrdered(Pageable pageable){
 		return orderedRepository.findAll(pageable);
 	}
-    
+    //상점 비활성화 기능
     @Transactional
     public void toggleShopActivation(Long shopNo, boolean isDeactivated) {
     	System.out.println("isDeactivated : " + isDeactivated);
