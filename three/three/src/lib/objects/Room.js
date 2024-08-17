@@ -103,6 +103,8 @@ export class D2Room extends THREE.Group {
     this.add(rotationController);
     this.addWalls({ points, center });
     this.createDots({ points, center });
+
+    this.getObjectByName("floor").updateMatrix();
   };
 
   addWalls = ({ points, center }) => {
