@@ -1,6 +1,6 @@
 // import { FontLoader } from "../loader/FontLoader/FontLoader.js";
 // import { loadedFont } from "../loader/FontLoader/FontLoader";
-import { MILLPerWidth } from "../../main";
+import { MILLPerWidth } from "../../three";
 import { THREE } from "../loader/three";
 import { MilliName } from "../objectConf/objectNames";
 import { arrowsRenderOrder, arrowsY } from "../objectConf/renderOrders";
