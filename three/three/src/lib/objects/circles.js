@@ -1,4 +1,4 @@
-import { floorY } from "../../main";
+import { floorY } from "../../three";
 import { THREE } from "../loader/three";
 import { circleGroupName, circleName } from "../objectConf/objectNames";
 import { circlesRenderOrder, roomY } from "../objectConf/renderOrders";
@@ -8,9 +8,9 @@ export class Circles extends THREE.Group {
     super();
     this.name = circleGroupName;
     points.forEach((point) => {
-      const geometry = new THREE.CircleGeometry(2.5, 32);
+      const geometry = new THREE.CircleGeometry(5, 32);
       const material = new THREE.MeshBasicMaterial({
-        color: "red",
+        color: "green",
         side: THREE.DoubleSide,
       });
       const circle = new THREE.Mesh(geometry, material);
