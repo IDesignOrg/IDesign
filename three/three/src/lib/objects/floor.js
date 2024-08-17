@@ -1,4 +1,4 @@
-import { floorMaterial } from "../../main";
+import { floorMaterial } from "../../three";
 import { THREE } from "../loader/three";
 import { floorName } from "../objectConf/objectNames";
 import { floorY } from "../objectConf/renderOrders";
@@ -18,9 +18,7 @@ export class D2Floor {
       const y = (uvAttribute.getY(i) - offset.y) / range.y;
       uvAttribute.setXY(i, x, y);
     }
-
     uvAttribute.needsUpdate = true;
-
     // Mesh 생성
     const material = floorMaterial;
     const mesh = new THREE.Mesh(geometry, material);
@@ -31,26 +29,7 @@ export class D2Floor {
     if (height) {
       mesh.position.y = height;
     }
-
     return mesh;
-
-    // const shape = new Shape({ points });
-    // const geometry = new THREE.ShapeGeometry(shape);
-    // let material;
-    // if (height) {
-    // } else {
-    //   material = floorMaterial;
-    // }
-    // const mesh = new THREE.Mesh(geometry, material);
-    // mesh.name = "floor";
-    // mesh.renderOrder = 1;
-    // mesh.rotation.x = -Math.PI / 2;
-    // mesh.position.set(-center.x, center.y, -center.z);
-    // if (height) {
-    //   mesh.position.y = height;
-    // }
-
-    // return mesh;
   }
 }
 
