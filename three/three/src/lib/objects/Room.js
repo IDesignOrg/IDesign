@@ -34,7 +34,6 @@ export class D3Room extends THREE.Group {
 
     const floor = object.getObjectByName("floor").clone();
     this.add(floor);
-    console.log(points);
     const ceiling = new D2Floor({ points, height: 50, center });
     ceiling.name = "ceiling";
     this.add(ceiling);
@@ -104,31 +103,8 @@ export class D2Room extends THREE.Group {
     this.add(rotationController);
     this.addWalls({ points, center });
     this.createDots({ points, center });
-    // console.log(points);
-    // console.log(this.position);
-    // [
-    //   { x: -25, y: 1, z: -25 },
-    //   {
-    //     x: 125,
-    //     y: 1,
-    //     z: -25,
-    //   },
-    //   {
-    //     x: 125,
-    //     y: 1,
-    //     z: 125,
-    //   },
-    //   {
-    //     x: -25,
-    //     y: 1,
-    //     z: 125,
-    //   },
-    // ];
-    // this.rotation.y = -Math.PI / 2;
-    // if (this.getObjectByName("moveController")) {
-    //   this.remove(this.getObjectByName("moveController"));
-    // }
-    // this.add(new MoveController());
+
+    this.getObjectByName("floor").updateMatrix();
   };
 
   addWalls = ({ points, center }) => {
@@ -220,8 +196,12 @@ export class D2Room extends THREE.Group {
       this.remove(this.getObjectByName("circleGroup"));
     }
     const walls = this.getObjectByName(wallsName);
+    const newPoints = [];
+    walls.children.forEach((wall) => {
+      // console.log(wall);
+    });
     const circles = new Circles({ points });
-    circles.position.set(-center.x, points[0].y, -center.z);
+    circles.position.set(-center.x, 5, -center.z);
     this.add(circles);
   };
 
