@@ -1,4 +1,4 @@
-import { floorY } from "../../main";
+import { floorY } from "../../three";
 import { THREE } from "../loader/three";
 import { circleGroupName, circleName } from "../objectConf/objectNames";
 import { circlesRenderOrder, roomY } from "../objectConf/renderOrders";

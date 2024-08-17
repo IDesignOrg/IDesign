@@ -10,7 +10,8 @@ const webpackMode = process.env.NODE_ENV || "development";
 module.exports = {
   mode: webpackMode,
   entry: {
-    main: "./src/main.js",
+    dashboard: "./dashboard/src/dashboard.js",
+    three: "./three/src/three.js",
   },
   output: {
     path: path.resolve("./dist"),
@@ -55,7 +56,9 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: "./three.html",
+      template: "./three/three.html",
+      filename: "three.html",
+      chunks: ["three", "public"],
       minify:
         process.env.NODE_ENV === "production"
           ? {
@@ -64,6 +67,19 @@ module.exports = {
             }
           : false,
     }),
+    new HtmlWebpackPlugin({
+      template: "./dashboard/dashboard.html",
+      filename: "dashboard.html",
+      chunks: ["dashboard", "public"],
+      minify:
+        process.env.NODE_ENV === "production"
+          ? {
+              collapseWhitespace: true,
+              removeComments: true,
+            }
+          : false,
+    }),
+
     new CleanWebpackPlugin(),
     // CopyWebpackPlugin: 그대로 복사할 파일들을 설정하는 플러그인
     // 아래 patterns에 설정한 파일/폴더는 빌드 시 dist 폴더에 자동으로 생성됩니다.
