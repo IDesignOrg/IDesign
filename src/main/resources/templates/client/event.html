@@ -153,7 +153,7 @@
 				<div class="event-details">
 					<a th:href="@{/board/eventDetail(eventNo=${event.eventNo})}" class="event-title"
 						th:text="${event.eventTitle}"></a>
-					<img th:src = "@{'/image/' + ${event.eventImg}}"/>
+					<img th:src = "${event.eventImg}"/>
 				</div>
 			</li>
 		</ul>

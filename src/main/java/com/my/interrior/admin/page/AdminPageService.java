@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import com.my.interrior.admin.coupon.CouponMapRepository;
@@ -18,6 +19,8 @@ import com.my.interrior.client.csc.notice.NoticeRepository;
 import com.my.interrior.client.csc.recover.RecoveryEntity;
 import com.my.interrior.client.csc.recover.RecoveryRepository;
 import com.my.interrior.client.evaluation.ReviewRepository;
+import com.my.interrior.client.event.EventEntity;
+import com.my.interrior.client.event.EventRepository;
 import com.my.interrior.client.event.coupon.CouponEntity;
 import com.my.interrior.client.event.coupon.CouponMapEntity;
 import com.my.interrior.client.ordered.OrderedEntity;
@@ -67,6 +70,9 @@ public class AdminPageService {
 	@Autowired
 	private OrderedRepository orderedRepository;
 	
+	@Autowired
+	private EventRepository eventRepository;
+	
 	
 	//유저 카운트
 	public long getUserCount() {
@@ -85,21 +91,30 @@ public class AdminPageService {
         return shopRepository.findTopByOrderByShopHitDesc();
     }
 	
-	public List<UserWithPostAndCommentCount> findAllUsersWithCounts() {
-        List<UserEntity> users = userRepository.findAll();
-        List<UserWithPostAndCommentCount> userCounts = new ArrayList<>();
+	public Page<UserWithPostAndCommentCount> findAllUsersWithCounts(Pageable pageable) {
+	    List<UserEntity> users = userRepository.findAll();
+	    List<UserWithPostAndCommentCount> userCounts = new ArrayList<>();
 
-        for (UserEntity user : users) {
-        	int postCount = reviewRepository.countByUser(user);
-        	int commentCount = shopReviewRepository.countByUser(user);
-        	UserWithPostAndCommentCount dto = new UserWithPostAndCommentCount(user, postCount, commentCount);
-        	userCounts.add(dto);
-        }
+	    for (UserEntity user : users) {
+	        int postCount = reviewRepository.countByUser(user);
+	        int commentCount = shopReviewRepository.countByUser(user);
+	        UserWithPostAndCommentCount dto = new UserWithPostAndCommentCount(user, postCount, commentCount);
+	        userCounts.add(dto);
+	    }
 
-        return userCounts;
-    }
+	    // 페이징 처리
+	    int start = (int) pageable.getOffset();
+	    int end = Math.min((start + pageable.getPageSize()), userCounts.size());
+	    List<UserWithPostAndCommentCount> pagedList = userCounts.subList(start, end);
+
+	    return new PageImpl<>(pagedList, pageable, userCounts.size());
+	}
 	public Page<NoticeEntity> getAllNotice(Pageable pageable){
 		return noticerepository.findAll(pageable);
+	}
+	
+	public Page<EventEntity> getAllEvent(Pageable pageable){
+		return eventRepository.findAll(pageable);
 	}
 	
 	@Transactional
