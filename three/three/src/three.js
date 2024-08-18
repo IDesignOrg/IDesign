@@ -40,8 +40,8 @@ export const MILLPerWidth = 0.1;
 const save = document.getElementById("save");
 const hudIcon = document.getElementById("hud-icon");
 const modeToggles = document.getElementById("modeToggles");
-
-let D3Walls = [];
+const canvas = document.getElementById("canvas");
+console.log("canvas = ", canvas);
 
 // zoom in/out & drag and drop
 let isDragging = false;
@@ -695,6 +695,12 @@ window.addEventListener("mousedown", onMouseDown);
 window.addEventListener("mousemove", onMouseMove);
 window.addEventListener("mouseup", onMouseUp);
 window.addEventListener("wheel", onWheel);
+window.addEventListener("beforeunload", () => {
+  window.removeEventListener("mousedown", onMouseDown);
+  window.removeEventListener("mousemove", onMouseMove);
+  window.removeEventListener("mouseup", onMouseUp);
+  window.removeEventListener("wheel", onWheel);
+});
 
 hudIcon.addEventListener("click", onCreateBtnClick);
 save.addEventListener("click", onSave);
