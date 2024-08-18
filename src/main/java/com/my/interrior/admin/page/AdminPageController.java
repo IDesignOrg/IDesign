@@ -31,6 +31,7 @@ import com.my.interrior.client.csc.recover.RecoveryEntity;
 import com.my.interrior.client.evaluation.ReviewEntity;
 import com.my.interrior.client.evaluation.ReviewRepository;
 import com.my.interrior.client.evaluation.ReviewService;
+import com.my.interrior.client.event.EventEntity;
 import com.my.interrior.client.event.coupon.CouponEntity;
 import com.my.interrior.client.event.coupon.CouponMapEntity;
 import com.my.interrior.client.ordered.OrderedEntity;
@@ -140,12 +141,20 @@ public class AdminPageController {
 
 	// 회원정보 페이지
 	@GetMapping("/admin/page/adminUsers")
-	public String adminUsers(Model model) {
-		// findAllUsersWithCounts() 메서드는 UserWithPostAndCommentCount 리스트를 반환함
-		List<UserWithPostAndCommentCount> usersWithCounts = adminPageService.findAllUsersWithCounts();
-		model.addAttribute("usersWithCounts", usersWithCounts);
+	public String adminUsers(
+			@RequestParam(name = "page", defaultValue = "0") int page,
+	        @RequestParam(name = "size", defaultValue = "10") int size,
+	        Model model) {
 
-		return "/admin/page/adminUsers"; // 뷰의 이름을 반환
+	    Pageable pageable = PageRequest.of(page, size);
+	    Page<UserWithPostAndCommentCount> usersWithCounts = adminPageService.findAllUsersWithCounts(pageable);
+
+	    model.addAttribute("usersWithCounts", usersWithCounts);
+	    model.addAttribute("currentPage", page);
+	    model.addAttribute("totalPages", usersWithCounts.getTotalPages());
+	    model.addAttribute("pageSize", size);
+
+	    return "/admin/page/adminUsers";
 	}
 
 	// 어드민 페이지 게시글 모달
@@ -194,7 +203,7 @@ public class AdminPageController {
 		adminPageService.deleteNotice(noticeNo);
 		return ResponseEntity.ok().build();
 	}
-
+	//유저 비활성화
 	@PostMapping("/deactivateUser")
 	public ResponseEntity<String> deactivateUser(@RequestParam("userUNo") Long userUNo) {
 		try {
@@ -374,6 +383,14 @@ public class AdminPageController {
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body("상점 상태 변경에 실패했습니다.");
 		}
+	}
+	
+	//이벤트 관리 페이지
+	@GetMapping("/admin/page/adminEvent")
+	public String adminEvent(Model model, Pageable pageable) {
+		Page<EventEntity> events = adminPageService.getAllEvent(PageRequest.of(pageable.getPageNumber(), PAGE_SIZE));
+		model.addAttribute("events", events);
+		return "/admin/page/adminEvent";
 	}
 
 }

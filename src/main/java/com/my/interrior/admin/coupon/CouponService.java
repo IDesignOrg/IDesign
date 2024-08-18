@@ -18,9 +18,14 @@ public class CouponService {
 
 	private final CouponRepository couponRepository;
 	private final CouponMapRepository couponMapRepository;
-	
+	/*
 	public CouponEntity findCouponNumber(Long eventNo) {
 		CouponEntity coupon = couponRepository.findBycouponNo(eventNo);
+		return coupon;
+	}
+	*/
+	public CouponEntity findCouponNumber(Long couponNo) {
+		CouponEntity coupon = couponRepository.findBycouponNo(couponNo);
 		return coupon;
 	}
 	

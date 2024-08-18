@@ -90,7 +90,6 @@ public class ShopService {
 			List<String> descriptionImageUrls, String shopCategory, List<String> optionNames, List<String> options,
 			List<String> price, String shopDiscountRate) {
 		// ShopEntity 저장
-		System.out.println("서비스 들어오긴");
 		ShopEntity shopEntity = new ShopEntity();
 		int hits = 0;
 		int sell = 0;
