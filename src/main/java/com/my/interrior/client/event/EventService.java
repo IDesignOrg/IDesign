@@ -52,7 +52,6 @@ public class EventService {
 		 CouponEntity coupon = couponRepository.findById(couponNo)
 	                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 쿠폰 번호입니다."));
 		//gcs에 사진 파일 보내기
-		 
 		System.out.println("이벤트 이미지 : " + eventImg);
 		String url = uploadFile(eventImg);
 		//이벤트 엔티티에 저장
