@@ -1,10 +1,14 @@
 package com.my.interrior.client.event;
 
+import com.my.interrior.client.event.coupon.CouponEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -27,4 +31,8 @@ public class EventEntity {
 
 	@Column(nullable = false, name = "event_img")
 	private String eventImg;
+	
+	@ManyToOne
+    @JoinColumn(name = "coupon_no", nullable = false)
+    private CouponEntity coupon;
 }

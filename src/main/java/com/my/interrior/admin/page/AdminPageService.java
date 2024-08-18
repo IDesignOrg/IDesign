@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import com.my.interrior.admin.coupon.CouponMapRepository;
@@ -18,12 +19,18 @@ import com.my.interrior.client.csc.notice.NoticeRepository;
 import com.my.interrior.client.csc.recover.RecoveryEntity;
 import com.my.interrior.client.csc.recover.RecoveryRepository;
 import com.my.interrior.client.evaluation.ReviewRepository;
+import com.my.interrior.client.event.EventEntity;
+import com.my.interrior.client.event.EventRepository;
 import com.my.interrior.client.event.coupon.CouponEntity;
 import com.my.interrior.client.event.coupon.CouponMapEntity;
+import com.my.interrior.client.ordered.OrderedEntity;
+import com.my.interrior.client.ordered.OrderedRepository;
+import com.my.interrior.client.shop.ShopEntity;
 import com.my.interrior.client.shop.ShopRepository;
 import com.my.interrior.client.shop.ShopReviewRepository;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
+import com.my.interrior.client.user.UserService;
 
 import jakarta.transaction.Transactional;
 
@@ -60,6 +67,12 @@ public class AdminPageService {
 	@Autowired
 	private CouponService couponService;
 	
+	@Autowired
+	private OrderedRepository orderedRepository;
+	
+	@Autowired
+	private EventRepository eventRepository;
+	
 	
 	//유저 카운트
 	public long getUserCount() {
@@ -73,22 +86,35 @@ public class AdminPageService {
 	public long getReviewCount() {
 		return reviewRepository.count();
 	}
-	
-	public List<UserWithPostAndCommentCount> findAllUsersWithCounts() {
-        List<UserEntity> users = userRepository.findAll();
-        List<UserWithPostAndCommentCount> userCounts = new ArrayList<>();
-
-        for (UserEntity user : users) {
-        	int postCount = reviewRepository.countByUser(user);
-        	int commentCount = shopReviewRepository.countByUser(user);
-        	UserWithPostAndCommentCount dto = new UserWithPostAndCommentCount(user, postCount, commentCount);
-        	userCounts.add(dto);
-        }
-
-        return userCounts;
+	//가장 높은 조회수를 가진 상점
+	public Optional<ShopEntity> getMostViewedShop() {
+        return shopRepository.findTopByOrderByShopHitDesc();
     }
+	
+	public Page<UserWithPostAndCommentCount> findAllUsersWithCounts(Pageable pageable) {
+	    List<UserEntity> users = userRepository.findAll();
+	    List<UserWithPostAndCommentCount> userCounts = new ArrayList<>();
+
+	    for (UserEntity user : users) {
+	        int postCount = reviewRepository.countByUser(user);
+	        int commentCount = shopReviewRepository.countByUser(user);
+	        UserWithPostAndCommentCount dto = new UserWithPostAndCommentCount(user, postCount, commentCount);
+	        userCounts.add(dto);
+	    }
+
+	    // 페이징 처리
+	    int start = (int) pageable.getOffset();
+	    int end = Math.min((start + pageable.getPageSize()), userCounts.size());
+	    List<UserWithPostAndCommentCount> pagedList = userCounts.subList(start, end);
+
+	    return new PageImpl<>(pagedList, pageable, userCounts.size());
+	}
 	public Page<NoticeEntity> getAllNotice(Pageable pageable){
 		return noticerepository.findAll(pageable);
+	}
+	
+	public Page<EventEntity> getAllEvent(Pageable pageable){
+		return eventRepository.findAll(pageable);
 	}
 	
 	@Transactional
@@ -142,5 +168,42 @@ public class AdminPageService {
         CouponEntity coupon = couponService.findCouponById(couponNo);
         coupon.setCouponState(state);
         couponRepository.save(coupon);
+    }
+    
+    @Transactional
+    public void recoveryUser(Long userUNo) {
+    	UserEntity user = userRepository.findByUNo(userUNo);
+    	
+    	user.setUDeactivated(false);
+    	userRepository.save(user);
+    	
+    }
+    //shop and counts
+    public List<ShopListAndOrderedDTO> getAllShopsAndCounts(){
+    	List<ShopEntity> shops = shopRepository.findAll();
+    	List<ShopListAndOrderedDTO> shopCounts = new ArrayList<>();
+    	
+    	for(ShopEntity shop : shops) {
+    		int orderedCount = orderedRepository.countByShopNo(shop.getShopNo());
+    		ShopListAndOrderedDTO dto = new ShopListAndOrderedDTO(shop, orderedCount);
+    		shopCounts.add(dto);
+    	}
+    	
+		return shopCounts;
+	}
+    // 구매내역
+    public Page<OrderedEntity> getAllOrdered(Pageable pageable){
+		return orderedRepository.findAll(pageable);
+	}
+    //상점 비활성화 기능
+    @Transactional
+    public void toggleShopActivation(Long shopNo, boolean isDeactivated) {
+    	System.out.println("isDeactivated : " + isDeactivated);
+        ShopEntity shop = shopRepository.findById(shopNo)
+                .orElseThrow(() -> new IllegalArgumentException("해당 상점을 찾을 수 없습니다: " + shopNo));
+        
+        // 비활성화 처리
+        shop.setSDeactivated(isDeactivated);
+        shopRepository.save(shop);
     }
 }

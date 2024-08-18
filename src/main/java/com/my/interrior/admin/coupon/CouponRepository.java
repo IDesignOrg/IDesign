@@ -1,5 +1,6 @@
 package com.my.interrior.admin.coupon;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,4 +13,6 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Long>{
 	CouponEntity findBycouponNo(Long eventNo);
 	
 	List<CouponEntity> findByCouponNoIn(List<Long> couponNos);
+	
+	List<CouponEntity> findByCouponEndAtBeforeAndCouponState(LocalDate date, String state);
 }

@@ -6,32 +6,7 @@
     <title>관리자 페이지</title>
     <link rel="stylesheet" href="/css/adminPage.css" />
     <style>
-        .ellipsis {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 200px;
-        }
-        .pagination {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        .pagination a {
-            color: black;
-            padding: 8px 16px;
-            text-decoration: none;
-            transition: background-color 0.3s;
-        }
-        .pagination a.active {
-            background-color: #4CAF50;
-            color: white;
-            border-radius: 5px;
-        }
-        .pagination a:hover:not(.active) {
-            background-color: #ddd;
-            border-radius: 5px;
-        }
+       
     </style>
 </head>
 <body>
@@ -68,6 +43,7 @@
             </span>
             <a th:href="@{/admin/page/adminNotice(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}">다음 &raquo;</a>
         </div>
+        
     </div>
     <script>
         function deleteNotice(noticeNo) {

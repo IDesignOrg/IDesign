@@ -90,7 +90,6 @@ public class ShopService {
 			List<String> descriptionImageUrls, String shopCategory, List<String> optionNames, List<String> options,
 			List<String> price, String shopDiscountRate) {
 		// ShopEntity 저장
-		System.out.println("서비스 들어오긴");
 		ShopEntity shopEntity = new ShopEntity();
 		int hits = 0;
 		int sell = 0;
@@ -167,7 +166,7 @@ public class ShopService {
 
 	// 샵 페이지 리스트
 	public Page<ShopEntity> getAllShop(Pageable pageable) {
-		return shopRepository.findAll(pageable);
+		return shopRepository.findBySDeactivatedFalse(pageable);
 	}
 
 
@@ -226,6 +225,12 @@ public class ShopService {
 
     public List<ShopReviewPhotoEntity> getShopReviewPhotosByReviewNo(Long shopReviewNo) {
         return shopReviewPhotoRepository.findByShopReviewEntityShopReviewNo(shopReviewNo);
+    }
+    //조회수 증가
+    public void increaseViewCount(Long shopNo) {
+        ShopEntity shop = shopRepository.findByShopNo(shopNo);
+        shop.setShopHit(shop.getShopHit() + 1);
+        shopRepository.save(shop);
     }
 
     //리뷰 작성
