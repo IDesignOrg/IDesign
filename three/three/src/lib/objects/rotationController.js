@@ -1,4 +1,4 @@
-import { maxZoom, minZoom } from "../../main";
+import { maxZoom, minZoom } from "../../three";
 import { THREE } from "../loader/three";
 
 export const RotationControllerY = 3;
@@ -97,8 +97,20 @@ export class RotationController extends THREE.Group {
   rotation = ({ angle, room }) => {
     room.userData.rotation = angle;
     room.rotation.y = angle;
+    room.updateMatrix();
+    const floor = room.getObjectByName("floor");
+    floor.updateMatrix();
+    // floor.geometry.applyMatrix(floor.matrix);
+    // floor.matrix.identity();
+    // floor.updateMatrix();
+    // floor.geometry.clone().applyMatrix4(floor);
+    // room.getObjectByName("floor").updateMatrix();
+    // room
+    //   .getObjectByName("floor")
+    //   .geometry.clone()
+    //   .applyMatrix4(room.getObjectByName("floor"));
     const area = room.getObjectByName("area");
-    // area.rotation.z = -angle;
+    area.rotation.z = 0;
     // area.position.set(0, area.position.y, 0);
   };
 

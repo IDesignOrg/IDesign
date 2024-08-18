@@ -25,13 +25,17 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        System.out.println("shshshshsh");
         registry.addInterceptor(interceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/auth/**","/","/login", "/board/**", "/static/**", "/css/**", "/js/**", "/include/**", "/image/**", "/logout", "/board/faq/search/**", "dist/**"); //auth명시된건 패스시킨다
+                .excludePathPatterns("/auth/**","/","/login", "/board/**", "/static/**", "/css/**", "/js/**", "/include/**", "/image/**", "/logout", "/board/faq/search/**", "/dist/**"); //auth명시된건 패스시킨다
     }
     @Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    	// 1. Spring Boot의 기본 정적 리소스 경로 (첫 번째 우선순위)
+        registry.addResourceHandler("/**")
+                .addResourceLocations("classpath:/static/", "classpath:/public/", "classpath:/resources/", "classpath:/META-INF/resources/");
+
+        // 2. 커스터마이징된 정적 리소스 경로 (두 번째 우선순위)
 		// `three` 디렉토리 내의 `public` 폴더에서 정적 파일을 서빙
 		registry.addResourceHandler("/dist/**")
 				.addResourceLocations("file:" + System.getProperty("user.dir") + "/three/dist/");

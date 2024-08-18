@@ -92,7 +92,7 @@ const composer = new EffectComposer(renderer);
 const renderPass = new RenderPass(scene, camera);
 composer.addPass(renderPass);
 
-const floorPaper = "../public/img/floor.jpg";
+const floorPaper = "/dist/public/img/floor.jpg";
 const texture = new THREE.TextureLoader().load(
   floorPaper,
   function () {
@@ -104,7 +104,7 @@ const texture = new THREE.TextureLoader().load(
   } // onError
 );
 
-const wallpaper = "../public/img/wallpaper.jpeg";
+const wallpaper = "/dist/public/img/wallpaper.jpeg";
 const texture2 = new THREE.TextureLoader().load(wallpaper);
 export const wallMaterial = new THREE.MeshBasicMaterial({ map: texture2 });
 export const floorMaterial = new THREE.MeshBasicMaterial({ map: texture });
@@ -191,19 +191,20 @@ const getIntersectsArray = (raycaster) => {
 };
 
 const updateShadows = ({ object, background }) => {
-  const points = [
-    new THREE.Vector3(object.clickedPoints.x, roomY, object.clickedPoints.z),
-    new THREE.Vector3(background.point.x, roomY, object.clickedPoints.z),
-    new THREE.Vector3(background.point.x, roomY, background.point.z),
-    new THREE.Vector3(object.clickedPoints.x, roomY, background.point.z),
-  ];
-  // const y = roomY;
   // const points = [
-  //   { x: 0, y, z: 0 },
-  //   { x: 100, y, z: 0 },
-  //   { x: 100, y, z: 100 },
-  //   { x: 0, y, z: 100 },
+  //   new THREE.Vector3(object.clickedPoints.x, roomY, object.clickedPoints.z),
+  //   new THREE.Vector3(background.point.x, roomY, object.clickedPoints.z),
+  //   new THREE.Vector3(background.point.x, roomY, background.point.z),
+  //   new THREE.Vector3(object.clickedPoints.x, roomY, background.point.z),
   // ];
+  const y = roomY;
+  const w = 500;
+  const points = [
+    { x: 0, y, z: 0 },
+    { x: w, y, z: 0 },
+    { x: w, y, z: w },
+    { x: 0, y, z: w },
+  ];
   object.drawLines(points);
 };
 
@@ -211,7 +212,6 @@ const onMouseDown = (event) => {
   if (controls.enabled) return;
   let points;
   const raycaster = getIntersects(event);
-  // console.log(raycaster.map((c) => c.object.name));
   const background = raycaster.find((obj) => obj.object.name === "background");
   if (!background) return;
   const objectArr = getIntersectsArray(raycaster);
@@ -267,7 +267,6 @@ const onMouseDown = (event) => {
       let controller = objectArr.find((obj) =>
         obj.object.name.includes("controller")
       );
-      // console.log(controller);
       if (!controller) {
         controller = objectArr.find((obj) =>
           obj.object.name.includes(moveControllerChildrenName)
@@ -353,17 +352,25 @@ const onMouseDown = (event) => {
         break;
       case chairName:
       case deskName:
-        const floor = raycaster.find((obj) => obj.object.name === "floor");
+        let floor = raycaster.find((obj) => obj.object.name === "floor");
         if (!floor) return;
         const room = floor.object.parent;
+        let position = floor.point;
+        floor = floor.object;
         const object = scene.getObjectByName(shadowName);
         object.name = target;
-        room.add(object);
         const center = room.userData.center;
-        // object.position.set(background.point.x - center.x, )
-        object.position.x = background.point.x - center.x;
-        object.position.z = background.point.z - center.z;
+        const localClickPosition = new THREE.Vector3(10, 0, 0);
 
+        // floor의 월드 행렬을 사용하여 로컬 좌표를 월드 좌표로 변환합니다
+        const worldClickPosition = localClickPosition
+          .clone()
+          .applyMatrix4(floor.matrixWorld);
+        console.log(worldClickPosition);
+        object.position.x = position.x - center.x;
+        object.position.z = position.z - center.z;
+
+        room.add(object);
         isCreating = {
           isSelect: false,
           isDragging: false,
@@ -424,6 +431,7 @@ const onMouseMove = (event) => {
     const point = new THREE.Vector3(floor.point.x, roomY, floor.point.z);
     const object = scene.getObjectByName(shadowName);
     object.visible = true;
+    console.log(point);
     object.position.set(point.x, roomY, point.z);
     return;
   } else if (isChangingObject.isDragging) {
@@ -513,7 +521,6 @@ const wheelThrottle = () => {
 };
 const wheelDebounce = () => {
   const scaler = (minZoom / maxZoom) * cameraZoom * 0.2;
-  // console.log("scaler", scaler);
   const rotationController = scene.getObjectByName(rotationConrollerName);
   rotationController.setScale({
     object: rotationController,
@@ -526,7 +533,6 @@ const wheelDebounce = () => {
         child.scale.set(scaler, scaler, scaler);
         const box = new THREE.Box3();
         box.setFromObject(child);
-        // console.log("box", box);
         const width = box.max.x - box.min.x;
         const height = box.max.y - box.min.y;
         // const
@@ -633,7 +639,6 @@ const onSave = async () => {
     project_id: new Date().getTime(),
     data: {},
   };
-  console.log(scene);
 
   // const room = scene.getObjectByName("room");
 
@@ -660,8 +665,6 @@ const onSave = async () => {
   // }
 
   // def(room, scene);
-
-  // console.log(data);
 
   // {
   //   uuid: string,
