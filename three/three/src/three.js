@@ -11,11 +11,11 @@ import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader.js";
 import { D2Shapes, D3Shapes } from "./lib/three/geomentryFactory.js";
 import { D2Room } from "./lib/objects/Room.js";
 import { THREE } from "./lib/loader/three.js";
-import { debounce } from "./lib/debounce.js";
+import { debounce } from "../lib/debounce.js";
 import { create3DRoom } from "./lib/Dimension/dimension.js";
 import { chairCreator, createChair } from "./lib/gltfObjects/ObjectFactory.js";
 import { RotationController } from "./lib/objects/rotationController.js";
-import { calculateCenter, getClickedCircleIndex } from "./lib/calculater.js";
+import { calculateCenter, getClickedCircleIndex } from "../lib/calculater.js";
 import { OrbitControls } from "./lib/loader/OrbitControls.js";
 import { WEBGL } from "./lib/webgl.js";
 import {
@@ -33,7 +33,7 @@ import {
 } from "./lib/objectConf/objectNames.js";
 import { roomY } from "./lib/objectConf/renderOrders.js";
 import { MoveController } from "./lib/objects/moveController.js";
-import { throttle } from "./lib/throttling.js";
+import { throttle } from "../lib/throttling.js";
 
 export const MILLPerWidth = 0.1;
 

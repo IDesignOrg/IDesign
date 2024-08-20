@@ -1,5 +1,5 @@
-import { MILLPerWidth } from "../three.js";
-import { THREE } from "./loader/three.js";
+import { MILLPerWidth } from "../src/three.js";
+import { THREE } from "../src/lib/loader/three.js";
 
 function sum(arr) {
   return arr.reduce(
