@@ -11,7 +11,7 @@ import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader.js";
 import { D2Shapes, D3Shapes } from "./lib/three/geomentryFactory.js";
 import { D2Room } from "./lib/objects/Room.js";
 import { THREE } from "./lib/loader/three.js";
-import { debounce } from "./lib/debounce.js";
+
 import { create3DRoom } from "./lib/Dimension/dimension.js";
 import { chairCreator, createChair } from "./lib/gltfObjects/ObjectFactory.js";
 import { RotationController } from "./lib/objects/rotationController.js";
@@ -33,15 +33,16 @@ import {
 } from "./lib/objectConf/objectNames.js";
 import { roomY } from "./lib/objectConf/renderOrders.js";
 import { MoveController } from "./lib/objects/moveController.js";
-import { throttle } from "./lib/throttling.js";
+import { throttle } from "../../utils/throttling.js";
+import { debounce } from "../../utils/debounce.js";
 
 export const MILLPerWidth = 0.1;
 
 const save = document.getElementById("save");
 const hudIcon = document.getElementById("hud-icon");
 const modeToggles = document.getElementById("modeToggles");
-
-let D3Walls = [];
+const canvas = document.getElementById("canvas");
+console.log("canvas = ", canvas);
 
 // zoom in/out & drag and drop
 let isDragging = false;
@@ -695,6 +696,12 @@ window.addEventListener("mousedown", onMouseDown);
 window.addEventListener("mousemove", onMouseMove);
 window.addEventListener("mouseup", onMouseUp);
 window.addEventListener("wheel", onWheel);
+window.addEventListener("beforeunload", () => {
+  window.removeEventListener("mousedown", onMouseDown);
+  window.removeEventListener("mousemove", onMouseMove);
+  window.removeEventListener("mouseup", onMouseUp);
+  window.removeEventListener("wheel", onWheel);
+});
 
 hudIcon.addEventListener("click", onCreateBtnClick);
 save.addEventListener("click", onSave);

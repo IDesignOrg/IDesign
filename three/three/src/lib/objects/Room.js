@@ -8,13 +8,10 @@ import {
   calculateArea,
   calculateCenter,
   calculateDistance,
-  getStraightLineX,
-  getStraightLineZ,
   calculateAngle,
 } from "../calculater.js";
 import { Text } from "./text.js";
 import { RotationController } from "./rotationController.js";
-import { MoveController } from "./moveController.js";
 import {
   areaRenderOrder,
   arrowsRenderOrder,
