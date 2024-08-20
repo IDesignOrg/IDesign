@@ -5,9 +5,8 @@ import {
   calculateDistance,
   calculateOffsetPoints,
 } from "../calculater.js";
-import { floorMaterial, wallMaterial } from "../../three.js";
+import { wallMaterial } from "../../three.js";
 import { wallName, wallsName } from "../objectConf/objectNames";
-import { roomY } from "../objectConf/renderOrders.js";
 import { Shape } from "./floor.js";
 
 export const wallHeight = 50;
