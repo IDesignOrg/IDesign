@@ -9,7 +9,9 @@
 <body>
 	<div class="sidebar" th:fragment="sidebar">
 		<div class="logo">
-			<h2>관리자 페이지</h2>
+			<a href="/admin/page/adminIndex" class="adminIndexIn">
+				<h2>관리자 페이지</h2>
+			</a>
 		</div>
 		<ul>
 			<li>
@@ -22,8 +24,16 @@
 			<li>
 				<a href="#">Event</a>
 				<ul>
+					<li><a href="/admin/page/adminEvent">이벤트 리스트</a></li>
 					<li><a href="/admin/page/adminCouponList">쿠폰 리스트</a></li>
 					<li><a href="/admin/page/adminUserCoupon">유저 쿠폰 리스트</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="#">Shop</a>
+				<ul>
+					<li><a href="/admin/page/adminShopList">상점 리스트</a></li>
+					<li><a href="/admin/page/adminOrdered">상점 구매내역</a></li>
 				</ul>
 			</li>
 			<li><a href="/admin/page/adminNotice">Notice</a></li>

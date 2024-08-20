@@ -93,7 +93,7 @@ const composer = new EffectComposer(renderer);
 const renderPass = new RenderPass(scene, camera);
 composer.addPass(renderPass);
 
-const floorPaper = "../public/img/floor.jpg";
+const floorPaper = "/dist/public/img/floor.jpg";
 const texture = new THREE.TextureLoader().load(
   floorPaper,
   function () {
@@ -105,7 +105,7 @@ const texture = new THREE.TextureLoader().load(
   } // onError
 );
 
-const wallpaper = "../public/img/wallpaper.jpeg";
+const wallpaper = "/dist/public/img/wallpaper.jpeg";
 const texture2 = new THREE.TextureLoader().load(wallpaper);
 export const wallMaterial = new THREE.MeshBasicMaterial({ map: texture2 });
 export const floorMaterial = new THREE.MeshBasicMaterial({ map: texture });

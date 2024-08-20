@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class ThreeController {
 
-	@GetMapping("/auth/three")
+	@GetMapping("/three")
 	public String goToThreeDashBoard() {
-		return "three";
+		return "dist/three";
 	}
 }
