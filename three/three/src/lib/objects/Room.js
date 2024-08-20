@@ -9,10 +9,9 @@ import {
   calculateCenter,
   calculateDistance,
   calculateAngle,
-} from "../../../lib/calculater.js";
+} from "../calculater.js";
 import { Text } from "./text.js";
 import { RotationController } from "./rotationController.js";
-import { MoveController } from "./moveController.js";
 import {
   areaRenderOrder,
   arrowsRenderOrder,

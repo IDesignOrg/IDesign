@@ -1,5 +1,5 @@
 import axios from "axios";
-import { interectionObserver } from "./observer";
+import { interectionObserver } from "../../utils/observer";
 import { dummy } from "./dummy";
 
 const side = document.getElementById("side");
@@ -8,19 +8,20 @@ const searchInput = document.getElementById("searching-input");
 const sortBox = document.getElementById("selected");
 const selectedSort = sortBox.getElementsByTagName("span")[0];
 const options = document.getElementById("select-options");
-const optionHeight = 200;
 const container = document.getElementById("container");
 const trashBtn = document.getElementById("trash");
 const observer = document.getElementById("observer");
 
+const optionHeight = 200;
+
 let isLaoding = false;
 let hasMoreProjects = true;
-
 let isTrashBtnClick = false;
+
 const projects = [];
 const remove_projects = {};
 
-const removeProjects = () => {
+const removeAllProject = () => {
   const projects = Array.from(container.getElementsByClassName("project"));
   projects.forEach((box) => {
     if (box.classList.contains("received")) {
@@ -32,6 +33,7 @@ const removeProjects = () => {
 const ProjectBox = (project) => {
   const box = document.createElement("div");
   const a = document.createElement("a");
+  // wook
   a.href = `http://localhost:8080/three/${project.project_id}`;
   a.id = project.project_id;
   a.className = "project-wrapper";
@@ -57,8 +59,9 @@ const ProjectBox = (project) => {
   mod_dt.innerText = new Date(project.reg_dt);
   project_src.appendChild(mod_dt);
 
-  const delete_div = document.createElement("div");
+  const delete_div = document.createElement("button");
   delete_div.className = "delete_bg";
+  delete_div.name = project.project_id;
 
   const delete_background = document.createElement("div");
   delete_background.className = "delete_background";
@@ -66,15 +69,6 @@ const ProjectBox = (project) => {
 
   const selectInput = document.createElement("input");
   selectInput.checked = false;
-  delete_div.addEventListener("click", (e) => {
-    e.stopPropagation();
-    selectInput.checked = !selectInput.checked;
-    if (selectInput.checked) {
-      remove_projects[project.project_id] = project;
-    } else {
-      delete remove_projects[project.project_id];
-    }
-  });
   selectInput.type = "checkbox";
   selectInput.className = "select_input";
   selectInput.id = `${project.project_id}_checkBox`;
@@ -106,6 +100,7 @@ const getProjects = async () => {
 
   const filter = searchInput.value;
   const sort = selectedSort.id;
+  //wook
   //밑에 주소 바꿔주셈
   // const data =await axios.get('http:localhost:8080/get_projects', {
   //   u_no,
@@ -124,7 +119,7 @@ const getProjects = async () => {
 };
 
 const onFilterChange = () => {
-  removeProjects();
+  removeAllProject();
   getProjects();
 };
 
@@ -135,7 +130,7 @@ const onChangeSort = (e) => {
   selectedSort.innerHTML = li.innerHTML;
   selectedSort.id = li.id;
 
-  removeProjects();
+  removeAllProject();
   getProjects();
 };
 
@@ -174,13 +169,22 @@ const onChangeSideBar = () => {
   }
 };
 
+const reqRemoveProjects = async () => {
+  // wook
+  // 프로젝트 삭제
+  // ex) localhost:3000/remove_projects?project_ids=[1,2,3,4]
+  const data = await axios.post("", {
+    project_ids: Object.keys(remove_projects),
+  });
+};
+
 const onTrashClick = () => {
   isTrashBtnClick = !isTrashBtnClick;
   const nodes = Array.from(document.getElementsByClassName("delete_bg"));
   if (isTrashBtnClick) {
     nodes.forEach((node) => (node.style.display = "block"));
   } else {
-    removeProjects();
+    reqRemoveProjects();
     nodes.forEach((node) => (node.style.display = "none"));
   }
 };
@@ -188,9 +192,15 @@ const onTrashClick = () => {
 const onProjectClick = (e) => {
   const btn = e.target.closest("button");
   if (!btn) return;
+  const project_id = btn.name;
+  const input = btn.getElementsByTagName("input")[0];
+  input.checked = !input.checked;
 
-  const project_id = btn.id;
-  // req
+  if (input.checked) {
+    remove_projects[project_id] = project_id;
+  } else {
+    delete remove_projects[project_id];
+  }
 };
 
 const onClickWindow = () => {
