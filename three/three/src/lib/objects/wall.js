@@ -4,7 +4,7 @@ import {
   calculateAngle,
   calculateDistance,
   calculateOffsetPoints,
-} from "../calculater.js";
+} from "../../../lib/calculater.js";
 import { floorMaterial, wallMaterial } from "../../three.js";
 import { wallName, wallsName } from "../objectConf/objectNames";
 import { roomY } from "../objectConf/renderOrders.js";
