@@ -8,10 +8,8 @@ import {
   calculateArea,
   calculateCenter,
   calculateDistance,
-  getStraightLineX,
-  getStraightLineZ,
   calculateAngle,
-} from "../calculater.js";
+} from "../../../lib/calculater.js";
 import { Text } from "./text.js";
 import { RotationController } from "./rotationController.js";
 import { MoveController } from "./moveController.js";

@@ -14,7 +14,7 @@
   <body>
     <div id="app">
       <!-- hader -->
-      <div id="side" class="block-border">
+      <div id="side" class="block-border spread">
         <div id="side-top">
           <header class="block-border">
             <!--아이디자인 로고-->
@@ -55,7 +55,7 @@
           <div id="searching-box">
             <span id="searching-span">내 프로젝트 찾기</span>
             <div id="input-box">
-              <input type="text" />
+              <input type="text" id="searching-input" />
               <div class="search-icon">
                 <i class="fas fa-search"></i>
               </div>
@@ -64,8 +64,27 @@
           <div id="user-info">userID</div>
         </div>
         <div id="main-bottom">
+          <div id="sort-bar">
+            <div>
+              <div id="selected-sort">
+                <div id="selected">
+                  <span id="recent">최신순</span>
+                  <i class="fas fa-angle-down"></i>
+                </div>
+                <ul id="select-options">
+                  <li class="select-option" id="recent">최신순</li>
+                  <li class="select-option" id="asc">오름차순</li>
+                  <li class="select-option" id="desc">내림차순</li>
+                </ul>
+              </div>
+            </div>
+            <button id="trash">
+              <span>삭제하기</span>
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
           <div id="container">
-            <div class="project">
+            <a class="project">
               <div class="renovate-img">
                 <div id="plus-btn">
                   <div>
@@ -80,7 +99,8 @@
               <div class="project-src">
                 <div>새로운 프로젝트</div>
               </div>
-            </div>
+            </a>
+            <div id="observer"></div>
           </div>
         </div>
       </div>
