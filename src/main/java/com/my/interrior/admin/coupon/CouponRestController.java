@@ -35,9 +35,9 @@ public class CouponRestController {
 	private final UserRepository userRepository;
 
 	// 나중에 couponLimit으로 사용했는지 안했는지 파악하자.(아마 결제에서)
-	@PostMapping("/get/coupon/{eventNo}")
-	public ResponseEntity<String> getCoupon(@PathVariable("eventNo") Long eventNo, HttpSession session) {
-		CouponEntity coupon = couponService.findCouponNumber(eventNo);
+	@PostMapping("/get/coupon/{couponNo}")
+	public ResponseEntity<String> getCoupon(@PathVariable("couponNo") Long couponNo, HttpSession session) {
+		CouponEntity coupon = couponService.findCouponNumber(couponNo);
 
 		CouponMapEntity couponMapEntity = new CouponMapEntity();
 		String userId = (String) session.getAttribute("UId");
