@@ -57,7 +57,7 @@ export function calculateCenter(points) {
   };
 }
 
-export const getClickedCircleIndex = ({ background, floor, cg, object }) => {
+export const getClickedCircleIndex = ({ cg, object }) => {
   const children = cg.children;
   const position = object.position;
   for (let i = 0; i < children.length; i++) {
