@@ -99,7 +99,7 @@ export class RotationController extends THREE.Group {
     room.rotation.y = angle;
     room.updateMatrix();
     const floor = room.getObjectByName("floor");
-    floor.updateMatrix();
+    // floor.applyMatrix4();
     // floor.geometry.applyMatrix(floor.matrix);
     // floor.matrix.identity();
     // floor.updateMatrix();

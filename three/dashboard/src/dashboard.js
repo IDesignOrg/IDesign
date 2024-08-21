@@ -102,10 +102,8 @@ const getProjects = async () => {
   const sort = selectedSort.id;
   //wook
   //밑에 주소 바꿔주셈
-  // const data =await axios.get('http:localhost:8080/get_projects', {
-  //   u_no,
-  //   filter,
-  //   sort
+  // const data = await axios.get("http:localhost:8080/get_projects", {
+  //   params: { u_no, filter, sort },
   // });
   const data = await getDummyData();
   const receivedProjects = data.data.projects;

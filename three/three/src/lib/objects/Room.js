@@ -104,6 +104,10 @@ export class D2Room extends THREE.Group {
     this.getObjectByName("floor").updateMatrix();
   };
 
+  // addzz = () => {
+  //   this.add()
+  // }
+
   addWalls = ({ points, center }) => {
     if (this.getObjectByName(wallsName)) {
       this.remove(this.getObjectByName(wallsName));
