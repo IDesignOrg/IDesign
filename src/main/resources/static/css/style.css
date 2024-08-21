@@ -550,7 +550,7 @@
 * {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+  
 }
 
 .product-grid {
@@ -602,16 +602,6 @@
 .product-discount {
     font-size: 0.9rem;
     color: #888;
-}
-
-form {
-    display: flex;
-    justify-content: space-between;
-    margin: 20px 0;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 form label {
