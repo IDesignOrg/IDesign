@@ -14,4 +14,5 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
 	// int updateHits(Long rNo);
 	int countByUser(UserEntity user);
 	List<ReviewEntity> findByUserUNo(Long userUNo);
+	ReviewEntity findByRNo(Long rNo);
 }

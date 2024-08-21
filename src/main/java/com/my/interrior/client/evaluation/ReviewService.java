@@ -18,6 +18,7 @@ import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.my.interrior.client.gcs.GCSFileDeleter;
+import com.my.interrior.client.shop.ShopEntity;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
 
@@ -147,6 +148,14 @@ public class ReviewService {
 	    // 2. 조회된 리뷰 포토 목록을 반환합니다.
 	    return reviewPhotos;
 	}
+	
+	//조회수 증가
+    public void increaseViewCount(Long rNo) {
+        ReviewEntity review = reviewRepository.findByRNo(rNo);
+        review.setRViews(review.getRViews() + 1);
+        reviewRepository.save(review);
+    }
+    
 	@Transactional
 	public void updateReview(Long rNo, String title, String category, String content, String starRating,
 			MultipartFile[] files, MultipartFile mainPhoto) throws IOException {
@@ -217,4 +226,5 @@ public class ReviewService {
         
         reviewRepository.deleteById(rNo);
 	}
+	
 }
