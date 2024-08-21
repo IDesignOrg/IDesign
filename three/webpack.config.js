@@ -21,6 +21,21 @@ module.exports = {
   // 단, 이거 설정하면 webpack-dev-server 3번대 버전에서 live reloading 동작 안함
   // target: ['web', 'es5'],
   devServer: {
+    static: [
+      {
+        directory: path.join(__dirname),
+        publicPath: "/",
+        serveIndex: true,
+      },
+      {
+        directory: path.join(__dirname, "three"),
+        publicPath: "/three",
+      },
+      {
+        directory: path.join(__dirname, "dashboard"),
+        publicPath: "/dashboard",
+      },
+    ],
     liveReload: true,
   },
   optimization: {
@@ -42,6 +57,10 @@ module.exports = {
   },
   module: {
     rules: [
+      // {
+      //   test: /\.(png|jpe?g|gif|svg)$/i, // 이미지 파일 로더
+      //   type: "public/resource", // Webpack 5에서는 기본적으로 asset/resource를 사용하여 이미지를 처리
+      // },
       {
         test: /\.js$/,
         loader: "babel-loader",
