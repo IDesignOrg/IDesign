@@ -11,7 +11,7 @@ import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader.js";
 import { D2Shapes, D3Shapes } from "./lib/three/geomentryFactory.js";
 import { D2Room } from "./lib/objects/Room.js";
 import { THREE } from "./lib/loader/three.js";
-import { debounce } from "./lib/debounce.js";
+
 import { create3DRoom } from "./lib/Dimension/dimension.js";
 import { chairCreator, createChair } from "./lib/gltfObjects/ObjectFactory.js";
 import { RotationController } from "./lib/objects/rotationController.js";
@@ -33,15 +33,16 @@ import {
 } from "./lib/objectConf/objectNames.js";
 import { roomY } from "./lib/objectConf/renderOrders.js";
 import { MoveController } from "./lib/objects/moveController.js";
-import { throttle } from "./lib/throttling.js";
+import { throttle } from "../../utils/throttling.js";
+import { debounce } from "../../utils/debounce.js";
 
 export const MILLPerWidth = 0.1;
 
 const save = document.getElementById("save");
 const hudIcon = document.getElementById("hud-icon");
 const modeToggles = document.getElementById("modeToggles");
-
-let D3Walls = [];
+const canvas = document.getElementById("canvas");
+console.log("canvas = ", canvas);
 
 // zoom in/out & drag and drop
 let isDragging = false;
@@ -71,7 +72,7 @@ let isChangingObject = {
 };
 
 const mouse = new THREE.Vector2();
-const raycaster = new THREE.Raycaster();
+// const raycaster = new THREE.Raycaster();
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("rgb(250,251,255)");
 const camera = new THREE.PerspectiveCamera(
@@ -106,8 +107,14 @@ const texture = new THREE.TextureLoader().load(
 
 const wallpaper = "/dist/public/img/wallpaper.jpeg";
 const texture2 = new THREE.TextureLoader().load(wallpaper);
-export const wallMaterial = new THREE.MeshBasicMaterial({ map: texture2 });
-export const floorMaterial = new THREE.MeshBasicMaterial({ map: texture });
+export const wallMaterial = new THREE.MeshBasicMaterial({
+  // map: texture2
+  color: "red",
+});
+export const floorMaterial = new THREE.MeshBasicMaterial({
+  // map: texture
+  color: "green",
+});
 // export const
 const light = new THREE.DirectionalLight(0xffffff, 1.5);
 light.position.set(200, 200, 200);
@@ -124,7 +131,7 @@ effectFXAA.uniforms["resolution"].value.set(
   1 / window.innerWidth,
   1 / window.innerHeight
 );
-
+const raycaster = new THREE.Raycaster();
 // 아웃라인 설정
 outlinePass.edgeStrength = 3.0;
 outlinePass.edgeGlow = 1.0;
@@ -190,6 +197,103 @@ const getIntersectsArray = (raycaster) => {
   );
 };
 
+//
+//
+//
+//
+
+//
+// const group = new THREE.Group();
+
+// const y = 0;
+// const points = [
+//   { x: -100, y, z: -100 },
+//   { x: 100, y, z: -100 },
+//   { x: 100, y, z: 100 },
+//   { x: -100, y, z: 100 },
+// ];
+
+// const center = calculateCenter(points);
+// group.position.set(center.x, 0, center.z);
+// const shape = new THREE.Shape();
+// shape.moveTo(points[0].x, -points[0].z);
+// for (let i = 1; i < points.length; i++) {
+//   shape.lineTo(points[i].x, -points[i].z);
+// }
+// shape.lineTo(points[0].x, -points[0].z);
+
+// const geometry = new THREE.ShapeGeometry(shape);
+// const material = new THREE.MeshBasicMaterial({ color: "yellowgreen" });
+// const mesh = new THREE.Mesh(geometry, material);
+// mesh.rotation.x = -Math.PI / 2;
+// mesh.name = "floor";
+// mesh.position.set(-center.x, 0, -center.z);
+
+// const geometry_circle = new THREE.CircleGeometry(5, 32);
+// const material_circle = new THREE.MeshBasicMaterial({
+//   color: "blue",
+// });
+
+// const material_circle_2 = new THREE.MeshBasicMaterial({
+//   color: "red",
+// });
+
+// const circle_1 = new THREE.Mesh(geometry_circle, material_circle);
+// const circle_2 = new THREE.Mesh(geometry_circle, material_circle_2);
+// // const circle_3 = new THREE.Mesh(geometry_circle, material_circle);
+// const circle_1_position = new THREE.Vector3(-90, 0.01, -90);
+// const circle_2_position = new THREE.Vector3(90, 0.01, -90);
+// circle_1.position.set(
+//   circle_1_position.x - center.x,
+//   0,
+//   circle_1_position.z - center.z
+// );
+// circle_1.rotation.x = -Math.PI / 2;
+// circle_1.renderOrder = 1;
+// group.add(circle_1);
+
+// circle_2.position.set(
+//   circle_2_position.x - center.x,
+//   0,
+//   circle_2_position.z - center.z
+// );
+// circle_2.rotation.x = -Math.PI / 2;
+// circle_2.renderOrder = 1;
+// group.add(circle_2);
+
+// // group.rotation.y = Math.PI / 2;
+// group.add(mesh);
+// scene.add(group);
+// window.addEventListener("mousedown", (event) => {
+//   event.preventDefault();
+
+//   // 마우스 좌표 설정
+//   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+//   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+//   // Raycaster 설정
+//   raycaster.setFromCamera(mouse, camera);
+
+//   // 장면의 객체들과 교차점 계산
+//   const intersects = raycaster.intersectObjects(scene.children, true);
+
+//   const floorObj = intersects.find((obj) => obj.object.name === "floor");
+//   if (floorObj) {
+//     // 월드 좌표계에서의 클릭 위치
+//     const worldPoint = floorObj.point;
+
+//     // 클릭 위치를 group의 로컬 좌표로 변환
+//     const groupLocalPoint = group.worldToLocal(worldPoint.clone());
+
+//     console.log("Clicked position relative to group:", groupLocalPoint);
+//   }
+// });
+//
+//
+//
+//
+//
+
 const updateShadows = ({ object, background }) => {
   // const points = [
   //   new THREE.Vector3(object.clickedPoints.x, roomY, object.clickedPoints.z),
@@ -212,6 +316,8 @@ const onMouseDown = (event) => {
   if (controls.enabled) return;
   let points;
   const raycaster = getIntersects(event);
+  const floorObj = raycaster.find((obj) => obj.object.name === "floor");
+
   const background = raycaster.find((obj) => obj.object.name === "background");
   if (!background) return;
   const objectArr = getIntersectsArray(raycaster);
@@ -309,7 +415,7 @@ const onMouseDown = (event) => {
     switch (target) {
       case floorName:
         if (isDragging) {
-          // 만들기 종료
+          // floor 만들기 종료
           const obj = scene.getObjectByName(shadowName);
 
           obj.name = roomName;
@@ -352,24 +458,29 @@ const onMouseDown = (event) => {
         break;
       case chairName:
       case deskName:
-        let floor = raycaster.find((obj) => obj.object.name === "floor");
+        const floorObj = raycaster.find((obj) => obj.object.name === "floor");
         if (!floor) return;
-        const room = floor.object.parent;
-        let position = floor.point;
-        floor = floor.object;
+        const room = floorObj.object.parent;
+        const worldPoint = floorObj.point;
+
+        // 클릭 위치를 group의 로컬 좌표로 변환
         const object = scene.getObjectByName(shadowName);
+        const groupLocalPoint = room.worldToLocal(worldPoint.clone());
+        // let position = floor.point;
+        // floor = floor.object;
+        // object.name = target;
+        // const center = room.userData.center;
+        // const localClickPosition = new THREE.Vector3(10, 0, 0);
+
+        // // floor의 월드 행렬을 사용하여 로컬 좌표를 월드 좌표로 변환합니다
+        // const worldClickPosition = localClickPosition
+        //   .clone()
+        //   .applyMatrix4(floor.matrixWorld);
+        // console.log(worldClickPosition);
+        // object.position.x = position.x - center.x;
+        // object.position.z = position.z - center.z;
+        object.position.set(groupLocalPoint.x, 2, groupLocalPoint.z);
         object.name = target;
-        const center = room.userData.center;
-        const localClickPosition = new THREE.Vector3(10, 0, 0);
-
-        // floor의 월드 행렬을 사용하여 로컬 좌표를 월드 좌표로 변환합니다
-        const worldClickPosition = localClickPosition
-          .clone()
-          .applyMatrix4(floor.matrixWorld);
-        console.log(worldClickPosition);
-        object.position.x = position.x - center.x;
-        object.position.z = position.z - center.z;
-
         room.add(object);
         isCreating = {
           isSelect: false,
@@ -404,6 +515,7 @@ const onMouseMove = (event) => {
     return;
   }
   const raycaster = getIntersects(event);
+
   const background = raycaster.find((obj) => obj.object.name === "background");
   if (!background) return;
   const arr = getIntersectsArray(raycaster);
@@ -633,13 +745,52 @@ const onChangeMode = (e) => {
   }
 };
 
+//내가 건드리는 중
 const onSave = async () => {
-  const reqData = {
-    id: "example_userID",
-    project_id: new Date().getTime(),
-    data: {},
-  };
+  const projectId = new Date().getTime().toString();
+  console.log("userNo: ", userNo);
+  const reqData = await axios.post("http://localhost:8080/save/project", {
+    //더미 데이터 시작
+    projectId: projectId,
+    dataEntities: [
+      {
+        type: "example_type",
+        rotation: 30.0,
+        angle: 35.0,
 
+        points: [
+          { x: 1.0, y: 2.0, z: 3.0 },
+          { x: 1.5, y: 2.5, z: 3.5 },
+        ],
+
+        parent: {
+          type: "parent_type",
+          rotation: 11.1,
+          angle: 11.1,
+          points: [
+            { x: 100.0, y: 200.0, z: 300.0 },
+            { x: 100.5, y: 200.5, z: 300.5 },
+          ],
+        },
+
+        children: [
+          {
+            type: "child_type",
+            rotation: 55.5,
+            angle: 55.5,
+            points: [
+              { x: 10.0, y: 20.0, z: 30.0 },
+              { x: 10.5, y: 20.5, z: 30.5 },
+            ],
+          },
+        ],
+      },
+    ],
+  });
+
+  //data 받을 시
+
+  //////////////////////////////////////////////////////////
   // const room = scene.getObjectByName("room");
 
   // const data = {};
@@ -695,6 +846,12 @@ window.addEventListener("mousedown", onMouseDown);
 window.addEventListener("mousemove", onMouseMove);
 window.addEventListener("mouseup", onMouseUp);
 window.addEventListener("wheel", onWheel);
+window.addEventListener("beforeunload", () => {
+  window.removeEventListener("mousedown", onMouseDown);
+  window.removeEventListener("mousemove", onMouseMove);
+  window.removeEventListener("mouseup", onMouseUp);
+  window.removeEventListener("wheel", onWheel);
+});
 
 hudIcon.addEventListener("click", onCreateBtnClick);
 save.addEventListener("click", onSave);
