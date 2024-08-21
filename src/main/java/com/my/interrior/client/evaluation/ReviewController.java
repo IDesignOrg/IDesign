@@ -1,6 +1,7 @@
 package com.my.interrior.client.evaluation;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,8 +81,17 @@ public class ReviewController {
 	
 	//후기 상세페이지
 	@GetMapping("/auth/evaluation/{rNo}")
-	public String reviewDetail(@PathVariable("rNo") Long rNo, Model model) {
+	public String reviewDetail(@PathVariable("rNo") Long rNo, Model model, HttpSession session) {
 		//reviewService.updateHits(rNo);
+		String pageKey = "viewedShop_" + rNo;
+        LocalDateTime lastViewedTime = (LocalDateTime) session.getAttribute(pageKey);
+
+        if (lastViewedTime == null || lastViewedTime.isBefore(LocalDateTime.now().minusHours(1))) {
+            reviewService.increaseViewCount(rNo);
+
+            // 현재 시간을 세션에 저장
+            session.setAttribute(pageKey, LocalDateTime.now());
+        }
 		Optional<ReviewEntity> review = reviewService.getReviewById(rNo);
 		if (review.isPresent()) {		
 			model.addAttribute("review", review.get());

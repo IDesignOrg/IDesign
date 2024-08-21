@@ -43,6 +43,16 @@
 				</tbody>
 			</table>
 		</div>
+		<div class="pagination">
+			<a th:href="@{/admin/page/adminUserCoupon(page=${currentPage - 1})}" th:if="${currentPage > 0}">&laquo;
+				이전</a>
+			<span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+				<a th:href="@{/admin/page/adminUserCoupon(page=${i})}" th:classappend="${i == currentPage} ? 'active'"
+					th:text="${i + 1}">1</a>
+			</span>
+			<a th:href="@{/admin/page/adminUserCoupon(page=${currentPage + 1})}"
+				th:if="${currentPage < totalPages - 1}">다음 &raquo;</a>
+		</div>
 
 		<!-- JavaScript 쿠폰 사용 처리 -->
 		<script>

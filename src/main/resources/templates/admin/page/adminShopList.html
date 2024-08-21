@@ -54,12 +54,23 @@
 					</tr>
 				</tbody>
 			</table>
+			<div class="new-shop-button-container" style="text-align: center; margin-top: 20px;">
+				<a href="/shopWrite">
+					<button class="new-shop-btn">새로운 상점 등록</button>
+				</a>
+			</div>
 		</div>
-		<div class="new-shop-button-container" style="text-align: center; margin-top: 20px;">
-			<a href="/shopWrite">
-				<button class="new-shop-btn">새로운 상점 등록</button>
-			</a>
+		<div class="pagination">
+			<a th:href="@{/admin/page/adminShopList(page=${currentPage - 1})}" th:if="${currentPage > 0}">&laquo;
+				이전</a>
+			<span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+				<a th:href="@{/admin/page/adminShopList(page=${i})}" th:classappend="${i == currentPage} ? 'active'"
+					th:text="${i + 1}">1</a>
+			</span>
+			<a th:href="@{/admin/page/adminShopList(page=${currentPage + 1})}"
+				th:if="${currentPage < totalPages - 1}">다음 &raquo;</a>
 		</div>
+
 
 		<!-- 주문 정보 모달 -->
 		<div id="orderModal" class="modal">
