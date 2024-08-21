@@ -17,9 +17,13 @@ public class Interceptor implements HandlerInterceptor {
 		HttpSession session = request.getSession(false); // 세션에 없으면 널값반환
 
 		if (session == null || session.getAttribute("UId") == null) {
+			/*
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			System.out.println("aaaaa");
 			return false;
+			*/
+			response.sendRedirect("/error/401");  // 401 페이지로 리다이렉트
+            return false;
 		}
 		System.out.println("sessss");
 		return true;
