@@ -745,13 +745,52 @@ const onChangeMode = (e) => {
   }
 };
 
+//내가 건드리는 중
 const onSave = async () => {
-  const reqData = {
-    id: "example_userID",
-    project_id: new Date().getTime(),
-    data: [{ id: new Date().getTime(), type: "room" }],
-  };
+  const projectId = new Date().getTime().toString();
+  console.log("userNo: ", userNo);
+  const reqData = await axios.post("http://localhost:8080/save/project", {
+    //더미 데이터 시작
+    projectId: projectId,
+    dataEntities: [
+      {
+        type: "example_type",
+        rotation: 30.0,
+        angle: 35.0,
 
+        points: [
+          { x: 1.0, y: 2.0, z: 3.0 },
+          { x: 1.5, y: 2.5, z: 3.5 },
+        ],
+
+        parent: {
+          type: "parent_type",
+          rotation: 11.1,
+          angle: 11.1,
+          points: [
+            { x: 100.0, y: 200.0, z: 300.0 },
+            { x: 100.5, y: 200.5, z: 300.5 },
+          ],
+        },
+
+        children: [
+          {
+            type: "child_type",
+            rotation: 55.5,
+            angle: 55.5,
+            points: [
+              { x: 10.0, y: 20.0, z: 30.0 },
+              { x: 10.5, y: 20.5, z: 30.5 },
+            ],
+          },
+        ],
+      },
+    ],
+  });
+
+  //data 받을 시
+
+  //////////////////////////////////////////////////////////
   // const room = scene.getObjectByName("room");
 
   // const data = {};
