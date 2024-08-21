@@ -9,9 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.my.interrior.client.cart.CartEntity;
 import com.my.interrior.client.cart.CartRepository;
+import com.my.interrior.client.shop.ShopEntity;
+import com.my.interrior.client.shop.ShopRepository;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +26,8 @@ public class OrderedService {
 	private final OrderedRepository orderedRepository;
 	private final CartRepository cartRepository;
 	private static int orderedNumber = 100000;
+	private final OrderedRefundRepository orderedRefundRepository;
+	private final ShopRepository shopRepository;
 
 	@Transactional
 	public void saveOrdered(HttpSession session) {
@@ -78,7 +83,7 @@ public class OrderedService {
 			} else if (orderedDate.isBefore(today.minusDays(1))) {
 				order.setShipmentState("배송완료");
 			}
-			
+
 			orderedRepository.save(order);
 		}
 	}
@@ -86,6 +91,39 @@ public class OrderedService {
 	@Transactional
 	public void deleteByMerchantUId(String merchantUId) {
 		orderedRepository.deleteByMerchantUId(merchantUId);
+	}
+
+	//환불시에 state변환
+	@Transactional
+	public void updateOrderedState(String merchantUId, String refundReason, String userid) {
+		// merchantUId로 단일 OrderedEntity 조회
+		OrderedEntity orderedEntity = orderedRepository.findByMerchantUId(merchantUId)
+				.orElseThrow(() -> new EntityNotFoundException("No order found with merchantUId: " + merchantUId));
+
+		// orderedState 업데이트
+		orderedEntity.setOrderedState("환불");
+		orderedEntity.setShipmentState("환불");
+
+		// 변경된 엔티티 저장
+		orderedRepository.save(orderedEntity);
+		
+		
+		OrderedRefundEntity orderedRefundEntity = new OrderedRefundEntity();
+	    orderedRefundEntity.setOrderedEntity(orderedEntity);  // 관련 주문 설정
+	    orderedRefundEntity.setRefundReason(refundReason);  // 환불 사유 설정
+	    orderedRefundEntity.setRefundUser(userid);
+		//환불 사유 저장
+		orderedRefundRepository.save(orderedRefundEntity);
+		
+		//shopRefund횟수 추가
+		ShopEntity shopEntity = shopRepository.findById(orderedEntity.getShopNo())
+	            .orElseThrow(() -> new EntityNotFoundException("No shop found with shopNo: " + orderedEntity.getShopNo()));
+
+	    // 환불 횟수 증가
+	    shopEntity.setShopRefundCount(shopEntity.getShopRefundCount() + 1);
+
+	    // 변경된 ShopEntity 저장
+	    shopRepository.save(shopEntity);
 	}
 
 	public List<OrderedEntity> getOrderedList(HttpSession session) {
