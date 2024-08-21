@@ -35,7 +35,13 @@ import com.my.interrior.client.event.EventEntity;
 import com.my.interrior.client.event.coupon.CouponEntity;
 import com.my.interrior.client.event.coupon.CouponMapEntity;
 import com.my.interrior.client.ordered.OrderedEntity;
+import com.my.interrior.client.ordered.OrderedRefundEntity;
+import com.my.interrior.client.ordered.OrderedRefundRepository;
 import com.my.interrior.client.ordered.OrderedRepository;
+import com.my.interrior.client.ordered.OrderedService;
+import com.my.interrior.client.pay.PayEntity;
+import com.my.interrior.client.pay.PaymentAndUserService;
+import com.my.interrior.client.pay.PaymentService;
 import com.my.interrior.client.shop.ShopEntity;
 import com.my.interrior.client.shop.ShopRepository;
 import com.my.interrior.client.shop.ShopReviewEntity;
@@ -45,6 +51,7 @@ import com.my.interrior.client.user.UserDTO;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserService;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -82,12 +89,24 @@ public class AdminPageController {
 	@Autowired
 	private CouponMapRepository couponMap;
 
+	@Autowired
+	private PaymentService paymentService;
+
+	@Autowired
+	private OrderedService orderedService;
+
+	@Autowired
+	private PaymentAndUserService PaymentAndUserService;
+	
+	@Autowired
+	private OrderedRefundRepository orderedRefundRepository;
+
 	@GetMapping("/auth/adminLogin")
 	public String AdminLogin() {
 		return "admin/page/adminLogin";
 	}
 
-	//어드민 로그인
+	// 어드민 로그인
 	@PostMapping("/auth/adminlogin")
 	public String adminjoin(@ModelAttribute UserDTO userDTO, HttpSession session, Model model) throws Exception {
 		try {
@@ -132,29 +151,27 @@ public class AdminPageController {
 		Long reviewCount = adminPageService.getReviewCount();
 		System.out.println("리뷰의 수 : " + reviewCount);
 		model.addAttribute("reviewCount", reviewCount);
-		//가장 높은 조회수를 가진 상점
+		// 가장 높은 조회수를 가진 상점
 		Optional<ShopEntity> mostViewedShop = adminPageService.getMostViewedShop();
-        mostViewedShop.ifPresent(shop -> model.addAttribute("mostViewedShop", shop));
+		mostViewedShop.ifPresent(shop -> model.addAttribute("mostViewedShop", shop));
 
 		return "/admin/page/adminIndex";
 	}
 
 	// 회원정보 페이지
 	@GetMapping("/admin/page/adminUsers")
-	public String adminUsers(
-			@RequestParam(name = "page", defaultValue = "0") int page,
-	        @RequestParam(name = "size", defaultValue = "10") int size,
-	        Model model) {
+	public String adminUsers(@RequestParam(name = "page", defaultValue = "0") int page,
+			@RequestParam(name = "size", defaultValue = "10") int size, Model model) {
 
-	    Pageable pageable = PageRequest.of(page, size);
-	    Page<UserWithPostAndCommentCount> usersWithCounts = adminPageService.findAllUsersWithCounts(pageable);
+		Pageable pageable = PageRequest.of(page, size);
+		Page<UserWithPostAndCommentCount> usersWithCounts = adminPageService.findAllUsersWithCounts(pageable);
 
-	    model.addAttribute("usersWithCounts", usersWithCounts);
-	    model.addAttribute("currentPage", page);
-	    model.addAttribute("totalPages", usersWithCounts.getTotalPages());
-	    model.addAttribute("pageSize", size);
+		model.addAttribute("usersWithCounts", usersWithCounts);
+		model.addAttribute("currentPage", page);
+		model.addAttribute("totalPages", usersWithCounts.getTotalPages());
+		model.addAttribute("pageSize", size);
 
-	    return "/admin/page/adminUsers";
+		return "/admin/page/adminUsers";
 	}
 
 	// 어드민 페이지 게시글 모달
@@ -203,7 +220,8 @@ public class AdminPageController {
 		adminPageService.deleteNotice(noticeNo);
 		return ResponseEntity.ok().build();
 	}
-	//유저 비활성화
+
+	// 유저 비활성화
 	@PostMapping("/deactivateUser")
 	public ResponseEntity<String> deactivateUser(@RequestParam("userUNo") Long userUNo) {
 		try {
@@ -259,18 +277,22 @@ public class AdminPageController {
 		return "User activated successfully";
 	}
 
+	// 쿠폰 리스트
 	@GetMapping("/admin/page/adminCouponList")
-	public String couponManagement(Model model) {
-		List<CouponEntity> coupons = adminPageService.getAllCoupons();
+	public String couponManagement(Model model, Pageable pageable) {
+		Page<CouponEntity> coupons = adminPageService
+				.getAllCoupons(PageRequest.of(pageable.getPageNumber(), PAGE_SIZE));
 		model.addAttribute("coupons", coupons);
+		model.addAttribute("currentPage", pageable.getPageNumber());
+		model.addAttribute("totalPages", coupons.getTotalPages());
 		return "admin/page/adminCouponList"; // 쿠폰 관리 페이지로 이동
 	}
 
 	// 쿠폰 모달창
 	@GetMapping("/getCoupons")
 	@ResponseBody
-	public List<CouponEntity> getCoupons() {
-		return adminPageService.getAllCoupons();
+	public List<CouponEntity> getAllModalCoupons() {
+		return adminPageService.getAllModalCoupons();
 	}
 
 	// 유저한테 쿠폰 발급
@@ -297,9 +319,12 @@ public class AdminPageController {
 
 	// 유저 쿠폰 리스트
 	@GetMapping("/admin/page/adminUserCoupon")
-	public String userCoupon(Model model) {
-		List<CouponMapEntity> couponMaps = adminPageService.getAllUserCoupons();
+	public String userCoupon(Model model, Pageable pageable) {
+		Page<CouponMapEntity> couponMaps = adminPageService
+				.getAllUserCoupons(PageRequest.of(pageable.getPageNumber(), PAGE_SIZE));
 		model.addAttribute("couponMaps", couponMaps);
+		model.addAttribute("currentPage", pageable.getPageNumber());
+		model.addAttribute("totalPages", couponMaps.getTotalPages());
 		return "/admin/page/adminUserCoupon";
 	}
 
@@ -335,9 +360,12 @@ public class AdminPageController {
 
 	// shop리스트와 ordered의 count
 	@GetMapping("/admin/page/adminShopList")
-	public String adminShopList(Model model) {
-		List<ShopListAndOrderedDTO> shops = adminPageService.getAllShopsAndCounts();
+	public String adminShopList(Model model, Pageable pageable) {
+		Page<ShopListAndOrderedDTO> shops = adminPageService
+				.getAllShopsAndCounts(PageRequest.of(pageable.getPageNumber(), PAGE_SIZE));
 		model.addAttribute("shops", shops);
+		model.addAttribute("currentPage", pageable.getPageNumber());
+		model.addAttribute("totalPages", shops.getTotalPages());
 		return "/admin/page/adminShopList";
 	}
 
@@ -364,11 +392,14 @@ public class AdminPageController {
 		return orderDetailsList;
 	}
 
+	// 주문관리 페이지
 	@GetMapping("/admin/page/adminOrdered")
 	public String adminOrderedList(Model model, Pageable pageable) {
 		Page<OrderedEntity> orders = adminPageService
 				.getAllOrdered(PageRequest.of(pageable.getPageNumber(), PAGE_SIZE));
 		model.addAttribute("orders", orders);
+		model.addAttribute("currentPage", pageable.getPageNumber());
+		model.addAttribute("totalPages", orders.getTotalPages());
 		return "/admin/page/adminOrdered";
 	}
 
@@ -384,13 +415,50 @@ public class AdminPageController {
 			return ResponseEntity.status(500).body("상점 상태 변경에 실패했습니다.");
 		}
 	}
-	
-	//이벤트 관리 페이지
+
+	// 이벤트 관리 페이지
 	@GetMapping("/admin/page/adminEvent")
 	public String adminEvent(Model model, Pageable pageable) {
 		Page<EventEntity> events = adminPageService.getAllEvent(PageRequest.of(pageable.getPageNumber(), PAGE_SIZE));
 		model.addAttribute("events", events);
+		model.addAttribute("currentPage", pageable.getPageNumber());
+		model.addAttribute("totalPages", events.getTotalPages());
 		return "/admin/page/adminEvent";
 	}
 
+	// 환불
+	@PostMapping("/refund/paymentToAdmin")
+	public ResponseEntity<?> refundPayment(
+			@RequestParam("merchantUId") String merchantUId,
+			@RequestParam("refundReason") String refundReason,
+			HttpSession session) throws Exception {
+		String userid = (String)session.getAttribute("UId");
+		String token = paymentService.getAccessToken();
+		paymentService.refundRequest(token, merchantUId);
+		
+		// 여기에 주문 내역에서 삭제해야 됨.
+		// ordered랑 payment랑 payment_user_mapping 테이블 전부인데 payment_user_mapping부터 지워야 됨.
+		// shipment는 나중에 시간나면 추가해줘야 됨. 지금 shipment 지울만한 속성이 없음.
+		// 오더 상태 변경
+		orderedService.updateOrderedState(merchantUId, refundReason, userid);
+
+		PayEntity pay = paymentService.findPayEntity(merchantUId);
+		Long payNo = pay.getPayNo();
+		// payment_user_mapping 제거
+		PaymentAndUserService.deleteByPayNo(payNo);
+		// payment 제거
+		paymentService.deleteByMerchantUId(merchantUId);
+		return ResponseEntity.ok().build();
+	}
+	
+	@GetMapping("/refund/reason")
+	public ResponseEntity<?> getRefundReason(@RequestParam("merchantUId") String merchantUId) {
+	    OrderedRefundEntity refundEntity = orderedRefundRepository.findByOrderedEntity_MerchantUId(merchantUId)
+	        .orElseThrow(() -> new EntityNotFoundException("No refund found for merchantUId: " + merchantUId));
+
+	    return ResponseEntity.ok(Map.of(
+	        "refundReason", refundEntity.getRefundReason(),
+	        "refundUser", refundEntity.getRefundUser()  // 추가된 필드
+	    ));
+	}
 }
