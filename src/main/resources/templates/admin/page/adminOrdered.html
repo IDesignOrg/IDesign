@@ -6,6 +6,54 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>주문 관리</title>
 	<link rel="stylesheet" href="/css/adminPage.css" />
+	<style>
+		/* 모달 스타일 추가 */
+		.modal {
+			display: none;
+			position: fixed;
+			z-index: 1;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			overflow: auto;
+			background-color: rgb(0, 0, 0);
+			background-color: rgba(0, 0, 0, 0.4);
+		}
+
+		.modal-content {
+			background-color: #fefefe;
+			margin: 15% auto;
+			padding: 20px;
+			border: 1px solid #888;
+			width: 80%;
+			max-width: 500px;
+		}
+
+		.close {
+			color: #aaa;
+			float: right;
+			font-size: 28px;
+			font-weight: bold;
+		}
+
+		.close:hover,
+		.close:focus {
+			color: black;
+			text-decoration: none;
+			cursor: pointer;
+		}
+
+		.modal-header,
+		.modal-body,
+		.modal-footer {
+			padding: 10px;
+		}
+
+		.modal-footer {
+			text-align: right;
+		}
+	</style>
 </head>
 
 <body>
@@ -31,7 +79,8 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:each="order : ${orders}" th:data-orderedno="${order.orderedNo}">
+					<tr th:each="order : ${orders}" th:data-orderedno="${order.orderedNo}"
+						th:data-orderedstate="${order.orderedState}">
 						<td th:text="${order.orderedNo}"></td>
 						<td th:text="${order.orderedNumber}"></td>
 						<td th:text="${order.orderedState}"></td>
@@ -50,8 +99,7 @@
 			</table>
 		</div>
 		<div class="pagination">
-			<a th:href="@{/admin/page/adminOrdered(page=${currentPage - 1})}" th:if="${currentPage > 0}">&laquo;
-				이전</a>
+			<a th:href="@{/admin/page/adminOrdered(page=${currentPage - 1})}" th:if="${currentPage > 0}">&laquo; 이전</a>
 			<span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
 				<a th:href="@{/admin/page/adminOrdered(page=${i})}" th:classappend="${i == currentPage} ? 'active'"
 					th:text="${i + 1}">1</a>
@@ -60,27 +108,114 @@
 				&raquo;</a>
 		</div>
 
+		<!-- 환불하기 모달창 추가 -->
+		<div id="refundModal" class="modal">
+			<div class="modal-content">
+				<span class="close">&times;</span>
+				<div class="modal-header">
+					<h2>환불하기</h2>
+				</div>
+				<div class="modal-body">
+					<textarea id="refundReasonInput" rows="4" style="width: 100%;"
+						placeholder="환불 사유를 입력하세요"></textarea>
+				</div>
+				<div class="modal-footer">
+					<button id="confirmRefundBtn">환불 요청</button>
+					<button class="close">닫기</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- 환불사유 모달창 추가 -->
+		<div id="refundReasonModal" class="modal">
+			<div class="modal-content">
+				<span class="close">&times;</span>
+				<div class="modal-header">
+					<h2>환불 사유</h2>
+				</div>
+				<div class="modal-body">
+					<p><strong>신청자:</strong> <span id="refundUser"></span></p>
+					<textarea id="refundReasonDisplay" rows="4" style="width: 100%;" readonly></textarea>
+				</div>
+				<div class="modal-footer">
+					<button class="close">닫기</button>
+				</div>
+			</div>
+		</div>
+
 		<!-- JavaScript로 데이터 로드 및 환불 처리 -->
 		<script>
 			document.addEventListener("DOMContentLoaded", function () {
-				// 환불 버튼 이벤트 추가
-				var refundButtons = document.querySelectorAll(".refund-btn");
-				refundButtons.forEach(function (button) {
-					button.addEventListener("click", function () {
-						var merchantUId = button.previousElementSibling.getAttribute('data-merchant-uid');
-						console.log("Extracted merchantUId: ", merchantUId); // 로그 추가
-						if (confirm("해당 주문을 환불하시겠습니까?")) {
-							refundOrder(merchantUId);
-						}
+				var refundModal = document.getElementById("refundModal");
+				var refundReasonModal = document.getElementById("refundReasonModal");
+
+				var refundReasonInput = document.getElementById("refundReasonInput");
+				var refundReasonDisplay = document.getElementById("refundReasonDisplay");
+				var refundUserDisplay = document.getElementById("refundUser");
+
+				var confirmRefundBtn = document.getElementById("confirmRefundBtn");
+				var selectedMerchantUId = "";
+
+				// 모달 닫기 기능
+				var closeModalButtons = document.querySelectorAll(".close");
+				closeModalButtons.forEach(function (btn) {
+					btn.addEventListener("click", function () {
+						refundModal.style.display = "none";
+						refundReasonModal.style.display = "none";
+						refundReasonInput.value = ""; // 입력 필드 초기화
+						refundReasonDisplay.value = ""; // 환불 사유 초기화
+						refundUserDisplay.textContent = ""; // 환불 신청자 초기화
 					});
 				});
-				function refundOrder(merchantUId) {
-					fetch('/refund/payment', {
+
+				// 버튼 상태 설정 및 이벤트 할당
+				var refundButtons = document.querySelectorAll(".refund-btn");
+				refundButtons.forEach(function (button) {
+					var orderedState = button.closest("tr").getAttribute("data-orderedstate");
+					if (orderedState === "환불") {
+						button.textContent = "환불 사유";
+						button.addEventListener("click", function () {
+							selectedMerchantUId = button.previousElementSibling.getAttribute('data-merchant-uid');
+							fetchRefundReason(selectedMerchantUId);
+						});
+					} else {
+						button.addEventListener("click", function () {
+							selectedMerchantUId = button.previousElementSibling.getAttribute('data-merchant-uid');
+							showRefundModal();
+						});
+					}
+				});
+
+				function fetchRefundReason(merchantUId) {
+					fetch(`/refund/reason?merchantUId=${merchantUId}`)
+						.then(response => {
+							if (!response.ok) {
+								throw new Error('환불 정보를 불러오는 데 실패했습니다.');
+							}
+							return response.json();
+						})
+						.then(data => {
+							refundReasonDisplay.value = data.refundReason || "등록된 환불 사유가 없습니다.";
+							refundUserDisplay.textContent = data.refundUser || "알 수 없음";
+							refundReasonModal.style.display = "block";
+						})
+						.catch(error => {
+							console.error('Error fetching refund reason:', error);
+							alert('환불 사유를 가져오는 중 오류가 발생했습니다.');
+						});
+				}
+
+				function showRefundModal() {
+					refundModal.style.display = "block";
+				}
+
+				function refundOrder(merchantUId, refundReason) {
+					fetch('/refund/paymentToAdmin', {
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/x-www-form-urlencoded'
 						},
-						body: new URLSearchParams({merchantUId: merchantUId}).toString()
+						body: new URLSearchParams({merchantUId: merchantUId, refundReason: refundReason}).toString()
 					})
 						.then(response => {
 							if (response.ok) {
@@ -95,9 +230,17 @@
 							alert('주문 환불 중 오류가 발생했습니다. 서버 응답: ' + error.message);
 						});
 				}
+
+				confirmRefundBtn.addEventListener("click", function () {
+					var refundReason = refundReasonInput.value.trim();
+					if (refundReason === "") {
+						alert("환불 사유를 입력하세요.");
+						return;
+					}
+					refundOrder(selectedMerchantUId, refundReason);
+				});
 			});
 		</script>
-
 	</div>
 </body>
 
