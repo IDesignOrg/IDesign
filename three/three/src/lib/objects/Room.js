@@ -8,13 +8,10 @@ import {
   calculateArea,
   calculateCenter,
   calculateDistance,
-  getStraightLineX,
-  getStraightLineZ,
   calculateAngle,
 } from "../calculater.js";
 import { Text } from "./text.js";
 import { RotationController } from "./rotationController.js";
-import { MoveController } from "./moveController.js";
 import {
   areaRenderOrder,
   arrowsRenderOrder,
@@ -106,6 +103,10 @@ export class D2Room extends THREE.Group {
 
     this.getObjectByName("floor").updateMatrix();
   };
+
+  // addzz = () => {
+  //   this.add()
+  // }
 
   addWalls = ({ points, center }) => {
     if (this.getObjectByName(wallsName)) {
