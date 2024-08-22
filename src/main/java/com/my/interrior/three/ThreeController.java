@@ -34,7 +34,7 @@ public class ThreeController {
 		long userNo = user.getUNo();
 
 		session.setAttribute("userNo", userNo);
-		return "dist/three";
+		return "three/three";
 
 	}
 }
