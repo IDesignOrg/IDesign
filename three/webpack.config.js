@@ -10,7 +10,8 @@ const webpackMode = process.env.NODE_ENV || "development";
 module.exports = {
   mode: webpackMode,
   entry: {
-    main: "./src/main.js",
+    dashboard: "./dashboard/src/dashboard.js",
+    three: "./three/src/three.js",
   },
   output: {
     path: path.resolve("./dist"),
@@ -20,6 +21,21 @@ module.exports = {
   // 단, 이거 설정하면 webpack-dev-server 3번대 버전에서 live reloading 동작 안함
   // target: ['web', 'es5'],
   devServer: {
+    static: [
+      {
+        directory: path.join(__dirname),
+        publicPath: "/",
+        serveIndex: true,
+      },
+      {
+        directory: path.join(__dirname, "three"),
+        publicPath: "/three",
+      },
+      {
+        directory: path.join(__dirname, "dashboard"),
+        publicPath: "/dashboard",
+      },
+    ],
     liveReload: true,
   },
   optimization: {
@@ -41,6 +57,10 @@ module.exports = {
   },
   module: {
     rules: [
+      // {
+      //   test: /\.(png|jpe?g|gif|svg)$/i, // 이미지 파일 로더
+      //   type: "public/resource", // Webpack 5에서는 기본적으로 asset/resource를 사용하여 이미지를 처리
+      // },
       {
         test: /\.js$/,
         loader: "babel-loader",
@@ -55,7 +75,9 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: "./index.html",
+      template: "three.html",
+      filename: "three.html",
+      chunks: ["three", "public"],
       minify:
         process.env.NODE_ENV === "production"
           ? {
@@ -64,6 +86,19 @@ module.exports = {
             }
           : false,
     }),
+    new HtmlWebpackPlugin({
+      template: "dashboard.html",
+      filename: "dashboard.html",
+      chunks: ["dashboard", "public"],
+      minify:
+        process.env.NODE_ENV === "production"
+          ? {
+              collapseWhitespace: true,
+              removeComments: true,
+            }
+          : false,
+    }),
+
     new CleanWebpackPlugin(),
     // CopyWebpackPlugin: 그대로 복사할 파일들을 설정하는 플러그인
     // 아래 patterns에 설정한 파일/폴더는 빌드 시 dist 폴더에 자동으로 생성됩니다.

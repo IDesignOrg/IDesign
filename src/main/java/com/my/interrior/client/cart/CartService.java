@@ -63,4 +63,14 @@ public class CartService {
 		cartRepository.save(cartEntity);
 
 	}
+	
+	public List<CartEntity> findAllCarts(String userId){
+		return cartRepository.findByUserEntity_UId(userId);
+	}
+	
+	public int getAllCartsByUserId(String userId) {
+		return cartRepository.countByUserEntity_UId(userId);
+	}
+	
+
 }
