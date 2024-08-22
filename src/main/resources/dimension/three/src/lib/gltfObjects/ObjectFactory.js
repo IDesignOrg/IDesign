@@ -1,29 +1,3 @@
-import { GLTFLoader } from "../loader/GLTFLoader.js";
-
-const loader = new GLTFLoader();
-
-export const createChair = () => {
-  return new Promise((res, rej) => {
-    loader.load(
-      "./gltf/chair/chair.gltf",
-      (gltf) => {
-        res(gltf.scene);
-      },
-      undefined,
-      (error) => {
-        rej(error);
-      }
-    );
-  });
-};
-
-// //fbx를 로더해보자
-// export const createDesk = () => {
-//   const fbxURL = "/gltf/desk/desk2.fbx";
-//   return new Promise((res) => {
-//     fbxLoader.load(fbxURL, function (object) {
-//       object.scale.set(0.5, 0.5, 0.5);
-//       res(object);
-//     });
-//   });
-// };
+version https://git-lfs.github.com/spec/v1
+oid sha256:85861a14965a3d2208a03870f2f894600a9c66c07bc8214e195252cb8eb16b7f
+size 628

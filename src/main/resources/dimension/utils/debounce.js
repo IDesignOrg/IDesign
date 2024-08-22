@@ -1,13 +1,3 @@
-export const debounce = (func, delay) => {
-  let timer;
-
-  return () => {
-    if (timer) {
-      clearTimeout(timer);
-    }
-
-    timer = setTimeout(() => {
-      func();
-    }, delay);
-  };
-};
+version https://git-lfs.github.com/spec/v1
+oid sha256:83d738537f914f013f4ccca291ea24fee5b993fb0009bac9d6b2b7e3af82dd18
+size 193
