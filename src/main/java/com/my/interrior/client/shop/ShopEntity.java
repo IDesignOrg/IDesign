@@ -51,4 +51,7 @@ public class ShopEntity {
 	
     @Column(nullable = false, name = "s_deactivated")
     private boolean SDeactivated = false;
+    
+    @Column(nullable = false, name = "shop_refund_count")
+    private int shopRefundCount = 0;
 }

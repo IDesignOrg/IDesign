@@ -146,11 +146,14 @@ public class AdminPageService {
         recoveryRepository.save(recovery);
     }
     
-    public List<CouponEntity> getAllCoupons() {
+    public List<CouponEntity> getAllModalCoupons() {
         return couponRepository.findAll();
     }
-    public List<CouponMapEntity> getAllUserCoupons() {
-        return couponMap.findAll();
+    public Page<CouponEntity> getAllCoupons(Pageable pageable) {
+        return couponRepository.findAll(pageable);
+    }
+    public Page<CouponMapEntity> getAllUserCoupons(Pageable pageable) {
+        return couponMap.findAll(pageable);
     }
     public Optional<CouponEntity> findCouponById(Long couponNo) {
         return couponRepository.findById(couponNo);
@@ -178,19 +181,18 @@ public class AdminPageService {
     	userRepository.save(user);
     	
     }
-    //shop and counts
-    public List<ShopListAndOrderedDTO> getAllShopsAndCounts(){
-    	List<ShopEntity> shops = shopRepository.findAll();
-    	List<ShopListAndOrderedDTO> shopCounts = new ArrayList<>();
-    	
-    	for(ShopEntity shop : shops) {
-    		int orderedCount = orderedRepository.countByShopNo(shop.getShopNo());
-    		ShopListAndOrderedDTO dto = new ShopListAndOrderedDTO(shop, orderedCount);
-    		shopCounts.add(dto);
-    	}
-    	
-		return shopCounts;
-	}
+    public Page<ShopListAndOrderedDTO> getAllShopsAndCounts(Pageable pageable) {
+        Page<ShopEntity> shops = shopRepository.findAll(pageable);
+        List<ShopListAndOrderedDTO> shopCounts = new ArrayList<>();
+        
+        for (ShopEntity shop : shops) {
+            int orderedCount = orderedRepository.countByShopNo(shop.getShopNo());
+            ShopListAndOrderedDTO dto = new ShopListAndOrderedDTO(shop, orderedCount);
+            shopCounts.add(dto);
+        }
+
+        return new PageImpl<>(shopCounts, pageable, shops.getTotalElements());
+    }
     // 구매내역
     public Page<OrderedEntity> getAllOrdered(Pageable pageable){
 		return orderedRepository.findAll(pageable);
