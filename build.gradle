@@ -24,19 +24,19 @@ node {
     version = "20.16.0"
     npmVersion = "10.8.1"
     npmWorkDir = file("${project.projectDir}/.gradle/npm")
-    nodeModulesDir = file("${project.projectDir}/three")
+    nodeModulesDir = file("${project.projectDir}/src/main/resources")
 }
 
 /* 프론트엔드 빌드 전 작업 */
 task cleanDist(type: Delete) {
-    delete fileTree("${project.projectDir}/three/dist")
+    delete fileTree("${project.projectDir}/src/main/resources/dist")
 }
 
 /* Webpack 빌드 작업 */
 task npmBuild(type: NpmTask) {
     dependsOn cleanDist
     args = ['run', 'build']
-    workingDir = file("${project.projectDir}/three")
+    workingDir = file("${project.projectDir}/src/main/resources")
     doFirst {
         npmInstall() // npm 설치를 보장
     }
@@ -79,17 +79,17 @@ task webpackBuild(type: Exec) {
     inputs.file("webpack.config.js")
     outputs.dir("dist")
     commandLine "npx", "webpack", "--display-error-details"
-    workingDir = file("${project.projectDir}/three")
+    workingDir = file("${project.projectDir}/src/main/resources")
 }
 
 task webpackServer(type: Exec, dependsOn: webpackBuild) {
     commandLine "npx", "webpack-dev-server", "--config", "./webpack.config.js"
-    workingDir = file("${project.projectDir}/three")
+    workingDir = file("${project.projectDir}/src/main/resources")
 }
 
 /* 프론트엔드 빌드 후 패키징 */
 task packageFrontend(type: Zip, dependsOn: npmBuild) {
-    from fileTree("${project.projectDir}/three/dist")
+    from fileTree("${project.projectDir}/src/main/resources/dist")
     include '**/*'
     archiveFileName.set("${rootProject.name}-frontend.zip")
     destinationDirectory.set(file("${buildDir}"))
