@@ -82,7 +82,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./dimension/three/three.html", // 상대 경로로 수정
       filename: "three.html",
-      chunks: ["three", "reset"],
+      chunks: ["three", ""],
       minify:
         process.env.NODE_ENV === "production"
           ? {
@@ -94,7 +94,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./dimension/dashboard/dashboard.html", // 상대 경로로 수정
       filename: "dashboard.html",
-      chunks: ["dashboard", "reset"],
+      chunks: ["dashboard", "public"],
       minify:
         process.env.NODE_ENV === "production"
           ? {
