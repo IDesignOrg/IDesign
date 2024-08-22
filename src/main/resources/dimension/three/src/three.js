@@ -108,8 +108,7 @@ const texture = new THREE.TextureLoader().load(
   } // onError
 );
 
-const wallpaper = "/dimension/public/img/wallpaper.jpeg";
-const texture2 = new THREE.TextureLoader().load(wallpaper);
+// const texture2 = new THREE.TextureLoader().load(wallpaper);
 export const wallMaterial = new THREE.MeshBasicMaterial({
   // map: texture2
   color: "red",
