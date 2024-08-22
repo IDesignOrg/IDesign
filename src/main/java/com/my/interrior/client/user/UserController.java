@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -19,8 +20,10 @@ import com.my.interrior.common.KakaoApi;
 import com.my.interrior.common.NaverApi;
 
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
+@Slf4j
 public class UserController {
 
 	@Autowired
@@ -37,10 +40,10 @@ public class UserController {
 
 	@Autowired
 	private GoogleApi googleApi;
-	
+
 	@Autowired
 	private NaverApi naverApi;
-	
+
 	@Autowired
 	private HttpSession session;
 
@@ -54,7 +57,6 @@ public class UserController {
 		model.addAttribute("googleScope", googleApi.getScope());
 		model.addAttribute("naverClientId", naverApi.getClientId());
 		model.addAttribute("naverRedirectUri", naverApi.getRedirectUri());
-		
 
 		System.out.println("googleClientId: " + googleApi.getClientId());
 		System.out.println("googleRedirectUri: " + googleApi.getRedirectUri());
@@ -63,7 +65,14 @@ public class UserController {
 	}
 
 	@GetMapping("/auth/join")
-	public String join() {
+	public String join(Model model) {
+		model.addAttribute("kakaoApiKey", kakaoApi.getKakaoApiKey());
+		model.addAttribute("redirectUri", kakaoApi.getKakaoRedirectUri());
+		model.addAttribute("googleClientId", googleApi.getClientId());
+		model.addAttribute("googleRedirectUri", googleApi.getRedirectUri());
+		model.addAttribute("googleScope", googleApi.getScope());
+		model.addAttribute("naverClientId", naverApi.getClientId());
+		model.addAttribute("naverRedirectUri", naverApi.getRedirectUri());
 		return "client/join";
 	}
 
@@ -96,6 +105,10 @@ public class UserController {
 			UserEntity user = userService.checkLogin(UId);
 			System.out.println("user" + user);
 			if (user != null && passwordEncoder.matches(UPw, user.getUPw())) {
+				if (user.isUDeactivated()) {
+					model.addAttribute("loginError", "비활성화된 아이디입니다.");
+					return "client/login";
+				}
 				session.setAttribute("UId", user.getUId());
 				return "redirect:/";
 			} else {
@@ -113,29 +126,26 @@ public class UserController {
 	public String findPasswordPage() {
 		return "client/findUId";
 	}
-	
+
 	@GetMapping("/auth/findUPw")
 	public String findUPw() {
 		return "client/findUPw";
 	}
 
-	@PostMapping("/auth/findUserID")
-	public ResponseEntity<String> findUserID(@RequestBody Map<String, String> requestData) {
-		String UPw = requestData.get("UPw");
+	@PostMapping("/auth/find/user/id")
+	public ResponseEntity<String> findUserID(@RequestBody Map<String, String> requestData) throws Exception {
 		String UMail = requestData.get("UMail");
 
-		UserEntity user = userRepository.findByUPwAndUMail(UPw, UMail);
-
-		System.out.println("유저" + user);
+		UserEntity user = userRepository.findByUMail(UMail);
 
 		if (user != null) {
 			String ID = user.getUId();
 			return ResponseEntity.ok(ID);
 		} else {
-			return ResponseEntity.notFound().build();
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
 	}
-	
+
 	// 로그아웃
 	@RequestMapping("/logout")
 	public String logout() {

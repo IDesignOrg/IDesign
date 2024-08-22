@@ -74,4 +74,8 @@ public class UserEntity {
     
     @OneToMany(mappedBy = "userEntity")
     private List<FaqEntity> faq;
+    
+    @JsonProperty("UDeactivated")
+    @Column(nullable = false, name = "u_deactivated")
+    private boolean UDeactivated = false;
 }

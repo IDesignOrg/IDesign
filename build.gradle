@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.5'
     id 'io.spring.dependency-management' version '1.1.4'
+    id 'com.github.node-gradle.node' version '3.2.1'
 }
 
 group = 'com.my'
@@ -13,6 +14,32 @@ java {
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }
+    maven { url "https://plugins.gradle.org/m2" }
+}
+
+/* Node.js 및 npm 설정 */
+node {
+    download = false
+    version = "20.16.0"
+    npmVersion = "10.8.1"
+    npmWorkDir = file("${project.projectDir}/.gradle/npm")
+    nodeModulesDir = file("${project.projectDir}/three")
+}
+
+/* 프론트엔드 빌드 전 작업 */
+task cleanDist(type: Delete) {
+    delete fileTree("${project.projectDir}/three/dist")
+}
+
+/* Webpack 빌드 작업 */
+task npmBuild(type: NpmTask) {
+    dependsOn cleanDist
+    args = ['run', 'build']
+    workingDir = file("${project.projectDir}/three")
+    doFirst {
+        npmInstall() // npm 설치를 보장
+    }
 }
 
 dependencies {
@@ -25,25 +52,66 @@ dependencies {
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    //Maria DB
+    // MariaDB
     implementation 'org.mariadb.jdbc:mariadb-java-client:3.2.0'
     // Spring Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    //oauth2
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-	//google mail
-	implementation 'org.springframework.boot:spring-boot-starter-mail'
-	//webSocket
-	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    // OAuth2
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    // Google Mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    // WebSocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
     // Spring Boot Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-//    testImplementation 'org.springframework.security:spring-security-test'
-	implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter', version: '1.2.5.RELEASE'
-	// GCS starter
-	implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-storage', version: '1.2.5.RELEASE'
-	// GCS storage
+    // Spring Cloud GCP
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter', version: '1.2.5.RELEASE'
+    // GCS Storage
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-storage', version: '1.2.5.RELEASE'
+    // IAMPORT 결제
+    implementation 'com.github.iamport:iamport-rest-client-java:0.2.21'
 }
 
+/* Webpack 빌드 및 서버 실행 태스크 */
+task webpackBuild(type: Exec) {
+    inputs.file("package-lock.json").withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs.dir("src").withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs.file("webpack.config.js")
+    outputs.dir("dist")
+    commandLine "npx", "webpack", "--display-error-details"
+    workingDir = file("${project.projectDir}/three")
+}
+
+task webpackServer(type: Exec, dependsOn: webpackBuild) {
+    commandLine "npx", "webpack-dev-server", "--config", "./webpack.config.js"
+    workingDir = file("${project.projectDir}/three")
+}
+
+/* 프론트엔드 빌드 후 패키징 */
+task packageFrontend(type: Zip, dependsOn: npmBuild) {
+    from fileTree("${project.projectDir}/three/dist")
+    include '**/*'
+    archiveFileName.set("${rootProject.name}-frontend.zip")
+    destinationDirectory.set(file("${buildDir}"))
+}
+
+/* 전체 정리 작업 */
+task cleanAll(type: Delete) {
+    delete fileTree('build')
+    delete fileTree('dist')
+}
+
+/* 테스트 설정 */
 test {
     useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile) {
+    dependsOn cleanAll
+}
+
+/* Spring Boot 빌드 시 npmBuild 실행 */
+bootJar {
+    archiveFileName.set("app.jar")
+    dependsOn npmBuild
 }
