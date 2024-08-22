@@ -75,7 +75,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: "./three/three.html",
+      template: "three.html",
       filename: "three.html",
       chunks: ["three", "public"],
       minify:
@@ -87,7 +87,7 @@ module.exports = {
           : false,
     }),
     new HtmlWebpackPlugin({
-      template: "./dashboard/dashboard.html",
+      template: "dashboard.html",
       filename: "dashboard.html",
       chunks: ["dashboard", "public"],
       minify:
