@@ -43,6 +43,7 @@ bin/
 
 # for client
 **/node_modules
+**/dist
 ### 민감한정보 ###
 application-private.properties
 ###GCS키###

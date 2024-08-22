@@ -1,0 +1,105 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+#webgl-container {
+  position: "absolute";
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+aside {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 200px;
+  height: 100vh;
+  background-color: red;
+}
+
+#container {
+  display: flex;
+  height: 100%;
+  background-color: blue;
+  flex-direction: column;
+}
+
+.center {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10% 0;
+  border-bottom: 1px solid black;
+}
+#hud-icon {
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  flex: 1;
+}
+
+#modeToggles {
+  height: 100px;
+  background-color: red;
+}
+
+/* #container {
+  width: 100%;
+  height: 100%;
+} */
+
+/* #hud-icon {
+  display: none;
+  position: absolute;
+  bottom: 20px;
+  right: 50px;
+  width: 50px;
+  height: 50px;
+  background-color: red;
+  z-index: 999;
+  display: flex;
+  gap: 10px;
+  button {
+    cursor: pointer;
+  }
+}
+
+#canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#frame-btns {
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+}
+
+#modeToggles {
+  position: fixed;
+  z-index: 1;
+  bottom: 10px;
+  left: 20px;
+}
+
+#save {
+  position: fixed;
+  z-index: 1;
+  top: 10;
+  left: 10;
+  display: inline-block;
+} */

@@ -49,4 +49,13 @@ public class UserRestController {
 		return ResponseEntity.ok(user != null ? "duplicated" : "available");
 
 	}
+	
+	@GetMapping("/auth/check/email/{UMail}")
+	public ResponseEntity<String> checkDuplicatedEmail(@PathVariable("UMail") String email){
+		
+		UserEntity user = userRepository.findByUMail(email);
+		
+		return ResponseEntity.ok(user != null ? "duplicated" : "available");
+	}
+	
 }
