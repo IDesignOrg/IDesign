@@ -26,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.my.interrior.admin.coupon.CouponMapRepository;
 import com.my.interrior.admin.coupon.CouponService;
+import com.my.interrior.client.csc.faq.FaqEntity;
 import com.my.interrior.client.csc.notice.NoticeEntity;
 import com.my.interrior.client.csc.recover.RecoveryEntity;
 import com.my.interrior.client.evaluation.ReviewEntity;
@@ -97,7 +98,7 @@ public class AdminPageController {
 
 	@Autowired
 	private PaymentAndUserService PaymentAndUserService;
-	
+
 	@Autowired
 	private OrderedRefundRepository orderedRefundRepository;
 
@@ -428,14 +429,12 @@ public class AdminPageController {
 
 	// 환불
 	@PostMapping("/refund/paymentToAdmin")
-	public ResponseEntity<?> refundPayment(
-			@RequestParam("merchantUId") String merchantUId,
-			@RequestParam("refundReason") String refundReason,
-			HttpSession session) throws Exception {
-		String userid = (String)session.getAttribute("UId");
+	public ResponseEntity<?> refundPayment(@RequestParam("merchantUId") String merchantUId,
+			@RequestParam("refundReason") String refundReason, HttpSession session) throws Exception {
+		String userid = (String) session.getAttribute("UId");
 		String token = paymentService.getAccessToken();
 		paymentService.refundRequest(token, merchantUId);
-		
+
 		// 여기에 주문 내역에서 삭제해야 됨.
 		// ordered랑 payment랑 payment_user_mapping 테이블 전부인데 payment_user_mapping부터 지워야 됨.
 		// shipment는 나중에 시간나면 추가해줘야 됨. 지금 shipment 지울만한 속성이 없음.
@@ -450,15 +449,41 @@ public class AdminPageController {
 		paymentService.deleteByMerchantUId(merchantUId);
 		return ResponseEntity.ok().build();
 	}
-	
+
 	@GetMapping("/refund/reason")
 	public ResponseEntity<?> getRefundReason(@RequestParam("merchantUId") String merchantUId) {
-	    OrderedRefundEntity refundEntity = orderedRefundRepository.findByOrderedEntity_MerchantUId(merchantUId)
-	        .orElseThrow(() -> new EntityNotFoundException("No refund found for merchantUId: " + merchantUId));
+		OrderedRefundEntity refundEntity = orderedRefundRepository.findByOrderedEntity_MerchantUId(merchantUId)
+				.orElseThrow(() -> new EntityNotFoundException("No refund found for merchantUId: " + merchantUId));
 
-	    return ResponseEntity.ok(Map.of(
-	        "refundReason", refundEntity.getRefundReason(),
-	        "refundUser", refundEntity.getRefundUser()  // 추가된 필드
-	    ));
+		return ResponseEntity
+				.ok(Map.of("refundReason", refundEntity.getRefundReason(), "refundUser", refundEntity.getRefundUser() // 추가된
+																														// 필드
+				));
 	}
+
+	@PostMapping("/admin/updateShipmentState")
+	public ResponseEntity<?> updateShipmentState(@RequestParam("orderedNo") Long orderedNo,
+			@RequestParam("shipmentState") String shipmentState) {
+
+		try {
+			// 주문 번호를 기반으로 주문을 조회하고 상태 업데이트
+			adminPageService.updateShipmentState(orderedNo, shipmentState);
+
+			// 성공적으로 업데이트된 경우 HTTP 200 응답을 반환
+			return ResponseEntity.ok().build();
+		} catch (Exception e) {
+			// 오류가 발생한 경우 HTTP 500 응답을 반환
+			return ResponseEntity.status(500).body("주문 상태 업데이트 중 오류가 발생했습니다.");
+		}
+	}
+
+	@GetMapping("/admin/adminFAQ")
+	public String getFaqList(Model model, Pageable pageable) {
+		Page<FaqEntity> faqs = adminPageService.getAllFaq(PageRequest.of(pageable.getPageNumber(), PAGE_SIZE));
+		model.addAttribute("faqs", faqs);
+		model.addAttribute("currentPage", pageable.getPageNumber());
+		model.addAttribute("totalPages", faqs.getTotalPages());
+		return "/admin/page/adminFAQ";
+	}
+
 }
