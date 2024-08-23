@@ -83,7 +83,10 @@ public class MypageController {
     	
     	return "client/mypage/mypage";
     }
-    
+    @GetMapping("/mypage/mypageUpdatePassword")
+    public String mypageUpdatePassword() {
+    	return "client/mypage/mypageUpdatePassword";
+    }
     
     
     
