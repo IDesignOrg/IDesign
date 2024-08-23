@@ -440,6 +440,11 @@
 		function updateUserInfo() {
 			window.location.href = '/mypage/mypageUpdate';
 		}
+		/*비밓번호 변*/
+		function changePassword() {
+			// mypageUpdatePassword.html로 이동
+			window.location.href = "/mypage/mypageUpdatePassword";
+		}
 
 	</script>
 </head>
@@ -481,6 +486,11 @@
 					<div class="form-group">
 						<button type="button" onclick="updateUserInfo()">Update</button>
 						<button type="button" onclick="deleteUserInfo()">Delete</button>
+						<span style="float: right;">
+							<button type="button" id="changePasswordBtn"
+								th:if="${not #strings.startsWith(session.UId, 'naver') and not #strings.startsWith(session.UId, 'Google') and not #strings.startsWith(session.UId, 'kakao')}"
+								onclick="changePassword()">비밀번호 변경</button>
+						</span>
 					</div>
 				</form>
 			</div>

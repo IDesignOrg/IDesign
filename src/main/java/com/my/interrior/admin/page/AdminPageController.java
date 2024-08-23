@@ -18,7 +18,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,6 +29,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.my.interrior.admin.coupon.CouponMapRepository;
 import com.my.interrior.admin.coupon.CouponService;
 import com.my.interrior.client.csc.faq.FaqEntity;
+import com.my.interrior.client.csc.faq.FaqRepository;
 import com.my.interrior.client.csc.notice.NoticeEntity;
 import com.my.interrior.client.csc.recover.RecoveryEntity;
 import com.my.interrior.client.evaluation.ReviewEntity;
@@ -101,6 +104,9 @@ public class AdminPageController {
 
 	@Autowired
 	private OrderedRefundRepository orderedRefundRepository;
+	
+	@Autowired
+	private FaqRepository faqRepository;
 
 	@GetMapping("/auth/adminLogin")
 	public String AdminLogin() {
@@ -476,7 +482,7 @@ public class AdminPageController {
 			return ResponseEntity.status(500).body("주문 상태 업데이트 중 오류가 발생했습니다.");
 		}
 	}
-
+	//자주 묻는 질문 리스
 	@GetMapping("/admin/adminFAQ")
 	public String getFaqList(Model model, Pageable pageable) {
 		Page<FaqEntity> faqs = adminPageService.getAllFaq(PageRequest.of(pageable.getPageNumber(), PAGE_SIZE));
@@ -485,5 +491,42 @@ public class AdminPageController {
 		model.addAttribute("totalPages", faqs.getTotalPages());
 		return "/admin/page/adminFAQ";
 	}
+	//자주 묻는 질문 수정 모달창 
+	@GetMapping("/admin/faq/{faqNo}")
+	@ResponseBody
+	public ResponseEntity<FaqEntity> getFaq(@PathVariable("faqNo") Long faqNo) {
+	    System.out.println("Fetching FAQ with ID: " + faqNo);
+	    FaqEntity faq = adminPageService.getFaqById(faqNo);
+	    if (faq != null) {
+	        return ResponseEntity.ok(faq);
+	    } else {
+	        System.out.println("FAQ not found with ID: " + faqNo);
+	        return ResponseEntity.notFound().build();
+	    }
+	}
+
+	
+	//자주 묻는 질문 수정
+	@PutMapping("/admin/faq/{faqNo}")
+    @ResponseBody
+    public ResponseEntity<String> updateFaq(@PathVariable("faqNo") Long faqNo, @RequestBody FaqEntity faqData) {
+        boolean updated =adminPageService.updateFaq(faqNo, faqData);
+        if (updated) {
+            return ResponseEntity.ok("FAQ가 성공적으로 수정되었습니다.");
+        } else {
+            return ResponseEntity.badRequest().body("FAQ 수정에 실패했습니다.");
+        }
+    }
+	
+	@DeleteMapping("/admin/faq/{faqNo}")
+    @ResponseBody
+    public ResponseEntity<String> deleteFaq(@PathVariable("faqNo") Long faqNo) {
+        boolean deleted = adminPageService.deleteFaq(faqNo);
+        if (deleted) {
+            return ResponseEntity.ok("FAQ가 성공적으로 삭제되었습니다.");
+        } else {
+            return ResponseEntity.badRequest().body("FAQ 삭제에 실패했습니다.");
+        }
+    }
 
 }
