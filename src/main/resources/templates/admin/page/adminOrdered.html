@@ -76,6 +76,7 @@
 						<th>수량</th>
 						<th>결제 UID</th>
 						<th>관리</th>
+						<th>주문 확인</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -94,6 +95,21 @@
 							<input type="hidden" th:data-merchant-uid="${order.merchantUId}" />
 							<button class="refund-btn" th:data-orderedno="${order.orderedNo}">환불하기</button>
 						</td>
+						<td>
+							<!-- 주문 확인 버튼은 배송 상태가 '주문 확인 중'일 때만 표시 -->
+							<button class="confirm-order-btn" th:data-orderedno="${order.orderedNo}"
+								th:if="${order.shipmentState == '주문 확인 중'}">주문 확인</button>
+
+							<!-- 환불된 주문 처리 버튼 -->
+							<button class="refund-info-btn" th:if="${order.shipmentState == '환불'}" disabled>환불된
+								주문</button>
+
+							<!-- 다른 상태의 주문 처리 버튼 -->
+							<button class="other-info-btn"
+								th:if="${order.shipmentState != '주문 확인 중' && order.shipmentState != '환불'}" disabled>주문
+								처리 완료</button>
+						</td>
+
 					</tr>
 				</tbody>
 			</table>
@@ -167,6 +183,38 @@
 						refundUserDisplay.textContent = ""; // 환불 신청자 초기화
 					});
 				});
+
+				// 주문 확인 버튼 클릭 이벤트 처리
+				var confirmOrderButtons = document.querySelectorAll(".confirm-order-btn");
+				confirmOrderButtons.forEach(function (button) {
+					button.addEventListener("click", function () {
+						var orderedNo = button.getAttribute("data-orderedno");
+						updateShipmentState(orderedNo);
+					});
+				});
+
+				// 주문 상태 업데이트 함수
+				function updateShipmentState(orderedNo) {
+					fetch(`/admin/updateShipmentState`, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/x-www-form-urlencoded'
+						},
+						body: new URLSearchParams({orderedNo: orderedNo, shipmentState: "배송 준비중"}).toString()
+					})
+						.then(response => {
+							if (response.ok) {
+								alert('주문 상태가 "배송 준비중"으로 변경되었습니다.');
+								location.reload(); // 페이지 새로고침으로 목록 갱신
+							} else {
+								return response.text().then(text => {throw new Error(text);});
+							}
+						})
+						.catch(error => {
+							console.error('Error updating shipment state:', error);
+							alert('주문 상태 업데이트 중 오류가 발생했습니다.');
+						});
+				}
 
 				// 버튼 상태 설정 및 이벤트 할당
 				var refundButtons = document.querySelectorAll(".refund-btn");

@@ -82,8 +82,11 @@ public class PaymentRestController {
 
 	// 환불
 	@PostMapping("/refund/payment")
-	public ResponseEntity<?> refundPayment(@RequestParam("merchantUId") String merchantUId) throws Exception{
-	
+	public ResponseEntity<?> refundPayment(
+			@RequestParam("merchantUId") String merchantUId,
+			@RequestParam("refundReason") String refundReason,
+			HttpSession session) throws Exception{
+		String userid = (String)session.getAttribute("UId");
 		String token = paymentService.getAccessToken();
 		log.info("token값에는 : {}", token);
 		paymentService.refundRequest(token, merchantUId);
@@ -91,7 +94,7 @@ public class PaymentRestController {
 		//여기에 주문 내역에서 삭제해야 됨.
 		//ordered랑 payment랑 payment_user_mapping 테이블 전부인데 payment_user_mapping부터 지워야 됨.
 		//shipment는 나중에 시간나면 추가해줘야 됨. 지금 shipment 지울만한 속성이 없음.
-		orderedService.deleteByMerchantUId(merchantUId);
+		orderedService.updateOrderedState(merchantUId, refundReason, userid);
 		PayEntity pay = paymentService.findPayEntity(merchantUId);
 		Long payNo = pay.getPayNo();
 		//payment_user_mapping 제거

@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import com.my.interrior.admin.coupon.CouponMapRepository;
 import com.my.interrior.admin.coupon.CouponRepository;
 import com.my.interrior.admin.coupon.CouponService;
+import com.my.interrior.client.csc.faq.FaqEntity;
+import com.my.interrior.client.csc.faq.FaqRepository;
 import com.my.interrior.client.csc.notice.NoticeEntity;
 import com.my.interrior.client.csc.notice.NoticeRepository;
 import com.my.interrior.client.csc.recover.RecoveryEntity;
@@ -73,6 +75,9 @@ public class AdminPageService {
 	@Autowired
 	private EventRepository eventRepository;
 	
+	@Autowired
+	private FaqRepository faqRepository;
+	
 	
 	//유저 카운트
 	public long getUserCount() {
@@ -115,6 +120,10 @@ public class AdminPageService {
 	
 	public Page<EventEntity> getAllEvent(Pageable pageable){
 		return eventRepository.findAll(pageable);
+	}
+	
+	public Page<FaqEntity> getAllFaq(Pageable pageable){
+		return faqRepository.findAll(pageable);
 	}
 	
 	@Transactional
@@ -207,5 +216,15 @@ public class AdminPageService {
         // 비활성화 처리
         shop.setSDeactivated(isDeactivated);
         shopRepository.save(shop);
+    }
+    
+    //ordered 배송상태 변환
+    public void updateShipmentState(Long orderedNo, String shipmentState) throws Exception {
+    	OrderedEntity order = orderedRepository.findById(orderedNo)
+    			.orElseThrow(() -> new Exception("주문을 찾을 수 없습니다."));
+    	
+    	order.setShipmentState(shipmentState);
+    	
+    	orderedRepository.save(order);
     }
 }

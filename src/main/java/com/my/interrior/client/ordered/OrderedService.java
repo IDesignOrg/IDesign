@@ -50,7 +50,7 @@ public class OrderedService {
 			OrderedEntity ordered = new OrderedEntity();
 			ordered.setOrderedNumber(orNum());
 			ordered.setOrderedState("주문 완료");
-			ordered.setShipmentState("배송 준비중");
+			ordered.setShipmentState("주문 확인 중");
 			ordered.setOrderedDate(LocalDate.now());
 			ordered.setUserEntity(user);
 			// u_no랑 shop_no를 비교해서 quantity 가져오기
@@ -66,19 +66,38 @@ public class OrderedService {
 		}
 		session.removeAttribute("merchantUId");
 	}
-
+	//배송 시간마다 바뀌는거
 	@Scheduled(cron = "0 0 0 * * *") // 매일 자정에 실행
 	@Transactional
 	public void updateShipmentStatus() {
 		List<OrderedEntity> orders = orderedRepository.findAll();
 
 		for (OrderedEntity order : orders) {
+	        // 현재 주문의 배송 상태를 가져옵니다.
+	        String orderedShipmentState = order.getShipmentState();
+
+	        // 배송 상태가 "배송 준비중"일 때만 상태를 업데이트합니다.
+	        if ("배송 준비중".equals(orderedShipmentState)) {
+	            LocalDate orderedDate = order.getOrderedDate();
+	            LocalDate today = LocalDate.now();
+
+	            if (orderedDate.equals(today.minusDays(1))) {
+	                order.setShipmentState("배송중");
+	            } else if (orderedDate.isBefore(today.minusDays(1))) {
+	                order.setShipmentState("배송완료");
+	            }
+
+	            orderedRepository.save(order);
+	        }
+		}
+	}
+		/*
+		for (OrderedEntity order : orders) {
 			LocalDate orderedDate = order.getOrderedDate();
 			LocalDate today = LocalDate.now();
 
-			if (orderedDate.equals(today)) {
-				order.setShipmentState("배송 준비중");
-			} else if (orderedDate.equals(today.minusDays(1))) {
+			
+			if (orderedDate.equals(today.minusDays(1))) {
 				order.setShipmentState("배송중");
 			} else if (orderedDate.isBefore(today.minusDays(1))) {
 				order.setShipmentState("배송완료");
@@ -86,7 +105,8 @@ public class OrderedService {
 
 			orderedRepository.save(order);
 		}
-	}
+		*/
+		
 
 	@Transactional
 	public void deleteByMerchantUId(String merchantUId) {
