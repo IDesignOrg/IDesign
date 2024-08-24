@@ -1,9 +1,11 @@
 package com.my.interrior.admin.page;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -121,8 +123,19 @@ public class AdminPageService {
 		return noticerepository.findAll(pageable);
 	}
 
+	// 이벤트 리스트
 	public Page<EventEntity> getAllEvent(Pageable pageable) {
 		return eventRepository.findAll(pageable);
+	}
+
+	// 이벤트 제목 검색
+	public Page<EventEntity> searchEventsByTitle(String title, Pageable pageable) {
+		return eventRepository.findByEventTitleContaining(title, pageable);
+	}
+
+	// 이벤트 쿠폰 이름 검색
+	public Page<EventEntity> searchEventsByCouponName(String couponName, Pageable pageable) {
+		return eventRepository.findByCoupon_CouponNameContaining(couponName, pageable);
 	}
 
 	public Page<FaqEntity> getAllFaq(Pageable pageable) {
@@ -196,6 +209,7 @@ public class AdminPageService {
 
 	}
 
+	// 어드민 샵 리스트
 	public Page<ShopListAndOrderedDTO> getAllShopsAndCounts(Pageable pageable) {
 		Page<ShopEntity> shops = shopRepository.findAll(pageable);
 		List<ShopListAndOrderedDTO> shopCounts = new ArrayList<>();
@@ -207,6 +221,36 @@ public class AdminPageService {
 		}
 
 		return new PageImpl<>(shopCounts, pageable, shops.getTotalElements());
+	}
+
+	// 어드민 샵 검색
+	public Page<ShopListAndOrderedDTO> searchShops(String shopTitle, String shopCategory, Integer minPrice, Integer maxPrice,
+			Pageable pageable) {
+		List<ShopEntity> shops = shopRepository.findByShopTitleContainingAndShopCategoryContaining(shopTitle,
+				shopCategory);
+		
+
+		BigDecimal minPriceBigDecimal = minPrice != null ? BigDecimal.valueOf(minPrice) : BigDecimal.ZERO;
+		BigDecimal maxPriceBigDecimal = maxPrice != null ? BigDecimal.valueOf(maxPrice)
+				: BigDecimal.valueOf(Long.MAX_VALUE);
+
+		List<ShopEntity> filteredShops = shops.stream().filter(shop -> {
+			BigDecimal price = new BigDecimal(shop.getShopPrice());
+			return price.compareTo(minPriceBigDecimal) >= 0 && price.compareTo(maxPriceBigDecimal) <= 0;
+		}).collect(Collectors.toList());
+		
+		 List<ShopListAndOrderedDTO> shopCounts = filteredShops.stream()
+	                .map(shop -> {
+	                    int orderedCount = orderedRepository.countByShopNo(shop.getShopNo());
+	                    return new ShopListAndOrderedDTO(shop, orderedCount);
+	                })
+	                .collect(Collectors.toList());
+
+		int start = (int) pageable.getOffset();
+		int end = Math.min((start + pageable.getPageSize()), filteredShops.size());
+		List<ShopListAndOrderedDTO> pagedShopCounts = shopCounts.subList(start, end);
+
+		return new PageImpl<>(pagedShopCounts, pageable, shopCounts.size());
 	}
 
 	// 구매내역
@@ -248,12 +292,12 @@ public class AdminPageService {
 		}
 		return false;
 	}
-	
+
 	// 특정 FAQ 조회
-    public FaqEntity getFaqById(Long faqNo) {
-        Optional<FaqEntity> faq = faqRepository.findById(faqNo);
-        return faq.orElse(null);  // FAQ가 없으면 null 반환
-    }
+	public FaqEntity getFaqById(Long faqNo) {
+		Optional<FaqEntity> faq = faqRepository.findById(faqNo);
+		return faq.orElse(null); // FAQ가 없으면 null 반환
+	}
 
 	// FAQ 삭제
 	public boolean deleteFaq(Long faqNo) {

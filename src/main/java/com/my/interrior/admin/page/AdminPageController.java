@@ -104,7 +104,7 @@ public class AdminPageController {
 
 	@Autowired
 	private OrderedRefundRepository orderedRefundRepository;
-	
+
 	@Autowired
 	private FaqRepository faqRepository;
 
@@ -366,13 +366,37 @@ public class AdminPageController {
 	}
 
 	// shop리스트와 ordered의 count
-	@GetMapping("/admin/page/adminShopList")
+	@GetMapping("/admin/adminShopList")
 	public String adminShopList(Model model, Pageable pageable) {
 		Page<ShopListAndOrderedDTO> shops = adminPageService
 				.getAllShopsAndCounts(PageRequest.of(pageable.getPageNumber(), PAGE_SIZE));
 		model.addAttribute("shops", shops);
 		model.addAttribute("currentPage", pageable.getPageNumber());
 		model.addAttribute("totalPages", shops.getTotalPages());
+		return "/admin/page/adminShopList";
+	}
+
+	@GetMapping("/adminsearch")
+	public String shopList(@RequestParam(name = "shopTitle", required = false) String shopTitle,
+			@RequestParam(name = "shopCategory", required = false) String shopCategory,
+			@RequestParam(name = "minPrice", required = false) Integer minPrice,
+			@RequestParam(name = "maxPrice", required = false) Integer maxPrice, Model model, Pageable pageable) {
+
+		// 검색 조건을 처리하고 DTO로 변환된 결과를 가져옵니다.
+		Page<ShopListAndOrderedDTO> shops = adminPageService.searchShops(shopTitle, shopCategory, minPrice, maxPrice,
+				PageRequest.of(pageable.getPageNumber(), PAGE_SIZE));
+
+		// 결과를 모델에 추가하여 뷰에 전달합니다.
+		model.addAttribute("shops", shops.getContent());
+		model.addAttribute("currentPage", pageable.getPageNumber());
+		model.addAttribute("totalPages", shops.getTotalPages());
+
+		// 검색 조건을 다시 view에 전달하여 검색 폼에 값이 유지되도록 합니다.
+		model.addAttribute("shopTitle", shopTitle);
+		model.addAttribute("shopCategory", shopCategory);
+		model.addAttribute("minPrice", minPrice);
+		model.addAttribute("maxPrice", maxPrice);
+
 		return "/admin/page/adminShopList";
 	}
 
@@ -433,6 +457,25 @@ public class AdminPageController {
 		return "/admin/page/adminEvent";
 	}
 
+	@GetMapping("/admin/page/adminEventSearch")
+	public String searchEvents(@RequestParam("type") String type, @RequestParam("keyword") String keyword,
+			Pageable pageable, Model model) {
+
+		Page<EventEntity> events;
+		if ("title".equals(type)) {
+			events = adminPageService.searchEventsByTitle(keyword, pageable);
+		} else if ("couponName".equals(type)) {
+			events = adminPageService.searchEventsByCouponName(keyword, pageable);
+		} else {
+			events = adminPageService.getAllEvent(pageable); // 기본으로 전체 이벤트 가져오기
+		}
+
+		model.addAttribute("events", events);
+		model.addAttribute("currentPage", pageable.getPageNumber());
+		model.addAttribute("totalPages", events.getTotalPages());
+		return "/admin/page/adminEvent";
+	}
+
 	// 환불
 	@PostMapping("/refund/paymentToAdmin")
 	public ResponseEntity<?> refundPayment(@RequestParam("merchantUId") String merchantUId,
@@ -482,7 +525,8 @@ public class AdminPageController {
 			return ResponseEntity.status(500).body("주문 상태 업데이트 중 오류가 발생했습니다.");
 		}
 	}
-	//자주 묻는 질문 리스
+
+	// 자주 묻는 질문 리스
 	@GetMapping("/admin/adminFAQ")
 	public String getFaqList(Model model, Pageable pageable) {
 		Page<FaqEntity> faqs = adminPageService.getAllFaq(PageRequest.of(pageable.getPageNumber(), PAGE_SIZE));
@@ -491,42 +535,42 @@ public class AdminPageController {
 		model.addAttribute("totalPages", faqs.getTotalPages());
 		return "/admin/page/adminFAQ";
 	}
-	//자주 묻는 질문 수정 모달창 
+
+	// 자주 묻는 질문 수정 모달창
 	@GetMapping("/admin/faq/{faqNo}")
 	@ResponseBody
 	public ResponseEntity<FaqEntity> getFaq(@PathVariable("faqNo") Long faqNo) {
-	    System.out.println("Fetching FAQ with ID: " + faqNo);
-	    FaqEntity faq = adminPageService.getFaqById(faqNo);
-	    if (faq != null) {
-	        return ResponseEntity.ok(faq);
-	    } else {
-	        System.out.println("FAQ not found with ID: " + faqNo);
-	        return ResponseEntity.notFound().build();
-	    }
+		System.out.println("Fetching FAQ with ID: " + faqNo);
+		FaqEntity faq = adminPageService.getFaqById(faqNo);
+		if (faq != null) {
+			return ResponseEntity.ok(faq);
+		} else {
+			System.out.println("FAQ not found with ID: " + faqNo);
+			return ResponseEntity.notFound().build();
+		}
 	}
 
-	
-	//자주 묻는 질문 수정
+	// 자주 묻는 질문 수정
 	@PutMapping("/admin/faq/{faqNo}")
-    @ResponseBody
-    public ResponseEntity<String> updateFaq(@PathVariable("faqNo") Long faqNo, @RequestBody FaqEntity faqData) {
-        boolean updated =adminPageService.updateFaq(faqNo, faqData);
-        if (updated) {
-            return ResponseEntity.ok("FAQ가 성공적으로 수정되었습니다.");
-        } else {
-            return ResponseEntity.badRequest().body("FAQ 수정에 실패했습니다.");
-        }
-    }
-	
+	@ResponseBody
+	public ResponseEntity<String> updateFaq(@PathVariable("faqNo") Long faqNo, @RequestBody FaqEntity faqData) {
+		boolean updated = adminPageService.updateFaq(faqNo, faqData);
+		if (updated) {
+			return ResponseEntity.ok("FAQ가 성공적으로 수정되었습니다.");
+		} else {
+			return ResponseEntity.badRequest().body("FAQ 수정에 실패했습니다.");
+		}
+	}
+
 	@DeleteMapping("/admin/faq/{faqNo}")
-    @ResponseBody
-    public ResponseEntity<String> deleteFaq(@PathVariable("faqNo") Long faqNo) {
-        boolean deleted = adminPageService.deleteFaq(faqNo);
-        if (deleted) {
-            return ResponseEntity.ok("FAQ가 성공적으로 삭제되었습니다.");
-        } else {
-            return ResponseEntity.badRequest().body("FAQ 삭제에 실패했습니다.");
-        }
-    }
+	@ResponseBody
+	public ResponseEntity<String> deleteFaq(@PathVariable("faqNo") Long faqNo) {
+		boolean deleted = adminPageService.deleteFaq(faqNo);
+		if (deleted) {
+			return ResponseEntity.ok("FAQ가 성공적으로 삭제되었습니다.");
+		} else {
+			return ResponseEntity.badRequest().body("FAQ 삭제에 실패했습니다.");
+		}
+	}
 
 }
