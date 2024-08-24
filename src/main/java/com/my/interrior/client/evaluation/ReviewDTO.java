@@ -1,8 +1,7 @@
 package com.my.interrior.client.evaluation;
 
-import java.time.LocalDateTime;
 
-import com.my.interrior.client.user.UserEntity;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,24 +11,24 @@ import lombok.ToString;
 @Setter
 @ToString
 public class ReviewDTO {
+	private String rCategory;
+    private String rTitle;
+    private String rStarRating;
+    private String rContent;
+    private int rViews;
+    private String rWrittenTime;
+    private String userUId; // 유저 ID 필드 추가
+    private List<String> reviewPhotos;
 
-	private Long RNo;
-	
-	private String RTitle;
-	
-	private String RContent;
-	
-	private String RMainphoto;
-	
-	private String RCategory;
-	
-	private String RStarRating;
-	
-	private Integer RViews;
-	
-	private LocalDateTime RWrittenTime;
-	
-	private UserEntity user;
-	
-	private String RProfile;
+    // DTO 생성자
+    public ReviewDTO(ReviewEntity review, List<String> reviewPhotos) {
+        this.rCategory = review.getRCategory();
+        this.rTitle = review.getRTitle();
+        this.rStarRating = review.getRStarRating();
+        this.rContent = review.getRContent();
+        this.rViews = review.getRViews();
+        this.rWrittenTime = review.getRWrittenTime().toString();  // 변환 확인
+        this.userUId = review.getUser().getUId();  // 유저 ID 설정 확인
+        this.reviewPhotos = reviewPhotos;
+    }
 }
