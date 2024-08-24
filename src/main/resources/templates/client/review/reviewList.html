@@ -1,90 +1,311 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Review List</title>
-    <link rel="stylesheet" href="/css/review.css" />
+	<meta charset="UTF-8">
+	<title>Review List</title>
+	<link rel="stylesheet" href="/css/review.css" />
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			margin: 0;
+			padding: 0;
+			background-color: #fafafa;
+		}
+
+		.container {
+			width: 100%;
+			max-width: 1200px;
+			margin: 0 auto;
+			padding: 20px;
+		}
+
+		.review-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+			gap: 20px;
+		}
+
+		.review-card {
+			background-color: #fff;
+			border: 1px solid #dbdbdb;
+			border-radius: 8px;
+			overflow: hidden;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			cursor: pointer;
+		}
+
+		.review-card img {
+			width: 100%;
+			height: auto;
+			display: block;
+		}
+
+		.review-content {
+			padding: 15px;
+		}
+
+		.review-title {
+			font-weight: bold;
+			font-size: 16px;
+			margin: 0 0 10px 0;
+		}
+
+		.review-text {
+			font-size: 14px;
+			color: #555;
+			margin: 0 0 10px 0;
+			line-height: 1.5;
+		}
+
+		.review-footer {
+			padding: 10px 15px;
+			background-color: #fafafa;
+			border-top: 1px solid #dbdbdb;
+			font-size: 13px;
+			color: #888;
+		}
+
+		.review-footer .written-time {
+			float: right;
+			color: #aaa;
+		}
+
+		/* 모달 스타일 */
+		.modal {
+			display: none;
+			position: fixed;
+			z-index: 1;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			overflow: auto;
+			background-color: rgba(0, 0, 0, 0.8);
+		}
+
+		.modal-content {
+			display: flex;
+			flex-direction: row;
+			background-color: #fefefe;
+			margin: 5% auto;
+			padding: 0;
+			border: 1px solid #888;
+			width: 80%;
+			max-width: 900px;
+			position: relative;
+		}
+
+		/* 슬라이드 쇼 스타일 */
+		.slider {
+			flex: 1;
+			position: relative;
+			width: 100%;
+		}
+
+		.slides {
+			display: flex;
+			overflow: hidden;
+			height: 100%;
+		}
+
+		.slides img {
+			width: 100%;
+			transition: transform 0.5s ease;
+		}
+
+		.prev,
+		.next {
+			cursor: pointer;
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			width: auto;
+			padding: 16px;
+			color: white;
+			font-weight: bold;
+			font-size: 18px;
+			border-radius: 3px;
+			background-color: rgba(0, 0, 0, 0.5);
+			user-select: none;
+		}
+
+		.prev {
+			left: 0;
+		}
+
+		.next {
+			right: 0;
+		}
+
+		/* 오른쪽 정보 패널 */
+		.info-panel {
+			flex: 1;
+			padding: 20px;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+		}
+
+		.info-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			border-bottom: 1px solid #dbdbdb;
+			padding-bottom: 10px;
+		}
+
+		.info-content {
+			margin-top: 20px;
+		}
+
+		.info-content p {
+			margin: 5px 0;
+		}
+
+		.info-footer {
+			border-top: 1px solid #dbdbdb;
+			padding-top: 10px;
+			text-align: right;
+			color: #888;
+		}
+
+		.close {
+			position: absolute;
+			top: 10px;
+			right: 20px;
+			font-size: 30px;
+			cursor: pointer;
+			color: #888;
+		}
+	</style>
 </head>
+
 <body>
-    <h1>Review List</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>Title</th>
-                <th>Content</th>
-                <th>Written Time</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="review : ${reviews}">
-				<td th:text="${review.rNo}"></td>
-				<td>
-				  	<a th:href="@{/auth/evaluation/{id}(id=${review.rNo})}" th:text="${review.rTitle}"></a>
-				</td>
-				
-				<td>
-					<a th:href="@{/auth/evaluation/{id}(id=${review.rNo})}" th:text="${review.rContent}"></a>
-				</td>
-				<td>
-					<a th:href="@{/auth/evaluation/{id}(id=${review.rNo})}" th:text="${review.rWrittenTime}"></a>
-				</td>
-            </tr>
-        </tbody>
-        
-        <a href="/review_write" th:if="${session.UId} != null">작성</a>
-    </table>
-    <!--
-    <div class="width1200">
-		<ul class="review" th:each="review : ${reviews}">
-			<li class="review_photo">
-				<a href="@{/auth/evaluation/{id}(id=${review.rNo})}">
-					<img class="mainImg" th:src="${review.RMainPhoto}">
-				</a>
-			</li>
-			<li class="review_title">
-				<label 타이틀
-			</li>
-			<li class="review_user">
-				프로필, 작성자
-			</li>
-			<li class="review_count">
-				별점 조회수
-			</li>
-			
-		</ul>
-	</div>
-	-->
-	
-	<div th:if="${totalPages > 1}">
-	        <ul class="pagination">
-	            <li th:class="${currentPage == 0} ? 'page-item disabled' : 'page-item'">
-	                <a class="page-link" th:href="@{/auth/evaluation(page=0)}">First</a>
-	            </li>
-	            
-	            <li th:class="${currentPage == 0} ? 'page-item disabled' : 'page-item'">
-	                <a class="page-link" th:href="@{/auth/evaluation(page=${currentPage - 1})}">Previous</a>
-	            </li>
-
-	            <li th:each="pageNumber : ${#numbers.sequence(0, totalPages - 1)}" 
-	                th:class="${currentPage == pageNumber} ? 'page-item active' : 'page-item'">
-	                <a class="page-link" th:href="@{/auth/evaluation(page=${pageNumber})}" th:text="${pageNumber + 1}"></a>
-	            </li>
-	
-	            <li th:class="${currentPage + 1 == totalPages} ? 'page-item disabled' : 'page-item'">
-	                <a class="page-link" th:href="@{/auth/evaluation(page=${currentPage + 1})}">Next</a>
-	            </li>
-
-	            <li th:class="${currentPage + 1 == totalPages} ? 'page-item disabled' : 'page-item'">
-	                <a class="page-link" th:href="@{/auth/evaluation(page=${totalPages - 1})}">Last</a>
-	            </li>
-	        </ul>
-	    </div>
-	    
-	    <div class="ex">
-			<ul>
-				<li></li>
-			</ul>
+	<div class="container">
+		<h1>Review List</h1>
+		<div class="review-grid">
+			<div class="review-card" th:each="review : ${reviews}" th:data-rno="${review.RNo}">
+				<img th:src="${review.RMainPhoto}" alt="Review Image">
+				<div class="review-content">
+					<div class="review-title" th:text="${review.RTitle}"></div>
+					<div class="review-text" th:text="${#strings.abbreviate(review.RContent, 100)}"></div>
+				</div>
+				<div class="review-footer">
+					<span th:text="${review.user.UId}">User ID</span>
+					<span class="written-time"
+						th:text="${#temporals.format(review.RWrittenTime, 'yyyy-MM-dd HH:mm')}"></span>
+				</div>
+			</div>
 		</div>
+
+		<!-- 모달 -->
+		<div id="reviewModal" class="modal">
+			<div class="modal-content">
+				<!-- 슬라이드 쇼 컨테이너 -->
+				<div class="slider">
+					<div class="slides" id="photoContainer">
+						<!-- 슬라이드 내용이 JavaScript로 동적으로 추가됨 -->
+					</div>
+					<!-- 이전 및 다음 버튼 -->
+					<button class="prev" onclick="changeSlide(-1)">&#10094;</button>
+					<button class="next" onclick="changeSlide(1)">&#10095;</button>
+				</div>
+
+				<!-- 오른쪽 정보 패널 -->
+				<div class="info-panel">
+					<div class="info-header">
+						<h2 id="modalTitle"></h2>
+						<span class="close">&times;</span>
+					</div>
+					<div class="info-content">
+						<p><strong>Category:</strong> <span id="modalCategory"></span></p>
+						<p><strong>Star Rating:</strong> <span id="modalStarRating"></span></p>
+						<p><strong>Views:</strong> <span id="modalViews"></span></p>
+						<p><strong>Written Time:</strong> <span id="modalWrittenTime"></span></p>
+						<p id="modalContent"></p>
+					</div>
+					<div class="info-footer">
+						<p>작성자: <span id="modalUserId"></span></p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		let currentSlideIndex = 0;
+
+		function showSlides(index) {
+			const slides = document.querySelectorAll(".slides img");
+			if (index >= slides.length) {
+				currentSlideIndex = 0;
+			} else if (index < 0) {
+				currentSlideIndex = slides.length - 1;
+			} else {
+				currentSlideIndex = index;
+			}
+			slides.forEach((slide, i) => {
+				slide.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
+			});
+		}
+
+		function changeSlide(n) {
+			showSlides(currentSlideIndex + n);
+		}
+
+		document.addEventListener("DOMContentLoaded", function () {
+			const modal = document.getElementById("reviewModal");
+			const closeModal = document.getElementsByClassName("close")[0];
+
+			document.querySelectorAll(".review-card").forEach(card => {
+				card.addEventListener("click", function () {
+					const rNo = card.getAttribute("data-rno");
+
+					fetch(`/auth/evaluation/${rNo}`)
+						.then(response => response.json())
+						.then(data => {
+							console.log(data);  // 데이터 구조를 확인하는 콘솔 로그
+
+							document.getElementById("modalCategory").textContent = data.rcategory || 'N/A';
+							document.getElementById("modalTitle").textContent = data.rtitle || 'N/A';
+							document.getElementById("modalStarRating").textContent = data.rstarRating || 'N/A';
+							document.getElementById("modalContent").textContent = data.rcontent || 'N/A';
+							document.getElementById("modalViews").textContent = data.rviews || '0';
+							document.getElementById("modalWrittenTime").textContent = data.rwrittenTime || 'N/A';
+							document.getElementById("modalUserId").textContent = data.userUId || 'Unknown';
+
+							// 사진 처리 코드
+							const photoContainer = document.getElementById("photoContainer");
+							photoContainer.innerHTML = '';
+							data.reviewPhotos.forEach(photoUrl => {
+								const img = document.createElement("img");
+								img.src = photoUrl;
+								img.alt = "Review Photo";
+								photoContainer.appendChild(img);
+							});
+
+							modal.style.display = "block";
+							showSlides(0);  // 첫 슬라이드 표시
+						});
+				});
+			});
+
+			// 모달 닫기 기능
+			closeModal.onclick = function () {
+				modal.style.display = "none";
+			};
+
+			// 모달 외부 클릭 시 닫기
+			window.onclick = function (event) {
+				if (event.target === modal) {
+					modal.style.display = "none";
+				}
+			};
+		});
+
+
+	</script>
 </body>
+
 </html>

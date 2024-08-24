@@ -20,5 +20,6 @@ public interface ShopRepository extends JpaRepository<ShopEntity, Long>{
 	Optional<ShopEntity> findById(Long shopNo);
 	ShopEntity findByShopNo(Long shopNo);
 	Optional<ShopEntity> findTopByOrderByShopHitDesc();
+	Optional<ShopEntity> findTopByOrderByShopSellDesc();
 
 }

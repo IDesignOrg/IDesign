@@ -100,6 +100,10 @@ public class AdminPageService {
 		return shopRepository.findTopByOrderByShopHitDesc();
 	}
 
+	public Optional<ShopEntity> getMostSelledShop() {
+		return shopRepository.findTopByOrderByShopSellDesc();
+	}
+
 	public Page<UserWithPostAndCommentCount> findAllUsersWithCounts(Pageable pageable) {
 		List<UserEntity> users = userRepository.findAll();
 		List<UserWithPostAndCommentCount> userCounts = new ArrayList<>();
@@ -117,6 +121,43 @@ public class AdminPageService {
 		List<UserWithPostAndCommentCount> pagedList = userCounts.subList(start, end);
 
 		return new PageImpl<>(pagedList, pageable, userCounts.size());
+	}
+
+	public List<UserWithPostAndCommentCount> searchUsers(String searchType, String searchInput, LocalDate startDate,
+			LocalDate endDate, String orderType) {
+		List<UserEntity> users;
+
+// 검색 조건에 따라 사용자 목록 필터링
+		switch (searchType) {
+		case "name":
+			users = userRepository.findByUNameContainingIgnoreCaseAndURegisterBetween(searchInput, startDate, endDate);
+			break;
+		case "nickname":
+			users = userRepository.findByUIdContainingIgnoreCaseAndURegisterBetween(searchInput, startDate, endDate);
+			break;
+		case "email":
+			users = userRepository.findByUMailContainingIgnoreCaseAndURegisterBetween(searchInput, startDate, endDate);
+			break;
+		default:
+			users = userRepository.findAllByURegisterBetween(startDate, endDate);
+			break;
+		}
+
+// 사용자 목록을 UserWithPostAndCommentCount로 변환
+		List<UserWithPostAndCommentCount> userCounts = users.stream().map(user -> {
+			int postCount = reviewRepository.countByUser(user);
+			int commentCount = shopReviewRepository.countByUser(user);
+			return new UserWithPostAndCommentCount(user, postCount, commentCount);
+		}).collect(Collectors.toList());
+
+// 정렬 방식에 따른 정렬
+		if (orderType.equals("postCountDesc")) {
+			userCounts.sort((u1, u2) -> Integer.compare(u2.getPostCount(), u1.getPostCount()));
+		} else if (orderType.equals("commentCountDesc")) {
+			userCounts.sort((u1, u2) -> Integer.compare(u2.getCommentCount(), u1.getCommentCount()));
+		}
+
+		return userCounts;
 	}
 
 	public Page<NoticeEntity> getAllNotice(Pageable pageable) {
@@ -169,6 +210,22 @@ public class AdminPageService {
 		// 변경된 복구 요청을 저장
 		recoveryRepository.save(recovery);
 	}
+	
+	public List<RecoveryEntity> searchRecoveryRequests(String searchType, String searchInput, LocalDate startDate, LocalDate endDate) {
+        if (startDate == null) startDate = LocalDate.of(1900, 1, 1);
+        if (endDate == null) endDate = LocalDate.now();
+
+        switch (searchType) {
+            case "userId":
+                return recoveryRepository.findByUser_UIdContainingIgnoreCaseAndRequestDateBetween(searchInput, startDate, endDate);
+            case "name":
+                return recoveryRepository.findByUser_UNameContainingIgnoreCaseAndRequestDateBetween(searchInput, startDate, endDate);
+            case "email":
+                return recoveryRepository.findByUser_UMailContainingIgnoreCaseAndRequestDateBetween(searchInput, startDate, endDate);
+            default:
+                return new ArrayList<>();
+        }
+    }
 
 	public List<CouponEntity> getAllModalCoupons() {
 		return couponRepository.findAll();
@@ -224,11 +281,10 @@ public class AdminPageService {
 	}
 
 	// 어드민 샵 검색
-	public Page<ShopListAndOrderedDTO> searchShops(String shopTitle, String shopCategory, Integer minPrice, Integer maxPrice,
-			Pageable pageable) {
+	public Page<ShopListAndOrderedDTO> searchShops(String shopTitle, String shopCategory, Integer minPrice,
+			Integer maxPrice, Pageable pageable) {
 		List<ShopEntity> shops = shopRepository.findByShopTitleContainingAndShopCategoryContaining(shopTitle,
 				shopCategory);
-		
 
 		BigDecimal minPriceBigDecimal = minPrice != null ? BigDecimal.valueOf(minPrice) : BigDecimal.ZERO;
 		BigDecimal maxPriceBigDecimal = maxPrice != null ? BigDecimal.valueOf(maxPrice)
@@ -238,13 +294,11 @@ public class AdminPageService {
 			BigDecimal price = new BigDecimal(shop.getShopPrice());
 			return price.compareTo(minPriceBigDecimal) >= 0 && price.compareTo(maxPriceBigDecimal) <= 0;
 		}).collect(Collectors.toList());
-		
-		 List<ShopListAndOrderedDTO> shopCounts = filteredShops.stream()
-	                .map(shop -> {
-	                    int orderedCount = orderedRepository.countByShopNo(shop.getShopNo());
-	                    return new ShopListAndOrderedDTO(shop, orderedCount);
-	                })
-	                .collect(Collectors.toList());
+
+		List<ShopListAndOrderedDTO> shopCounts = filteredShops.stream().map(shop -> {
+			int orderedCount = orderedRepository.countByShopNo(shop.getShopNo());
+			return new ShopListAndOrderedDTO(shop, orderedCount);
+		}).collect(Collectors.toList());
 
 		int start = (int) pageable.getOffset();
 		int end = Math.min((start + pageable.getPageSize()), filteredShops.size());

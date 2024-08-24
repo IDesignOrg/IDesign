@@ -61,9 +61,14 @@ public class OrderedService {
 			ordered.setMerchantUId(merchantUId);
 			ordered.setQuantity(quantity);
 			System.out.println("ordered에는 : " + ordered);
+			//shopSell(판매량)증가
+			ShopEntity shop = shopRepository.findByShopNo(cartEntity.getShopEntity().getShopNo());
+			shop.setShopSell(shop.getShopSell() + 1);
+			
 
 			orderedRepository.save(ordered);
 		}
+
 		session.removeAttribute("merchantUId");
 	}
 	//배송 시간마다 바뀌는거

@@ -76,6 +76,36 @@
 				</div>
 			</div>
 		</div>
+
+		<div class="most-viewed-shop-card" th:if="${mostSelledShop != null}">
+			<h2 class="card-title">가장 많은 판매량을 가진 상점</h2>
+
+			<div class="most-viewed-shop-content">
+				<div class="image-section">
+					<img th:src="${mostSelledShop.shopMainPhoto}" alt="Shop Image" class="shop-image">
+				</div>
+				<div class="info-section">
+					<div class="row">
+						<div class="label">제목</div>
+						<div class="value" th:text="${mostSelledShop.shopTitle}"></div>
+						<div class="label">카테고리</div>
+						<div class="value" th:text="${mostSelledShop.shopCategory}"></div>
+					</div>
+					<div class="row">
+						<div class="label">내용</div>
+						<div class="value" th:text="${mostSelledShop.shopContent}"></div>
+						<div class="label">조회수</div>
+						<div class="value" th:text="${mostSelledShop.shopHit}"></div>
+					</div>
+					<div class="row">
+						<div class="label">가격</div>
+						<div class="value" th:text="${mostSelledShop.shopPrice}"></div>
+						<div class="label">팔린수</div>
+						<div class="value" th:text="${mostSelledShop.shopSell}"></div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </body>
 

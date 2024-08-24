@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -105,8 +106,6 @@ public class AdminPageController {
 	@Autowired
 	private OrderedRefundRepository orderedRefundRepository;
 
-	@Autowired
-	private FaqRepository faqRepository;
 
 	@GetMapping("/auth/adminLogin")
 	public String AdminLogin() {
@@ -161,6 +160,9 @@ public class AdminPageController {
 		// 가장 높은 조회수를 가진 상점
 		Optional<ShopEntity> mostViewedShop = adminPageService.getMostViewedShop();
 		mostViewedShop.ifPresent(shop -> model.addAttribute("mostViewedShop", shop));
+		// 가장 높은 판매량을 가진 상점
+		Optional<ShopEntity> mostSelledShop = adminPageService.getMostSelledShop();
+		mostSelledShop.ifPresent(shop -> model.addAttribute("mostSelledShop", shop));
 
 		return "/admin/page/adminIndex";
 	}
@@ -179,6 +181,25 @@ public class AdminPageController {
 		model.addAttribute("pageSize", size);
 
 		return "/admin/page/adminUsers";
+	}
+
+	@GetMapping("/searchUsers")
+	@ResponseBody
+	public List<UserWithPostAndCommentCount> searchUsers(@RequestParam(name = "searchType") String searchType,
+			@RequestParam(name = "searchInput") String searchInput,
+			@RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+			@RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+			@RequestParam(name = "orderType") String orderType) {
+		// null 값 처리
+		if (startDate == null)
+			startDate = LocalDate.of(1900, 1, 1);
+		if (endDate == null)
+			endDate = LocalDate.now();
+
+		List<UserWithPostAndCommentCount> results = adminPageService.searchUsers(searchType, searchInput, startDate,
+				endDate, orderType);
+		System.out.println("Search results: " + results); // 디버깅용 로그
+		return results;
 	}
 
 	// 어드민 페이지 게시글 모달
@@ -255,6 +276,17 @@ public class AdminPageController {
 		model.addAttribute("currentPage", pageable.getPageNumber());
 		model.addAttribute("totalPages", recovers.getTotalPages());
 		return "/admin/page/adminRecovery";
+	}
+	
+	@GetMapping("/admin/page/adminRecovery/search")
+	@ResponseBody
+	public List<RecoveryEntity> searchRecoveryRequests(
+	    @RequestParam(name = "searchType") String searchType,
+	    @RequestParam(name = "searchInput", required = false) String searchInput,
+	    @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+	    @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+	    return adminPageService.searchRecoveryRequests(searchType, searchInput, startDate, endDate);
 	}
 
 	// admin 복구페이지 복구 메서드
