@@ -130,5 +130,7 @@ public class ReviewController {
 		reviewService.deleteReview(rNo);
 		return "redirect:/auth/evaluation";
 	}
+	
+	
 
 }
