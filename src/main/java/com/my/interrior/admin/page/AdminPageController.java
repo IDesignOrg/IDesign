@@ -106,7 +106,6 @@ public class AdminPageController {
 	@Autowired
 	private OrderedRefundRepository orderedRefundRepository;
 
-
 	@GetMapping("/auth/adminLogin")
 	public String AdminLogin() {
 		return "admin/page/adminLogin";
@@ -205,9 +204,13 @@ public class AdminPageController {
 	// 어드민 페이지 게시글 모달
 	@GetMapping("/fetchPosts")
 	@ResponseBody
-	public List<ReviewEntity> fetchPosts(@RequestParam("userUNo") Long userUNo) {
-		// ReviewRepository에서 UNo 기준으로 데이터 가져오기
-		return reviewRepository.findByUserUNo(userUNo);
+	public ResponseEntity<?> fetchPosts(@RequestParam("userUNo") Long userUNo) {
+		try {
+			List<ReviewEntity> reviews = reviewRepository.findByUserUNo(userUNo);
+			return ResponseEntity.ok(reviews);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching posts");
+		}
 	}
 
 	// 어드민 페이지 게시글 모달 삭제
@@ -277,16 +280,15 @@ public class AdminPageController {
 		model.addAttribute("totalPages", recovers.getTotalPages());
 		return "/admin/page/adminRecovery";
 	}
-	
+
 	@GetMapping("/admin/page/adminRecovery/search")
 	@ResponseBody
-	public List<RecoveryEntity> searchRecoveryRequests(
-	    @RequestParam(name = "searchType") String searchType,
-	    @RequestParam(name = "searchInput", required = false) String searchInput,
-	    @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-	    @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+	public List<RecoveryEntity> searchRecoveryRequests(@RequestParam(name = "searchType") String searchType,
+			@RequestParam(name = "searchInput", required = false) String searchInput,
+			@RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+			@RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-	    return adminPageService.searchRecoveryRequests(searchType, searchInput, startDate, endDate);
+		return adminPageService.searchRecoveryRequests(searchType, searchInput, startDate, endDate);
 	}
 
 	// admin 복구페이지 복구 메서드
