@@ -3,7 +3,7 @@ package com.my.interrior.client.evaluation;
 import java.time.LocalDateTime;
 
 import com.my.interrior.client.user.UserEntity;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,5 +35,6 @@ public class ReviewCommentEntity {
 	
 	@ManyToOne
 	@JoinColumn(name = "r_no")
+	@JsonIgnore
 	private ReviewEntity reviewEntity;
 }
