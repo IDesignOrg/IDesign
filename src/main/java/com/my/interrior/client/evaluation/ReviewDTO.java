@@ -19,9 +19,10 @@ public class ReviewDTO {
     private String rWrittenTime;
     private String userUId; // 유저 ID 필드 추가
     private List<String> reviewPhotos;
+    private List<ReviewCommentEntity> comments;
 
     // DTO 생성자
-    public ReviewDTO(ReviewEntity review, List<String> reviewPhotos) {
+    public ReviewDTO(ReviewEntity review, List<String> reviewPhotos, List<ReviewCommentEntity> comments) {
         this.rCategory = review.getRCategory();
         this.rTitle = review.getRTitle();
         this.rStarRating = review.getRStarRating();
@@ -30,5 +31,6 @@ public class ReviewDTO {
         this.rWrittenTime = review.getRWrittenTime().toString();  // 변환 확인
         this.userUId = review.getUser().getUId();  // 유저 ID 설정 확인
         this.reviewPhotos = reviewPhotos;
+        this.comments = comments;
     }
 }
