@@ -1,6 +1,7 @@
 package com.my.interrior.client.evaluation;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.Getter;
@@ -11,25 +12,27 @@ import lombok.ToString;
 @Setter
 @ToString
 public class ReviewDTO {
-	private String rCategory;
+	private Long rNo;
     private String rTitle;
-    private String rStarRating;
     private String rContent;
-    private int rViews;
-    private String rWrittenTime;
-    private String userUId; // 유저 ID 필드 추가
+    private String rCategory;
+    private String rStarRating;
+    private Integer rViews;
+    private LocalDateTime rWrittenTime;
+    private String userId;
     private List<String> reviewPhotos;
-    private List<ReviewCommentEntity> comments;
+    private List<ReviewCommentDTO> comments;
 
     // DTO 생성자
-    public ReviewDTO(ReviewEntity review, List<String> reviewPhotos, List<ReviewCommentEntity> comments) {
-        this.rCategory = review.getRCategory();
-        this.rTitle = review.getRTitle();
-        this.rStarRating = review.getRStarRating();
-        this.rContent = review.getRContent();
-        this.rViews = review.getRViews();
-        this.rWrittenTime = review.getRWrittenTime().toString();  // 변환 확인
-        this.userUId = review.getUser().getUId();  // 유저 ID 설정 확인
+    public ReviewDTO(Long rNo, String rTitle, String rContent, String rCategory, String rStarRating, Integer rViews, LocalDateTime rWrittenTime, String userId, List<String> reviewPhotos, List<ReviewCommentDTO> comments) {
+        this.rNo = rNo;
+        this.rTitle = rTitle;
+        this.rContent = rContent;
+        this.rCategory = rCategory;
+        this.rStarRating = rStarRating;
+        this.rViews = rViews;
+        this.rWrittenTime = rWrittenTime;
+        this.userId = userId;
         this.reviewPhotos = reviewPhotos;
         this.comments = comments;
     }

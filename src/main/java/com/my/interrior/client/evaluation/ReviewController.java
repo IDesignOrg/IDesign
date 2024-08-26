@@ -80,7 +80,7 @@ public class ReviewController {
 		return "client/review/reviewList";
 	}
 
-	// 후기 상세페이지
+	// 후기 상세페이지 및 댓글 포함 데이터 반환
 	@GetMapping("/auth/evaluation/{rNo}")
 	@ResponseBody
 	public ResponseEntity<ReviewDTO> getReviewDetail(@PathVariable("rNo") Long rNo) {
@@ -90,23 +90,21 @@ public class ReviewController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // 리뷰가 없으면 404 반환
 		}
 
-		List<ReviewPhotoEntity> reviewPhotos = reviewService.getPhotosByReviewId(rNo);
+		// 리뷰 사진 및 댓글 데이터를 가져옵니다.
+		List<String> reviewPhotos = reviewService.getPhotosByReviewId(rNo).stream().map(ReviewPhotoEntity::getRpPhoto)
+				.collect(Collectors.toList());
 
-		// 리뷰에 대한 댓글 데이터를 가져옵니다.
-		List<ReviewCommentEntity> comments = reviewService.getCommentsByReviewId(rNo);
+		List<ReviewCommentDTO> comments = reviewService.getCommentsByReviewId(rNo).stream()
+				.map(comment -> new ReviewCommentDTO(comment.getRCommentNo(), comment.getRComment(),
+						comment.getRCommentCreated(), comment.getUser().getUName(), comment.getUser().getUPofile()))
+				.collect(Collectors.toList());
 
 		// DTO로 변환하여 필요한 데이터만 응답합니다.
-		ReviewDTO response = new ReviewDTO(review.get(),
-				reviewPhotos.stream().map(ReviewPhotoEntity::getRpPhoto).collect(Collectors.toList()), comments); 
+		ReviewDTO response = new ReviewDTO(review.get().getRNo(), review.get().getRTitle(), review.get().getRContent(),
+				review.get().getRCategory(), review.get().getRStarRating(), review.get().getRViews(),
+				review.get().getRWrittenTime(), review.get().getUser().getUId(), reviewPhotos, comments);
 
 		return ResponseEntity.ok(response); // JSON 데이터 반환
-	}
-
-	// 리뷰 댓글
-	@GetMapping("/auth/review/{reviewId}")
-	public ResponseEntity<List<ReviewCommentEntity>> getCommentsByReviewId(@PathVariable("reviewId") Long reviewId) {
-		List<ReviewCommentEntity> comments = reviewService.getCommentsByReviewId(reviewId);
-		return ResponseEntity.ok(comments);
 	}
 
 	// 리뷰 댓글 쓰기

@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import com.my.interrior.client.user.UserEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,6 +19,7 @@ import lombok.Setter;
 @Entity(name = "review_comment")
 @Getter
 @Setter
+@JsonIgnoreProperties({"reviews", "comments"})
 public class ReviewCommentEntity {
 	
 	@Id
@@ -35,6 +38,5 @@ public class ReviewCommentEntity {
 	
 	@ManyToOne
 	@JoinColumn(name = "r_no")
-	@JsonIgnore
 	private ReviewEntity reviewEntity;
 }
