@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,9 +31,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.my.interrior.admin.coupon.CouponMapRepository;
 import com.my.interrior.admin.coupon.CouponService;
 import com.my.interrior.client.csc.faq.FaqEntity;
-import com.my.interrior.client.csc.faq.FaqRepository;
 import com.my.interrior.client.csc.notice.NoticeEntity;
 import com.my.interrior.client.csc.recover.RecoveryEntity;
+import com.my.interrior.client.evaluation.ReviewCommentDTO;
 import com.my.interrior.client.evaluation.ReviewCommentEntity;
 import com.my.interrior.client.evaluation.ReviewEntity;
 import com.my.interrior.client.evaluation.ReviewRepository;
@@ -49,7 +50,6 @@ import com.my.interrior.client.pay.PayEntity;
 import com.my.interrior.client.pay.PaymentAndUserService;
 import com.my.interrior.client.pay.PaymentService;
 import com.my.interrior.client.shop.ShopEntity;
-import com.my.interrior.client.shop.ShopRepository;
 import com.my.interrior.client.shop.ShopReviewEntity;
 import com.my.interrior.client.shop.ShopReviewRepository;
 import com.my.interrior.client.shop.ShopService;
@@ -59,7 +59,6 @@ import com.my.interrior.client.user.UserService;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
-import lombok.Getter;
 
 @Controller
 public class AdminPageController {
@@ -165,7 +164,7 @@ public class AdminPageController {
 		Optional<ShopEntity> mostSelledShop = adminPageService.getMostSelledShop();
 		mostSelledShop.ifPresent(shop -> model.addAttribute("mostSelledShop", shop));
 
-		return "/admin/page/adminIndex";
+		return "admin/page/adminIndex";
 	}
 
 	// 회원정보 페이지
@@ -183,7 +182,8 @@ public class AdminPageController {
 
 		return "/admin/page/adminUsers";
 	}
-	//리뷰 리스트
+
+	// 리뷰 리스트
 	@GetMapping("/admin/adminReview")
 	public String adminReview(@RequestParam(name = "page", defaultValue = "0") int page,
 			@RequestParam(name = "size", defaultValue = "10") int size, Model model) {
@@ -198,12 +198,16 @@ public class AdminPageController {
 
 		return "/admin/page/adminReview";
 	}
-	
+
 	@GetMapping("/fetchRComments")
-    public ResponseEntity<List<ReviewCommentEntity>> fetchRComments(@RequestParam("reviewNo") Long reviewNo) {
-        List<ReviewCommentEntity> comments = reviewService.getCommentsByReviewId(reviewNo);
-        return ResponseEntity.ok(comments);
-    }
+	public ResponseEntity<List<ReviewCommentDTO>> fetchRComments(@RequestParam("reviewNo") Long reviewNo) {
+		List<ReviewCommentDTO> comments = reviewService.getCommentsByReviewId(reviewNo).stream()
+				.map(comment -> new ReviewCommentDTO(comment.getRCommentNo(), comment.getRComment(),
+						comment.getRCommentCreated(), comment.getUser().getUName(), comment.getUser().getUPofile()))
+				.collect(Collectors.toList());
+
+		return ResponseEntity.ok(comments);
+	}
 
 	@GetMapping("/searchUsers")
 	@ResponseBody
