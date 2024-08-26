@@ -22,6 +22,8 @@ import com.my.interrior.client.csc.notice.NoticeEntity;
 import com.my.interrior.client.csc.notice.NoticeRepository;
 import com.my.interrior.client.csc.recover.RecoveryEntity;
 import com.my.interrior.client.csc.recover.RecoveryRepository;
+import com.my.interrior.client.evaluation.ReviewCommentRepository;
+import com.my.interrior.client.evaluation.ReviewEntity;
 import com.my.interrior.client.evaluation.ReviewRepository;
 import com.my.interrior.client.event.EventEntity;
 import com.my.interrior.client.event.EventRepository;
@@ -52,6 +54,9 @@ public class AdminPageService {
 
 	@Autowired
 	private ReviewRepository reviewRepository;
+	
+	@Autowired
+	private ReviewCommentRepository reviewCommentRepository;
 
 	@Autowired
 	private ShopReviewRepository shopReviewRepository;
@@ -121,6 +126,21 @@ public class AdminPageService {
 		List<UserWithPostAndCommentCount> pagedList = userCounts.subList(start, end);
 
 		return new PageImpl<>(pagedList, pageable, userCounts.size());
+	}
+	
+	public Page<ReviewAndCommentDTO> findAllReviewAndCounts(Pageable pageable){
+		List<ReviewEntity> reviews = reviewRepository.findAll();
+		List<ReviewAndCommentDTO> reviewCounts = new ArrayList<>();
+		
+		for (ReviewEntity review : reviews) {
+			int commentCount = reviewCommentRepository.countByReviewEntity(review);
+			ReviewAndCommentDTO dto = new ReviewAndCommentDTO(review, commentCount);
+			reviewCounts.add(dto);
+		}
+		int start = (int) pageable.getOffset();
+		int end = Math.min((start + pageable.getPageSize()), reviewCounts.size());
+		List<ReviewAndCommentDTO> pagedList = reviewCounts.subList(start, end);
+		return new PageImpl<>(pagedList, pageable, reviewCounts.size());
 	}
 
 	public List<UserWithPostAndCommentCount> searchUsers(String searchType, String searchInput, LocalDate startDate,
