@@ -33,6 +33,7 @@ import com.my.interrior.client.csc.faq.FaqEntity;
 import com.my.interrior.client.csc.faq.FaqRepository;
 import com.my.interrior.client.csc.notice.NoticeEntity;
 import com.my.interrior.client.csc.recover.RecoveryEntity;
+import com.my.interrior.client.evaluation.ReviewCommentEntity;
 import com.my.interrior.client.evaluation.ReviewEntity;
 import com.my.interrior.client.evaluation.ReviewRepository;
 import com.my.interrior.client.evaluation.ReviewService;
@@ -58,6 +59,7 @@ import com.my.interrior.client.user.UserService;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
+import lombok.Getter;
 
 @Controller
 public class AdminPageController {
@@ -181,6 +183,27 @@ public class AdminPageController {
 
 		return "/admin/page/adminUsers";
 	}
+	//리뷰 리스트
+	@GetMapping("/admin/adminReview")
+	public String adminReview(@RequestParam(name = "page", defaultValue = "0") int page,
+			@RequestParam(name = "size", defaultValue = "10") int size, Model model) {
+
+		Pageable pageable = PageRequest.of(page, size);
+		Page<ReviewAndCommentDTO> reviewAndCounts = adminPageService.findAllReviewAndCounts(pageable);
+
+		model.addAttribute("reviewAndCounts", reviewAndCounts);
+		model.addAttribute("currentPage", page);
+		model.addAttribute("totalPages", reviewAndCounts.getTotalPages());
+		model.addAttribute("pageSize", size);
+
+		return "/admin/page/adminReview";
+	}
+	
+	@GetMapping("/fetchRComments")
+    public ResponseEntity<List<ReviewCommentEntity>> fetchRComments(@RequestParam("reviewNo") Long reviewNo) {
+        List<ReviewCommentEntity> comments = reviewService.getCommentsByReviewId(reviewNo);
+        return ResponseEntity.ok(comments);
+    }
 
 	@GetMapping("/searchUsers")
 	@ResponseBody
