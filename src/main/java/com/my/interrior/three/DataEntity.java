@@ -25,6 +25,8 @@ public class DataEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	
 	@Column(name = "oid")
 	private Long oid;
 	
@@ -33,23 +35,17 @@ public class DataEntity {
 	private String type;
 	
 	@ManyToOne
-	@JoinColumn(name = "parent_oid")
-	private DataEntity parent;
+	@JoinColumn(name = "project_id", nullable = false)
+	private ThreeEntity threeEntity;
 	
-	@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<DataEntity> children;
-	
-	@OneToMany(mappedBy = "dataEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "data")
 	private List<PointEntity> points;
 	
 	@Column(name = "rotation", nullable = false)
 	private Double rotation;
+
+//	@Column(name = "angle", nullable = false)
+//	private Double angle;
 	
-	@Column(name = "angle", nullable = false)
-	private Double angle;
-	
-	@ManyToOne
-	@JoinColumn(name = "project_id", nullable = false)
-	private ThreeEntity threeEntity;
 	
 }
