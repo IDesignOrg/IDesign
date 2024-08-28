@@ -1,3 +1,7 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:913f432032df24d04136921f31119d03ac4a3e4c57195f93eb4304a4373f13ff
-size 255
+const deskColor = "rgb(139, 69, 19)";
+const floorColors = "rgb(240, 234, 214)";
+const shadowColor = "rgb(215, 63, 63)";
+const ceilingColor = "#b5b2b2";
+const wallColor = "#797676";
+
+export { wallColor, ceilingColor, deskColor, floorColors, shadowColor };

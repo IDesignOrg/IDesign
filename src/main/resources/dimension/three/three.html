@@ -1,3 +1,34 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:33ee00b39a537cbd679b1ef54a2ff6aad0eed4ac268b9cee0cacc84ed327f69a
-size 1012
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>도면그리기</title>
+    <link rel="stylesheet" href="/dimension/public/reset.css" />
+    <link rel="stylesheet" href="/dimension/public/three.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@<version>/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <aside>
+      <div id="container">
+        <div class="center">도면 그리기</div>
+        <div id="hud-icon">
+          <button id="desk">책상</button>
+          <button id="chair">의자</button>
+          <button id="floor">바닥</button>
+        </div>
+        <div id="modeToggles">
+          <button id="save">SAVE</button>
+          <button id="2D">2D</button>
+          <button id="3D">3D</button>
+        </div>
+      </div>
+    </aside>
+  </body>
+</html>
