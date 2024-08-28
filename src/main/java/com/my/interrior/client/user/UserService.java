@@ -114,4 +114,18 @@ public class UserService {
         Optional<UserEntity> user = userRepository.findById(id);
         return user.orElse(null); // 사용자가 존재하지 않으면 null 반환
     }
+    
+    public UserEntity findByUId(String UId) {
+    	return userRepository.findByUId(UId);
+    }
+    public void updatePassword(String UId, String newPassword) {
+        UserEntity user = findByUId(UId);
+        if (user != null) {
+            user.setUPw(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+        }
+    }
+    public boolean checkPasswordMatch(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
 }
