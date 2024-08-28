@@ -1,3 +1,44 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:9e800ee528e1d4c14fe6107aa863ed895ca2710cf730cb975a009c4bffca765d
-size 1318
+export const dummy = {
+  status: "success",
+  response: 200,
+  data: {
+    hasMoreProjects: true, //더이상 받을 프로젝트 없음
+    projects: [
+      {
+        project_id: "1",
+        project_name: "test_name",
+        reg_dt: new Date().getTime(),
+        userID: "nickname",
+        img: "https://cdn.pixabay.com/photo/2018/04/26/16/31/marine-3352341_1280.jpg",
+      },
+      {
+        project_id: "2",
+        project_name: "test_name",
+        reg_dt: new Date().getTime(),
+        userID: "nickname",
+        img: "https://cdn.pixabay.com/photo/2018/04/26/16/31/marine-3352341_1280.jpg",
+      },
+      {
+        project_id: "3",
+        project_name: "test_name",
+        reg_dt: new Date().getTime(),
+        userID: "nickname",
+        img: "https://cdn.pixabay.com/photo/2018/04/26/16/31/marine-3352341_1280.jpg",
+      },
+      {
+        project_id: "4",
+        project_name: "test_name",
+        reg_dt: new Date().getTime(),
+        userID: "nickname",
+        img: "https://cdn.pixabay.com/photo/2018/04/26/16/31/marine-3352341_1280.jpg",
+      },
+      {
+        project_id: "4",
+        project_name: "test_name",
+        reg_dt: new Date().getTime(),
+        userID: "nickname",
+        img: "https://cdn.pixabay.com/photo/2018/04/26/16/31/marine-3352341_1280.jpg",
+      },
+    ],
+  },
+};

@@ -1,3 +1,90 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:89063259e8035a578095f5c89b06f98eead1b47324b1398ff7e87d9e6f8edde4
-size 2828
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Review List</title>
+    <link rel="stylesheet" href="/css/review.css" />
+</head>
+<body>
+    <h1>Review List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Title</th>
+                <th>Content</th>
+                <th>Written Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="review : ${reviews}">
+				<td th:text="${review.rNo}"></td>
+				<td>
+				  	<a th:href="@{/auth/evaluation/{id}(id=${review.rNo})}" th:text="${review.rTitle}"></a>
+				</td>
+				
+				<td>
+					<a th:href="@{/auth/evaluation/{id}(id=${review.rNo})}" th:text="${review.rContent}"></a>
+				</td>
+				<td>
+					<a th:href="@{/auth/evaluation/{id}(id=${review.rNo})}" th:text="${review.rWrittenTime}"></a>
+				</td>
+            </tr>
+        </tbody>
+        
+        <a href="/review_write" th:if="${session.UId} != null">작성</a>
+    </table>
+    <!--
+    <div class="width1200">
+		<ul class="review" th:each="review : ${reviews}">
+			<li class="review_photo">
+				<a href="@{/auth/evaluation/{id}(id=${review.rNo})}">
+					<img class="mainImg" th:src="${review.RMainPhoto}">
+				</a>
+			</li>
+			<li class="review_title">
+				<label 타이틀
+			</li>
+			<li class="review_user">
+				프로필, 작성자
+			</li>
+			<li class="review_count">
+				별점 조회수
+			</li>
+			
+		</ul>
+	</div>
+	-->
+	
+	<div th:if="${totalPages > 1}">
+	        <ul class="pagination">
+	            <li th:class="${currentPage == 0} ? 'page-item disabled' : 'page-item'">
+	                <a class="page-link" th:href="@{/auth/evaluation(page=0)}">First</a>
+	            </li>
+	            
+	            <li th:class="${currentPage == 0} ? 'page-item disabled' : 'page-item'">
+	                <a class="page-link" th:href="@{/auth/evaluation(page=${currentPage - 1})}">Previous</a>
+	            </li>
+
+	            <li th:each="pageNumber : ${#numbers.sequence(0, totalPages - 1)}" 
+	                th:class="${currentPage == pageNumber} ? 'page-item active' : 'page-item'">
+	                <a class="page-link" th:href="@{/auth/evaluation(page=${pageNumber})}" th:text="${pageNumber + 1}"></a>
+	            </li>
+	
+	            <li th:class="${currentPage + 1 == totalPages} ? 'page-item disabled' : 'page-item'">
+	                <a class="page-link" th:href="@{/auth/evaluation(page=${currentPage + 1})}">Next</a>
+	            </li>
+
+	            <li th:class="${currentPage + 1 == totalPages} ? 'page-item disabled' : 'page-item'">
+	                <a class="page-link" th:href="@{/auth/evaluation(page=${totalPages - 1})}">Last</a>
+	            </li>
+	        </ul>
+	    </div>
+	    
+	    <div class="ex">
+			<ul>
+				<li></li>
+			</ul>
+		</div>
+</body>
+</html>
