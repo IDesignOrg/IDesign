@@ -1,3 +1,5 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:67b6b63a62476b3e1a15941d960ea9fcda72c09ffa0587452ef71a902889dcb7
-size 93
+export const planeLength = 10;
+export const planeWidth = 15;
+export const ceilingHeight = 5;
+export const wallHeight = 200;
+export const MILLPerWidth = 0.1;

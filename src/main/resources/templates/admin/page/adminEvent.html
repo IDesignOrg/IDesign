@@ -1,3 +1,111 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:dc751c04eed2d37a649866ac4bd8d16f3084d4198933761f797ea450ede58020
-size 3530
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>이벤트 관리</title>
+	<link rel="stylesheet" href="/css/adminPage.css" />
+</head>
+
+<body>
+	<div th:insert="~{/admin/page/adminsidebar :: sidebar}"></div>
+	<div class="main-content">
+		<header>
+			<h1>이벤트 관리</h1>
+		</header>
+		<div class="table-container">
+			<table>
+				<thead>
+					<tr>
+						<th>이벤트 번호</th>
+						<th>이벤트 제목</th>
+						<th>이벤트 내용</th>
+						<th>이벤트 이미지</th>
+						<th>쿠폰 번호</th>
+						<th>상태</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="event : ${events}" th:data-eventno="${event.eventNo}">
+						<td th:text="${event.eventNo}"></td>
+						<td th:text="${event.eventTitle}"></td>
+						<td th:text="${event.eventContent}"></td>
+						<td><img th:src="${event.eventImg}" alt="이벤트 이미지" style="width: 100px; height: auto;"></td>
+						<td th:text="${event.coupon.couponName}"></td>
+						<td>
+							<button class="delete-event-btn" th:data-eventno="${event.eventNo}">삭제</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<a href="/board/event/write">이벤트 작성 하기</a>
+		</div>
+		<div class="pagination">
+			<a th:href="@{/admin/page/adminEvent(page=${currentPage - 1})}" th:if="${currentPage > 0}">&laquo; 이전</a>
+			<span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+				<a th:href="@{/admin/page/adminEvent(page=${i})}" th:classappend="${i == currentPage} ? 'active'"
+					th:text="${i + 1}">1</a>
+			</span>
+			<a th:href="@{/admin/page/adminEvent(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}">다음
+				&raquo;</a>
+		</div>
+
+		<!-- JavaScript -->
+		<script>
+			document.addEventListener("DOMContentLoaded", function () {
+
+				// 삭제 버튼 이벤트 추가
+				var deleteButtons = document.querySelectorAll(".delete-event-btn");
+				deleteButtons.forEach(function (button) {
+					button.addEventListener("click", function () {
+						var eventNo = button.getAttribute("data-eventno");
+						if (confirm("정말로 이 이벤트를 삭제하시겠습니까?")) {
+							deleteEvent(eventNo);
+						}
+					});
+				});
+
+				// 이벤트 상태 변경 처리 함수
+				function processEvent(eventNo, state) {
+					fetch('/processEvent?eventNo=' + eventNo + '&state=' + state, {
+						method: 'POST'
+					})
+						.then(response => {
+							if (response.ok) {
+								alert('이벤트 상태가 업데이트되었습니다.');
+								location.reload(); // 페이지 새로고침으로 목록 갱신
+							} else {
+								alert('이벤트 상태 업데이트에 실패했습니다.');
+							}
+						})
+						.catch(error => {
+							console.error('Error processing event:', error);
+							alert('이벤트 상태 업데이트 중 오류가 발생했습니다.');
+						});
+				}
+
+				// 이벤트 삭제 처리 함수
+				function deleteEvent(eventNo) {
+					fetch('/deleteEvent?eventNo=' + eventNo, {
+						method: 'DELETE'
+					})
+						.then(response => {
+							if (response.ok) {
+								alert('이벤트가 삭제되었습니다.');
+								location.reload(); // 페이지 새로고침으로 목록 갱신
+							} else {
+								alert('이벤트 삭제에 실패했습니다.');
+							}
+						})
+						.catch(error => {
+							console.error('Error deleting event:', error);
+							alert('이벤트 삭제 중 오류가 발생했습니다.');
+						});
+				}
+			});
+		</script>
+	</div>
+</body>
+
+</html>
