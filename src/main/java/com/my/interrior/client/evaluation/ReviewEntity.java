@@ -2,6 +2,9 @@ package com.my.interrior.client.evaluation;
 
 import java.time.LocalDateTime;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.my.interrior.client.user.UserEntity;
 
@@ -54,6 +57,7 @@ public class ReviewEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "u_id", referencedColumnName = "u_id")
+	@JsonIgnore
 	private UserEntity user;
 	
 	@JsonProperty("RMainPhoto")
