@@ -1,3 +1,184 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:9805c064650c3eed48d2b5c20d4e1770f108459a589f21848aea5dfe3e403567
-size 4023
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>이벤트 페이지</title>
+	<style>
+		/* Reset styles */
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		/* Global styles */
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #f8f9fa;
+			padding: 20px;
+			display: flex;
+			justify-content: center;
+		}
+
+		.container {
+			width: 90%;
+			max-width: 1200px;
+			background-color: #fff;
+			border-radius: 5px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			padding: 20px;
+			margin-top: 20px;
+			position: relative;
+		}
+
+		h1 {
+			font-size: 24px;
+			margin-bottom: 20px;
+			text-align: center;
+		}
+
+		.event-list {
+			list-style: none;
+			padding-left: 0;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.event-list li {
+			border: 1px solid #ddd;
+			border-radius: 5px;
+			overflow: hidden;
+			transition: box-shadow 0.3s ease;
+			margin-bottom: 20px;
+		}
+
+		.event-list li:hover {
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+		}
+
+		.event-list li img {
+			width: 100%;
+			display: block;
+			border-radius: 5px 5px 0 0;
+		}
+
+		.event-details {
+			padding: 10px;
+		}
+
+		.event-title {
+			font-size: 18px;
+			font-weight: bold;
+			color: #333;
+			margin-bottom: 10px;
+			text-decoration: none;
+			display: block;
+			transition: color 0.3s ease;
+		}
+
+		.event-title:hover {
+			color: #007bff;
+		}
+
+		.pagination {
+			margin-top: 20px;
+			text-align: center;
+		}
+
+		.pagination li {
+			display: inline-block;
+			margin-right: 5px;
+		}
+
+		.pagination li a {
+			color: #007bff;
+			text-decoration: none;
+			padding: 5px 10px;
+			border: 1px solid #007bff;
+			border-radius: 5px;
+			transition: all 0.3s ease;
+		}
+
+		.pagination li.disabled a,
+		.pagination li.active a {
+			color: #fff;
+			background-color: #007bff;
+			border-color: #007bff;
+		}
+
+		.pagination li a:hover {
+			background-color: #007bff;
+			color: #fff;
+		}
+
+		/* Home button */
+		.home-button {
+			width: 100%;
+			/* 홈 버튼을 부모 요소인 .container의 너비에 맞추기 */
+			text-align: center;
+			border-radius: 5px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			padding: 20px;
+			background-color: #007bff;
+			/* 파란색 배경색 */
+			margin-top: 40px;
+		}
+
+		.home-button a {
+			display: block;
+			/* 버튼을 블록 레벨 요소로 설정하여 가로로 길게 표시 */
+			width: 100%;
+			/* 버튼을 부모 요소인 .home-button의 너비에 맞추기 */
+			padding: 10px 0;
+			/* 위아래로 내부 여백 설정 */
+			color: #fff;
+			text-decoration: none;
+			border-radius: 5px;
+			transition: background-color 0.3s ease, color 0.3s ease;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<h1>이벤트 목록</h1>
+
+		<ul class="event-list">
+			<li th:if="${session.UId} == admin">
+				<a th:href = "@{/board/event/write}">글 쓰기</a>
+			</li>
+			<li th:each="event : ${events.content}">
+				<div class="event-details">
+					<a th:href="@{/board/eventDetail(eventNo=${event.eventNo})}" class="event-title"
+						th:text="${event.eventTitle}"></a>
+					<img th:src = "${event.eventImg}"/>
+				</div>
+			</li>
+		</ul>
+
+		<!-- Pagination links -->
+		<nav aria-label="Page navigation">
+			<ul class="pagination">
+				<li th:class="${events.first ? 'page-item disabled' : 'page-item'}">
+					<a class="page-link" th:href="@{/board/event(page=0)}">&laquo;</a>
+				</li>
+				<li th:each="pageNum : ${#numbers.sequence(0, events.totalPages - 1)}"
+					th:class="${events.number == pageNum ? 'page-item active' : 'page-item'}">
+					<a class="page-link" th:href="@{/board/event(page=${pageNum})}" th:text="${pageNum + 1}"></a>
+				</li>
+				<li th:class="${events.last ? 'page-item disabled' : 'page-item'}">
+					<a class="page-link" th:href="@{/board/event(page=${events.totalPages - 1})}">&raquo;</a>
+				</li>
+			</ul>
+		</nav>
+
+		<!-- Home button -->
+		<div class="home-button">
+			<a href="/" class="btn">홈으로</a>
+		</div>
+	</div>
+</body>
+
+</html>

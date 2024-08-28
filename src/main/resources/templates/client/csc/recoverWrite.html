@@ -1,3 +1,56 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:c01efd304d849431467e0a4bcf4cfb32f929a862caded41c110611b86bfb3f5b
-size 1426
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>계정 복구 신청</title>
+	<script th:inline="javascript">
+		document.addEventListener("DOMContentLoaded", function () {
+			var successMessage = /*[[${message}]]*/ '';
+			var errorMessage = /*[[${error}]]*/ '';
+
+			if (successMessage) {
+				alert(successMessage);
+			}
+
+			if (errorMessage) {
+				alert(errorMessage);
+			}
+		});
+	</script>
+
+</head>
+
+<body>
+	<div class="container">
+		<h1>계정 복구 신청</h1>
+
+		<!-- 성공 메시지 출력 -->
+		<div th:if="${message}" class="success-message">
+			<p th:text="${message}"></p>
+		</div>
+
+		<!-- 오류 메시지 출력 -->
+		<div th:if="${error}" class="error-message">
+			<p th:text="${error}"></p>
+		</div>
+
+		<form action="/board/submitRecovery" method="post">
+			<!-- 사용자 정보는 숨겨진 필드로 전송 -->
+			<input type="hidden" name="userNO" th:value="${user.UNo}">
+
+			<!-- 신청 날짜는 현재 날짜로 자동 설정 -->
+			<label for="requestDate">신청 날짜:</label>
+			<input type="text" id="requestDate" name="requestDate" th:value="${requestDate}" readonly>
+
+			<!-- 복구 사유 입력 -->
+			<label for="reason">복구 사유:</label>
+			<textarea id="reason" name="reason" rows="6" required></textarea>
+
+			<button type="submit">복구 신청</button>
+		</form>
+	</div>
+</body>
+
+</html>

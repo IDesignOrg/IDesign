@@ -1,3 +1,663 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:518215679f53a02c6dd740dab859dcd2c6ab9bba0f3c3d7aace46e374b192f2a
-size 9988
+.visual {}
+
+.visual .viSlider {
+	width: 1820px;
+	height: 800px;
+	margin: 120px auto 0;
+	position: relative;
+}
+
+.visual .viSlider .itme {}
+
+.visual .viSlider .itme img {}
+
+.visual .viSlider .slick-dots {
+	width: 720px;
+	height: 72px;
+	background: #6633ff70;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	position: absolute;
+	left: 0;
+	bottom: 0;
+}
+
+.visual .viSlider .slick-dots li {
+	margin-right: 62px;
+	opacity: 0.4;
+}
+
+.visual .viSlider .slick-dots li:last-child {
+	margin-right: 0;
+}
+
+.visual .viSlider .slick-dots li.slick-active {
+	opacity: 1;
+}
+
+.visual .viSlider .slick-dots li span {
+	font-size: 18px;
+	font-weight: 400;
+	color: #fff;
+	display: block;
+	cursor: pointer;
+}
+
+/* service */
+.service {}
+
+.service .inner {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	margin: 130px 0;
+}
+
+.service .inner .title {
+	text-align: center;
+	margin-bottom: 70px;
+}
+
+.service .inner .title span {
+	font-size: 18px;
+	font-weight: 500;
+	text-transform: uppercase;
+	color: #6666ff;
+	margin-bottom: 16px;
+	display: block;
+}
+
+.service .inner .title h2 {
+	font-size: 36px;
+	font-weight: 700;
+	color: #6633ff;
+}
+
+.service .desc {
+	width: 1380px;
+	height: 320px;
+
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.service .desc .item {
+	width: 250px;
+	height: 100%;
+	box-shadow: 4px 5px 15px rgba(0, 0, 0, 0.295);
+	border-radius: 10px;
+}
+
+.service .desc .item img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* banner */
+.banner {
+	height: 480px;
+	background: url("../image/banner_bg.png") no-repeat center center;
+	background-size: cover;
+
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+}
+
+.banner .title {
+	margin-left: 230px;
+}
+
+.banner .title span {
+	font-size: 18px;
+	font-weight: 400;
+	color: #fff;
+
+	display: block;
+}
+
+.banner .title h2 {
+	font-size: 36px;
+	font-weight: 400;
+	line-height: 50px;
+	color: #fff;
+
+	margin: 18px 0 36px;
+}
+
+.banner .title h2 strong {
+	font-weight: 700;
+}
+
+/* gallery */
+.gallery {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 170px 0;
+}
+
+.gallery .title {
+	margin-left: 130px;
+}
+
+.gallery .title h2 {
+	font-size: 36px;
+	font-weight: 700;
+	line-height: 50px;
+	color: #6633ff;
+}
+
+.gallery .title p {
+	font-size: 22px;
+	font-weight: 400;
+	line-height: 36px;
+	color: #5a5a5a;
+	margin: 32px 0 62px;
+}
+
+.gallery .title .viewLink {}
+
+.gallery .title .viewLink span {}
+
+.gallSlider {
+	width: 1200px;
+	position: relative;
+}
+
+.gallSlider .slick-dots {
+	position: absolute;
+	left: 0;
+	bottom: -32px;
+
+	width: calc(100% - 20px);
+	height: 5px;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.gallSlider .slick-dots li {
+	flex: 1;
+	height: 100%;
+	background: #6666ff80;
+	transition: 0.25s;
+}
+
+.gallSlider .slick-dots li.slick-active {
+	background: #6633ff;
+}
+
+.gallSlider .slick-dots li button {
+	display: none;
+}
+
+.gallSlider .item {
+	width: 380px !important;
+	border-radius: 20px;
+	border: 1px solid #676767;
+	box-sizing: border-box;
+	margin-right: 20px;
+
+	position: relative;
+	cursor: pointer;
+	overflow: hidden;
+}
+
+.gallSlider .item:hover {
+	/* transform: translateY(-50px); */
+}
+
+.gallSlider .item img {
+	width: 380px;
+	height: 470px;
+}
+
+.gallSlider .item .tBox {
+	width: 100%;
+	height: 62px;
+	background: #6633ff;
+
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	opacity: 0;
+	transition: 0.5s;
+}
+
+.gallSlider .item .tBox span {
+	font-size: 20px;
+	font-weight: 700;
+	color: #fff;
+	margin-left: 20px;
+}
+
+.gallSlider .item:hover .tBox {
+	opacity: 11;
+}
+
+/* review */
+.review {
+	background: #f6f3ff;
+}
+
+.review .inner {
+	width: 1350px;
+	margin: 135px auto;
+}
+
+.review .title {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 36px;
+}
+
+.review .title h2 {
+	font-size: 36px;
+	font-weight: 700;
+	line-height: 42px;
+	color: #6633ff;
+}
+
+.review .title h2 span {
+	font-size: 22px;
+	font-weight: 400;
+	color: #5a5a5a;
+}
+
+.review .title .viewLink {}
+
+.review .title .viewLink span {}
+
+.reviewCont {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.reviewCont .desc {}
+
+.reviewCont .desc .item {
+	width: 430px;
+	height: 430px;
+}
+
+.reviewCont .desc .item img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.reviewCont .desc02 {
+	width: 890px;
+	height: 430px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-direction: column;
+}
+
+.reviewCont .desc02 .items {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.reviewCont .desc02 .items .item {
+	width: 200px;
+	height: 200px;
+}
+
+.reviewCont .desc02 .items .item img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* shop */
+.shop {
+	height: 530px;
+	background: url("../image/shop_bg.png") no-repeat center center;
+	background-size: cover;
+}
+
+.shop .title {
+	margin: 70px 0 0 400px;
+}
+
+.shop .title h2 {
+	font-size: 36px;
+	font-weight: 400;
+	line-height: 50px;
+	color: #6633ff;
+	letter-spacing: -1.5px;
+}
+
+.shop .title h2 strong {
+	font-weight: 700;
+}
+
+.shop .title p {
+	font-size: 18px;
+	font-weight: 400;
+	color: #5a5a5a;
+	margin: 26px 0 36px;
+}
+
+.shop .title .shopLink {
+	width: 200px;
+	height: 52px;
+	background: #6633ff;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.shop .title .shopLink span {
+	font-size: 16px;
+	font-weight: 400;
+	color: #fff;
+	text-transform: uppercase;
+}
+
+#chatIcon {
+	position: fixed;
+	right: 50px;
+	/* 오른쪽에서 50px 위치에 */
+	bottom: 50px;
+	/* 아래에서 50px 위치에 고정 */
+	z-index: 997;
+	/* 다른 요소 위에 나타나도록 */
+	cursor: pointer;
+	/* 마우스 커서를 포인터로 변경하여 클릭 가능하게 */
+}
+
+#chatIcon img {
+	width: 50px;
+	/* 아이콘 크기 조정 */
+	height: 50px;
+}
+
+#chatContainer {
+	position: fixed;
+	right: 50px;
+	/* 오른쪽에서 50px 위치에 */
+	bottom: 50px;
+	/* 아래에서 50px 위치에 고정 */
+	width: 300px;
+	/* 채팅 창 너비 */
+	height: 300px;
+	/* 채팅 창 높이 */
+	background-color: #fff;
+	/* 배경색 */
+	border: 1px solid #ccc;
+	/* 테두리 */
+	padding: 10px;
+	/* 안쪽 여백 */
+	z-index: 998;
+	/* 아이콘 아래에 표시 */
+}
+
+.hidden {
+	display: none;
+}
+
+.login-container {
+	width: 320px;
+	background-color: #fff;
+	border-radius: 5px;
+	padding: 40px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-container h1 {
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.login-form label {
+	display: block;
+	margin-bottom: 10px;
+}
+
+.login-form input {
+	width: calc(100% - 22px);
+	padding: 12px;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+}
+
+.login-form button {
+	width: 100%;
+	padding: 15px 0;
+	background: #6633ff;
+	color: #fff;
+	border: none;
+	border-radius: 3px;
+	cursor: pointer;
+	margin-top: 32px;
+}
+
+.find {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 10px 0 22px;
+}
+
+.find a {
+	/* flex: 1; */
+	display: inline-block;
+	text-align: center;
+	padding: 5px 12px;
+
+	font-size: 14px;
+
+	position: relative;
+}
+
+.find a::before {
+	content: "";
+	position: absolute;
+	right: 0;
+	top: 50%;
+	transform: translateY(-50%);
+
+	width: 1px;
+	height: 65%;
+	display: block;
+	background: #000;
+}
+
+.find a:last-child::before {
+	display: none;
+}
+
+.snsLogin {
+	width: 100%;
+}
+
+.snsLogin .text-center {
+	width: 100%;
+	height: 42px;
+	border-radius: 5px;
+	overflow: hidden;
+	margin-bottom: 10px;
+}
+
+.snsLogin .text-center:last-child {
+	margin-bottom: 0;
+}
+
+.snsLogin .text-center a {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.snsLogin .text-center:nth-child(1) a {
+	background: #fee500;
+	color: #391b1b;
+}
+
+.snsLogin .text-center:nth-child(2) a {
+	background: #4086f4;
+	color: #fff;
+}
+
+.snsLogin .text-center:nth-child(3) a {
+	background: #09aa5c;
+	color: #fff;
+}
+
+.snsLogin .text-center a img {
+	width: 25px;
+	display: block;
+
+	margin-left: 20px;
+}
+
+.snsLogin .text-center:nth-child(2) a img,
+.snsLogin .text-center:nth-child(3) a img {
+	filter: brightness(0) invert(1);
+}
+
+.snsLogin .text-center a span {
+	font-size: 16px;
+	font-weight: 800;
+	/* color: #303030; */
+	margin-right: 20px;
+	display: block;
+}
+
+/* shopList */
+* {
+    margin: 0;
+    padding: 0;
+  
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.product-item {
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out;
+}
+
+.product-item:hover {
+    transform: scale(1.05);
+}
+
+.product-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.product-link img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.product-details {
+    padding: 15px;
+    text-align: center;
+}
+
+.product-details h2 {
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.product-price {
+    font-size: 1.1rem;
+    color: #e74c3c;
+    margin-bottom: 5px;
+}
+
+.product-discount {
+    font-size: 0.9rem;
+    color: #888;
+}
+
+form label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+form input, form select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    flex: 1;
+    margin-right: 10px;
+}
+
+form button {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+form button:hover {
+    background-color: #2980b9;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination a {
+    padding: 10px 15px;
+    margin: 0 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #3498db;
+    transition: background-color 0.3s;
+}
+
+.pagination a.active {
+    background-color: #3498db;
+    color: white;
+}
+
+.pagination a.disabled {
+    color: #ccc;
+    pointer-events: none;
+}
+
+.pagination a:hover:not(.disabled) {
+    background-color: #2980b9;
+    color: white;
+}

@@ -1,3 +1,31 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:a6de181b6fb224603254c31835e2872ebfb35ece1edf9240fa548b121d8f8da6
-size 884
+import { THREE } from "../../../three.js";
+import { ceilingColor } from "../objectConf/colors.js";
+import { planeLength, planeWidth, wallHeight } from "../objectConf/length.js";
+import { ceilingName } from "../objectConf/objectNames.js";
+class Ceiling {
+  constructor({
+    x,
+    y = wallHeight,
+    z,
+    width = planeWidth,
+    length = planeLength,
+    color = ceilingColor,
+    rotationY,
+  }) {
+    const ceilingGeometry = new THREE.PlaneGeometry(width, length);
+    const ceilingMaterial = new THREE.MeshBasicMaterial({
+      color: color,
+      side: THREE.BackSide,
+    });
+    const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
+    ceiling.name = ceilingName;
+    ceiling.rotation.x = Math.PI / 2;
+    ceiling.rotation.y = rotationY;
+    // ceiling.rotation.z = Math.PI / 4;
+    ceiling.position.set(x, y, z);
+
+    return ceiling;
+  }
+}
+
+export { Ceiling };
