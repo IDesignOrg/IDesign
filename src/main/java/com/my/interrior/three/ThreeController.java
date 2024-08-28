@@ -23,7 +23,7 @@ public class ThreeController {
 		String userId = (String) session.getAttribute("UId");
 
 		model.addAttribute("userId", userId);
-		return "dashboard/dashboard";
+		return "dashboard";
 	}
 
 	@GetMapping("/three/design")
@@ -34,7 +34,7 @@ public class ThreeController {
 		long userNo = user.getUNo();
 
 		session.setAttribute("userNo", userNo);
-		return "three/three";
+		return "three";
 
 	}
 }
