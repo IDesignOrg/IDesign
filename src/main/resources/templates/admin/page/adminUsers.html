@@ -14,11 +14,39 @@
 		<header>
 			<h1>회원 정보</h1>
 		</header>
+		<!-- 검색 폼 추가 -->
+		<div class="search-container">
+			<form id="searchForm">
+				<label for="searchType">검색 유형:</label>
+				<select id="searchType" name="searchType">
+					<option value="nickname">아이디 (UId)</option>
+					<option value="name">닉네임 (UName)</option>
+					<option value="email">이메일 (UMail)</option>
+				</select>
+
+				<label for="searchInput">검색어:</label>
+				<input type="text" id="searchInput" name="searchInput" placeholder="검색어를 입력하세요">
+
+				<label for="startDate">가입일(시작):</label>
+				<input type="date" id="startDate" name="startDate">
+
+				<label for="endDate">가입일(끝):</label>
+				<input type="date" id="endDate" name="endDate">
+
+				<label for="orderType">정렬:</label>
+				<select id="orderType" name="orderType">
+					<option value="postCountDesc">게시글 높은 순</option>
+					<option value="commentCountDesc">댓글 높은 순</option>
+				</select>
+
+				<button type="button" id="searchButton">검색</button>
+			</form>
+		</div>
 		<div class="table-container">
 			<table>
 				<thead>
 					<tr>
-						<th>이름</th>
+						<th>아이디</th>
 						<th>닉네임</th>
 						<th>EMail</th>
 						<th>가입일</th>
@@ -28,7 +56,7 @@
 						<th>쿠폰 발급</th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody id="userTableBody">
 					<tr th:each="userWithCounts : ${usersWithCounts}" th:data-uno="${userWithCounts.user.UNo}">
 						<td th:text="${userWithCounts.user.UId}"></td>
 						<td th:text="${userWithCounts.user.UName}"></td>
@@ -139,9 +167,98 @@
 				var selectedCouponNo = null;
 				var selectedUserNo = null;
 
-				// 콘솔 로그를 통해 요소가 제대로 선택되었는지 확인
-				console.log("issueSelectedCouponBtn:", issueSelectedCouponBtn);
-				console.log("couponModal:", couponModal);
+				// 검색 버튼 이벤트 리스너 추가
+				document.getElementById("searchButton").addEventListener("click", function () {
+					var searchType = document.getElementById("searchType").value;
+					var searchInput = document.getElementById("searchInput").value || "";
+					var startDate = document.getElementById("startDate").value;
+					var endDate = document.getElementById("endDate").value;
+					var orderType = document.getElementById("orderType").value;
+
+					var queryParams = `searchType=${searchType}&searchInput=${searchInput}&orderType=${orderType}`;
+					if (startDate) queryParams += `&startDate=${startDate}`;
+					if (endDate) queryParams += `&endDate=${endDate}`;
+
+					fetch(`/searchUsers?${queryParams}`)
+						.then(response => {
+							if (!response.ok) {
+								throw new Error('Network response was not ok');
+							}
+							return response.json();
+						})
+						.then(data => {
+							updateUserTable(data);
+						})
+						.catch(error => {
+							console.error('Error fetching user data:', error);
+						});
+				});
+
+				function updateUserTable(users) {
+					console.log('Received data:', users); // 서버에서 받은 데이터 확인
+
+					if (!Array.isArray(users)) {
+						console.error('Expected an array but received:', users);
+						return;
+					}
+
+					var tableBody = document.getElementById("userTableBody");
+					tableBody.innerHTML = ""; // 기존 테이블 내용 초기화
+
+					users.forEach(user => {
+						var row = `
+            <tr data-uno="${user.user.UNo}">
+                <td>${user.user.UId}</td>
+                <td>${user.user.UName}</td>
+                <td>${user.user.UMail}</td>
+                <td>${new Date(user.user.URegister).toLocaleDateString()}</td>
+                <td class="post-count" data-post-count="${user.postCount}">${user.postCount}</td>
+                <td class="comment-count" data-comment-count="${user.commentCount}">${user.commentCount}</td>
+                <td>
+                    <button class="deactivate-btn" data-uno="${user.user.UNo}" ${user.user.UDeactivated ? 'style="display:none;"' : ''}>비활성화</button>
+                    <button class="activate-btn" data-uno="${user.user.UNo}" ${user.user.UDeactivated ? '' : 'style="display:none;"'}>활성화</button>
+                </td>
+                <td><button class="issue-coupon-btn" data-uno="${user.user.UNo}">쿠폰 발급</button></td>
+            </tr>
+        `;
+						tableBody.innerHTML += row;
+					});
+
+					resetEventListeners(); // 이벤트 리스너 재설정
+				}
+
+
+
+				function resetEventListeners() {
+					deactivateButtons = document.querySelectorAll(".deactivate-btn");
+					activateButtons = document.querySelectorAll(".activate-btn");
+					issueCouponButtons = document.querySelectorAll(".issue-coupon-btn");
+
+					deactivateButtons.forEach(function (button) {
+						button.addEventListener("click", function () {
+							var userUNo = button.getAttribute("data-uno");
+							if (confirm("해당 유저를 비활성화 하시겠습니까?")) {
+								deactivateUser(userUNo);
+							}
+						});
+					});
+
+					activateButtons.forEach(function (button) {
+						button.addEventListener("click", function () {
+							var userUNo = button.getAttribute("data-uno");
+							if (confirm("해당 유저를 활성화 하시겠습니까?")) {
+								activateUser(userUNo);
+							}
+						});
+					});
+
+					issueCouponButtons.forEach(function (button) {
+						button.addEventListener("click", function () {
+							selectedUserNo = button.getAttribute("data-uno");
+							fetchCoupons();
+						});
+					});
+				}
 
 				deactivateButtons.forEach(function (button) {
 					button.addEventListener("click", function () {
@@ -209,21 +326,37 @@
 							document.getElementById("userModal").style.display = "block";
 						} else {
 							fetch('/fetchPosts?userUNo=' + userUNo)
-								.then(response => response.json())
+								.then(response => {
+									if (!response.ok) {
+										throw new Error('네트워크 응답에 문제가 있습니다.');
+									}
+									return response.text(); // JSON 대신 텍스트로 응답을 받아옵니다.
+								})
+								.then(text => {
+									console.log('서버 응답 텍스트:', text); // 서버에서 받은 응답을 로그에 출력합니다.
+
+									try {
+										const jsonData = JSON.parse(text); // JSON으로 파싱 시도
+										return jsonData;
+									} catch (error) {
+										console.error('JSON 파싱 오류 발생:', error.message);
+										throw error; // 파싱 오류를 발생시켜 이후 처리를 막습니다.
+									}
+								})
 								.then(data => {
 									if (!data || data.length === 0) {
 										document.getElementById("modalTableBody").innerHTML = '<tr><td colspan="6">게시글이 없습니다.</td></tr>';
 									} else {
 										let tableRows = data.map(post => `
-                                            <tr>
-                                                <td>${post.RNo}</td>
-                                                <td>${post.RTitle}</td>
-                                                <td>${post.RStarRating}</td>
-                                                <td>${post.RViews}</td>
-                                                <td>${new Date(post.RWrittenTime).toLocaleString()}</td>
-                                                <td><button class="delete-post-btn" data-rno="${post.RNo}">삭제</button></td>
-                                            </tr>
-                                        `).join('');
+                <tr>
+                    <td>${post.RNo}</td>
+                    <td>${post.RTitle}</td>
+                    <td>${post.RStarRating}</td>
+                    <td>${post.RViews}</td>
+                    <td>${new Date(post.RWrittenTime).toLocaleString()}</td>
+                    <td><button class="delete-post-btn" data-rno="${post.RNo}">삭제</button></td>
+                </tr>
+            `).join('');
 										document.getElementById("modalTableBody").innerHTML = tableRows;
 
 										// 삭제 버튼에 클릭 이벤트 추가
@@ -238,13 +371,16 @@
 									document.getElementById("userModal").style.display = "block";
 								})
 								.catch(error => {
-									console.error('Error fetching posts:', error);
+									console.error('게시글을 가져오는 중 오류 발생:', error);
 									document.getElementById("modalTableBody").innerHTML = '<tr><td colspan="6">데이터를 가져오는 중 오류가 발생했습니다.</td></tr>';
 									document.getElementById("userModal").style.display = "block";
 								});
+
 						}
 					});
 				});
+
+
 
 				var commentCountElements = document.querySelectorAll(".comment-count");
 				commentCountElements.forEach(function (element) {
@@ -296,13 +432,11 @@
 				issueCouponButtons.forEach(function (button) {
 					button.addEventListener("click", function () {
 						selectedUserNo = button.getAttribute("data-uno");
-						console.log("Selected User No:", selectedUserNo); // 로그 추가
 						fetchCoupons();
 					});
 				});
 
 				issueSelectedCouponBtn.addEventListener("click", function () {
-					console.log("Issue Coupon button clicked"); // 로그 추가
 					if (selectedCouponNo && selectedUserNo) {
 						issueCoupon(selectedUserNo, selectedCouponNo);
 					} else {
@@ -311,7 +445,6 @@
 				});
 
 				function issueCoupon(userNo, couponNo) {
-					console.log("Issuing coupon for user:", userNo, "with coupon:", couponNo); // 로그 추가
 					fetch('/issueCouponToUser', {
 						method: 'POST',
 						headers: {
@@ -323,7 +456,6 @@
 						})
 					})
 						.then(response => {
-							// 응답이 성공적인지 확인
 							return response.text().then(text => {
 								if (!response.ok) {
 									throw new Error(text);  // 오류가 있으면 예외 발생
@@ -360,7 +492,6 @@
 							document.querySelectorAll('input[name="selectedCoupon"]').forEach(function (radio) {
 								radio.addEventListener("change", function () {
 									selectedCouponNo = this.value;
-									console.log("Selected Coupon No:", selectedCouponNo); // 로그 추가
 								});
 							});
 

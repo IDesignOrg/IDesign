@@ -1,8 +1,8 @@
 package com.my.interrior.client.evaluation;
 
-import java.time.LocalDateTime;
 
-import com.my.interrior.client.user.UserEntity;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,24 +12,28 @@ import lombok.ToString;
 @Setter
 @ToString
 public class ReviewDTO {
+	private Long rNo;
+    private String rTitle;
+    private String rContent;
+    private String rCategory;
+    private String rStarRating;
+    private Integer rViews;
+    private LocalDateTime rWrittenTime;
+    private String userId;
+    private List<String> reviewPhotos;
+    private List<ReviewCommentDTO> comments;
 
-	private Long RNo;
-	
-	private String RTitle;
-	
-	private String RContent;
-	
-	private String RMainphoto;
-	
-	private String RCategory;
-	
-	private String RStarRating;
-	
-	private Integer RViews;
-	
-	private LocalDateTime RWrittenTime;
-	
-	private UserEntity user;
-	
-	private String RProfile;
+    // DTO 생성자
+    public ReviewDTO(Long rNo, String rTitle, String rContent, String rCategory, String rStarRating, Integer rViews, LocalDateTime rWrittenTime, String userId, List<String> reviewPhotos, List<ReviewCommentDTO> comments) {
+        this.rNo = rNo;
+        this.rTitle = rTitle;
+        this.rContent = rContent;
+        this.rCategory = rCategory;
+        this.rStarRating = rStarRating;
+        this.rViews = rViews;
+        this.rWrittenTime = rWrittenTime;
+        this.userId = userId;
+        this.reviewPhotos = reviewPhotos;
+        this.comments = comments;
+    }
 }

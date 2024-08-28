@@ -53,7 +53,7 @@ public class FaqController {
 
 		faqRepository.save(faq);
 
-		return "admin/csc/faqWrite";
+		return "redirect:/admin/adminFAQ";
 
 	}
 
