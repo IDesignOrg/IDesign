@@ -1,3 +1,94 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:462a366f92056b3ab0c36a1bd3fc600c1cf090ba1d78cab453cc0a32ef89bc9b
-size 6163
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>복구 요청 관리</title>
+    <link rel="stylesheet" href="/css/adminPage.css" />
+</head>
+
+<body>
+    <div th:insert="~{/admin/page/adminsidebar :: sidebar}"></div>
+    <div class="main-content">
+        <header>
+            <h1>복구 요청 관리</h1>
+        </header>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>사용자 ID</th>
+                        <th>이름</th>
+                        <th>이메일</th>
+                        <th>신청 날짜</th>
+                        <th>사유</th>
+                        <th>상태</th>
+                        <th>복구</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="recovery : ${recovers}" th:data-recoverno="${recovery.RecoverNo}">
+                        <td th:text="${recovery.user.UId}"></td>
+                        <td th:text="${recovery.user.UName}"></td>
+                        <td th:text="${recovery.user.UMail}"></td>
+                        <td th:text="${recovery.requestDate}"></td>
+                        <td th:text="${recovery.reason}"></td>
+                        <td th:text="${recovery.status}"></td>
+                        <td>
+                            <button th:if="${recovery.processedDate == null}" class="recover-btn" th:data-recoverno="${recovery.RecoverNo}">
+                                복구
+                            </button>
+                            <span th:if="${recovery.processedDate != null}">복구 완료</span>
+                        </td>
+                    </tr>
+                    <!-- 다른 데이터 행들 -->
+                </tbody>
+            </table>
+        </div>
+        <!-- 페이지 네비게이션 -->
+		<div class="pagination">
+            <a th:href="@{/admin/page/adminRecovery(page=${currentPage - 1})}" th:if="${currentPage > 0}">&laquo; 이전</a>
+            <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                <a th:href="@{/admin/page/adminRecovery(page=${i})}" th:classappend="${i == currentPage} ? 'active'" th:text="${i + 1}">1</a>
+            </span>
+            <a th:href="@{/admin/page/adminRecovery(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}">다음 &raquo;</a>
+        </div>
+
+        <!-- JavaScript 모달 제어 및 데이터 로드 -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // 복구 버튼 이벤트 추가
+                var recoverButtons = document.querySelectorAll(".recover-btn");
+                recoverButtons.forEach(function (button) {
+                    button.addEventListener("click", function () {
+                        var recoverNo = button.getAttribute("data-recoverno");
+                        if (confirm("해당 요청을 복구하시겠습니까?")) {
+                            processRecovery(recoverNo);
+                        }
+                    });
+                });
+
+                function processRecovery(recoverNo) {
+                    fetch('/processRecovery?recoverNo=' + recoverNo, {
+                        method: 'POST' // POST 요청으로 전송
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                alert('복구가 완료되었습니다.');
+                                location.reload(); // 페이지 새로고침으로 목록 갱신
+                            } else {
+                                alert('복구에 실패했습니다.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error processing recovery:', error);
+                            alert('복구 처리 중 오류가 발생했습니다.');
+                        });
+                }
+            });
+        </script>
+    </div>
+</body>
+
+</html>
