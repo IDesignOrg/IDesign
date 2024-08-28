@@ -1,3 +1,15 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:d8ddb7c77261460ed461d32692270d87205c4285b825ea958b2a0df0b2bbc23d
-size 555
+export const gridHelperY = -1;
+export const moveControllerY = floorY + 2;
+export const roomY = 1;
+export const floorY = roomY;
+export const wallY = floorY + 0.01;
+export const arrowsY = floorY + 0.01;
+export const objectY = floorY + 0.01;
+export const distanceTextY = arrowsY + 0.01;
+export const lineShaodwY = floorY + 0.5;
+export const circleY = floorY + 2;
+
+export const floorRenderOrder = 0;
+export const circlesRenderOrder = floorRenderOrder + 1;
+export const areaRenderOrder = floorRenderOrder + 1;
+export const arrowsRenderOrder = areaRenderOrder;
