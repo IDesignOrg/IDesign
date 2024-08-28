@@ -1,3 +1,31 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:e2c87bb2e5a7e91a065c7fed65ed666508807b0968e78a3f1cd836d1914e1e1f
-size 740
+import { D2Room, D3Room } from "../objects/Room";
+import { Circles } from "../objects/circles";
+
+export const D3Shapes = ({ object, scene }) => {
+  console.log(object);
+  const room = new D3Room({ object });
+
+  return room;
+};
+
+export const D2Shapes = ({ object, cameraZoom }) => {
+  // 아마 room
+  const points = object.userData.points;
+  const room = new D2Room({ points });
+  room.createRoom({ cameraZoom });
+  room.userData = {
+    ...object.userData,
+  };
+
+  return room;
+};
+
+export const create2DObject = ({ name, points, cameraZooom }) => {
+  let room = new D2Room({ points, name });
+
+  room.name = name;
+  const circleGroup = new Circles({ points });
+  circleGroup.name = "circleGroup";
+  room.add(circleGroup);
+  return room;
+};

@@ -1,3 +1,185 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:cd9483fb3c18cf8073e7816f574de2d397052f20b61f5e2fdd5d311379cef071
-size 7128
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>상점 관리</title>
+	<link rel="stylesheet" href="/css/adminPage.css" />
+</head>
+
+<body>
+	<div th:insert="~{/admin/page/adminsidebar :: sidebar}"></div>
+	<div class="main-content">
+		<header>
+			<h1>상점 관리</h1>
+		</header>
+		<div class="table-container">
+			<table>
+				<thead>
+					<tr>
+						<th>번호</th>
+						<th>제목</th>
+						<th>내용</th>
+						<th>메인 사진</th>
+						<th>가격</th>
+						<th>카테고리</th>
+						<th>할인율</th>
+						<th>조회수</th>
+						<th>판매량</th>
+						<th>작성일</th>
+						<th>구매 수</th>
+						<th>관리</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="shop : ${shops}" th:data-shopno="${shop.shop.shopNo}">
+						<td th:text="${shop.shop.shopNo}"></td>
+						<td th:text="${shop.shop.shopTitle}"></td>
+						<td th:text="${shop.shop.shopContent}"></td>
+						<td><img th:src="@{${shop.shop.shopMainPhoto}}" alt="상품 이미지" width="100"></td>
+						<td th:text="${shop.shop.shopPrice}"></td>
+						<td th:text="${shop.shop.shopCategory}"></td>
+						<td th:text="${shop.shop.shopDiscont}"></td>
+						<td th:text="${shop.shop.shopHit}"></td>
+						<td th:text="${shop.shop.shopSell}"></td>
+						<td th:text="${#temporals.format(shop.shop.shopWriteTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+						<td class="purchase-count" th:data-shopno="${shop.shop.shopNo}" th:text="${shop.orderedCount}">
+						</td>
+						<td>
+							<button class="toggle-shop-btn" th:data-shopno="${shop.shop.shopNo}"
+								th:data-active="${!shop.shop.sDeactivated ? 'true' : 'false'}"
+								th:text="${shop.shop.sDeactivated ? '활성화' : '비활성화'}"></button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<div class="new-shop-button-container" style="text-align: center; margin-top: 20px;">
+				<a href="/shopWrite">
+					<button class="new-shop-btn">새로운 상점 등록</button>
+				</a>
+			</div>
+		</div>
+		<div class="pagination">
+			<a th:href="@{/admin/page/adminShopList(page=${currentPage - 1})}" th:if="${currentPage > 0}">&laquo;
+				이전</a>
+			<span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+				<a th:href="@{/admin/page/adminShopList(page=${i})}" th:classappend="${i == currentPage} ? 'active'"
+					th:text="${i + 1}">1</a>
+			</span>
+			<a th:href="@{/admin/page/adminShopList(page=${currentPage + 1})}"
+				th:if="${currentPage < totalPages - 1}">다음 &raquo;</a>
+		</div>
+
+
+		<!-- 주문 정보 모달 -->
+		<div id="orderModal" class="modal">
+			<div class="modal-content">
+				<span class="close">&times;</span>
+				<h2>구매 내역</h2>
+				<table id="orderModalTable">
+					<thead>
+						<tr>
+							<th>주문 번호</th>
+							<th>주문 번호(유니크)</th>
+							<th>주문 상태</th>
+							<th>배송 상태</th>
+							<th>주문 날짜</th>
+							<th>사용자 이름</th>
+							<th>수량</th>
+						</tr>
+					</thead>
+					<tbody id="orderModalTableBody">
+						<!-- JavaScript로 추가될 행들 -->
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<!-- JavaScript로 데이터 로드 및 삭제 처리 -->
+		<script>
+			document.addEventListener("DOMContentLoaded", function () {
+				var toggleButtons = document.querySelectorAll(".toggle-shop-btn");
+				toggleButtons.forEach(function (button) {
+					button.addEventListener("click", function () {
+						var shopNo = button.getAttribute("data-shopno");
+						var isDeactivated = button.getAttribute("data-active") === 'true'; // 'true'이면 비활성화 상태
+						toggleShopActivation(shopNo, isDeactivated);
+					});
+				});
+
+				function toggleShopActivation(shopNo, isDeactivated) {
+					fetch('/toggleShopActivation?shopNo=' + shopNo + '&isDeactivated=' + isDeactivated, {
+						method: 'POST'
+					})
+						.then(response => {
+							if (response.ok) {
+								alert('상점 상태가 변경되었습니다.');
+								location.reload();
+							} else {
+								alert('상점 상태 변경에 실패했습니다.');
+							}
+						})
+						.catch(error => {
+							console.error('Error toggling shop activation:', error);
+							alert('상점 상태 변경 중 오류가 발생했습니다.');
+						});
+				}
+
+
+				// 구매 수량 클릭 이벤트 추가
+				var purchaseCountElements = document.querySelectorAll(".purchase-count");
+				purchaseCountElements.forEach(function (element) {
+					element.addEventListener("click", function () {
+						var shopNo = element.getAttribute("data-shopno");
+						fetchOrderDetails(shopNo);
+					});
+				});
+
+				function fetchOrderDetails(shopNo) {
+					console.log("Fetching order details for shopNo:", shopNo);
+					fetch('/fetchOrderDetails?shopNo=' + shopNo)
+						.then(response => response.json())
+						.then(data => {
+							console.log("Data received:", data); // 추가된 로그
+							if (data.length === 0) {
+								document.getElementById("orderModalTableBody").innerHTML = '<tr><td colspan="7">해당 상품에 대한 주문 내역이 없습니다.</td></tr>';
+							} else {
+								let tableRows = data.map(order => `
+                    <tr>
+                        <td>${order.orderedNo}</td>
+                        <td>${order.orderedNumber}</td>
+                        <td>${order.orderedState}</td>
+                        <td>${order.shipmentState}</td>
+                        <td>${new Date(order.orderedDate).toLocaleDateString()}</td>
+                        <td>${order.userName}</td>
+                        <td>${order.quantity}</td>
+                    </tr>
+                `).join('');
+								document.getElementById("orderModalTableBody").innerHTML = tableRows;
+							}
+							document.getElementById("orderModal").style.display = "block";
+						})
+						.catch(error => {
+							console.error('Error fetching order details:', error);
+							alert('주문 내역을 가져오는 중 오류가 발생했습니다.');
+						});
+				}
+
+				// 모달 창 닫기
+				var modal = document.getElementById("orderModal");
+				var closeBtn = document.querySelector(".close");
+				closeBtn.onclick = function () {
+					modal.style.display = "none";
+				}
+				window.onclick = function (event) {
+					if (event.target === modal) {
+						modal.style.display = "none";
+					}
+				}
+			});
+		</script>
+	</div>
+</body>
+
+</html>
