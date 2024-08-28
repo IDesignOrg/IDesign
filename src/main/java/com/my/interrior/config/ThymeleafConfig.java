@@ -41,7 +41,7 @@ public class ThymeleafConfig {
     public ITemplateResolver fileTemplateResolver() {
         SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
         //나중에 배포할 때 dist로 변경하기
-        resolver.setPrefix("classpath:/dimension/");
+        resolver.setPrefix("classpath:/dist/");
         resolver.setSuffix(".html");
         resolver.setTemplateMode("HTML");
         resolver.setOrder(2);  // 두 번째 우선순위
