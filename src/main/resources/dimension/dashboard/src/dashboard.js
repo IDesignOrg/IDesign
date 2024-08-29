@@ -34,6 +34,7 @@ const ProjectBox = (project) => {
   const box = document.createElement("div");
   const a = document.createElement("a");
   // wook
+  //wrapper
   a.href = `http://localhost:8080/three/${project.project_id}`;
   a.id = project.project_id;
   a.className = "project-wrapper";
@@ -41,6 +42,7 @@ const ProjectBox = (project) => {
   box.appendChild(a);
   box.className = "project received";
 
+  //img wrapper
   const renovate_img = document.createElement("div");
   renovate_img.className = "renovate-img";
   const backgroundImage = document.createElement("img");
@@ -48,6 +50,7 @@ const ProjectBox = (project) => {
   renovate_img.append(backgroundImage);
   a.appendChild(renovate_img);
 
+  // 프로젝트 설명란
   const project_src = document.createElement("div");
   project_src.className = "project-src";
 
@@ -59,6 +62,7 @@ const ProjectBox = (project) => {
   mod_dt.innerText = new Date(project.reg_dt);
   project_src.appendChild(mod_dt);
 
+  //삭제하기 눌렀을 때 나타남
   const delete_div = document.createElement("button");
   delete_div.className = "delete_bg";
   delete_div.name = project.project_id;

@@ -11,13 +11,21 @@ export const saveFactory = (scene) => {
       object.name === roomName ||
       Object.keys(furnitureObjects).includes(object.name)
     ) {
+      let children = [];
+      if (object.children) {
+        object.children.forEach((o) => {
+          if (furnitureObjects.hasOwnProperty(o.name)) {
+            children.push(o.uuid);
+          }
+        });
+      }
       const obj = {
         type: object.name,
         parent,
         rotation: object.userData.rotation || 0,
         points: object.userData.points,
         oid: object.uuid,
-        
+        children: children.length === 0 ? null : children,
       };
       arr.push(obj);
     }
