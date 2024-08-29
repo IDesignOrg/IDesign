@@ -266,6 +266,7 @@
 			background-color: #0056b3;
 		}
 	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 
 <body>
@@ -353,54 +354,44 @@
 		}
 
 		function submitComment() {
-			const commentInput = document.getElementById("commentInput");
-			const commentText = commentInput.value.trim();
-
-			if (!commentText) {
-				alert("댓글을 입력하세요.");
-				return;
-			}
-
-			fetch(`/review/${currentReviewId}`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/x-www-form-urlencoded",
-				},
-				body: new URLSearchParams({
-					comment: commentText
-				})
-			})
-				.then(response => {
-					if (response.ok) {
-						return response.json();
-					} else {
-						throw new Error("댓글 작성 실패");
-					}
-				})
-				.then(newComment => {
-					// JSON 응답 데이터를 콘솔에 출력
-					console.log("Received JSON response:", JSON.stringify(newComment, null, 2));
-
-					// 댓글 UI 업데이트
-					const commentSection = document.getElementById("commentSection");
-					const commentDiv = document.createElement("div");
-					commentDiv.classList.add("comment");
-
-					commentDiv.innerHTML = `
-            <img src="${newComment.user?.UPofile || '/path/to/default/profile.jpg'}" alt="User profile">
-            <div class="comment-text">
-                <span class="username">${newComment.user?.UName || 'Unknown'}</span>
-                ${newComment.rcomment || 'No comment available'}
-            </div>
-        `;
-					commentSection.appendChild(commentDiv);
-
-					// 입력 필드 비우기
-					commentInput.value = "";
-				})
-				.catch(error => {
-					alert(error.message);
-				});
+		    const commentInput = document.getElementById("commentInput");
+		    const commentText = commentInput.value.trim();
+		
+		    if (!commentText) {
+		        alert("댓글을 입력하세요.");
+		        return;
+		    }
+		
+		    console.log("currentReviewId:", currentReviewId);
+		
+		    $.ajax({
+		        url: `/review/${currentReviewId}`,
+		        type: "POST",
+		        data: {
+		            comment: commentText
+		        },
+		        success: function(newComment) {
+		            // 댓글 UI 업데이트
+		            const commentSection = document.getElementById("commentSection");
+		            const commentDiv = document.createElement("div");
+		            commentDiv.classList.add("comment");
+		
+		            commentDiv.innerHTML = `
+		                <img src="${newComment.user?.UPofile || '/path/to/default/profile.jpg'}" alt="User profile">
+		                <div class="comment-text">
+		                    <span class="username">${newComment.user?.UName || 'Unknown'}</span>
+		                    ${newComment.rcomment || 'No comment available'}
+		                </div>
+		            `;
+		            commentSection.appendChild(commentDiv);
+		
+		            // 입력 필드 비우기
+		            commentInput.value = "";
+		        },
+		        error: function(jqXHR, textStatus, errorThrown) {
+		            alert("Error: " + errorThrown);
+		        }
+		    });
 		}
 
 

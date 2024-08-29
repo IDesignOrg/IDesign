@@ -18,11 +18,12 @@ public class SaveProjectRequest {
 	@Setter
 	@ToString
 	public static class DataRequest{
-		private Long oid;
+		private String oid;
 		private String type;
 		private Double rotation;
+		private String parent;
 		private List<PointRequest> points;
-		private List<DataRequest> children;
+		private List<String> children;
 	}
 	
 	@Getter
