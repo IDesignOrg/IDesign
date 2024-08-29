@@ -18,6 +18,7 @@
 			max-width: 1200px;
 			margin: 0 auto;
 			padding: 20px;
+			margin-top: 140px;
 		}
 
 		.review-grid {
@@ -33,17 +34,30 @@
 			overflow: hidden;
 			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 			cursor: pointer;
+			width: 300px;
+			/* 고정 너비 설정 */
+			height: 400px;
+			/* 고정 높이 설정 */
+			display: flex;
+			flex-direction: column;
 		}
 
 		.review-card img {
 			width: 100%;
-			height: auto;
+			height: 200px;
+			/* 고정 높이 설정 */
+			object-fit: cover;
+			/* 이미지가 카드에 맞게 크기 조정 */
 			display: block;
 		}
 
 		.review-content {
 			padding: 15px;
+			flex: 1;
+			overflow: hidden;
+			/* 내용이 넘치지 않도록 설정 */
 		}
+
 
 		.review-title {
 			font-weight: bold;
@@ -266,9 +280,12 @@
 			background-color: #0056b3;
 		}
 	</style>
+	<link rel="stylesheet" href="/css/header.css" />
+	<link rel="stylesheet" href="/css/reset.css" />
 </head>
 
 <body>
+	<th:block th:include="~{fragments/header.html::header}"></th:block>
 	<div class="container">
 		<h1>Review List</h1>
 		<div class="review-grid">

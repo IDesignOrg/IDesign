@@ -62,7 +62,7 @@ public class ReviewController {
 
 		reviewService.uploadFileAndCreateReview(title, category, content, starRating, files, mainPhoto);
 
-		return "client/review/reviewList";
+		return "redirect:/auth/evaluation";
 	}
 
 	// 후기 페이지
