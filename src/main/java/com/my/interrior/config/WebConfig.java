@@ -39,5 +39,8 @@ public class WebConfig implements WebMvcConfigurer {
 		// `three` 디렉토리 내의 `public` 폴더에서 정적 파일을 서빙
 		registry.addResourceHandler("/dist/**")
 				.addResourceLocations("classpath:/dist/");
+		
+		registry.addResourceHandler("/dimension/**")
+		.addResourceLocations("classpath:/dimension/");
 	}
 }
