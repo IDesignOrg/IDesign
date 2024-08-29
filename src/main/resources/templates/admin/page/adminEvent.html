@@ -39,7 +39,19 @@
 					</tr>
 				</tbody>
 			</table>
-			<a href="/board/event/write">이벤트 작성 하기</a>
+			<div class="controls-container">
+				<div class="search-container">
+					<select id="searchType">
+						<option value="title">제목</option>
+						<option value="couponName">쿠폰 이름</option>
+					</select>
+					<input type="text" id="searchInput" placeholder="검색어를 입력하세요">
+					<button id="searchButton">검색</button>
+				</div>
+				<div class="create-event-container">
+					<a href="/board/event/write" class="create-event-link">이벤트 작성 하기</a>
+				</div>
+			</div>
 		</div>
 		<div class="pagination">
 			<a th:href="@{/admin/page/adminEvent(page=${currentPage - 1})}" th:if="${currentPage > 0}">&laquo; 이전</a>
@@ -64,6 +76,12 @@
 							deleteEvent(eventNo);
 						}
 					});
+				});
+				// 검색 버튼 이벤트
+				document.getElementById("searchButton").addEventListener("click", function () {
+					var searchType = document.getElementById("searchType").value;
+					var searchInput = document.getElementById("searchInput").value;
+					window.location.href = '/admin/page/adminEventSearch?type=' + searchType + '&keyword=' + searchInput;
 				});
 
 				// 이벤트 상태 변경 처리 함수
