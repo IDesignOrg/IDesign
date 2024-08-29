@@ -34,5 +34,5 @@ public class PointEntity {
 	
 	@ManyToOne
 	@JoinColumn(name = "oid", nullable = false)
-	private DataEntity dataEntity;
+	private DataEntity data;
 }

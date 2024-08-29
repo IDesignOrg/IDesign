@@ -1,3 +1,30 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:7c6a57ee83759aa02aebdffd0cba5208ae883881aaf9e4ea03ed9ddebd97bce2
-size 596
+import { THREE } from "../loader/three.js";
+import { Shape } from "./floor.js";
+import { uuidv4 as uuid } from "../uuid.js";
+
+export class ShadowLines extends THREE.Line {
+  constructor({ points }) {
+    const material = new THREE.LineBasicMaterial({
+      color: "red",
+    });
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    super(geometry, material);
+    this.name = "shadowLines";
+    this.userData = {
+      ...this.userData,
+      oid: uuid(),
+    };
+  }
+}
+
+// export class ShadowLines extends Group {
+//   constructor({ points }) {
+//     super();
+
+//     for (let i = 0; i < points.length; i++){
+//       const current = points[i];
+//       const next = points[(i + 1) % points.length];
+
+//     }
+//   }
+// }

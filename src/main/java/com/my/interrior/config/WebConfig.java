@@ -27,7 +27,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(interceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/error/**","/auth/**","/","/login", "/board/**", "/static/**", "/css/**", "/js/**", "/include/**", "/image/**", "/logout", "/board/faq/search/**", "/dist/**"); //auth명시된건 패스시킨다
+                .excludePathPatterns("/error/**","/auth/**","/","/login", "/board/**", "/static/**", "/css/**", "/js/**", "/include/**", "/image/**", "/logout", "/board/faq/search/**", "/dist/**", "/save/**"); //auth명시된건 패스시킨다
     }
     @Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -38,6 +38,9 @@ public class WebConfig implements WebMvcConfigurer {
         // 2. 커스터마이징된 정적 리소스 경로 (두 번째 우선순위)
 		// `three` 디렉토리 내의 `public` 폴더에서 정적 파일을 서빙
 		registry.addResourceHandler("/dist/**")
-				.addResourceLocations("file:" + System.getProperty("user.dir") + "/three/dist/");
+				.addResourceLocations("classpath:/dist/");
+		
+		registry.addResourceHandler("/dimension/**")
+		.addResourceLocations("classpath:/dimension/");
 	}
 }

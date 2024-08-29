@@ -1,3 +1,572 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:191252df741d4443531a794f72421a5331c48e0895148a6532897f944092cdec
-size 16281
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>회원 정보</title>
+	<link rel="stylesheet" href="/css/adminPage.css" />
+</head>
+
+<body>
+	<div th:insert="~{/admin/page/adminsidebar :: sidebar}"></div>
+	<div class="main-content">
+		<header>
+			<h1>회원 정보</h1>
+		</header>
+		<!-- 검색 폼 추가 -->
+		<div class="search-container">
+			<form id="searchForm">
+				<label for="searchType">검색 유형:</label>
+				<select id="searchType" name="searchType">
+					<option value="nickname">아이디 (UId)</option>
+					<option value="name">닉네임 (UName)</option>
+					<option value="email">이메일 (UMail)</option>
+				</select>
+
+				<label for="searchInput">검색어:</label>
+				<input type="text" id="searchInput" name="searchInput" placeholder="검색어를 입력하세요">
+
+				<label for="startDate">가입일(시작):</label>
+				<input type="date" id="startDate" name="startDate">
+
+				<label for="endDate">가입일(끝):</label>
+				<input type="date" id="endDate" name="endDate">
+
+				<label for="orderType">정렬:</label>
+				<select id="orderType" name="orderType">
+					<option value="postCountDesc">게시글 높은 순</option>
+					<option value="commentCountDesc">댓글 높은 순</option>
+				</select>
+
+				<button type="button" id="searchButton">검색</button>
+			</form>
+		</div>
+		<div class="table-container">
+			<table>
+				<thead>
+					<tr>
+						<th>아이디</th>
+						<th>닉네임</th>
+						<th>EMail</th>
+						<th>가입일</th>
+						<th>게시물</th>
+						<th>댓글</th>
+						<th>상태</th>
+						<th>쿠폰 발급</th>
+					</tr>
+				</thead>
+				<tbody id="userTableBody">
+					<tr th:each="userWithCounts : ${usersWithCounts}" th:data-uno="${userWithCounts.user.UNo}">
+						<td th:text="${userWithCounts.user.UId}"></td>
+						<td th:text="${userWithCounts.user.UName}"></td>
+						<td th:text="${userWithCounts.user.UMail}"></td>
+						<td th:text="${userWithCounts.user.URegister}"></td>
+						<td class="post-count" th:data-post-count="${userWithCounts.postCount}"
+							th:text="${userWithCounts.postCount}"></td>
+						<td class="comment-count" th:data-comment-count="${userWithCounts.commentCount}"
+							th:text="${userWithCounts.commentCount}"></td>
+						<td>
+							<button class="deactivate-btn" th:data-uno="${userWithCounts.user.UNo}"
+								th:if="${!userWithCounts.user.UDeactivated}">비활성화</button>
+							<button class="activate-btn" th:data-uno="${userWithCounts.user.UNo}"
+								th:if="${userWithCounts.user.UDeactivated}">활성화</button>
+						</td>
+						<td><button class="issue-coupon-btn" th:data-uno="${userWithCounts.user.UNo}">쿠폰 발급</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<!-- 페이지 네비게이션 -->
+		<div class="pagination">
+			<a th:href="@{/admin/page/adminUsers(page=${currentPage - 1})}" th:if="${currentPage > 0}">&laquo; 이전</a>
+			<span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+				<a th:href="@{/admin/page/adminUsers(page=${i})}" th:classappend="${i == currentPage} ? 'active'"
+					th:text="${i + 1}">1</a>
+			</span>
+			<a th:href="@{/admin/page/adminUsers(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}">다음
+				&raquo;</a>
+		</div>
+
+		<!-- 모달 창들 -->
+		<div id="userModal" class="modal">
+			<div class="modal-content">
+				<span class="close">&times;</span>
+				<h2>회원 게시글</h2>
+				<table id="modalTable">
+					<thead>
+						<tr>
+							<th>번호</th>
+							<th>제목</th>
+							<th>별점</th>
+							<th>조회수</th>
+							<th>작성일</th>
+						</tr>
+					</thead>
+					<tbody id="modalTableBody">
+						<!-- JavaScript로 추가될 행들 -->
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div id="commentModal" class="modal">
+			<div class="modal-content">
+				<span class="close">&times;</span>
+				<h2>회원 댓글</h2>
+				<table id="commentModalTable">
+					<thead>
+						<tr>
+							<th>번호</th>
+							<th>내용</th>
+							<th>작성일</th>
+							<th>삭제</th>
+						</tr>
+					</thead>
+					<tbody id="commentModalTableBody">
+						<!-- JavaScript로 추가될 행들 -->
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<!-- 쿠폰 선택 모달 -->
+		<div id="couponModal" class="modal">
+			<div class="modal-content">
+				<span class="close">&times;</span>
+				<h2>쿠폰 선택</h2>
+				<table>
+					<thead>
+						<tr>
+							<th>쿠폰 이름</th>
+							<th>할인율(%)</th>
+							<th>사용 가능 횟수</th>
+							<th>시작일</th>
+							<th>종료일</th>
+							<th>선택</th>
+						</tr>
+					</thead>
+					<tbody id="couponTableBody">
+						<!-- 쿠폰 리스트가 여기에 추가됩니다 -->
+					</tbody>
+				</table>
+				<button id="issueSelectedCouponBtn">발급하기</button>
+			</div>
+		</div>
+
+		<!-- JavaScript 모달 제어 및 데이터 로드 -->
+		<script>
+			document.addEventListener("DOMContentLoaded", function () {
+				var deactivateButtons = document.querySelectorAll(".deactivate-btn");
+				var activateButtons = document.querySelectorAll(".activate-btn");
+				var issueCouponButtons = document.querySelectorAll(".issue-coupon-btn");
+				var issueSelectedCouponBtn = document.getElementById("issueSelectedCouponBtn");
+				var couponModal = document.getElementById("couponModal");
+				var selectedCouponNo = null;
+				var selectedUserNo = null;
+
+				// 검색 버튼 이벤트 리스너 추가
+				document.getElementById("searchButton").addEventListener("click", function () {
+					var searchType = document.getElementById("searchType").value;
+					var searchInput = document.getElementById("searchInput").value || "";
+					var startDate = document.getElementById("startDate").value;
+					var endDate = document.getElementById("endDate").value;
+					var orderType = document.getElementById("orderType").value;
+
+					var queryParams = `searchType=${searchType}&searchInput=${searchInput}&orderType=${orderType}`;
+					if (startDate) queryParams += `&startDate=${startDate}`;
+					if (endDate) queryParams += `&endDate=${endDate}`;
+
+					fetch(`/searchUsers?${queryParams}`)
+						.then(response => {
+							if (!response.ok) {
+								throw new Error('Network response was not ok');
+							}
+							return response.json();
+						})
+						.then(data => {
+							updateUserTable(data);
+						})
+						.catch(error => {
+							console.error('Error fetching user data:', error);
+						});
+				});
+
+				function updateUserTable(users) {
+					console.log('Received data:', users); // 서버에서 받은 데이터 확인
+
+					if (!Array.isArray(users)) {
+						console.error('Expected an array but received:', users);
+						return;
+					}
+
+					var tableBody = document.getElementById("userTableBody");
+					tableBody.innerHTML = ""; // 기존 테이블 내용 초기화
+
+					users.forEach(user => {
+						var row = `
+            <tr data-uno="${user.user.UNo}">
+                <td>${user.user.UId}</td>
+                <td>${user.user.UName}</td>
+                <td>${user.user.UMail}</td>
+                <td>${new Date(user.user.URegister).toLocaleDateString()}</td>
+                <td class="post-count" data-post-count="${user.postCount}">${user.postCount}</td>
+                <td class="comment-count" data-comment-count="${user.commentCount}">${user.commentCount}</td>
+                <td>
+                    <button class="deactivate-btn" data-uno="${user.user.UNo}" ${user.user.UDeactivated ? 'style="display:none;"' : ''}>비활성화</button>
+                    <button class="activate-btn" data-uno="${user.user.UNo}" ${user.user.UDeactivated ? '' : 'style="display:none;"'}>활성화</button>
+                </td>
+                <td><button class="issue-coupon-btn" data-uno="${user.user.UNo}">쿠폰 발급</button></td>
+            </tr>
+        `;
+						tableBody.innerHTML += row;
+					});
+
+					resetEventListeners(); // 이벤트 리스너 재설정
+				}
+
+
+
+				function resetEventListeners() {
+					deactivateButtons = document.querySelectorAll(".deactivate-btn");
+					activateButtons = document.querySelectorAll(".activate-btn");
+					issueCouponButtons = document.querySelectorAll(".issue-coupon-btn");
+
+					deactivateButtons.forEach(function (button) {
+						button.addEventListener("click", function () {
+							var userUNo = button.getAttribute("data-uno");
+							if (confirm("해당 유저를 비활성화 하시겠습니까?")) {
+								deactivateUser(userUNo);
+							}
+						});
+					});
+
+					activateButtons.forEach(function (button) {
+						button.addEventListener("click", function () {
+							var userUNo = button.getAttribute("data-uno");
+							if (confirm("해당 유저를 활성화 하시겠습니까?")) {
+								activateUser(userUNo);
+							}
+						});
+					});
+
+					issueCouponButtons.forEach(function (button) {
+						button.addEventListener("click", function () {
+							selectedUserNo = button.getAttribute("data-uno");
+							fetchCoupons();
+						});
+					});
+				}
+
+				deactivateButtons.forEach(function (button) {
+					button.addEventListener("click", function () {
+						var userUNo = button.getAttribute("data-uno");
+						if (confirm("해당 유저를 비활성화 하시겠습니까?")) {
+							deactivateUser(userUNo);
+						}
+					});
+				});
+
+				activateButtons.forEach(function (button) {
+					button.addEventListener("click", function () {
+						var userUNo = button.getAttribute("data-uno");
+						if (confirm("해당 유저를 활성화 하시겠습니까?")) {
+							activateUser(userUNo);
+						}
+					});
+				});
+
+				function deactivateUser(userUNo) {
+					fetch('/deactivateUser?userUNo=' + userUNo, {
+						method: 'POST'
+					})
+						.then(response => {
+							if (response.ok) {
+								alert('해당 유저는 비활성화 되었습니다.');
+								location.reload(); // 페이지 새로고침으로 목록 갱신
+							} else {
+								alert('유저 비활성화에 실패했습니다.');
+							}
+						})
+						.catch(error => {
+							console.error('Error deactivating user:', error);
+							alert('유저 비활성화 중 오류가 발생했습니다.');
+						});
+				}
+
+				function activateUser(userUNo) {
+					fetch('/activateUser?userUNo=' + userUNo, {
+						method: 'POST'
+					})
+						.then(response => {
+							if (response.ok) {
+								alert('해당 유저는 활성화 되었습니다.');
+								location.reload();
+							} else {
+								alert('유저 활성화에 실패했습니다.');
+							}
+						})
+						.catch(error => {
+							console.error('Error activating user:', error);
+							alert('유저 활성화 중 오류가 발생했습니다.');
+						});
+				}
+
+				// 기존의 게시글 모달 이벤트 처리
+				var postCountElements = document.querySelectorAll(".post-count");
+				postCountElements.forEach(function (element) {
+					element.addEventListener("click", function () {
+						var postCount = parseInt(element.getAttribute("data-post-count"));
+						var userUNo = element.parentElement.getAttribute("data-uno");
+
+						if (postCount === 0) {
+							document.getElementById("modalTableBody").innerHTML = '<tr><td colspan="6">아직 게시글을 작성하지 않았습니다</td></tr>';
+							document.getElementById("userModal").style.display = "block";
+						} else {
+							fetch('/fetchPosts?userUNo=' + userUNo)
+								.then(response => {
+									if (!response.ok) {
+										throw new Error('네트워크 응답에 문제가 있습니다.');
+									}
+									return response.text(); // JSON 대신 텍스트로 응답을 받아옵니다.
+								})
+								.then(text => {
+									console.log('서버 응답 텍스트:', text); // 서버에서 받은 응답을 로그에 출력합니다.
+
+									try {
+										const jsonData = JSON.parse(text); // JSON으로 파싱 시도
+										return jsonData;
+									} catch (error) {
+										console.error('JSON 파싱 오류 발생:', error.message);
+										throw error; // 파싱 오류를 발생시켜 이후 처리를 막습니다.
+									}
+								})
+								.then(data => {
+									if (!data || data.length === 0) {
+										document.getElementById("modalTableBody").innerHTML = '<tr><td colspan="6">게시글이 없습니다.</td></tr>';
+									} else {
+										let tableRows = data.map(post => `
+                <tr>
+                    <td>${post.RNo}</td>
+                    <td>${post.RTitle}</td>
+                    <td>${post.RStarRating}</td>
+                    <td>${post.RViews}</td>
+                    <td>${new Date(post.RWrittenTime).toLocaleString()}</td>
+                    <td><button class="delete-post-btn" data-rno="${post.RNo}">삭제</button></td>
+                </tr>
+            `).join('');
+										document.getElementById("modalTableBody").innerHTML = tableRows;
+
+										// 삭제 버튼에 클릭 이벤트 추가
+										var deleteButtons = document.querySelectorAll(".delete-post-btn");
+										deleteButtons.forEach(function (button) {
+											button.addEventListener("click", function () {
+												var rNo = button.getAttribute("data-rno");
+												deletePost(rNo);
+											});
+										});
+									}
+									document.getElementById("userModal").style.display = "block";
+								})
+								.catch(error => {
+									console.error('게시글을 가져오는 중 오류 발생:', error);
+									document.getElementById("modalTableBody").innerHTML = '<tr><td colspan="6">데이터를 가져오는 중 오류가 발생했습니다.</td></tr>';
+									document.getElementById("userModal").style.display = "block";
+								});
+
+						}
+					});
+				});
+
+
+
+				var commentCountElements = document.querySelectorAll(".comment-count");
+				commentCountElements.forEach(function (element) {
+					element.addEventListener("click", function () {
+						var commentCount = parseInt(element.getAttribute("data-comment-count"));
+						var userUNo = element.parentElement.getAttribute("data-uno");
+
+						if (commentCount === 0) {
+							document.getElementById("commentModalTableBody").innerHTML = '<tr><td colspan="4">아직 댓글을 작성하지 않았습니다</td></tr>';
+							document.getElementById("commentModal").style.display = "block";
+						} else {
+							fetch('/fetchComments?userUNo=' + userUNo)
+								.then(response => response.json())
+								.then(data => {
+									if (!data || data.length === 0) {
+										document.getElementById("commentModalTableBody").innerHTML = '<tr><td colspan="4">댓글이 없습니다.</td></tr>';
+									} else {
+										let tableRows = data.map(comment => `
+                                            <tr>
+                                                <td>${comment.shopReviewNo}</td>
+                                                <td>${comment.shopReviewContent}</td>
+                                                <td>${new Date(comment.shopReviewCreated).toLocaleString()}</td>
+                                                <td><button class="delete-comment-btn" data-shopReviewNo="${comment.shopReviewNo}">삭제</button></td>
+                                            </tr>
+                                        `).join('');
+										document.getElementById("commentModalTableBody").innerHTML = tableRows;
+
+										// 댓글 삭제 버튼에 클릭 이벤트 추가
+										var deleteCommentButtons = document.querySelectorAll(".delete-comment-btn");
+										deleteCommentButtons.forEach(function (button) {
+											button.addEventListener("click", function () {
+												var shopReviewNo = button.getAttribute("data-shopReviewNo");
+												deleteComment(shopReviewNo);
+											});
+										});
+									}
+									document.getElementById("commentModal").style.display = "block";
+								})
+								.catch(error => {
+									console.error('Error fetching comments:', error);
+									document.getElementById("commentModalTableBody").innerHTML = '<tr><td colspan="4">데이터를 가져오는 중 오류가 발생했습니다.</td></tr>';
+									document.getElementById("commentModal").style.display = "block";
+								});
+						}
+					});
+				});
+
+				// 쿠폰 발급 모달 처리
+				issueCouponButtons.forEach(function (button) {
+					button.addEventListener("click", function () {
+						selectedUserNo = button.getAttribute("data-uno");
+						fetchCoupons();
+					});
+				});
+
+				issueSelectedCouponBtn.addEventListener("click", function () {
+					if (selectedCouponNo && selectedUserNo) {
+						issueCoupon(selectedUserNo, selectedCouponNo);
+					} else {
+						alert('쿠폰을 선택해 주세요.');
+					}
+				});
+
+				function issueCoupon(userNo, couponNo) {
+					fetch('/issueCouponToUser', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							userNo: userNo,
+							couponNo: couponNo
+						})
+					})
+						.then(response => {
+							return response.text().then(text => {
+								if (!response.ok) {
+									throw new Error(text);  // 오류가 있으면 예외 발생
+								}
+								return text;  // 성공적인 경우 텍스트 반환
+							});
+						})
+						.then(message => {
+							alert(message);
+							couponModal.style.display = "none";  // 쿠폰 모달 닫기
+						})
+						.catch(error => {
+							console.error('Error issuing coupon:', error);
+							alert('쿠폰 발급 중 오류가 발생했습니다: ' + error.message);
+						});
+				}
+
+				function fetchCoupons() {
+					fetch('/getCoupons')  // 서버에서 쿠폰 리스트를 가져오는 엔드포인트
+						.then(response => response.json())
+						.then(data => {
+							let tableRows = data.map(coupon => `
+                                <tr>
+                                    <td>${coupon.couponName}</td>
+                                    <td>${coupon.couponDiscount}</td>
+                                    <td>${coupon.couponLimit}</td>
+                                    <td>${coupon.couponStartAt}</td>
+                                    <td>${coupon.couponEndAt}</td>
+                                    <td><input type="radio" name="selectedCoupon" value="${coupon.couponNo}"></td>
+                                </tr>
+                            `).join('');
+							document.getElementById("couponTableBody").innerHTML = tableRows;
+
+							document.querySelectorAll('input[name="selectedCoupon"]').forEach(function (radio) {
+								radio.addEventListener("change", function () {
+									selectedCouponNo = this.value;
+								});
+							});
+
+							couponModal.style.display = "block";
+						})
+						.catch(error => {
+							console.error('Error fetching coupons:', error);
+							alert('쿠폰을 불러오는 중 오류가 발생했습니다.');
+						});
+				}
+
+				// 게시글 삭제 요청 함수 추가
+				function deletePost(rNo) {
+					if (confirm("정말 이 게시글을 삭제하시겠습니까?")) {
+						fetch('/deletePost?rNo=' + rNo, {
+							method: 'DELETE'
+						})
+							.then(response => {
+								if (response.ok) {
+									alert('게시글이 삭제되었습니다.');
+									location.reload(); // 페이지 새로고침으로 목록 갱신
+								} else {
+									alert('게시글 삭제에 실패했습니다.');
+								}
+							})
+							.catch(error => {
+								console.error('Error deleting post:', error);
+								alert('게시글 삭제 중 오류가 발생했습니다.');
+							});
+					}
+				}
+
+				// 댓글 삭제 요청 함수 추가
+				function deleteComment(shopReviewNo) {
+					if (confirm("정말 이 댓글을 삭제하시겠습니까?")) {
+						fetch('/deleteComment?shopReviewNo=' + shopReviewNo, {
+							method: 'DELETE'
+						})
+							.then(response => {
+								if (response.ok) {
+									alert('댓글이 삭제되었습니다.');
+									location.reload(); // 페이지 새로고침으로 목록 갱신
+								} else {
+									alert('댓글 삭제에 실패했습니다.');
+								}
+							})
+							.catch(error => {
+								console.error('Error deleting comment:', error);
+								alert('댓글 삭제 중 오류가 발생했습니다.');
+							});
+					}
+				}
+
+				// 모달 닫기 버튼 핸들링
+				var closeButtons = document.querySelectorAll(".modal .close");
+				closeButtons.forEach(function (button) {
+					button.onclick = function () {
+						button.closest(".modal").style.display = "none";
+					};
+				});
+
+				window.onclick = function (event) {
+					if (event.target === document.getElementById("userModal")) {
+						document.getElementById("userModal").style.display = "none";
+					}
+					if (event.target === document.getElementById("commentModal")) {
+						document.getElementById("commentModal").style.display = "none";
+					}
+					if (event.target === couponModal) {
+						couponModal.style.display = "none";
+					}
+				};
+			});
+		</script>
+	</div>
+</body>
+
+</html>
