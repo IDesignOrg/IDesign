@@ -1,3 +1,203 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:ea3d0e29597cb8d607008b3fc0c8c142f248f7c5e04bf5a0ddc7921e277eca2d
-size 6395
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>리뷰 관리</title>
+	<link rel="stylesheet" href="/css/adminPage.css" />
+</head>
+
+<body>
+	<div th:insert="~{/admin/page/adminsidebar :: sidebar}"></div>
+	<div class="main-content">
+		<header>
+			<h1>리뷰 관리</h1>
+		</header>
+		<div class="table-container">
+			<table>
+				<thead>
+					<tr>
+						<th>리뷰 번호</th>
+						<th>제목</th>
+						<th>카테고리</th>
+						<th>별점</th>
+						<th>조회수</th>
+						<th>댓글 수</th>
+						<th>작성일</th>
+						<th>메인 사진</th>
+						<th>관리</th>
+					</tr>
+				</thead>
+				<tbody id="reviewTableBody">
+					<tr th:each="reviewAndCount : ${reviewAndCounts}" th:data-rno="${reviewAndCount.review.RNo}">
+						<td th:text="${reviewAndCount.review.RNo}"></td>
+						<td th:text="${reviewAndCount.review.RTitle}"></td>
+						<td th:text="${reviewAndCount.review.RCategory}"></td>
+						<td th:text="${reviewAndCount.review.RStarRating}"></td>
+						<td th:text="${reviewAndCount.review.RViews}"></td>
+						<td>
+							<a href="javascript:void(0);" class="view-comments-btn"
+								th:data-rno="${reviewAndCount.review.RNo}" th:text="${reviewAndCount.commentCount}"></a>
+						</td>
+						<td th:text="${#temporals.format(reviewAndCount.review.RWrittenTime, 'yyyy-MM-dd HH:mm')}"></td>
+						<td><img th:src="${reviewAndCount.review.RMainPhoto}" alt="메인 사진" width="50"></td>
+						<td>
+							<button class="delete-review-btn" th:data-rno="${reviewAndCount.review.RNo}">삭제</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<!-- 페이지 네비게이션 -->
+			<div class="pagination">
+				<a th:href="@{/admin/page/adminReview(page=${currentPage - 1})}" th:if="${currentPage > 0}">&laquo;
+					이전</a>
+				<span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+					<a th:href="@{/admin/page/adminReview(page=${i})}" th:classappend="${i == currentPage} ? 'active'"
+						th:text="${i + 1}">1</a>
+				</span>
+				<a th:href="@{/admin/page/adminReview(page=${currentPage + 1})}"
+					th:if="${currentPage < totalPages - 1}">다음 &raquo;</a>
+			</div>
+
+		</div>
+
+		<!-- 댓글 모달 창 -->
+		<div id="commentModal" class="modal">
+			<div class="modal-content">
+				<span class="close">&times;</span>
+				<h2>리뷰 댓글 관리</h2>
+				<table>
+					<thead>
+						<tr>
+							<th>댓글 번호</th>
+							<th>작성자</th>
+							<th>내용</th>
+							<th>작성일</th>
+							<th>삭제</th>
+						</tr>
+					</thead>
+					<tbody id="commentTableBody">
+						<!-- 댓글 리스트가 여기에 추가됩니다 -->
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			var viewCommentsButtons = document.querySelectorAll(".view-comments-btn");
+			var deleteReviewButtons = document.querySelectorAll(".delete-review-btn");
+			var commentModal = document.getElementById("commentModal");
+			var closeModal = document.querySelector(".close");
+
+			viewCommentsButtons.forEach(function (button) {
+				button.addEventListener("click", function () {
+					var rNo = button.getAttribute("data-rno");
+					fetchRComments(rNo);
+				});
+			});
+
+			deleteReviewButtons.forEach(function (button) {
+				button.addEventListener("click", function () {
+					var rNo = button.getAttribute("data-rno");
+					deleteReview(rNo);
+				});
+			});
+
+			closeModal.addEventListener("click", function () {
+				commentModal.style.display = "none";
+			});
+
+			window.onclick = function (event) {
+				if (event.target === commentModal) {
+					commentModal.style.display = "none";
+				}
+			};
+
+			function fetchRComments(rNo) {
+				fetch(`/fetchRComments?reviewNo=${rNo}`)
+					.then(response => response.json())
+					.then(data => {
+						var commentTableBody = document.getElementById("commentTableBody");
+						commentTableBody.innerHTML = "";
+
+						if (data.length === 0) {
+							commentTableBody.innerHTML = '<tr><td colspan="5">댓글이 없습니다.</td></tr>';
+						} else {
+							data.forEach(comment => {
+								console.log(comment);  // 여기서 comment 객체의 구조를 확인
+
+								var row = `
+                        <tr>
+                            <td>${comment.rcommentNo}</td>
+                            <td>${comment.userName}</td> <!-- 여기서 오류 발생 -->
+                            <td>${comment.rcomment}</td>
+                            <td>${new Date(comment.rcommentCreated).toLocaleString()}</td>
+                            <td><button class="delete-comment-btn" data-rcommentno="${comment.rCommentNo}">삭제</button></td>
+                        </tr>
+                    `;
+								commentTableBody.innerHTML += row;
+							});
+
+							// 댓글 삭제 버튼 이벤트 리스너 추가
+							var deleteCommentButtons = document.querySelectorAll(".delete-comment-btn");
+							deleteCommentButtons.forEach(function (button) {
+								button.addEventListener("click", function () {
+									var rCommentNo = button.getAttribute("data-rcommentno");
+									deleteComment(rCommentNo);
+								});
+							});
+						}
+						commentModal.style.display = "block";
+					})
+					.catch(error => {
+						console.error('댓글을 불러오는 중 오류 발생:', error);
+					});
+			}
+
+
+
+			function deleteReview(rNo) {
+				if (confirm("정말 이 리뷰를 삭제하시겠습니까?")) {
+					fetch(`/deleteReview?rNo=${rNo}`, {
+						method: 'DELETE'
+					})
+						.then(response => {
+							if (response.ok) {
+								alert('리뷰가 삭제되었습니다.');
+								location.reload();
+							} else {
+								alert('리뷰 삭제에 실패했습니다.');
+							}
+						})
+						.catch(error => {
+							console.error('리뷰 삭제 중 오류 발생:', error);
+						});
+				}
+			}
+
+			function deleteComment(rCommentNo) {
+				if (confirm("정말 이 댓글을 삭제하시겠습니까?")) {
+					fetch(`/deleteComment?rCommentNo=${rCommentNo}`, {
+						method: 'DELETE'
+					})
+						.then(response => {
+							if (response.ok) {
+								alert('댓글이 삭제되었습니다.');
+								location.reload();
+							} else {
+								alert('댓글 삭제에 실패했습니다.');
+							}
+						})
+						.catch(error => {
+							console.error('댓글 삭제 중 오류 발생:', error);
+						});
+				}
+			}
+		});
+	</script>
+</body>
+
+</html>
