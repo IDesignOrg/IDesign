@@ -27,8 +27,19 @@ aside {
 #container {
   display: flex;
   height: 100%;
-  background-color: blue;
+  width: 240px;
+  background-color: yellowgreen;
   flex-direction: column;
+}
+
+#container > header {
+  width: 100%;
+  background-color: red;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 .center {
