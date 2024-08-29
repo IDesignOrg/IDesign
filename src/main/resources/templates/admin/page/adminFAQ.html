@@ -1,3 +1,171 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:ae852353340a775fd7889340c17dd886091905c8178a92d0a8f18b10e67b8d99
-size 5390
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>FAQ 관리</title>
+	<link rel="stylesheet" href="/css/adminPage.css" />
+</head>
+
+<body>
+	<div th:insert="~{/admin/page/adminsidebar :: sidebar}"></div>
+	<div class="main-content">
+		<header>
+			<h1>FAQ 관리</h1>
+		</header>
+		<div class="table-container">
+			<table>
+				<thead>
+					<tr>
+						<th>번호</th>
+						<th>카테고리</th>
+						<th>제목</th>
+						<th>내용</th>
+						<th>작성일</th>
+						<th>작성자</th>
+						<th>관리</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="faq : ${faqs}" th:data-faqno="${faq.faqNo}">
+						<td th:text="${faq.faqNo}"></td>
+						<td th:text="${faq.faqCategory}"></td>
+						<td th:text="${faq.faqTitle}"></td>
+						<td th:text="${faq.faqContent}" class="ellipsis"></td>
+						<td th:text="${#temporals.format(faq.faqRegisteredDate, 'yyyy-MM-dd')}"></td>
+						<td th:text="${faq.faqAuthor}"></td>
+						<td>
+							<button class="edit-faq-btn" th:data-faqno="${faq.faqNo}">수정</button>
+							<button class="delete-faq-btn" th:data-faqno="${faq.faqNo}">삭제</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<a href="/board/faqWrite">자주 묻는 질문 작성 하기</a>
+		</div>
+
+		<div class="pagination">
+			<a th:href="@{/admin/page/adminFAQ(page=${currentPage - 1})}" th:if="${currentPage > 0}">&laquo; 이전</a>
+			<span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+				<a th:href="@{/admin/page/adminFAQ(page=${i})}" th:classappend="${i == currentPage} ? 'active'"
+					th:text="${i + 1}">1</a>
+			</span>
+			<a th:href="@{/admin/page/adminFAQ(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}">다음
+				&raquo;</a>
+		</div>
+
+		<!-- FAQ 수정 모달 -->
+		<div id="editFaqModal" class="modal">
+			<div class="modal-content">
+				<span class="close">&times;</span>
+				<h2>FAQ 수정</h2>
+				<form id="editFaqForm">
+					<input type="hidden" id="editFaqNo">
+					<div class="form-group">
+						<label for="editFaqTitle">제목</label>
+						<input type="text" id="editFaqTitle">
+					</div>
+					<div class="form-group">
+						<label for="editFaqCategory">카테고리</label>
+						<input type="text" id="editFaqCategory">
+					</div>
+					<div class="form-group">
+						<label for="editFaqContent">내용</label>
+						<textarea id="editFaqContent"></textarea>
+					</div>
+					<button type="submit">저장</button>
+				</form>
+			</div>
+		</div>
+
+		<script>
+			document.addEventListener("DOMContentLoaded", function () {
+				var editButtons = document.querySelectorAll(".edit-faq-btn");
+				var deleteButtons = document.querySelectorAll(".delete-faq-btn");
+				var editFaqModal = document.getElementById("editFaqModal");
+				var closeButtons = document.querySelectorAll(".close");
+
+				editButtons.forEach(function (button) {
+					button.addEventListener("click", function () {
+						var faqNo = button.getAttribute("data-faqno");
+						// FAQ 수정 모달을 표시하고 데이터를 로드합니다.
+						editFaqModal.style.display = "block";
+						loadFaqData(faqNo);
+					});
+				});
+
+				deleteButtons.forEach(function (button) {
+					button.addEventListener("click", function () {
+						var faqNo = button.getAttribute("data-faqno");
+						if (confirm("정말 이 FAQ를 삭제하시겠습니까?")) {
+							deleteFaq(faqNo);
+						}
+					});
+				});
+
+				closeButtons.forEach(function (button) {
+					button.onclick = function () {
+						button.closest(".modal").style.display = "none";
+					};
+				});
+
+				function loadFaqData(faqNo) {
+					fetch(`/admin/faq/${faqNo}`)
+						.then(response => response.json())
+						.then(data => {
+							document.getElementById("editFaqNo").value = data.faqNo;
+							document.getElementById("editFaqTitle").value = data.faqTitle;
+							document.getElementById("editFaqCategory").value = data.faqCategory;
+							document.getElementById("editFaqContent").value = data.faqContent;
+						})
+						.catch(error => console.error('Error fetching FAQ data:', error));
+				}
+
+				document.getElementById("editFaqForm").addEventListener("submit", function (event) {
+					event.preventDefault();
+					var faqNo = document.getElementById("editFaqNo").value;
+					var faqData = {
+						faqTitle: document.getElementById("editFaqTitle").value,
+						faqCategory: document.getElementById("editFaqCategory").value,
+						faqContent: document.getElementById("editFaqContent").value
+					};
+
+					fetch(`/admin/faq/${faqNo}`, {
+						method: 'PUT',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify(faqData)
+					})
+						.then(response => {
+							if (response.ok) {
+								alert('FAQ가 수정되었습니다.');
+								location.reload();
+							} else {
+								alert('FAQ 수정에 실패했습니다.');
+							}
+						})
+						.catch(error => console.error('Error updating FAQ:', error));
+				});
+
+				function deleteFaq(faqNo) {
+					fetch(`/admin/faq/${faqNo}`, {
+						method: 'DELETE'
+					})
+						.then(response => {
+							if (response.ok) {
+								alert('FAQ가 삭제되었습니다.');
+								location.reload();
+							} else {
+								alert('FAQ 삭제에 실패했습니다.');
+							}
+						})
+						.catch(error => console.error('Error deleting FAQ:', error));
+				}
+			});
+		</script>
+	</div>
+</body>
+
+</html>
