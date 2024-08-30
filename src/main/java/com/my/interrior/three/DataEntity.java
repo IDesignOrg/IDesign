@@ -2,8 +2,8 @@ package com.my.interrior.three;
 
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,7 +28,7 @@ public class DataEntity {
 	private Long id;
 	
 	@Column(name = "oid")
-	private Long oid;
+	private String oid;
 	
 	
 	@Column(name = "type", nullable = false)
@@ -44,6 +44,14 @@ public class DataEntity {
 	@Column(name = "rotation", nullable = false)
 	private Double rotation;
 
+	@ElementCollection
+    @Column(name = "child_oid")
+    private List<String> children;
+	
+	@Column(name = "parent", nullable = true)
+    private String parent;
+	
+	
 //	@Column(name = "angle", nullable = false)
 //	private Double angle;
 	
