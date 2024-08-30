@@ -223,12 +223,15 @@ header img {
   overflow-y: scroll;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 402px;
   gap: 10px;
 }
 
 .project {
   height: auto;
   user-select: none;
+  cursor: pointer;
+  border: 1px solid rgb(233, 233, 233);
 }
 .project-wrapper {
   width: 100%;
@@ -275,8 +278,9 @@ header img {
 }
 
 .project-src {
+  background-color: red;
   flex: 1;
-  height: 100%;
+  height: 100px;
   overflow: hidden;
   border-radius: 0 0 15px 15px;
   border-top: 1px solid rgb(233, 233, 233);
@@ -410,10 +414,80 @@ header img {
   margin-bottom: 2px;
 }
 
+.project-description {
+  display: none;
+  position: fixed;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+}
+
+.description-bg {
+  position: absolute;
+  z-index: 0;
+  left: 0;
+  top: 0;
+  background-color: black;
+  opacity: 0.3;
+  width: 100%;
+  height: 100%;
+}
+.description-wrapper {
+  width: 500px;
+  height: 400px;
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 12px;
+  padding: 20px;
+  background-color: rgb(240, 240, 240);
+}
+
+.dw-t {
+  margin-top: 30px;
+  width: 100%;
+}
+
+.dw-t > input {
+  width: 100%;
+  height: 40px;
+  border-radius: 7px;
+  padding: 5px;
+}
+
+.dw-d {
+  margin-top: 30px;
+  width: 100%;
+}
+
+.dw-d > textarea {
+  border-radius: 7px;
+  padding: 5px;
+  width: 100%;
+  height: 100px;
+}
+
+.submit-btns {
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.submit-btns > button {
+  width: 100px;
+  height: 40px;
+  background-color: rgb(90, 196, 240);
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 12px;
+}
 #observer {
-  /* position: absolute; */
-  /* bottom: 0; */
-  /* right: 0; */
 }
 
 @media (max-width: 1250px) {
