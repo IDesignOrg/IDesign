@@ -92,7 +92,11 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   10000
 );
-const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+const renderer = new THREE.WebGLRenderer({
+  alpha: true,
+  antialias: true,
+  preserveDrawingBuffer: true,
+});
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 const canvas = renderer.domElement;
@@ -662,20 +666,44 @@ const onChangeMode = (e) => {
       return;
     case "3D":
       if (controls.enabled) return; //이미 3d라면 종료
-      camera.lookAt(50, 50, 50);
-      camera.position.set(50, 50, 50);
+      camera.lookAt(250, 250, 250);
+      camera.position.set(250, 250, 250);
       controls.enabled = true;
       create3DScene();
   }
 };
 
-//내가 건드리는 중
+function dataURLtoBlob(dataURL) {
+  const byteString = atob(dataURL.split(",")[1]);
+  const mimeString = dataURL.split(",")[0].split(":")[1].split(";")[0];
+  const ab = new ArrayBuffer(byteString.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+  return new Blob([ab], { type: mimeString });
+}
+
 const onSave = async () => {
   const projectId = new Date().getTime().toString();
   const dataEntities = saveFactory(scene);
+
+  //스크린샷 타입
+  const strMime = "image/jpeg";
+  //base64 썸네일
+  const imageData = renderer.domElement.toDataURL(strMime);
+
+  const blobData = dataURLtoBlob(imageData);
+  const formData = new FormData();
+  const userId = "123123";
+  const project_id = "321321";
+  const thumbnail = new FormData();
+  thumbnail.append("file", blob, `${userId}_${project_id}_screenshot.jpg`);
+
   const req = {
     projectId,
     dataEntities,
+    thumbnail,
   };
   const { data } = await axios.post("http://localhost:8080/save/project", {
     ...req,
