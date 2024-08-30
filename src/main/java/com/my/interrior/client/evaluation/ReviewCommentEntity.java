@@ -3,7 +3,7 @@ package com.my.interrior.client.evaluation;
 import java.time.LocalDateTime;
 
 import com.my.interrior.client.user.UserEntity;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
@@ -29,7 +29,7 @@ public class ReviewCommentEntity {
 	@Column(name = "r_comment_created")
 	private LocalDateTime rCommentCreated;
 	
-	@Column(columnDefinition = "TEXT" ,name = "r_comment")
+	@Column(columnDefinition = "TEXT", name = "r_comment")
 	private String rComment;
 	
 	@ManyToOne
@@ -38,5 +38,6 @@ public class ReviewCommentEntity {
 	
 	@ManyToOne
 	@JoinColumn(name = "r_no")
+	@JsonBackReference
 	private ReviewEntity reviewEntity;
 }

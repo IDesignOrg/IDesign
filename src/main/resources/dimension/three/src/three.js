@@ -500,6 +500,7 @@ const onMouseUp = () => {
     };
   }
   if (isChangingObject.isDragging) {
+    //circle을 통해 방 모양 변경
     const room = scene.getObjectById(isChangingObject.changingObjectId);
     room.onMouseUp({ cameraZoom });
 
@@ -517,6 +518,7 @@ const onMouseUp = () => {
     moveController.onMouseUp();
   }
   if (controller.isDragging) {
+    // 컨트롤러로 방 회전
     controller.onMouseUp();
   }
   isDragging = false;
@@ -565,6 +567,7 @@ const onWheel = (event) => {
 };
 
 const isFunitureLoadSuccess = (id) => {
+  // gltf파일이 잘 로드되엇나 확인
   return furnitureObjects[id].status === "fulfilled";
 };
 
@@ -580,7 +583,7 @@ const onCreateBtnClick = async (e) => {
 
   // return;
   const { id } = btn;
-  if (Object.keys(furnitureObjects).includes(id)) {
+  if (furnitureObjects.hasOwnProperty(id)) {
     if (!isFunitureLoadSuccess(id)) return;
     const funitureShadow = furnitureObjects[id].value.clone();
     funitureShadow.name = shadowName;
@@ -595,7 +598,6 @@ const onCreateBtnClick = async (e) => {
 };
 
 const create2DRoom = (room) => {
-  console.log(room);
   const points = room.userData.points;
   const newRoom = new D2Room({ points });
   newRoom.name = "room";
