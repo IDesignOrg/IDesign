@@ -709,9 +709,6 @@ const onSave = async () => {
   if (pDes) {
     pDes = JSON.parse(pDes);
   }
-  console.log(pDes);
-
-  console.log(project_id);
   const req = {
     projectId,
     dataEntities,
@@ -723,8 +720,7 @@ const onSave = async () => {
         }
       : null,
   };
-  console.log(req);
-  return;
+  //wook
   const { data } = await axios.post("http://localhost:8080/save/project", {
     ...req,
   });
