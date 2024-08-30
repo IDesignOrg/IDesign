@@ -694,17 +694,37 @@ const onSave = async () => {
   const imageData = renderer.domElement.toDataURL(strMime);
 
   const blobData = dataURLtoBlob(imageData);
-  const formData = new FormData();
   const userId = "123123";
-  const project_id = "321321";
+  // const project_id = "321321";
   const thumbnail = new FormData();
-  thumbnail.append("file", blob, `${userId}_${project_id}_screenshot.jpg`);
+  thumbnail.append("file", blobData, `${userId}_${project_id}_screenshot.jpg`);
 
+  const urlParams = new URLSearchParams(window.location.search);
+  //wook
+  //project_id는 null일수도 잇음
+  // Ex) localhost:8080/three
+  // ex 2) localhost:8080/three?project_id=123123
+  const project_id = urlParams.get("project_id");
+  let pDes = localStorage.getItem("pdes");
+  if (pDes) {
+    pDes = JSON.parse(pDes);
+  }
+  console.log(pDes);
+
+  console.log(project_id);
   const req = {
     projectId,
     dataEntities,
     thumbnail,
+    project_src: pDes
+      ? {
+          title: pDes.title,
+          src: pDes.src,
+        }
+      : null,
   };
+  console.log(req);
+  return;
   const { data } = await axios.post("http://localhost:8080/save/project", {
     ...req,
   });
@@ -728,6 +748,8 @@ window.addEventListener("beforeunload", () => {
   canvas.removeEventListener("mousemove", onMouseMove);
   canvas.removeEventListener("mouseup", onMouseUp);
   canvas.removeEventListener("wheel", onWheel);
+
+  localStorage.removeItem("pDes");
 });
 
 hudIcon.addEventListener("click", onCreateBtnClick);
