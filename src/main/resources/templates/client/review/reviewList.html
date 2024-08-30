@@ -279,6 +279,30 @@
 		.comment-form button:hover {
 			background-color: #0056b3;
 		}
+
+		.pagination {
+			display: flex;
+			justify-content: center;
+			margin-top: 20px;
+		}
+
+		.pagination a {
+			color: black;
+			padding: 8px 16px;
+			text-decoration: none;
+			transition: background-color 0.3s;
+		}
+
+		.pagination a.active {
+			background-color: #4CAF50;
+			color: white;
+			border-radius: 5px;
+		}
+
+		.pagination a:hover:not(.active) {
+			background-color: #ddd;
+			border-radius: 5px;
+		}
 	</style>
 	<link rel="stylesheet" href="/css/header.css" />
 	<link rel="stylesheet" href="/css/reset.css" />
@@ -344,6 +368,15 @@
 					<span class="close">&times;</span>
 				</div>
 			</div>
+		</div>
+		<div class="pagination">
+			<a th:href="@{/auth/evaluation(page=${currentPage - 1})}" th:if="${currentPage > 0}">&laquo; 이전</a>
+			<span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+				<a th:href="@{/auth/evaluation(page=${i})}" th:classappend="${i == currentPage} ? 'active'"
+					th:text="${i + 1}">1</a>
+			</span>
+			<a th:href="@{/auth/evaluation(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}">다음
+				&raquo;</a>
 		</div>
 	</div>
 
