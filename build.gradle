@@ -19,13 +19,13 @@ repositories {
 }
 
 /* Node.js 및 npm 설정 */
-node {
-    download = false
-    version = "20.16.0"
-    npmVersion = "10.8.1"
-    npmWorkDir = file("${project.projectDir}/.gradle/npm")
-    nodeModulesDir = file("${project.projectDir}/src/main/resources")
-}
+// node {
+//     download = false
+//     version = "20.16.0"
+//     npmVersion = "10.8.1"
+//     npmWorkDir = file("${project.projectDir}/.gradle/npm")
+//     nodeModulesDir = file("${project.projectDir}/src/main/resources")
+// }
 
 /* 프론트엔드 빌드 전 작업 */
 task cleanDist(type: Delete) {
@@ -33,14 +33,14 @@ task cleanDist(type: Delete) {
 }
 
 /* Webpack 빌드 작업 */
-task npmBuild(type: NpmTask) {
-    dependsOn cleanDist
-    args = ['run', 'build']
-    workingDir = file("${project.projectDir}/src/main/resources")
-    doFirst {
-        npmInstall() // npm 설치를 보장
-    }
-}
+// task npmBuild(type: NpmTask) {
+//     // dependsOn cleanDist
+//     // args = ['run', 'build']
+//     // workingDir = file("${project.projectDir}/src/main/resources")
+//     // doFirst {
+//     //     npmInstall() // npm 설치를 보장
+//     // }
+// }
 
 dependencies {
     // Spring Data JPA
@@ -88,7 +88,8 @@ task webpackServer(type: Exec, dependsOn: webpackBuild) {
 }
 
 /* 프론트엔드 빌드 후 패키징 */
-task packageFrontend(type: Zip, dependsOn: npmBuild) {
+// task packageFrontend(type: Zip, dependsOn: npmBuild) {
+task packageFrontend(type: Zip) {
     from fileTree("${project.projectDir}/src/main/resources/dist")
     include '**/*'
     archiveFileName.set("${rootProject.name}-frontend.zip")
@@ -113,5 +114,5 @@ tasks.withType(JavaCompile) {
 /* Spring Boot 빌드 시 npmBuild 실행 */
 bootJar {
     archiveFileName.set("app.jar")
-    dependsOn npmBuild
+    // dependsOn npmBuild
 }
