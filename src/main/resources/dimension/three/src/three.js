@@ -696,6 +696,7 @@ const onSave = async () => {
   // base64 데이터를 Blob으로 변환
   const blobData = dataURLtoBlob(imageData);
   const userId = "123123";
+  const urlParams = new URLSearchParams(window.location.search);
   const project_id = urlParams.get("project_id");
 
   // FormData 객체 생성
