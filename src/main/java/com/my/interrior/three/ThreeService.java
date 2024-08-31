@@ -58,9 +58,13 @@ public class ThreeService {
 		MultipartFile thumbnail, String userId) throws IOException {
 		UserEntity user = userRepository.findByUId(userId);
 		String projectId = request.getProjectId();
+		
+		String file = uploadFile(thumbnail);
+		
+		System.out.println("file : " + file);
 
 		log.info("userId : {}, projectId : {}, user : {}", userId, projectId, user);
-		log.info("thumbnail: {}, src: {}, title: {}", request.getThumbnail(), request.getProjectSrc().getSrc(), request.getProjectSrc().getTitle());
+		log.info(" src: {}, title: {}", request.getProjectSrc().getSrc(), request.getProjectSrc().getTitle());
 
 		String file = uploadFile(thumbnail);
 		System.out.println("파일 이름 : " + file);
