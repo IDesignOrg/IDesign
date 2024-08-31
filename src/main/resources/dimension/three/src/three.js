@@ -723,7 +723,13 @@ const onSave = async () => {
   };
 
   // JSON 데이터를 문자열로 변환하여 FormData에 추가
-  formData.append("jsonData", JSON.stringify(req));
+  formData.append(
+    "jsonData",
+    new Blob([JSON.stringify(req)], {
+      type: "application/json",
+    })
+  );
+
   console.log("formData", formData);
   try {
     // axios로 POST 요청 보내기
@@ -733,6 +739,7 @@ const onSave = async () => {
       {
         headers: {
           "Content-Type": "multipart/form-data",
+          // "Content-Type": "application/json",
         },
       }
     );
