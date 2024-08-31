@@ -98,15 +98,18 @@
 			overflow: hidden;
 		}
 	</style>
+	<link rel="stylesheet" href="/css/header.css" />
+	<link rel="stylesheet" href="/css/reset.css" />
 </head>
 
 <body>
-	
-		<img th:src="${shops.shopMainPhoto}" alt="메인 사진" class="main-image">
-		<h1 th:text="${shops.shopTitle}"></h1>
-		<form id="shopReview" action="/shopReview" method="post" enctype="multipart/form-data">
-			<input type="hidden" id="shopNo" name="shopNo" th:value="${shops.shopNo}">
-			<!--별점 관련-->
+	<th:block th:include="~{fragments/header.html::header}"></th:block>
+
+	<img th:src="${shops.shopMainPhoto}" alt="메인 사진" class="main-image">
+	<h1 th:text="${shops.shopTitle}"></h1>
+	<form id="shopReview" action="/shopReview" method="post" enctype="multipart/form-data">
+		<input type="hidden" id="shopNo" name="shopNo" th:value="${shops.shopNo}">
+		<!--별점 관련-->
 		<div class="starpoint_wrap">
 			<div class="starpoint_box">
 				<label for="starpoint_1" class="label_star" title="0.5"><span class="blind">0.5점</span></label>
