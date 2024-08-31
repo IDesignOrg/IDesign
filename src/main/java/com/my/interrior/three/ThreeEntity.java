@@ -39,15 +39,20 @@ public class ThreeEntity {
 	private UserEntity userEntity;
 	
 	@Column(name = "mod_dt")
-	@Temporal(TemporalType.TIMESTAMP)
 	private LocalDateTime modDate;
 	
 	@Column(name = "reg_dt")
-	@Temporal(TemporalType.TIMESTAMP)
 	private LocalDateTime regDate;
 
 	@OneToMany(mappedBy = "threeEntity", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<DataEntity> dataEntity; 
+	private List<DataEntity> dataEntity;
+	
+	@Column(name = "thumbnail", nullable = false)
+	private String thumbnail;
+	
+	private String title;
+	private String src;
+	
 	
 	//엔티티 만들 때 자동으로 생성시켜주는 어노테이션
 	@PrePersist
