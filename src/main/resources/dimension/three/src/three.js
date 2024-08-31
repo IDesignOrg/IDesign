@@ -688,31 +688,32 @@ const onSave = async () => {
   const projectId = new Date().getTime().toString();
   const dataEntities = saveFactory(scene);
 
-  //스크린샷 타입
+  // 스크린샷 타입
   const strMime = "image/jpeg";
-  //base64 썸네일
+  // base64 썸네일
   const imageData = renderer.domElement.toDataURL(strMime);
 
+  // base64 데이터를 Blob으로 변환
   const blobData = dataURLtoBlob(imageData);
   const userId = "123123";
-  // const project_id = "321321";
-  const thumbnail = new FormData();
-  thumbnail.append("file", blobData, `${userId}_${project_id}_screenshot.jpg`);
-
   const urlParams = new URLSearchParams(window.location.search);
-  //wook
-  //project_id는 null일수도 잇음
-  // Ex) localhost:8080/three
-  // ex 2) localhost:8080/three?project_id=123123
   const project_id = urlParams.get("project_id");
+
+  // FormData 객체 생성
+  const formData = new FormData();
+
+  // Blob 데이터와 파일명으로 파일 추가
+  formData.append("file", blobData, `${userId}_${project_id}_screenshot.jpg`);
+
+  // JSON 데이터 생성
   let pDes = localStorage.getItem("pdes");
   if (pDes) {
     pDes = JSON.parse(pDes);
   }
+
   const req = {
     projectId,
     dataEntities,
-    thumbnail,
     projectSrc: pDes
       ? {
           title: pDes.title,
@@ -720,16 +721,28 @@ const onSave = async () => {
         }
       : null,
   };
+
+  // JSON 데이터를 문자열로 변환하여 FormData에 추가
+  formData.append("jsonData", JSON.stringify(req));
+
   try {
-    //wook
-    const { data } = await axios.post("http://localhost:8080/save/project", {
-      ...req,
-    });
+    // axios로 POST 요청 보내기
+    const { data } = await axios.post(
+      "http://localhost:8080/save/project",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
     if (pDes) localStorage.removeItem("pdes");
     console.log(data);
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
+
   //
 };
 
