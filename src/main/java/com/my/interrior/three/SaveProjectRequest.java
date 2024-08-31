@@ -15,7 +15,6 @@ public class SaveProjectRequest {
 
 	private String projectId;
 	private List<DataRequest> dataEntities;
-	private MultipartFile thumbnail;
 	private ProjectRequest projectSrc;
 	
 	@Getter
