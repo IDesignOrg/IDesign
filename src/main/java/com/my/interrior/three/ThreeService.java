@@ -58,15 +58,19 @@ public class ThreeService {
 		MultipartFile thumbnail, String userId) throws IOException {
 		UserEntity user = userRepository.findByUId(userId);
 		String projectId = request.getProjectId();
+		
+		String file = uploadFile(thumbnail);
+		
+		System.out.println("file : " + file);
 
 		log.info("userId : {}, projectId : {}, user : {}", userId, projectId, user);
-		log.info("thumbnail: {}, src: {}, title: {}", request.getThumbnail(), request.getProjectSrc().getSrc(), request.getProjectSrc().getTitle());
+		log.info(" src: {}, title: {}", request.getProjectSrc().getSrc(), request.getProjectSrc().getTitle());
 
 		// 저장하기 전에 ThreeEntity 먼저 저장시켜야 함.
 		ThreeEntity threeEntity = new ThreeEntity();
 		threeEntity.setProjectId(projectId);
 		threeEntity.setUserEntity(user);
-		threeEntity.setThumbnail(uploadFile(thumbnail));
+		threeEntity.setThumbnail(file);
 		threeEntity.setSrc(request.getProjectSrc().getSrc());
 		threeEntity.setTitle(request.getProjectSrc().getTitle());
 		// three 저장
