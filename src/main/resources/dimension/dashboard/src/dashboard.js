@@ -231,6 +231,13 @@ const onSubmitProject = () => {
   console.log(src);
   const obj = { title, src };
   localStorage.setItem("pdes", JSON.stringify(obj));
+  window.location.href = `${window.location.origin}/three/design`;
+  //   history.push("/three.html");
+  //   history.pushState(
+  //     JSON.stringify(obj),
+  //     `${window.location.origin}`,
+  //     `/three/design`
+  //   );
   //woook
   //   axios.post("http://localhost:8080/");
 };
