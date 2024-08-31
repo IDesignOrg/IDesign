@@ -12,6 +12,8 @@ java {
     sourceCompatibility = '17'
 }
 
+
+
 repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }
@@ -115,4 +117,9 @@ tasks.withType(JavaCompile) {
 bootJar {
     archiveFileName.set("app.jar")
     // dependsOn npmBuild
+}
+
+//한번 추가해봄
+jar {
+    enabled=false
 }
