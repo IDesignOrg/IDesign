@@ -724,6 +724,7 @@ const onSave = async () => {
   const { data } = await axios.post("http://localhost:8080/save/project", {
     ...req,
   });
+  if (pDes) localStorage.removeItem("pdes");
   console.log(data);
   //
 };
