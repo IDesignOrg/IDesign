@@ -713,7 +713,7 @@ const onSave = async () => {
     projectId,
     dataEntities,
     thumbnail,
-    project_src: pDes
+    projectSrc: pDes
       ? {
           title: pDes.title,
           src: pDes.src,
