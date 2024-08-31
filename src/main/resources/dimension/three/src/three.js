@@ -720,12 +720,16 @@ const onSave = async () => {
         }
       : null,
   };
-  //wook
-  const { data } = await axios.post("http://localhost:8080/save/project", {
-    ...req,
-  });
-  if (pDes) localStorage.removeItem("pdes");
-  console.log(data);
+  try {
+    //wook
+    const { data } = await axios.post("http://localhost:8080/save/project", {
+      ...req,
+    });
+    if (pDes) localStorage.removeItem("pdes");
+    console.log(data);
+  } catch (e) {
+    console.log(e);
+  }
   //
 };
 
