@@ -1,9 +1,10 @@
 package com.my.interrior.three;
 
+import java.io.IOException;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,9 +12,11 @@ import com.my.interrior.client.user.UserRepository;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class ThreeRestController {
 
 	private final UserRepository userRepository;
@@ -25,10 +28,12 @@ public class ThreeRestController {
 	
 	
 	@PostMapping("/save/project")
-	public ResponseEntity<?> saveProject(@RequestBody SaveProjectRequest request,
-			@RequestParam("thumbnail") MultipartFile thumbnail,
-			HttpSession session) throws Exception{
+	public ResponseEntity<?> saveProject(@RequestPart("jsonData") SaveProjectRequest request,
+			@RequestPart("file") MultipartFile thumbnail,
+			HttpSession session) throws IOException{
 		String userId = (String) session.getAttribute("UId");
+		
+		log.info("request DATA: {}, request FILE: {}", request, thumbnail);
 		
 		threeService.saveData(request, thumbnail, userId);
 		
