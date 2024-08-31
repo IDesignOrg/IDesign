@@ -18,6 +18,7 @@
 			max-width: 1200px;
 			margin: 0 auto;
 			padding: 20px;
+			margin-top: 140px;
 		}
 
 		.review-grid {
@@ -33,17 +34,30 @@
 			overflow: hidden;
 			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 			cursor: pointer;
+			width: 300px;
+			/* 고정 너비 설정 */
+			height: 400px;
+			/* 고정 높이 설정 */
+			display: flex;
+			flex-direction: column;
 		}
 
 		.review-card img {
 			width: 100%;
-			height: auto;
+			height: 200px;
+			/* 고정 높이 설정 */
+			object-fit: cover;
+			/* 이미지가 카드에 맞게 크기 조정 */
 			display: block;
 		}
 
 		.review-content {
 			padding: 15px;
+			flex: 1;
+			overflow: hidden;
+			/* 내용이 넘치지 않도록 설정 */
 		}
+
 
 		.review-title {
 			font-weight: bold;
@@ -265,11 +279,39 @@
 		.comment-form button:hover {
 			background-color: #0056b3;
 		}
+
+		.pagination {
+			display: flex;
+			justify-content: center;
+			margin-top: 20px;
+		}
+
+		.pagination a {
+			color: black;
+			padding: 8px 16px;
+			text-decoration: none;
+			transition: background-color 0.3s;
+		}
+
+		.pagination a.active {
+			background-color: #4CAF50;
+			color: white;
+			border-radius: 5px;
+		}
+
+		.pagination a:hover:not(.active) {
+			background-color: #ddd;
+			border-radius: 5px;
+		}
 	</style>
+	<link rel="stylesheet" href="/css/header.css" />
+	<link rel="stylesheet" href="/css/reset.css" />
+
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 
 <body>
+	<th:block th:include="~{fragments/header.html::header}"></th:block>
 	<div class="container">
 		<h1>Review List</h1>
 		<div class="review-grid">
@@ -328,6 +370,15 @@
 					<span class="close">&times;</span>
 				</div>
 			</div>
+		</div>
+		<div class="pagination">
+			<a th:href="@{/auth/evaluation(page=${currentPage - 1})}" th:if="${currentPage > 0}">&laquo; 이전</a>
+			<span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+				<a th:href="@{/auth/evaluation(page=${i})}" th:classappend="${i == currentPage} ? 'active'"
+					th:text="${i + 1}">1</a>
+			</span>
+			<a th:href="@{/auth/evaluation(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}">다음
+				&raquo;</a>
 		</div>
 	</div>
 
