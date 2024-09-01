@@ -107,11 +107,12 @@ const getProjects = async () => {
 
   const filter = searchInput.value;
   const sort = selectedSort.id;
+
   //wook
   //밑에 주소 바꿔주셈
-  // const data = await axios.get("http:localhost:8080/get/projects", {
-  // 	params: {filter, sort}
-  // });
+  const data = await axios.get("http:localhost:8080/get/projects", {
+    params: { filter, sort },
+  });
   /*
 	const data = await getDummyData();
 	const receivedProjects = data.data.projects;
@@ -228,7 +229,7 @@ const onSubmitProject = () => {
   const title = document.getElementById("description-title").value;
 
   const src = textArea.value;
-  console.log(src);
+
   const obj = { title, src };
   localStorage.setItem("pdes", JSON.stringify(obj));
   window.location.href = `${window.location.origin}/three/design`;
