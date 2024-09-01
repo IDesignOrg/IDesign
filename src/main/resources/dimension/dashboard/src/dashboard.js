@@ -111,8 +111,10 @@ const getProjects = async () => {
 
   //wook
   //밑에 주소 바꿔주셈
-  const data = await axios.get("http:localhost:8080/get/projects", {
-    params: { filter, sort },
+  let flag = 0
+  console.log('secx');
+  const data = await axios.get("/get/projects", {
+    params: { filter, sort, flag },
   });
   /*
 	const data = await getDummyData();
