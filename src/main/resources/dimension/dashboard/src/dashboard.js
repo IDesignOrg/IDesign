@@ -1,3 +1,4 @@
+
 import axios from "axios";
 import { interectionObserver } from "../../utils/observer";
 import { dummy } from "./dummy";
@@ -285,3 +286,4 @@ function debounce(func, delay) {
     }, delay);
   };
 }
+
