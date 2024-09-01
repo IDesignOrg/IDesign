@@ -39,28 +39,32 @@ public class ThreeService {
 	private Storage storage;
 
 	
+	public int getCounts(String userId) {
+		int count = threeRepository.countByUserEntity_UId(userId);
+		return count;
+	}
+	
 	// GCS 파일 업로드
-		public String uploadFile(MultipartFile file) throws IOException {
-			// 세션값 받아오기
-			String userId = (String) session.getAttribute("UId");
-			// 폴더 생성을 위해 user_ + 세션값으로 받기
-			String folderName = "three" + "user_" + userId;
-			// 경로설정 폴더이름 /uuid-원래 파일이름
-			String fileName = folderName + "/" + UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
-			BlobId blobId = BlobId.of(bucketName, fileName);
-			BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
-			storage.create(blobInfo, file.getBytes());
-			return String.format("https://storage.googleapis.com/%s/%s", bucketName, fileName);
-		}
-		
+	public String uploadFile(MultipartFile file) throws IOException {
+		// 세션값 받아오기
+		String userId = (String) session.getAttribute("UId");
+		// 폴더 생성을 위해 user_ + 세션값으로 받기
+		String folderName = "three" + "user_" + userId;
+		// 경로설정 폴더이름 /uuid-원래 파일이름
+		String fileName = folderName + "/" + UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
+		BlobId blobId = BlobId.of(bucketName, fileName);
+		BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
+		storage.create(blobInfo, file.getBytes());
+		return String.format("https://storage.googleapis.com/%s/%s", bucketName, fileName);
+	}
+
 	@Transactional
-	public void saveData(SaveProjectRequest request,
-		MultipartFile thumbnail, String userId) throws IOException {
+	public void saveData(SaveProjectRequest request, MultipartFile thumbnail, String userId) throws IOException {
 		UserEntity user = userRepository.findByUId(userId);
 		String projectId = request.getProjectId();
-		
+
 		String file = uploadFile(thumbnail);
-		
+
 		System.out.println("file : " + file);
 
 		log.info("userId : {}, projectId : {}, user : {}", userId, projectId, user);
