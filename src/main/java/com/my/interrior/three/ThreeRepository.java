@@ -17,7 +17,8 @@ public interface ThreeRepository extends JpaRepository<ThreeEntity, String> {
 	int countByUserEntity_UIdAndTitleContaining(String userId, String title);
 
 	//3D dashboard threeEntity 데이터들 페이징으로 받기(12개씩)
-	@Query("SELECT t FROM ThreeEntity t WHERE t.UserEntity.UId = :userId AND (:title IS NULL OR t.title LIKE %:title%)")
+	//query는 테이블 값을 가져오는 것이 아니라 엔티티의 값을 가지고 온다.
+	@Query("SELECT t FROM ThreeEntity t WHERE t.userEntity.UId = :userId AND (:title IS NULL OR t.title LIKE %:title%)")
 	Page<ThreeEntity> findByUserEntity_UIdAndTitle(@Param("userId") String userId, @Param("title") String title,
 			Pageable pageable);
 }
