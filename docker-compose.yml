@@ -1,0 +1,36 @@
+version: "3.8"
+services:
+  db:
+    image: mariadb
+    container_name: meeting-document-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: "meeting_document"
+      MYSQL_PASSWORD: "root"
+      MYSQL_ROOT_PASSWORD: "1234"
+    ports:
+      - "3306:3306"
+    networks:
+      - meeting-document-network
+    healthcheck:
+      test: '/usr/bin/mysql --user=root --password=root --execute "SHOW DATABASES;"'
+      interval: 2s
+      timeout: 20s
+      retries: 10
+    volumes:
+      - ./data:/docker-entrypoint-initdb.d
+#  application:
+#    container_name: meeting-document-application
+#    build:
+#      context: ./
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8080:8080"
+#    networks:
+#      - meeting-document-network
+#    depends_on:
+#      - "db"
+networks:
+  meeting-document-network:
+    name: meeting-document-network
+    driver: bridge
