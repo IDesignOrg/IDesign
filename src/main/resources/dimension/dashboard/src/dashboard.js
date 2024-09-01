@@ -105,35 +105,25 @@ const getProjects = async () => {
 	if (!hasMoreProjects || isLaoding) return;
 	isLaoding = true;
 
-	const filter = searchInput.value;
-	const sort = selectedSort.id;
+  const filter = searchInput.value;
+  const sort = selectedSort.id;
 
-	//wook
-	//밑에 주소 바꿔주셈
-	const data = await axios.get("http:localhost:8080/get/projects", {
-		params: { filter, sort, flag:1 }
+  //wook
+  //밑에 주소 바꿔주셈
+  const data = await axios.get("http:localhost:8080/get/projects", {
+    params: { filter, sort },
+  });
+  /*
+	const data = await getDummyData();
+	const receivedProjects = data.data.projects;
+	projects.push(...receivedProjects);
+	receivedProjects.forEach((project) => {
+		const projectBox = ProjectBox(project);
+		container.insertBefore(projectBox, observer);
 	});
-	/*
-    
-	//data
-	{
-	  status:'ssecess' or fail,
-	  response:200 errocode,
-	  data:{
-		  projects:[],
-		  flag_num:0 => 0~11, 1 => 12 ~ 23
-	  }
-   }
-	  const data = await getDummyData();
-	  const receivedProjects = data.data.projects;
-	  projects.push(...receivedProjects);
-	  receivedProjects.forEach((project) => {
-		  const projectBox = ProjectBox(project);
-		  container.insertBefore(projectBox, observer);
-	  });
-	  hasMoreProjects = data.data.hasMoreProjects;
-	  isLaoding = false;
-	  */
+	hasMoreProjects = data.data.hasMoreProjects;
+	isLaoding = false;
+	*/
 };
 
 const onFilterChange = () => {
@@ -238,19 +228,19 @@ const onCreateProject = () => {
 const onSubmitProject = () => {
 	const title = document.getElementById("description-title").value;
 
-	const src = textArea.value;
-	console.log(src);
-	const obj = { title, src };
-	localStorage.setItem("pdes", JSON.stringify(obj));
-	window.location.href = `${window.location.origin}/three/design`;
-	//   history.push("/three.html");
-	//   history.pushState(
-	//     JSON.stringify(obj),
-	//     `${window.location.origin}`,
-	//     `/three/design`
-	//   );
-	//woook
-	//   axios.post("http://localhost:8080/");
+  const src = textArea.value;
+
+  const obj = { title, src };
+  localStorage.setItem("pdes", JSON.stringify(obj));
+  window.location.href = `${window.location.origin}/three/design`;
+  //   history.push("/three.html");
+  //   history.pushState(
+  //     JSON.stringify(obj),
+  //     `${window.location.origin}`,
+  //     `/three/design`
+  //   );
+  //woook
+  //   axios.post("http://localhost:8080/");
 };
 interectionObserver(observer, getProjects);
 
