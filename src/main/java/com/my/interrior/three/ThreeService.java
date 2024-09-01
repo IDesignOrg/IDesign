@@ -7,9 +7,12 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.cloud.storage.BlobId;
@@ -38,29 +41,63 @@ public class ThreeService {
 	@Autowired
 	private Storage storage;
 
-	
-	// GCS 파일 업로드
-		public String uploadFile(MultipartFile file) throws IOException {
-			// 세션값 받아오기
-			String userId = (String) session.getAttribute("UId");
-			// 폴더 생성을 위해 user_ + 세션값으로 받기
-			String folderName = "three" + "user_" + userId;
-			// 경로설정 폴더이름 /uuid-원래 파일이름
-			String fileName = folderName + "/" + UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
-			BlobId blobId = BlobId.of(bucketName, fileName);
-			BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
-			storage.create(blobInfo, file.getBytes());
-			return String.format("https://storage.googleapis.com/%s/%s", bucketName, fileName);
+	public Page<ThreeEntity> getTopData(String userId, String title, int page, int size, String sort) {
+
+		// 정렬 정보 설정
+		Sort sortOrder;
+		switch (sort) {
+		case "recent":
+			sortOrder = Sort.by(Sort.Order.desc("regDate"));
+			break;
+		case "asc":
+			sortOrder = Sort.by(Sort.Order.asc("title"));
+			break;
+		case "desc":
+			sortOrder = Sort.by(Sort.Order.desc("title"));
+			break;
+		default:
+			sortOrder = Sort.by(Sort.Order.desc("regDate")); // 기본 정렬
+			break;
 		}
-		
+
+		// Pageable 객체 생성
+		Pageable pageable = PageRequest.of(page, size, sortOrder);
+
+		return threeRepository.findByUserEntity_UIdAndTitle(userId, title, pageable);
+	}
+
+
+	public int getCounts(String userId, String title, String sort) {
+		int count = 0;
+		if (title == null || title.isEmpty()) {
+			count = threeRepository.countByUserEntity_UId(userId);
+		} else {
+			count = threeRepository.countByUserEntity_UIdAndTitleContaining(userId, title);
+		}
+		return count;
+	}
+
+	// GCS 파일 업로드
+	public String uploadFile(MultipartFile file) throws IOException {
+		// 세션값 받아오기
+		String userId = (String) session.getAttribute("UId");
+		// 폴더 생성을 위해 user_ + 세션값으로 받기
+		String folderName = "three" + "user_" + userId;
+		// 경로설정 폴더이름 /uuid-원래 파일이름
+		String fileName = folderName + "/" + UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
+		BlobId blobId = BlobId.of(bucketName, fileName);
+		BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
+		storage.create(blobInfo, file.getBytes());
+		return String.format("https://storage.googleapis.com/%s/%s", bucketName, fileName);
+	}
+
 	@Transactional
-	public void saveData(SaveProjectRequest request,
-		MultipartFile thumbnail, String userId) throws IOException {
+	public void saveData(SaveProjectRequest request, MultipartFile thumbnail, String userId) throws IOException {
 		UserEntity user = userRepository.findByUId(userId);
 		String projectId = request.getProjectId();
-		
+
 		String file = uploadFile(thumbnail);
-		
+
 		System.out.println("file : " + file);
 
 		log.info("userId : {}, projectId : {}, user : {}", userId, projectId, user);

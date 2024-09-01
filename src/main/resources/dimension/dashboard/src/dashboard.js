@@ -1,3 +1,4 @@
+
 import axios from "axios";
 import { interectionObserver } from "../../utils/observer";
 import { dummy } from "./dummy";
@@ -107,11 +108,14 @@ const getProjects = async () => {
 
   const filter = searchInput.value;
   const sort = selectedSort.id;
+
   //wook
   //밑에 주소 바꿔주셈
-  // const data = await axios.get("http:localhost:8080/get/projects", {
-  // 	params: {filter, sort}
-  // });
+  let flag = 0
+  console.log('secx');
+  const data = await axios.get("/get/projects", {
+    params: { filter, sort, flag },
+  });
   /*
 	const data = await getDummyData();
 	const receivedProjects = data.data.projects;
@@ -119,10 +123,29 @@ const getProjects = async () => {
 	receivedProjects.forEach((project) => {
 		const projectBox = ProjectBox(project);
 		container.insertBefore(projectBox, observer);
+
 	});
-	hasMoreProjects = data.data.hasMoreProjects;
-	isLaoding = false;
-	*/
+	/*
+    
+	//data
+	{
+	  status:'ssecess' or fail,
+	  response:200 errocode,
+	  data:{
+		  projects:[],
+		  flag_num:0 => 0~11, 1 => 12 ~ 23
+	  }
+   }
+	  const data = await getDummyData();
+	  const receivedProjects = data.data.projects;
+	  projects.push(...receivedProjects);
+	  receivedProjects.forEach((project) => {
+		  const projectBox = ProjectBox(project);
+		  container.insertBefore(projectBox, observer);
+	  });
+	  hasMoreProjects = data.data.hasMoreProjects;
+	  isLaoding = false;
+	  */
 };
 
 const onFilterChange = () => {
@@ -183,6 +206,7 @@ const reqRemoveProjects = async () => {
   const data = await axios.post("", {
     project_ids: Object.keys(remove_projects),
   });
+  //
 };
 
 const onTrashClick = () => {
@@ -228,7 +252,7 @@ const onSubmitProject = () => {
   const title = document.getElementById("description-title").value;
 
   const src = textArea.value;
-  console.log(src);
+
   const obj = { title, src };
   localStorage.setItem("pdes", JSON.stringify(obj));
   window.location.href = `${window.location.origin}/three/design`;
@@ -264,3 +288,4 @@ function debounce(func, delay) {
     }, delay);
   };
 }
+
