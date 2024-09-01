@@ -1,67 +1,172 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>csc</title>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSC</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/header.css" />
+    <link rel="stylesheet" href="/css/reset.css" />
+    <style>
+        /* 중앙 정렬을 위한 컨테이너 */
+        .container {
+            max-width: 1200px;
+            /* 최대 너비 설정 */
+            margin: 0 auto;
+            /* 가로 중앙 정렬 */
+            padding: 20px;
+            /* 내용과 컨테이너 사이의 여백 */
+        }
+
+        .customContent {
+            margin-top: 140px;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .customContent form {
+            margin-bottom: 20px;
+        }
+
+        .customContent input[type="text"] {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .customContent button[type="submit"] {
+            padding: 10px 20px;
+            background-color: #6633ff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .customContent button[type="submit"]:hover {
+            background-color: #5555ff;
+        }
+
+        .customContent a {
+            display: inline-block;
+            margin-right: 20px;
+            font-weight: 700;
+            color: #272727;
+            transition: color 0.3s ease;
+        }
+
+        .customContent a:hover {
+            color: #6633ff;
+        }
+
+        .customContent table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .customContent table th,
+        .customContent table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .customContent table th {
+            background-color: #f4f4f4;
+        }
+
+        .customContent nav {
+            margin-top: 20px;
+        }
+
+        .customContent .pagination {
+            display: flex;
+            justify-content: center;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .customContent .pagination li {
+            margin: 0 5px;
+        }
+
+        .customContent .pagination li a {
+            padding: 8px 12px;
+            color: #6633ff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+
+        .customContent .pagination li.active a {
+            background-color: #6633ff;
+            color: #fff;
+            border-color: #6633ff;
+        }
+
+        .customContent .pagination li.disabled a {
+            color: #ccc;
+            pointer-events: none;
+        }
+    </style>
 </head>
 
 <body>
-	여기는 고객센터입니다.(현재 통합검색 만드는 중)
+    <th:block th:include="~{fragments/header.html::header}"></th:block>
+    <div class="container">
+        <div class="customContent">
+            <th:block th:include="~{fragments/cscHeader.html}"></th:block>
+            <div>
+                <a th:href="@{/board/faq}">전체</a>
+                <a th:each="category : ${categories}" th:href="@{|/board/faq/category/${category}|}"
+                    th:text="${category}"></a>
+            </div>
 
-	<!--여기에는 통합 검색 만들기-->
-	<form action="/board/faq/search" method="GET">
-		<input type="text" id="keyword" name="keyword" placeholder="제목을 입력해주세요." />
-		<button type="submit" id="searchBtn">검색</button>
-	</form>
+            <table>
+                <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>제목</th>
+                        <th>카테고리</th>
+                        <th>작성자</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="faq : ${faqs}">
+                        <td th:text="${faq.faqNo}"></td>
+                        <td>
+                            <a th:href="@{/board/faq/{no}(no=${faq.faqNo})}" th:text="${faq.faqTitle}"></a>
+                        </td>
+                        <td th:text="${faq.faqCategory}"></td>
+                        <td th:text="${faq.userEntity.UName}"></td>
+                    </tr>
+                </tbody>
+            </table>
 
-
-	<!--이제 여기에 자주 묻는 질문, 문의사항, 공지사항 만들기-->
-	<!--먼저 문의사항, 공지사항을 만들고 통합 검색을 들어가자-->
-	<a href="/board/faq">자주 묻는 질문</a>
-	<a href="/board/inquiry">문의사항</a>
-	<a href="/board/notices">공지사항</a>
-	<a href="/board/recoverLogin">복구신청</a>
-	<div>
-		<a th:href="@{/board/faq}">전체</a>
-		<a th:each="category : ${categories}" th:href="@{|/board/faq/category/${category}|}" th:text="${category}"></a>
-	</div>
-	<table>
-		<tr th:each="faq : ${faqs}">
-			<td th:text="${faq.faqNo}"></td>
-			<td>
-				<a th:href="@{/board/faq/{no}(no=${faq.faqNo})}" th:text="${faq.faqTitle}"></a>
-			</td>
-			<td th:text="${faq.faqCategory}"></td>
-			<td th:text="${faq.userEntity.UName}"></td>
-		</tr>
-	</table>
-
-	<nav aria-label="Page navigation">
-		<ul class="pagination">
-			<li class="page-item" th:class="${faqs.first ? 'disabled' : ''}">
-				<a th:if="${!faqs.first}" class="page-link"
-					th:href="@{/board/faq(page=${faqs.number - 1}, size=${faqs.size})}">이전</a>
-			</li>
-
-			<!-- 페이지 번호 링크 -->
-			<li th:each="pageNum : ${#numbers.sequence(0, faqs.totalPages - 1)}"
-				th:class="${faqs.number == pageNum ? 'page-item active' : 'page-item'}">
-				<a th:if="${param!=null}" class="page-link"
-					th:href="@{/board/faq/search(page=${pageNum}, size=${faqs.size}, keyword=${param.keyword})}"
-					th:text="${pageNum + 1}"></a>
-				<a th:if="${param==null}" class="page-link"
-					th:href="@{/board/faq(page=${pageNum}, size=${faqs.size})}" th:text="${pageNum + 1}"></a>
-			</li>
-
-			<li class="page-item" th:class="${faqs.last ? 'disabled' : ''}">
-				<a th:if="${!faqs.last}" class="page-link"
-					th:href="@{/board/faq(page=${faqs.number + 1}, size=${faqs.size})}">다음</a>
-			</li>
-		</ul>
-	</nav>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item" th:class="${faqs.first ? 'disabled' : ''}">
+                        <a th:if="${!faqs.first}" class="page-link"
+                            th:href="@{/board/faq(page=${faqs.number - 1}, size=${faqs.size})}">이전</a>
+                    </li>
+                    <li th:each="pageNum : ${#numbers.sequence(0, faqs.totalPages - 1)}"
+                        th:class="${faqs.number == pageNum ? 'page-item active' : 'page-item'}">
+                        <a th:if="${param!=null}" class="page-link"
+                            th:href="@{/board/faq/search(page=${pageNum}, size=${faqs.size}, keyword=${param.keyword})}"
+                            th:text="${pageNum + 1}"></a>
+                        <a th:if="${param==null}" class="page-link"
+                            th:href="@{/board/faq(page=${pageNum}, size=${faqs.size})}" th:text="${pageNum + 1}"></a>
+                    </li>
+                    <li class="page-item" th:class="${faqs.last ? 'disabled' : ''}">
+                        <a th:if="${!faqs.last}" class="page-link"
+                            th:href="@{/board/faq(page=${faqs.number + 1}, size=${faqs.size})}">다음</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
 </body>
 
 </html>

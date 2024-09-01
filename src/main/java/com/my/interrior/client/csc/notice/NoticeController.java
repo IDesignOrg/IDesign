@@ -43,7 +43,7 @@ public class NoticeController {
 		
 		noticeRepository.save(noticeEntity);
 		//나중에 변경할 것
-		return "admin/csc/noticeWrite";
+		return "redirect:/admin/page/adminNotice";
 		
 	}
 	
