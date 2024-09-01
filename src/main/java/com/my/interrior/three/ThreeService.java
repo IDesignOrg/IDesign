@@ -47,7 +47,7 @@ public class ThreeService {
 		Sort sortOrder;
 		switch (sort) {
 		case "recent":
-			sortOrder = Sort.by(Sort.Order.desc("regDt"));
+			sortOrder = Sort.by(Sort.Order.desc("regDate"));
 			break;
 		case "asc":
 			sortOrder = Sort.by(Sort.Order.asc("title"));
@@ -56,7 +56,7 @@ public class ThreeService {
 			sortOrder = Sort.by(Sort.Order.desc("title"));
 			break;
 		default:
-			sortOrder = Sort.by(Sort.Order.desc("regDt")); // 기본 정렬
+			sortOrder = Sort.by(Sort.Order.desc("regDate")); // 기본 정렬
 			break;
 		}
 
