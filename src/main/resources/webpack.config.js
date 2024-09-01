@@ -14,6 +14,7 @@ module.exports = {
     three: "./dimension/three/src/three.js",
   },
   output: {
+    publicPath: "/dist/",
     path: path.resolve("./dist"),
     filename: "[name].min.js",
   },
