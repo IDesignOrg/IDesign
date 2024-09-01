@@ -8,178 +8,60 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="/css/header.css" />
     <link rel="stylesheet" href="/css/reset.css" />
-    <style>
-        /* 전체 컨테이너 */
-        .container {
-            max-width: 1200px; /* 최대 너비 설정 */
-            margin: 0 auto; /* 가로 중앙 정렬 */
-            padding: 20px; /* 내용과 컨테이너 사이의 여백 */
-        }
-
-        /* 기본 텍스트 스타일 */
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background-color: #f9f9f9; /* 페이지 배경색 */
-            color: #333; /* 기본 텍스트 색상 */
-            margin-top: 140px;
-            padding: 0;
-        }
-
-        /* 링크 스타일 */
-        a {
-            text-decoration: none;
-            color: #6633ff; /* 링크 기본 색상 */
-            font-weight: bold;
-        }
-
-        a:hover {
-            color: #5555ff; /* 링크 호버 시 색상 */
-        }
-
-        /* 검색 폼 스타일 */
-        form {
-            margin-bottom: 20px;
-        }
-
-        input[type="text"] {
-            padding: 10px;
-            width: 300px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            margin-right: 10px;
-        }
-
-        button[type="submit"] {
-            padding: 10px 20px;
-            background-color: #6633ff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        button[type="submit"]:hover {
-            background-color: #5555ff;
-        }
-
-        /* 카테고리 및 메뉴 링크 스타일 */
-        .customContent a {
-            display: inline-block;
-            margin-right: 20px;
-            font-weight: 700;
-            color: #272727;
-            transition: color 0.3s ease;
-        }
-
-        .customContent a:hover {
-            color: #6633ff;
-        }
-
-        /* 테이블 스타일 */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background-color: #fff; /* 테이블 배경색 */
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
-        }
-
-        table th,
-        table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-
-        table th {
-            background-color: #f4f4f4; /* 헤더 배경색 */
-            font-weight: bold;
-        }
-
-        /* 페이지네이션 스타일 */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            padding-left: 0;
-            list-style: none;
-            margin-top: 20px;
-        }
-
-        .pagination li {
-            margin: 0 5px;
-        }
-
-        .pagination li a {
-            padding: 8px 12px;
-            color: #6633ff;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            text-decoration: none;
-        }
-
-        .pagination li.active a {
-            background-color: #6633ff;
-            color: #fff;
-            border-color: #6633ff;
-        }
-
-        .pagination li.disabled a {
-            color: #ccc;
-            pointer-events: none;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/csc.css" /> <!-- 공통 CSS 파일 추가 -->
 </head>
 
 <body>
     <th:block th:include="~{fragments/header.html::header}"></th:block>
     <div class="container">
-        <th:block th:include="~{fragments/cscHeader.html}"></th:block>
+        <div class="customContent">
+            <th:block th:include="~{fragments/cscHeader.html}"></th:block>
+            <div>
+                <a th:href="@{/board/inquiry}">전체</a>
+                <a th:each="category : ${categories}" th:href="@{|/board/inquiry/category/${category}|}"
+                    th:text="${category}"></a>
+            </div>
+            <a th:if="${session.UId} != null" th:href="@{/board/inquiry/write}">글 쓰기</a>
+            
+            <!-- 문의사항 테이블 -->
+            <table>
+                <tr th:each="inquiry : ${inquiries}">
+                    <td th:text="${inquiry.inqNo}"></td>
+                    <td>
+                        <a th:href="@{/board/inquiry/{no}(no=${inquiry.inqNo})}" th:text="${inquiry.inqTitle}"
+                            th:attr="data-user-id=${inquiry.userEntity.UId}"
+                            onclick="checkAuthorization(event, this.getAttribute('data-user-id'))"></a>
+                    </td>
+                    <td th:text="${inquiry.inqCategory}"></td>
+                    <td th:text="${inquiry.userEntity.UName}"></td>
+                </tr>
+            </table>
 
-        <div>
-            <a th:href="@{/board/inquiry}">전체</a>
-            <a th:each="category : ${categories}" th:href="@{|/board/inquiry/category/${category}|}"
-                th:text="${category}"></a>
+            <!-- 페이지 네비게이션 -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item" th:class="${inquiries.first ? 'disabled' : ''}">
+                        <a th:if="${!inquiries.first}" class="page-link"
+                            th:href="@{/board/inquiry(page=${inquiries.number - 1}, size=${inquiries.size})}">이전</a>
+                    </li>
+
+                    <!-- 페이지 번호 링크 -->
+                    <li th:each="pageNum : ${#numbers.sequence(0, inquiries.totalPages - 1)}"
+                        th:class="${inquiries.number == pageNum ? 'page-item active' : 'page-item'}">
+                        <a th:if="${param!=null}" class="page-link"
+                            th:href="@{/board/inquiry/search(page=${pageNum}, size=${inquiries.size}, keyword=${param.keyword})}"
+                            th:text="${pageNum + 1}"></a>
+                        <a th:if="${param==null}" class="page-link"
+                            th:href="@{/board/inquiry(page=${pageNum}, size=${inquiries.size})}" th:text="${pageNum + 1}"></a>
+                    </li>
+
+                    <li class="page-item" th:class="${inquiries.last ? 'disabled' : ''}">
+                        <a th:if="${!inquiries.last}" class="page-link"
+                            th:href="@{/board/inquiry(page=${inquiries.number + 1}, size=${inquiries.size})}">다음</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
-        <a th:if="${session.UId} != null" th:href="@{/board/inquiry/write}">글 쓰기</a>
-        
-        <!-- 문의사항 테이블 -->
-        <table>
-            <tr th:each="inquiry : ${inquiries}">
-                <td th:text="${inquiry.inqNo}"></td>
-                <td>
-                    <a th:href="@{/board/inquiry/{no}(no=${inquiry.inqNo})}" th:text="${inquiry.inqTitle}"
-                        th:attr="data-user-id=${inquiry.userEntity.UId}"
-                        onclick="checkAuthorization(event, this.getAttribute('data-user-id'))"></a>
-                </td>
-                <td th:text="${inquiry.inqCategory}"></td>
-                <td th:text="${inquiry.userEntity.UName}"></td>
-            </tr>
-        </table>
-
-        <!-- 페이지 네비게이션 -->
-        <nav aria-label="Page navigation">
-            <ul class="pagination">
-                <li class="page-item" th:class="${inquiries.first ? 'disabled' : ''}">
-                    <a th:if="${!inquiries.first}" class="page-link"
-                        th:href="@{/board/inquiry(page=${inquiries.number - 1}, size=${inquiries.size})}">이전</a>
-                </li>
-
-                <!-- 페이지 번호 링크 -->
-                <li th:each="pageNum : ${#numbers.sequence(0, inquiries.totalPages - 1)}"
-                    th:class="${inquiries.number == pageNum ? 'page-item active' : 'page-item'}">
-                    <a th:if="${param!=null}" class="page-link"
-                        th:href="@{/board/inquiry/search(page=${pageNum}, size=${inquiries.size}, keyword=${param.keyword})}"
-                        th:text="${pageNum + 1}"></a>
-                    <a th:if="${param==null}" class="page-link"
-                        th:href="@{/board/inquiry(page=${pageNum}, size=${inquiries.size})}" th:text="${pageNum + 1}"></a>
-                </li>
-
-                <li class="page-item" th:class="${inquiries.last ? 'disabled' : ''}">
-                    <a th:if="${!inquiries.last}" class="page-link"
-                        th:href="@{/board/inquiry(page=${inquiries.number + 1}, size=${inquiries.size})}">다음</a>
-                </li>
-            </ul>
-        </nav>
     </div>
 
     <script th:inline="javascript">

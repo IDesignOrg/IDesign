@@ -45,7 +45,7 @@ public class InquiryController {
 			
 			inquiryRepository.save(inquiryEntity);
 			//임시
-			return "admin/csc/inquiryWrite";
+			return "redirect:/board/inquiry";
 
 		
 	}
