@@ -18,6 +18,8 @@ import com.my.interrior.admin.coupon.CouponRepository;
 import com.my.interrior.admin.coupon.CouponService;
 import com.my.interrior.client.csc.faq.FaqEntity;
 import com.my.interrior.client.csc.faq.FaqRepository;
+import com.my.interrior.client.csc.inquiry.InquiryEntity;
+import com.my.interrior.client.csc.inquiry.InquiryRepository;
 import com.my.interrior.client.csc.notice.NoticeEntity;
 import com.my.interrior.client.csc.notice.NoticeRepository;
 import com.my.interrior.client.csc.recover.RecoveryEntity;
@@ -84,6 +86,9 @@ public class AdminPageService {
 
 	@Autowired
 	private FaqRepository faqRepository;
+	
+	@Autowired
+	private InquiryRepository inquiryRepository;
 
 	// 유저 카운트
 	public long getUserCount() {
@@ -201,6 +206,9 @@ public class AdminPageService {
 
 	public Page<FaqEntity> getAllFaq(Pageable pageable) {
 		return faqRepository.findAll(pageable);
+	}
+	public Page<InquiryEntity> getAllInquiry(Pageable pageable){
+		return inquiryRepository.findAll(pageable);
 	}
 
 	@Transactional

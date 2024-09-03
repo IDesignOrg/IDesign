@@ -1,45 +1,101 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>쿠폰 작성</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>쿠폰 작성</title>
+	<style>
+		/* 쿠폰 작성 폼 컨테이너 */
+		.coupon-form-container {
+		    background-color: #fff;
+		    padding: 30px; /* 패딩을 조금 더 여유롭게 */
+		    border-radius: 10px;
+		    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		    max-width: 700px; /* 최대 너비를 700px로 설정 */
+		    width: 80%; /* 너비를 80%로 설정하여 더 넓게 */
+		    margin: 40px auto; /* 상단과 하단 마진을 더 넓게 설정하여 중앙에 배치 */
+		}
+
+		/* 폼 내부 요소들 */
+		.coupon-form-container form div {
+		    margin-bottom: 20px; /* 요소 간의 간격을 넓게 설정 */
+		}
+
+		.coupon-form-container form label {
+		    font-weight: bold;
+		    margin-bottom: 10px; /* 레이블 아래의 여백을 늘림 */
+		    display: block;
+		    color: #333;
+		}
+
+		.coupon-form-container form input[type="text"],
+		.coupon-form-container form input[type="number"],
+		.coupon-form-container form input[type="date"] {
+		    width: 100%;
+		    padding: 15px; /* 입력 필드의 패딩을 늘림 */
+		    border-radius: 5px;
+		    border: 1px solid #ccc;
+		    box-sizing: border-box;
+		    font-size: 18px; /* 폰트 크기를 조금 더 키움 */
+		    background-color: #f5f5f5;
+		}
+
+		.coupon-form-container form button[type="submit"] {
+		    background-color: #28a745;
+		    color: white;
+		    padding: 15px; /* 버튼의 패딩을 늘려 클릭하기 쉽게 */
+		    border: none;
+		    border-radius: 5px;
+		    cursor: pointer;
+		    font-size: 20px; /* 버튼 텍스트의 폰트 크기를 키움 */
+		    transition: background-color 0.3s ease;
+		    width: 100%;
+		}
+
+		.coupon-form-container form button[type="submit"]:hover {
+		    background-color: #218838;
+		}
+
+	</style>
+	<link rel="stylesheet" href="/css/adminPage.css" />
 </head>
+
 <body>
-    <form action="/admin/coupon/write" method="post">
-        <div>
-            <label for="couponName">쿠폰 이름:</label>
-            <input type="text" id="couponName" name="couponName" required maxlength="50"/>
-        </div>
-        <div>
-            <label for="couponValue">쿠폰 가치: 안써도돔</label> 
-            <input type="number" id="couponValue" name="couponValue" required step="0.01"/>
-        </div>
-        <div>
-            <label for="couponDiscount">쿠폰 할인율:</label>
-            <input type="number" id="couponDiscount" name="couponDiscount" required/>
-        </div>
-        <div>
-            <label for="couponLimit">쿠폰 갯수 제한:</label>
-            <input type="number" id="couponLimit" name="couponLimit" required/>
-        </div>
-        <div>
-            <label for="couponState">쿠폰 상태:</label>
-            <input type="text" id="couponState" name="couponState" required/>
-        </div>
-        <div>
-            <label for="couponStartAt">쿠폰 시작일:</label>
-            <input type="date" id="couponStartAt" name="couponStartAt" required/>
-        </div>
-        <div>
-            <label for="couponCreateAt">쿠폰 생성일:</label>
-            <input type="date" id="couponCreateAt" name="couponCreateAt" required/>
-        </div>
-        <div>
-            <label for="couponEndAt">쿠폰 종료일:</label>
-            <input type="date" id="couponEndAt" name="couponEndAt" required/>
-        </div>
-        <button type="submit">쿠폰 작성</button>
-    </form>
+	<div th:insert="~{/admin/page/adminsidebar :: sidebar}"></div>
+	<div class="coupon-form-container">
+		<form action="/admin/coupon/write" method="post">
+			<div>
+				<label for="couponName">쿠폰 이름:</label>
+				<input type="text" id="couponName" name="couponName" required maxlength="50" />
+			</div>
+			<div>
+				<label for="couponDiscount">쿠폰 할인율:</label>
+				<input type="number" id="couponDiscount" name="couponDiscount" required />
+			</div>
+			<div>
+				<label for="couponLimit">쿠폰 갯수 제한:</label>
+				<input type="number" id="couponLimit" name="couponLimit" required />
+			</div>
+			<div>
+				<label for="couponState">쿠폰 상태:</label>
+				<input type="text" id="couponState" name="couponState" required />
+			</div>
+			<div>
+				<label for="couponStartAt">쿠폰 시작일:</label>
+				<input type="date" id="couponStartAt" name="couponStartAt" required />
+			</div>
+			<div>
+				<label for="couponCreateAt">쿠폰 생성일:</label>
+				<input type="date" id="couponCreateAt" name="couponCreateAt" required />
+			</div>
+			<div>
+				<label for="couponEndAt">쿠폰 종료일:</label>
+				<input type="date" id="couponEndAt" name="couponEndAt" required />
+			</div>
+			<button type="submit">쿠폰 작성</button>
+		</form>
+	</div>
 </body>
+
 </html>

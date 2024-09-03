@@ -25,7 +25,7 @@ public class CouponController {
 		
 		couponRepository.save(couponEntity);
 		
-		return "redirect:/admin/coupon/write";
+		return "redirect:/admin/page/adminCouponList";
 	}
 	
 	
