@@ -16,6 +16,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set up JDK
+        run: sudo apt-get install -y openjdk-17-jdk
+
+      - name: Build with Gradle
+        run: ./gradlew clean build
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
