@@ -1,126 +1,281 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <title>이벤트 쿠폰 만들기</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <style>
-        /* 모달 창 스타일 */
-        .modal {
-            display: none; /* 기본적으로 숨김 */
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4); /* 투명한 배경 */
-        }
+	<title>이벤트 쿠폰 만들기</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<style>
+		/* 전체 레이아웃을 감싸는 컨테이너 */
+		.main-container {
+			display: flex;
+			margin: 0;
+			padding: 20px;
+			font-family: Arial, sans-serif;
+			background-color: #f0f0f0;
+			width: 100vw;
+			height: 100vh;
+		}
 
-        .modal-content {
-            background-color: white;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-        }
+		/* 메인 컨텐츠 스타일 */
+		.main-content {
+			margin-top: 50px;
+			margin-left: 270px;
+			/* 사이드바와의 간격 */
+			padding: 20px;
+			background-color: #fff;
+			border-radius: 10px;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			max-width: 800px;
+			/* 최대 너비를 설정하여 크기 제한 */
+			width: 70%;
+			/* 전체 너비의 70%로 설정 */
+			min-width: 600px;
+			/* 최소 너비 설정 */
+		}
 
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
 
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-    </style>
+		/* 메인 컨텐츠의 h2 스타일 */
+		.main-content h2 {
+			text-align: center;
+			font-size: 28px;
+			color: #333;
+			margin-bottom: 30px;
+		}
+
+		form {
+			display: flex;
+			flex-direction: column;
+		}
+
+		form label {
+			font-weight: bold;
+			margin-bottom: 10px;
+			color: #555;
+		}
+
+		form input[type="text"],
+		form textarea,
+		form input[type="file"],
+		form button[type="button"] {
+			width: 100%;
+			padding: 12px;
+			margin-bottom: 20px;
+			border-radius: 5px;
+			border: 1px solid #ccc;
+			box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+			font-size: 16px;
+		}
+
+		form input[type="submit"] {
+			background-color: #28a745;
+			color: white;
+			padding: 12px;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			font-size: 18px;
+			transition: background-color 0.3s ease;
+			margin-bottom: 20px;
+		}
+
+		form input[type="submit"]:hover {
+			background-color: #218838;
+		}
+
+		form button[type="button"] {
+			background-color: #007bff;
+			color: white;
+			padding: 12px;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			font-size: 18px;
+			transition: background-color 0.3s ease;
+			margin-bottom: 20px;
+		}
+
+		form button[type="button"]:hover {
+			background-color: #0056b3;
+		}
+
+		@media (max-width: 768px) {
+			.main-content {
+				margin-left: 20px;
+				width: calc(100% - 40px);
+			}
+		}
+
+		/* 모달 창 스타일 */
+		.modal {
+			display: none;
+			position: fixed;
+			z-index: 1;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			overflow: auto;
+			background-color: rgba(0, 0, 0, 0.6);
+			backdrop-filter: blur(5px);
+		}
+
+		.modal-content {
+			background-color: #fff;
+			margin: 10% auto;
+			padding: 30px;
+			border: none;
+			border-radius: 15px;
+			width: 60%;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+		}
+
+		.close {
+			color: #333;
+			float: right;
+			font-size: 24px;
+			font-weight: bold;
+			transition: color 0.3s ease;
+		}
+
+		.close:hover,
+		.close:focus {
+			color: #000;
+			cursor: pointer;
+		}
+
+		/* 쿠폰 테이블 스타일 */
+		#couponTable {
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 20px;
+		}
+
+		#couponTable th,
+		#couponTable td {
+			padding: 12px;
+			text-align: center;
+			border-bottom: 1px solid #ddd;
+		}
+
+		#couponTable th {
+			background-color: #f8f8f8;
+			font-weight: bold;
+		}
+
+		#couponTable td {
+			background-color: #fff;
+		}
+
+		#couponTable tr:hover {
+			background-color: #f1f1f1;
+		}
+
+		.selectCoupon {
+			background-color: #4CAF50;
+			color: white;
+			padding: 8px 12px;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			transition: background-color 0.3s ease;
+		}
+
+		.selectCoupon:hover {
+			background-color: #45a049;
+		}
+	</style>
+	<link rel="stylesheet" href="/css/adminPage.css" />
 </head>
+
 <body>
-    <h2>이벤트 쿠폰 만들기</h2>
+	<div th:insert="~{/admin/page/adminsidebar :: sidebar}"></div>
+	<div class="main-container">
+		
+		<div class="main-content">
+			<h2>이벤트 쿠폰 만들기</h2>
 
-    <form action="/board/event/write" method="post" enctype="multipart/form-data">
-        <label for="eventTitle">이벤트 제목:</label>
-        <input type="text" id="eventTitle" name="eventTitle" required/>
+			<form action="/board/event/write" method="post" enctype="multipart/form-data">
+				<label for="eventTitle">이벤트 제목:</label>
+				<input type="text" id="eventTitle" name="eventTitle" required />
 
-        <br/><br/>
+				<br /><br />
 
-        <label for="eventContent">이벤트 내용:</label>
-        <textarea cols="50" rows="10" id="eventContent" name="eventContent" required></textarea>
+				<label for="eventContent">이벤트 내용:</label>
+				<textarea cols="50" rows="10" id="eventContent" name="eventContent" required></textarea>
 
-        <br/><br/>
+				<br /><br />
 
-        <label for="eventImg">이벤트 이미지:</label>
-        <input type="file" id="eventImg" name="eventImg" required/>
+				<label for="eventImg">이벤트 이미지:</label>
+				<input type="file" id="eventImg" name="eventImg" required />
 
-        <br/><br/>
+				<br /><br />
 
-        <label for="couponNo">쿠폰 선택:</label>
-        <input type="text" id="couponNo" name="couponNo" readonly required/>
-        <button type="button" id="selectCouponBtn">쿠폰 선택</button>
+				<label for="couponNo">쿠폰 선택:</label>
+				<input type="text" id="couponNo" name="couponNo" readonly required />
+				<button type="button" id="selectCouponBtn">쿠폰 선택</button>
 
-        <br/><br/>
+				<br /><br />
 
-        <input type="submit" value="이벤트 등록"/>
-    </form>
+				<input type="submit" value="이벤트 등록" />
+			</form>
 
-    <!-- 모달 창 -->
-    <div id="couponModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>쿠폰 선택</h2>
-            <table id="couponTable">
-                <thead>
-                    <tr>
-                        <th>쿠폰 번호</th>
-                        <th>쿠폰 이름</th>
-                        <th>할인율</th>
-                        <th>선택</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- 쿠폰 데이터를 반복문으로 표시 -->
-                    <tr th:each="coupon : ${coupons}">
-                        <td th:text="${coupon.couponNo}"></td>
-                        <td th:text="${coupon.couponName}"></td>
-                        <td th:text="${coupon.couponDiscount} + '%'"></td>
-                        <td><button type="button" class="selectCoupon" th:data-coupon-id="${coupon.couponNo}">선택</button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+			<!-- 모달 창 -->
+			<div id="couponModal" class="modal">
+				<div class="modal-content">
+					<span class="close">&times;</span>
+					<h2>쿠폰 선택</h2>
+					<table id="couponTable">
+						<thead>
+							<tr>
+								<th>쿠폰 번호</th>
+								<th>쿠폰 이름</th>
+								<th>할인율</th>
+								<th>선택</th>
+							</tr>
+						</thead>
+						<tbody>
+							<!-- 쿠폰 데이터를 반복문으로 표시 -->
+							<tr th:each="coupon : ${coupons}">
+								<td th:text="${coupon.couponNo}"></td>
+								<td th:text="${coupon.couponName}"></td>
+								<td th:text="${coupon.couponDiscount} + '%'"></td>
+								<td><button type="button" class="selectCoupon"
+										th:data-coupon-id="${coupon.couponNo}">선택</button></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
 
-    <script>
-        // 모달 창 열기
-        var modal = document.getElementById("couponModal");
-        var btn = document.getElementById("selectCouponBtn");
-        var span = document.getElementsByClassName("close")[0];
+	<script>
+		// 모달 창 열기
+		var modal = document.getElementById("couponModal");
+		var btn = document.getElementById("selectCouponBtn");
+		var span = document.getElementsByClassName("close")[0];
 
-        btn.onclick = function() {
-            modal.style.display = "block";
-        }
+		btn.onclick = function () {
+			modal.style.display = "block";
+		}
 
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
+		span.onclick = function () {
+			modal.style.display = "none";
+		}
 
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
+		window.onclick = function (event) {
+			if (event.target == modal) {
+				modal.style.display = "none";
+			}
+		}
 
-        // 쿠폰 선택 시 처리
-        $(document).on('click', '.selectCoupon', function() {
-            var couponId = $(this).data('coupon-id');
-            $('#couponNo').val(couponId);
-            modal.style.display = "none";
-        });
-    </script>
+		// 쿠폰 선택 시 처리
+		$(document).on('click', '.selectCoupon', function () {
+			var couponId = $(this).data('coupon-id');
+			$('#couponNo').val(couponId);
+			modal.style.display = "none";
+		});
+	</script>
 </body>
+
 </html>
