@@ -18,6 +18,9 @@ import com.my.interrior.admin.coupon.CouponRepository;
 import com.my.interrior.admin.coupon.CouponService;
 import com.my.interrior.client.csc.faq.FaqEntity;
 import com.my.interrior.client.csc.faq.FaqRepository;
+import com.my.interrior.client.csc.inquiry.InquiryAnswerDTO;
+import com.my.interrior.client.csc.inquiry.InquiryAnswerEntity;
+import com.my.interrior.client.csc.inquiry.InquiryAnswerRepository;
 import com.my.interrior.client.csc.inquiry.InquiryEntity;
 import com.my.interrior.client.csc.inquiry.InquiryRepository;
 import com.my.interrior.client.csc.notice.NoticeEntity;
@@ -89,6 +92,9 @@ public class AdminPageService {
 	
 	@Autowired
 	private InquiryRepository inquiryRepository;
+	
+	@Autowired
+	private InquiryAnswerRepository inquiryAnswerRepository;
 
 	// 유저 카운트
 	public long getUserCount() {
@@ -210,6 +216,31 @@ public class AdminPageService {
 	public Page<InquiryEntity> getAllInquiry(Pageable pageable){
 		return inquiryRepository.findAll(pageable);
 	}
+	//문의하기 질문 불러오기
+	public InquiryEntity getInquiryById(Long inqNo) {
+		return inquiryRepository.findByinqNo(inqNo);
+	}
+	//문의하기 답변 불러오기
+	public InquiryAnswerEntity getInquiryAnswerById(Long inqNo) {
+		return inquiryAnswerRepository.findByInquiryInqNo(inqNo);
+	}
+	
+	//문의하기 답변 저장
+	public void saveInquiryAnswer(Long inqNo, InquiryAnswerDTO answerDTO) {
+        InquiryEntity inquiryEntity = getInquiryById(inqNo);
+
+        InquiryAnswerEntity answerEntity = new InquiryAnswerEntity();
+        answerEntity.setAnsContent(answerDTO.getAnsContent());
+        answerEntity.setAnsRegisteredDate(LocalDate.now());
+        answerEntity.setInquiry(inquiryEntity);
+
+        // 답변 작성자 정보 설정 (현재 로그인된 사용자)
+        
+        UserEntity userEntity = userRepository.findByUNo(answerDTO.getUser().getUNo());
+        answerEntity.setUserEntity(userEntity);
+
+        inquiryAnswerRepository.save(answerEntity);
+    }
 
 	@Transactional
 	public void deleteNotice(Long notNo) {
