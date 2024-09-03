@@ -486,6 +486,7 @@ const onMouseMove = (event) => {
 
 const onMouseUp = () => {
   if (controls.enabled) return;
+  console.log("u");
   if (isRoomClick.isClick) {
     // 방 옮기기
     const room = isRoomClick.object.parent;
