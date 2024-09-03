@@ -19,7 +19,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: spring-app1
+    container_name: app1
+    # container_name: spring-app1
     environment:
       SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/idesign
       SPRING_DATASOURCE_USERNAME: root
