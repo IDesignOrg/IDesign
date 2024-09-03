@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,8 +38,8 @@
             max-width: 200px;
         }
 
-        .delete-btn {
-            background-color: #ff4d4d;
+        .action-btn {
+            background-color: #4CAF50;
             color: white;
             border: none;
             padding: 5px 10px;
@@ -46,8 +47,8 @@
             cursor: pointer;
         }
 
-        .delete-btn:hover {
-            background-color: #ff1a1a;
+        .action-btn:hover {
+            background-color: #45a049;
         }
 
         .pagination {
@@ -73,8 +74,74 @@
             background-color: #ddd;
             border-radius: 5px;
         }
+
+        /* 모달 창 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .inquiry-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .inquiry-category,
+        .inquiry-user {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .inquiry-registered-date {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .inquiry-content {
+            margin: 20px 0;
+        }
+
+        hr {
+            margin: 20px 0;
+            border: 0;
+            border-top: 1px solid #ddd;
+        }
     </style>
 </head>
+
 <body>
     <div th:insert="~{/admin/page/adminsidebar :: sidebar}"></div>
     <div class="main-content">
@@ -91,19 +158,23 @@
                         <th>카테고리</th>
                         <th>작성일</th>
                         <th>내용</th>
-                        <th>삭제</th>
+                        <th>액션</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="inquiry : ${inquiries}">
+                    <tr th:each="inquiry : ${inquirys}">
                         <td th:text="${inquiry.inqNo}"></td>
                         <td th:text="${inquiry.inqTitle}"></td>
-                        <td th:text="${inquiry.inqAuthor}"></td>
+                        <td th:text="${inquiry.userEntity.uName}"></td>
                         <td th:text="${inquiry.inqCategory}"></td>
                         <td th:text="${#temporals.format(inquiry.inqRegisteredDate, 'yyyy-MM-dd')}"></td>
                         <td class="ellipsis" th:text="${#strings.abbreviate(inquiry.inqContent, 50)}"></td>
                         <td>
-                            <button type="button" class="delete-btn" th:attr="onclick=|deleteInquiry(${inquiry.inqNo})|">삭제</button>
+                            <button type="button" class="action-btn" th:if="${inquiry.answer == null}"
+                                th:attr="onclick=|openAnswerModal(${inquiry.inqNo})|">답변하기</button>
+
+                            <button type="button" class="action-btn" th:if="${inquiry.answer != null}"
+                                th:attr="onclick=|openViewAnswerModal(${inquiry.inqNo})|">답변 완료</button>
                         </td>
                     </tr>
                 </tbody>
@@ -112,31 +183,151 @@
         <div class="pagination">
             <a th:href="@{/admin/page/inquiryList(page=${currentPage - 1})}" th:if="${currentPage > 0}">&laquo; 이전</a>
             <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-                <a th:href="@{/admin/page/inquiryList(page=${i})}" th:classappend="${i == currentPage} ? 'active'" th:text="${i + 1}">1</a>
+                <a th:href="@{/admin/page/inquiryList(page=${i})}" th:classappend="${i == currentPage} ? 'active'"
+                    th:text="${i + 1}">1</a>
             </span>
-            <a th:href="@{/admin/page/inquiryList(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}">다음 &raquo;</a>
+            <a th:href="@{/admin/page/inquiryList(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}">다음
+                &raquo;</a>
         </div>
     </div>
+
+    <!-- 답변 입력 모달 -->
+    <div id="answerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAnswerModal()">&times;</span>
+            <h2>답변하기</h2>
+
+            <!-- 문의 제목 -->
+            <div>
+                <label for="inquiryTitle">문의 제목:</label>
+                <p id="inquiryTitle" style="font-weight: bold;"></p>
+            </div>
+
+            <!-- 카테고리, 사용자 -->
+            <div class="inquiry-header">
+                <span class="inquiry-category" id="inquiryCategory"></span>
+                <span class="inquiry-user" id="inquiryUser"></span>
+            </div>
+
+            <!-- 등록일 -->
+            <div class="inquiry-registered-date" id="inquiryRegisteredDate"></div>
+
+            <!-- 문의 내용 -->
+            <div class="inquiry-content">
+                <label for="inquiryContent">문의 내용:</label>
+                <p id="inquiryContent"></p>
+            </div>
+
+            <!-- 구분선 -->
+            <hr>
+
+            <!-- 답변 입력 필드 -->
+            <form id="answerForm" method="post">
+                <div>
+                    <label for="answerContent">답변 내용:</label>
+                    <textarea id="answerContent" name="answerContent" rows="4" style="width: 100%;"></textarea>
+                </div>
+                <div style="margin-top: 10px;">
+                    <button type="button" onclick="submitAnswer()">제출</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 답변 보기 모달 -->
+    <div id="viewAnswerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeViewAnswerModal()">&times;</span>
+            <h2>문의 및 답변 보기</h2>
+            <div>
+                <label for="inquiryContent">문의 내용:</label>
+                <p id="inquiryContent"></p>
+            </div>
+            <div>
+                <label for="answerContentView">답변 내용:</label>
+                <p id="answerContentView"></p>
+            </div>
+        </div>
+    </div>
+
     <script>
-        function deleteInquiry(inqNo) {
-            if (confirm("정말로 이 문의를 삭제하시겠습니까?")) {
-                fetch('/deleteInquiry?inqNo=' + inqNo, {
-                    method: 'DELETE'
+        let currentInquiryId;
+
+        function openAnswerModal(inqNo) {
+            currentInquiryId = inqNo;
+
+            // 서버에서 문의 제목, 카테고리, 작성자, 등록일자, 내용을 가져오기
+            fetch('/getInquiryDetails?inqNo=' + inqNo)
+                .then(response => response.json())
+                .then(data => {
+                    // 모달 창에 문의 데이터를 표시
+                    document.getElementById('inquiryTitle').textContent = data.inqTitle;
+                    document.getElementById('inquiryCategory').textContent = data.inqCategory;
+                    document.getElementById('inquiryUser').textContent = data.user.uName;
+                    document.getElementById('inquiryRegisteredDate').textContent = data.inqRegisteredDate;
+                    document.getElementById('inquiryContent').textContent = data.inqContent;
+
+                    // 답변 입력 모달 창 열기
+                    document.getElementById('answerModal').style.display = 'block';
                 })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('문의 내용을 불러오는 중 오류가 발생했습니다.');
+                });
+        }
+
+        function closeAnswerModal() {
+            document.getElementById('answerModal').style.display = 'none';
+        }
+
+        function submitAnswer() {
+            const answerContent = document.getElementById('answerContent').value;
+
+            fetch('/submitAnswer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    inqNo: currentInquiryId,
+                    answerContent: answerContent
+                })
+            })
                 .then(response => {
                     if (response.ok) {
-                        alert("문의가 삭제되었습니다.");
+                        alert('답변이 제출되었습니다.');
+                        closeAnswerModal();
                         location.reload();
                     } else {
-                        alert("문의 삭제에 실패했습니다.");
+                        alert('답변 제출에 실패했습니다.');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert("문의 삭제 중 오류가 발생했습니다.");
+                    alert('답변 제출 중 오류가 발생했습니다.');
                 });
-            }
         }
+
+        function openViewAnswerModal(inqNo) {
+            fetch('/getInquiryAndAnswer?inqNo=' + inqNo)
+                .then(response => response.json())
+                .then(data => {
+                    // 모달 창에 문의 내용과 답변 내용 표시
+                    document.getElementById('inquiryContent').textContent = data.inquiryContent;
+                    document.getElementById('answerContentView').textContent = data.answerContent;
+                    document.getElementById('viewAnswerModal').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('데이터를 불러오는 중 오류가 발생했습니다.');
+                });
+        }
+
+        function closeViewAnswerModal() {
+            document.getElementById('viewAnswerModal').style.display = 'none';
+        }
+
     </script>
 </body>
+
 </html>

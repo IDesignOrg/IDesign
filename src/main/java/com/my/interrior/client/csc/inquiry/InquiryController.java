@@ -41,7 +41,6 @@ public class InquiryController {
 		
 			inquiryEntity.setInqRegisteredDate(LocalDate.now());
 			inquiryEntity.setUserEntity(user);
-			inquiryEntity.setInqAuthor(inquiryEntity.getUserEntity().getUName());
 			
 			inquiryRepository.save(inquiryEntity);
 			//임시
