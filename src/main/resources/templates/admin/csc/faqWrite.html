@@ -66,9 +66,11 @@
 			background-color: #0056b3;
 		}
 	</style>
+	<link rel="stylesheet" href="/css/adminPage.css" />
 </head>
 
 <body>
+	<div th:insert="~{/admin/page/adminsidebar :: sidebar}"></div>
 	<form id="faqWrite" action="/board/faqWrite" method="POST">
 		제목: <input type="text" id="faqTitle" name="faqTitle" />
 		카테고리: <select id="faqCategory" name="faqCategory">

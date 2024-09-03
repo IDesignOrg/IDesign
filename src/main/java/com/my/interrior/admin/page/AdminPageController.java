@@ -31,6 +31,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.my.interrior.admin.coupon.CouponMapRepository;
 import com.my.interrior.admin.coupon.CouponService;
 import com.my.interrior.client.csc.faq.FaqEntity;
+import com.my.interrior.client.csc.inquiry.InquiryEntity;
 import com.my.interrior.client.csc.notice.NoticeEntity;
 import com.my.interrior.client.csc.recover.RecoveryEntity;
 import com.my.interrior.client.evaluation.ReviewCommentDTO;
@@ -633,5 +634,15 @@ public class AdminPageController {
 			return ResponseEntity.badRequest().body("FAQ 삭제에 실패했습니다.");
 		}
 	}
+	//문의사항
+	@GetMapping("admin/inquiry")
+	public String getInquiryList(Model model, Pageable pageable) {
+		Page<InquiryEntity> inquirys = adminPageService.getAllInquiry(PageRequest.of(pageable.getPageNumber(), PAGE_SIZE));
+		model.addAttribute("inquirys", inquirys);
+		model.addAttribute("currentPage", pageable.getPageNumber());
+		model.addAttribute("totalPages", inquirys.getTotalPages());
+		return "/admin/page/adminInquiry";
+	}
+	
 
 }

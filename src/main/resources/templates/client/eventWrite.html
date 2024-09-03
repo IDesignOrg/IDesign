@@ -18,7 +18,7 @@
 
 		/* 메인 컨텐츠 스타일 */
 		.main-content {
-			margin-top: 50px;
+			margin-top: 20px;
 			margin-left: 270px;
 			/* 사이드바와의 간격 */
 			padding: 20px;
@@ -57,14 +57,16 @@
 		form textarea,
 		form input[type="file"],
 		form button[type="button"] {
-			width: 100%;
-			padding: 12px;
-			margin-bottom: 20px;
-			border-radius: 5px;
-			border: 1px solid #ccc;
-			box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-			font-size: 16px;
+		    width: 95%; /* 기존 100%에서 95%로 조정 */
+		    padding: 12px;
+		    margin-bottom: 20px;
+		    border-radius: 5px;
+		    border: 1px solid #ccc;
+		    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+		    font-size: 16px;
+		    box-sizing: border-box;
 		}
+
 
 		form input[type="submit"] {
 			background-color: #28a745;
@@ -78,21 +80,32 @@
 			margin-bottom: 20px;
 		}
 
-		form input[type="submit"]:hover {
-			background-color: #218838;
+		form input[type="submit"] {
+		    background-color: #28a745;
+		    color: white;
+		    padding: 12px;
+		    border: none;
+		    border-radius: 5px;
+		    cursor: pointer;
+		    font-size: 18px;
+		    transition: background-color 0.3s ease;
+		    width: 95%; /* 부모 요소의 너비에 맞게 설정 */
+		    box-sizing: border-box; /* 패딩과 테두리를 포함한 크기 계산 */
 		}
 
 		form button[type="button"] {
-			background-color: #007bff;
-			color: white;
-			padding: 12px;
-			border: none;
-			border-radius: 5px;
-			cursor: pointer;
-			font-size: 18px;
-			transition: background-color 0.3s ease;
-			margin-bottom: 20px;
+		    background-color: #007bff;
+		    color: white;
+		    padding: 12px;
+		    border: none;
+		    border-radius: 5px;
+		    cursor: pointer;
+		    font-size: 18px;
+		    transition: background-color 0.3s ease;
+		    width: 95%; /* 부모 요소의 너비에 맞게 설정 */
+		    box-sizing: border-box; /* 패딩과 테두리를 포함한 크기 계산 */
 		}
+
 
 		form button[type="button"]:hover {
 			background-color: #0056b3;
@@ -201,7 +214,7 @@
 				<br /><br />
 
 				<label for="eventContent">이벤트 내용:</label>
-				<textarea cols="50" rows="10" id="eventContent" name="eventContent" required></textarea>
+				<textarea cols="50" rows="5" id="eventContent" name="eventContent" required></textarea>
 
 				<br /><br />
 
