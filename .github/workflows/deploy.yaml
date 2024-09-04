@@ -26,6 +26,7 @@ jobs:
       #   run: sudo apt-get install -y openjdk-17-jdk
 
       - name: Setup Enviroments
+        uses: jsdaniell/create-json@v1.2.3
         run: |
           echo "${{ secrets.APPLICATIONPRIVATE }}" > src/main/resources/application-private.properties
           echo "${{ secrets.PERSUASIVE }}" > src/main/resources/persuasive-feat-426613-s5-d313a7303956.json
