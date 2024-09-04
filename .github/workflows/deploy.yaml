@@ -24,13 +24,13 @@ jobs:
 
       # - name: Set up JDK 11
       #   run: sudo apt-get install -y openjdk-17-jdk
-      # - name: Setup Environments (Create JSON)
-      #   uses: jsdaniell/create-json@v1.2.3
+      - name: Setup Environments (Create JSON)
+        uses: jsdaniell/create-json@v1.2.3
 
       - name: Write environment files
         run: |
           echo "${{ secrets.APPLICATIONPRIVATE }}" > src/main/resources/application-private.properties
-          echo "${{ secrets.CYPRESS_CONFIG_JSON }} | base64 -d" > src/main/resources/persuasive-feat-426613-s5-d313a7303956.json
+          echo "${{ secrets.CYPRESS_CONFIG_JSON }}" | base64 -d > src/main/resources/persuasive-feat-426613-s5-d313a7303956.json
 
       - name: Build with Gradle
         run: ./gradlew clean build
