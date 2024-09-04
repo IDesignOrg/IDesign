@@ -4,4 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface InquiryAnswerRepository extends JpaRepository<InquiryAnswerEntity, Long> {
 	InquiryAnswerEntity findByInquiryInqNo(Long inqNo);
+	boolean existsByInquiry(InquiryEntity inquiry);
 }
