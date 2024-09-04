@@ -30,9 +30,14 @@ jobs:
           echo "${{ secrets.APPLICATIONPRIVATE }}" > src/main/resources/application-private.properties
           # 만약 PERSUASIVE_ENCODE가 필요하다면 주석을 제거합니다.
           # echo "${{ secrets.PERSUASIVE_ENCODE }}" | base64 -d > src/main/resources/persuasive-feat-426613-s5-d313a7303956.json
-          touch src/main/resources/persuasive-feat-426613-s5-a789fe6d3bc5.json
-          echo "${{ secrets.PERSUASIVE }}" > src/main/resources/persuasive-feat-426613-s5-a789fe6d3bc5.json
 
+      - name: create-json
+        id: create-json
+        uses: jsdaniell/create-json@v1.2.2
+        with:
+          name: "persuasive-feat-426613-s5-a789fe6d3bc5.json"
+          json: ${{ secrets.BEACHCOMBINE }}
+          dir: "src/main/resources/"
       # - name: 제발 되라
       #   id: create-json
       #   uses: jsdaniell/create-json@v1.2.3
