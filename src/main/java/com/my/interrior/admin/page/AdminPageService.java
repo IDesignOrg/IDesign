@@ -22,6 +22,7 @@ import com.my.interrior.client.csc.inquiry.InquiryAnswerDTO;
 import com.my.interrior.client.csc.inquiry.InquiryAnswerEntity;
 import com.my.interrior.client.csc.inquiry.InquiryAnswerRepository;
 import com.my.interrior.client.csc.inquiry.InquiryEntity;
+import com.my.interrior.client.csc.inquiry.InquiryListDTO;
 import com.my.interrior.client.csc.inquiry.InquiryRepository;
 import com.my.interrior.client.csc.notice.NoticeEntity;
 import com.my.interrior.client.csc.notice.NoticeRepository;
@@ -43,6 +44,7 @@ import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
 import com.my.interrior.client.user.UserService;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -95,6 +97,8 @@ public class AdminPageService {
 	
 	@Autowired
 	private InquiryAnswerRepository inquiryAnswerRepository;
+	@Autowired
+	private HttpSession session;
 
 	// 유저 카운트
 	public long getUserCount() {
@@ -213,9 +217,24 @@ public class AdminPageService {
 	public Page<FaqEntity> getAllFaq(Pageable pageable) {
 		return faqRepository.findAll(pageable);
 	}
-	public Page<InquiryEntity> getAllInquiry(Pageable pageable){
-		return inquiryRepository.findAll(pageable);
+	//문의하기 전체 불러오기 
+	public Page<InquiryListDTO> getAllInquiries(Pageable pageable) {
+	    // InquiryEntity 페이지를 조회
+	    Page<InquiryEntity> inquiries = inquiryRepository.findAll(pageable);
+	    
+	    // InquiryEntity를 InquiryListDTO로 변환, 답변 여부를 확인
+	    List<InquiryListDTO> inquiryDTOs = inquiries.stream()
+	        .map(inquiry -> {
+	            // 답변 여부를 확인 (답변이 있는지 확인하는 메서드를 통해)
+	            boolean hasAnswer = inquiryAnswerRepository.existsByInquiry(inquiry);
+	            return new InquiryListDTO(inquiry, hasAnswer);  // InquiryListDTO로 객체 생성
+	        })
+	        .collect(Collectors.toList());
+
+	    // Page 객체로 반환
+	    return new PageImpl<>(inquiryDTOs, pageable, inquiries.getTotalElements());
 	}
+
 	//문의하기 질문 불러오기
 	public InquiryEntity getInquiryById(Long inqNo) {
 		return inquiryRepository.findByinqNo(inqNo);
@@ -226,17 +245,18 @@ public class AdminPageService {
 	}
 	
 	//문의하기 답변 저장
-	public void saveInquiryAnswer(Long inqNo, InquiryAnswerDTO answerDTO) {
+	public void saveInquiryAnswer(Long inqNo, String answerContent) {
         InquiryEntity inquiryEntity = getInquiryById(inqNo);
 
         InquiryAnswerEntity answerEntity = new InquiryAnswerEntity();
-        answerEntity.setAnsContent(answerDTO.getAnsContent());
+        answerEntity.setAnsContent(answerContent);
         answerEntity.setAnsRegisteredDate(LocalDate.now());
         answerEntity.setInquiry(inquiryEntity);
 
         // 답변 작성자 정보 설정 (현재 로그인된 사용자)
+        String userId = (String) session.getAttribute("UId");
         
-        UserEntity userEntity = userRepository.findByUNo(answerDTO.getUser().getUNo());
+        UserEntity userEntity = userRepository.findByUId(userId);
         answerEntity.setUserEntity(userEntity);
 
         inquiryAnswerRepository.save(answerEntity);
