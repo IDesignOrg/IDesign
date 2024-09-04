@@ -51,25 +51,25 @@ jobs:
           docker build -t idesign/example1
           docker push idesign/example1
 
-     - name: SSH Commands
-        uses: appleboy/ssh-action@v0.1.6
-        with:
-          host: ${{ secrets.AWS_SSH_HOST }}
-          username: ${{ secrets.AWS_SSH_USERNAME }}
-          key: ${{ secrets.AWS_SSH_KEY }}
-          port: ${{ secrets.AWS_SSH_PORT }}
-          script_stop: true #스크립트 실행중 중간에 문제생기면 더 진행 안함
-          script: | #ec2에 접속해서 실행할 커맨
-              sudo docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{ secrets.DOCKER_PASSWORD }}
-              cd IDesign
-              sudo docker-compose down
-              sudo docker rm $(sudo docker ps -a -q)
-              sudo docker rmi $(sudo docker images -q)
-              sudo docker pull idesign/example1
-              sudo docker-compose up --build -d
-              # sudo docker-compose -f $COMPOSE down
-              # sudo docker pull ${}
-              # # git pull origin main
-              # # docker compose down
-              # # docker compose up -d
-            EOF
+      - name: SSH Commands
+          uses: appleboy/ssh-action@v0.1.6
+          with:
+            host: ${{ secrets.AWS_SSH_HOST }}
+            username: ${{ secrets.AWS_SSH_USERNAME }}
+            key: ${{ secrets.AWS_SSH_KEY }}
+            port: ${{ secrets.AWS_SSH_PORT }}
+            script_stop: true #스크립트 실행중 중간에 문제생기면 더 진행 안함
+            script: | #ec2에 접속해서 실행할 커맨
+                sudo docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{ secrets.DOCKER_PASSWORD }}
+                cd IDesign
+                sudo docker-compose down
+                sudo docker rm $(sudo docker ps -a -q)
+                sudo docker rmi $(sudo docker images -q)
+                sudo docker pull idesign/example1
+                sudo docker-compose up --build -d
+                # sudo docker-compose -f $COMPOSE down
+                # sudo docker pull ${}
+                # # git pull origin main
+                # # docker compose down
+                # # docker compose up -d
+              EOF
