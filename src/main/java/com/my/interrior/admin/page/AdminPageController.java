@@ -671,7 +671,7 @@ public class AdminPageController {
 		findUserDTO.setUNo(inquiryEntity.getUserEntity().getUNo());
 		findUserDTO.setUPofile(inquiryEntity.getUserEntity().getUPofile());
 		inquiryDTO.setUser(findUserDTO);
-		
+		System.out.println("InquiryDTO: " + inquiryDTO);
 		//답변하기
 		InquiryAnswerEntity answerEntity = adminPageService.getInquiryAnswerById(inqNo);
         if (answerEntity != null) {
