@@ -30,50 +30,50 @@ jobs:
           echo "${{ secrets.APPLICATION_PRIVATE }}" > src/main/resources/application-private.properties
           echo "${{ secrets.PERSUASIVE }}" > src/main/resources/persuasive-feat-426613-s5-d313a7303956.json
 
-      - name: Build with Gradle
-        run: ./gradlew clean build
+      # - name: Build with Gradle
+      #   run: ./gradlew clean build
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      # - name: Set up Docker Buildx
+      #   uses: docker/setup-buildx-action@v2
 
-      # - name: Install Docker Compose
+      # # - name: Install Docker Compose
+      # #   run: |
+      # #     sudo apt-get update
+      # #     sudo apt-get install -y docker-compose
+
+      # - name: Log in to Docker Hub
+      #   uses: docker/login-action@v2
+      #   with:
+      #     username: ${{ secrets.DOCKER_USERNAME }}
+      #     password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # - name: Build and push Docker images
       #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get install -y docker-compose
+      #     docker build -t yoonjaehwan/idesign:latest .
+      #     docker push yoonjaehwan/idesign:latest
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Build and push Docker images
-        run: |
-          docker build -t yoonjaehwan/idesign:latest .
-          docker push yoonjaehwan/idesign:latest
-
-      - name: SSH Commands
-        uses: appleboy/ssh-action@v0.1.6
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: 22
-          script_stop: true
-          script: |
-            echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-            cd IDesign
-            sudo docker-compose down
-            sudo docker-compose down || true
-            CONTAINERS=$(sudo docker ps -a -q)
-            if [ -n "$CONTAINERS" ]; then
-              sudo docker rm -f $CONTAINERS
-            fi
-            IMAGES=$(sudo docker images -q)
-            if [ -n "$IMAGES" ]; then
-              sudo docker rmi -f $IMAGES
-            fi
-            # git pull origin feature-lhj
-            sudo docker pull yoonjaehwan/idesign:latest
-            # sudo docker-compose up --build -d --debug
-            DEBUG=1 sudo docker-compose up --build -d
+      # - name: SSH Commands
+      #   uses: appleboy/ssh-action@v0.1.6
+      #   with:
+      #     host: ${{ secrets.SERVER_IP }}
+      #     username: ${{ secrets.SSH_USER }}
+      #     key: ${{ secrets.SSH_KEY }}
+      #     port: 22
+      #     script_stop: true
+      #     script: |
+      #       echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+      #       cd IDesign
+      #       sudo docker-compose down
+      #       sudo docker-compose down || true
+      #       CONTAINERS=$(sudo docker ps -a -q)
+      #       if [ -n "$CONTAINERS" ]; then
+      #         sudo docker rm -f $CONTAINERS
+      #       fi
+      #       IMAGES=$(sudo docker images -q)
+      #       if [ -n "$IMAGES" ]; then
+      #         sudo docker rmi -f $IMAGES
+      #       fi
+      #       # git pull origin feature-lhj
+      #       sudo docker pull yoonjaehwan/idesign:latest
+      #       # sudo docker-compose up --build -d --debug
+      #       DEBUG=1 sudo docker-compose up --build -d
