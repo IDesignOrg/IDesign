@@ -73,5 +73,6 @@ jobs:
             if [ -n "$IMAGES" ]; then
               sudo docker rmi -f $IMAGES
             fi
+            git pull origin feature-lhj
             sudo docker pull yoonjaehwan/idesign:latest
             sudo docker-compose up --build -d
