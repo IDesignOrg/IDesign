@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import { interectionObserver } from "../../utils/observer";
 import { dummy } from "./dummy";
@@ -111,10 +110,8 @@ const getProjects = async () => {
 
   //wook
   //밑에 주소 바꿔주셈
-  let flag = 0
-  console.log('secx');
-  const data = await axios.get("/get/projects", {
-    params: { filter, sort, flag },
+  const data = await axios.get("http:localhost:8080/get/projects", {
+    params: { filter, sort },
   });
   /*
 	const data = await getDummyData();
@@ -123,29 +120,10 @@ const getProjects = async () => {
 	receivedProjects.forEach((project) => {
 		const projectBox = ProjectBox(project);
 		container.insertBefore(projectBox, observer);
-
 	});
-	/*
-    
-	//data
-	{
-	  status:'ssecess' or fail,
-	  response:200 errocode,
-	  data:{
-		  projects:[],
-		  flag_num:0 => 0~11, 1 => 12 ~ 23
-	  }
-   }
-	  const data = await getDummyData();
-	  const receivedProjects = data.data.projects;
-	  projects.push(...receivedProjects);
-	  receivedProjects.forEach((project) => {
-		  const projectBox = ProjectBox(project);
-		  container.insertBefore(projectBox, observer);
-	  });
-	  hasMoreProjects = data.data.hasMoreProjects;
-	  isLaoding = false;
-	  */
+	hasMoreProjects = data.data.hasMoreProjects;
+	isLaoding = false;
+	*/
 };
 
 const onFilterChange = () => {
@@ -288,4 +266,3 @@ function debounce(func, delay) {
     }, delay);
   };
 }
-

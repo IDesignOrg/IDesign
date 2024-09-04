@@ -7,12 +7,9 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.cloud.storage.BlobId;
@@ -41,42 +38,12 @@ public class ThreeService {
 	@Autowired
 	private Storage storage;
 
-	public Page<ThreeEntity> getTopData(String userId, String title, int page, int size, String sort) {
-
-		// 정렬 정보 설정
-		Sort sortOrder;
-		switch (sort) {
-		case "recent":
-			sortOrder = Sort.by(Sort.Order.desc("regDate"));
-			break;
-		case "asc":
-			sortOrder = Sort.by(Sort.Order.asc("title"));
-			break;
-		case "desc":
-			sortOrder = Sort.by(Sort.Order.desc("title"));
-			break;
-		default:
-			sortOrder = Sort.by(Sort.Order.desc("regDate")); // 기본 정렬
-			break;
-		}
-
-		// Pageable 객체 생성
-		Pageable pageable = PageRequest.of(page, size, sortOrder);
-
-		return threeRepository.findByUserEntity_UIdAndTitle(userId, title, pageable);
-	}
-
-
-	public int getCounts(String userId, String title, String sort) {
-		int count = 0;
-		if (title == null || title.isEmpty()) {
-			count = threeRepository.countByUserEntity_UId(userId);
-		} else {
-			count = threeRepository.countByUserEntity_UIdAndTitleContaining(userId, title);
-		}
+	
+	public int getCounts(String userId) {
+		int count = threeRepository.countByUserEntity_UId(userId);
 		return count;
 	}
-
+	
 	// GCS 파일 업로드
 	public String uploadFile(MultipartFile file) throws IOException {
 		// 세션값 받아오기
@@ -95,14 +62,14 @@ public class ThreeService {
 	public void saveData(SaveProjectRequest request, MultipartFile thumbnail, String userId) throws IOException {
 		UserEntity user = userRepository.findByUId(userId);
 		String projectId = request.getProjectId();
-
 		String file = uploadFile(thumbnail);
-
-		System.out.println("file : " + file);
+		System.out.println("파일 이름 : " + file);
 
 		log.info("userId : {}, projectId : {}, user : {}", userId, projectId, user);
 		log.info(" src: {}, title: {}", request.getProjectSrc().getSrc(), request.getProjectSrc().getTitle());
 
+		
+		
 		// 저장하기 전에 ThreeEntity 먼저 저장시켜야 함.
 		ThreeEntity threeEntity = new ThreeEntity();
 		threeEntity.setProjectId(projectId);
