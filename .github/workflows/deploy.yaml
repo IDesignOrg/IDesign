@@ -49,8 +49,8 @@ jobs:
 
       - name: Build and push Docker images
         run: |
-          docker build -t yoonjaehwan/idesign:latest .
-          docker push yoonjaehwan/idesign:latest
+          docker build -t yoonjaehwan/idesign:zzz .
+          docker push yoonjaehwan/idesign:zzz
 
       - name: SSH Commands
         uses: appleboy/ssh-action@v0.1.6
@@ -75,5 +75,5 @@ jobs:
             fi
             # sudo docker rm -f $(sudo docker ps -a -q)
             # sudo docker rmi -f $(sudo docker images -q)
-            sudo docker pull yoonjaehwan/idesign:latest
+            sudo docker pull yoonjaehwan/idesign:zzz
             sudo docker-compose up --build -d
