@@ -2,6 +2,8 @@ package com.my.interrior.three;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -13,16 +15,18 @@ public class SaveProjectRequest {
 
 	private String projectId;
 	private List<DataRequest> dataEntities;
+	private ProjectRequest projectSrc;
 	
 	@Getter
 	@Setter
 	@ToString
 	public static class DataRequest{
-		private Long oid;
+		private String oid;
 		private String type;
 		private Double rotation;
+		private String parent;
 		private List<PointRequest> points;
-		private List<DataRequest> children;
+		private List<String> children;
 	}
 	
 	@Getter
@@ -34,7 +38,13 @@ public class SaveProjectRequest {
 		private Double z;
 	}
 	
-	
+	@Getter
+	@Setter
+	@ToString
+	public static class ProjectRequest{
+		private String title;
+		private String src;
+	}
 	
 //	private long userNo;
 //	private String projectId;

@@ -11,6 +11,7 @@
     />
     <title>대쉬보드</title>
   </head>
+
   <body>
     <div id="app">
       <!-- hader -->
@@ -84,7 +85,7 @@
           </div>
           <div id="container">
             <!-- wook -->
-            <a class="project" href="/three/design">
+            <div class="project" id="create-project">
               <div class="renovate-img">
                 <div id="plus-btn">
                   <div>
@@ -92,17 +93,35 @@
                   </div>
                 </div>
                 <img
-                  src="/dist/public/img/renovate.png"
+                  src="/dimension/public/img/renovate.png"
                   alt="https://kr.freepik.com/icons/%EC%9D%B8%ED%85%8C%EB%A6%AC%EC%96%B4"
                 />
               </div>
               <div class="project-src">
                 <div>새로운 프로젝트</div>
               </div>
-            </a>
+            </div>
             <div id="observer" />
           </div>
         </div>
+      </div>
+      <div class="project-description" id="pdc">
+        <div class="description-wrapper">
+          <div class="d-w-">프로젝트에 대한 간단한 설명을 적어주세요.</div>
+          <div class="dw-t">
+            <div>제목</div>
+            <input type="text" id="description-title" />
+          </div>
+          <div class="dw-d">
+            <div>제목</div>
+            <textarea id="description-des" style="resize: none"></textarea>
+          </div>
+          <div class="submit-btns">
+            <button id="create-p-btn">시작하기</button>
+          </div>
+        </div>
+
+        <div class="description-bg" id="pdbg" />
       </div>
     </div>
   </body>

@@ -1,3 +1,4 @@
+
 import axios from "axios";
 import { interectionObserver } from "../../utils/observer";
 import { dummy } from "./dummy";
@@ -10,8 +11,12 @@ const selectedSort = sortBox.getElementsByTagName("span")[0];
 const options = document.getElementById("select-options");
 const container = document.getElementById("container");
 const trashBtn = document.getElementById("trash");
+const createProjectBtn = document.getElementById("create-project");
 const observer = document.getElementById("observer");
-
+const projectDescriptionContainer = document.getElementById("pdc");
+const projectDescriptionBG = document.getElementById("pdbg");
+const submitProject = document.getElementById("create-p-btn");
+const textArea = document.getElementById("description-des");
 const optionHeight = 200;
 
 let isLaoding = false;
@@ -33,7 +38,8 @@ const removeAllProject = () => {
 const ProjectBox = (project) => {
   const box = document.createElement("div");
   const a = document.createElement("a");
-  // wook
+  // wook 눌렀을 때 이동
+  //wrapper
   a.href = `http://localhost:8080/three/${project.project_id}`;
   a.id = project.project_id;
   a.className = "project-wrapper";
@@ -41,6 +47,7 @@ const ProjectBox = (project) => {
   box.appendChild(a);
   box.className = "project received";
 
+  //img wrapper
   const renovate_img = document.createElement("div");
   renovate_img.className = "renovate-img";
   const backgroundImage = document.createElement("img");
@@ -48,6 +55,7 @@ const ProjectBox = (project) => {
   renovate_img.append(backgroundImage);
   a.appendChild(renovate_img);
 
+  // 프로젝트 설명란
   const project_src = document.createElement("div");
   project_src.className = "project-src";
 
@@ -59,6 +67,7 @@ const ProjectBox = (project) => {
   mod_dt.innerText = new Date(project.reg_dt);
   project_src.appendChild(mod_dt);
 
+  //삭제하기 눌렀을 때 나타남
   const delete_div = document.createElement("button");
   delete_div.className = "delete_bg";
   delete_div.name = project.project_id;
@@ -96,24 +105,47 @@ const getDummyData = () => {
 const getProjects = async () => {
   if (!hasMoreProjects || isLaoding) return;
   isLaoding = true;
-  const u_no = 123;
 
   const filter = searchInput.value;
   const sort = selectedSort.id;
+
   //wook
   //밑에 주소 바꿔주셈
-  // const data = await axios.get("http:localhost:8080/get_projects", {
-  //   params: { u_no, filter, sort },
-  // });
-  const data = await getDummyData();
-  const receivedProjects = data.data.projects;
-  projects.push(...receivedProjects);
-  receivedProjects.forEach((project) => {
-    const projectBox = ProjectBox(project);
-    container.insertBefore(projectBox, observer);
+  let flag = 0
+  console.log('secx');
+  const data = await axios.get("/get/projects", {
+    params: { filter, sort, flag },
   });
-  hasMoreProjects = data.data.hasMoreProjects;
-  isLaoding = false;
+  /*
+	const data = await getDummyData();
+	const receivedProjects = data.data.projects;
+	projects.push(...receivedProjects);
+	receivedProjects.forEach((project) => {
+		const projectBox = ProjectBox(project);
+		container.insertBefore(projectBox, observer);
+
+	});
+	/*
+    
+	//data
+	{
+	  status:'ssecess' or fail,
+	  response:200 errocode,
+	  data:{
+		  projects:[],
+		  flag_num:0 => 0~11, 1 => 12 ~ 23
+	  }
+   }
+	  const data = await getDummyData();
+	  const receivedProjects = data.data.projects;
+	  projects.push(...receivedProjects);
+	  receivedProjects.forEach((project) => {
+		  const projectBox = ProjectBox(project);
+		  container.insertBefore(projectBox, observer);
+	  });
+	  hasMoreProjects = data.data.hasMoreProjects;
+	  isLaoding = false;
+	  */
 };
 
 const onFilterChange = () => {
@@ -174,6 +206,7 @@ const reqRemoveProjects = async () => {
   const data = await axios.post("", {
     project_ids: Object.keys(remove_projects),
   });
+  //
 };
 
 const onTrashClick = () => {
@@ -208,9 +241,36 @@ const onClickWindow = () => {
   }
 };
 
+const onCreateProject = () => {
+  let s = "block";
+  if (projectDescriptionContainer.style.display === "block") {
+    s = "none";
+  }
+  projectDescriptionContainer.style.display = s;
+};
+const onSubmitProject = () => {
+  const title = document.getElementById("description-title").value;
+
+  const src = textArea.value;
+
+  const obj = { title, src };
+  localStorage.setItem("pdes", JSON.stringify(obj));
+  window.location.href = `${window.location.origin}/three/design`;
+  //   history.push("/three.html");
+  //   history.pushState(
+  //     JSON.stringify(obj),
+  //     `${window.location.origin}`,
+  //     `/three/design`
+  //   );
+  //woook
+  //   axios.post("http://localhost:8080/");
+};
 interectionObserver(observer, getProjects);
 
 container.addEventListener("click", onProjectClick);
+submitProject.addEventListener("click", onSubmitProject);
+projectDescriptionBG.addEventListener("click", onCreateProject);
+createProjectBtn.addEventListener("click", onCreateProject);
 trashBtn.addEventListener("click", onTrashClick);
 sortBox.addEventListener("click", onSortClick);
 options.addEventListener("click", onChangeSort);
@@ -228,3 +288,4 @@ function debounce(func, delay) {
     }, delay);
   };
 }
+

@@ -92,7 +92,11 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   10000
 );
-const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+const renderer = new THREE.WebGLRenderer({
+  alpha: true,
+  antialias: true,
+  preserveDrawingBuffer: true,
+});
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 const canvas = renderer.domElement;
@@ -482,6 +486,7 @@ const onMouseMove = (event) => {
 
 const onMouseUp = () => {
   if (controls.enabled) return;
+  console.log();
   if (isRoomClick.isClick) {
     // 방 옮기기
     const room = isRoomClick.object.parent;
@@ -500,6 +505,7 @@ const onMouseUp = () => {
     };
   }
   if (isChangingObject.isDragging) {
+    //circle을 통해 방 모양 변경
     const room = scene.getObjectById(isChangingObject.changingObjectId);
     room.onMouseUp({ cameraZoom });
 
@@ -517,6 +523,7 @@ const onMouseUp = () => {
     moveController.onMouseUp();
   }
   if (controller.isDragging) {
+    // 컨트롤러로 방 회전
     controller.onMouseUp();
   }
   isDragging = false;
@@ -565,6 +572,7 @@ const onWheel = (event) => {
 };
 
 const isFunitureLoadSuccess = (id) => {
+  // gltf파일이 잘 로드되엇나 확인
   return furnitureObjects[id].status === "fulfilled";
 };
 
@@ -580,7 +588,7 @@ const onCreateBtnClick = async (e) => {
 
   // return;
   const { id } = btn;
-  if (Object.keys(furnitureObjects).includes(id)) {
+  if (furnitureObjects.hasOwnProperty(id)) {
     if (!isFunitureLoadSuccess(id)) return;
     const funitureShadow = furnitureObjects[id].value.clone();
     funitureShadow.name = shadowName;
@@ -595,7 +603,6 @@ const onCreateBtnClick = async (e) => {
 };
 
 const create2DRoom = (room) => {
-  console.log(room);
   const points = room.userData.points;
   const newRoom = new D2Room({ points });
   newRoom.name = "room";
@@ -660,25 +667,90 @@ const onChangeMode = (e) => {
       return;
     case "3D":
       if (controls.enabled) return; //이미 3d라면 종료
-      camera.lookAt(50, 50, 50);
-      camera.position.set(50, 50, 50);
+      camera.lookAt(250, 250, 250);
+      camera.position.set(250, 250, 250);
       controls.enabled = true;
       create3DScene();
   }
 };
 
-//내가 건드리는 중
+function dataURLtoBlob(dataURL) {
+  const byteString = atob(dataURL.split(",")[1]);
+  const mimeString = dataURL.split(",")[0].split(":")[1].split(";")[0];
+  const ab = new ArrayBuffer(byteString.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+  return new Blob([ab], { type: mimeString });
+}
+
 const onSave = async () => {
   const projectId = new Date().getTime().toString();
   const dataEntities = saveFactory(scene);
+
+  // 스크린샷 타입
+  const strMime = "image/jpeg";
+  // base64 썸네일
+  const imageData = renderer.domElement.toDataURL(strMime);
+
+  // base64 데이터를 Blob으로 변환
+  const blobData = dataURLtoBlob(imageData);
+  const userId = "123123";
+  const urlParams = new URLSearchParams(window.location.search);
+  const project_id = urlParams.get("project_id");
+
+  // FormData 객체 생성
+  const formData = new FormData();
+
+  // Blob 데이터와 파일명으로 파일 추가
+  formData.append("file", blobData, `${userId}_${project_id}_screenshot.jpg`);
+
+  // JSON 데이터 생성
+  let pDes = localStorage.getItem("pdes");
+  if (pDes) {
+    pDes = JSON.parse(pDes);
+  }
+
   const req = {
     projectId,
     dataEntities,
+    projectSrc: pDes
+      ? {
+          title: pDes.title,
+          src: pDes.src,
+        }
+      : null,
   };
-  const { data } = await axios.post("http://localhost:8080/save/project", {
-    ...req,
-  });
-  console.log(data);
+
+  // JSON 데이터를 문자열로 변환하여 FormData에 추가
+  formData.append(
+    "jsonData",
+    new Blob([JSON.stringify(req)], {
+      type: "application/json",
+    })
+  );
+
+  console.log("formData", formData);
+  try {
+    // axios로 POST 요청 보내기
+    const { data } = await axios.post(
+      "http://localhost:8080/save/project",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          // "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (pDes) localStorage.removeItem("pdes");
+    console.log(data);
+  } catch (e) {
+    console.error(e);
+  }
+
   //
 };
 
@@ -698,6 +770,8 @@ window.addEventListener("beforeunload", () => {
   canvas.removeEventListener("mousemove", onMouseMove);
   canvas.removeEventListener("mouseup", onMouseUp);
   canvas.removeEventListener("wheel", onWheel);
+
+  localStorage.removeItem("pDes");
 });
 
 hudIcon.addEventListener("click", onCreateBtnClick);

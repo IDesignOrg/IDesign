@@ -1,90 +1,524 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Review List</title>
-    <link rel="stylesheet" href="/css/review.css" />
+	<meta charset="UTF-8">
+	<title>Review List</title>
+	<link rel="stylesheet" href="/css/review.css" />
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			margin: 0;
+			padding: 0;
+			background-color: #fafafa;
+		}
+
+		.container {
+			width: 100%;
+			max-width: 1200px;
+			margin: 0 auto;
+			padding: 20px;
+			margin-top: 140px;
+		}
+
+		.review-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+			gap: 20px;
+		}
+
+		.review-card {
+			background-color: #fff;
+			border: 1px solid #dbdbdb;
+			border-radius: 8px;
+			overflow: hidden;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			cursor: pointer;
+			width: 300px;
+			/* 고정 너비 설정 */
+			height: 400px;
+			/* 고정 높이 설정 */
+			display: flex;
+			flex-direction: column;
+		}
+
+		.review-card img {
+			width: 100%;
+			height: 200px;
+			/* 고정 높이 설정 */
+			object-fit: cover;
+			/* 이미지가 카드에 맞게 크기 조정 */
+			display: block;
+		}
+
+		.review-content {
+			padding: 15px;
+			flex: 1;
+			overflow: hidden;
+			/* 내용이 넘치지 않도록 설정 */
+		}
+
+
+		.review-title {
+			font-weight: bold;
+			font-size: 16px;
+			margin: 0 0 10px 0;
+		}
+
+		.review-text {
+			font-size: 14px;
+			color: #555;
+			margin: 0 0 10px 0;
+			line-height: 1.5;
+		}
+
+		.review-footer {
+			padding: 10px 15px;
+			background-color: #fafafa;
+			border-top: 1px solid #dbdbdb;
+			font-size: 13px;
+			color: #888;
+		}
+
+		.review-footer .written-time {
+			float: right;
+			color: #aaa;
+		}
+
+		/* 모달 스타일 */
+		.modal {
+			display: none;
+			position: fixed;
+			z-index: 1;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.8);
+			backdrop-filter: blur(5px);
+			overflow: auto;
+		}
+
+		.modal-content {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 70%;
+			height: 70%;
+			background-color: #fefefe;
+			border-radius: 8px;
+			overflow: hidden;
+			display: flex;
+			flex-direction: row;
+		}
+
+		/* 슬라이드 쇼 스타일 */
+		.slider {
+			flex: 1;
+			position: relative;
+			width: 50%;
+			overflow: hidden;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background-color: #000;
+		}
+
+		.slides {
+			display: flex;
+			width: 100%;
+			height: 100%;
+		}
+
+		.slides img {
+			max-width: 100%;
+			max-height: 100%;
+			object-fit: contain;
+			transition: transform 0.5s ease;
+		}
+
+		.prev,
+		.next {
+			cursor: pointer;
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			width: auto;
+			padding: 16px;
+			color: white;
+			font-weight: bold;
+			font-size: 18px;
+			border-radius: 3px;
+			background-color: rgba(0, 0, 0, 0.5);
+			user-select: none;
+		}
+
+		.prev {
+			left: 0;
+		}
+
+		.next {
+			right: 0;
+		}
+
+		/* 오른쪽 정보 패널 */
+		.info-panel {
+			flex: 1;
+			padding: 20px;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			width: 50%;
+		}
+
+		.info-header {
+			border-bottom: 1px solid #dbdbdb;
+			padding-bottom: 10px;
+		}
+
+		.info-header h2 {
+			margin: 0;
+			font-size: 24px;
+		}
+
+		.info-subheader {
+			font-size: 14px;
+			color: #888;
+			display: flex;
+			justify-content: space-between;
+			margin-top: 5px;
+		}
+
+		.info-content {
+			margin-top: 20px;
+			flex: 1;
+			overflow-y: auto;
+		}
+
+		.info-content p {
+			margin: 10px 0;
+		}
+
+		.info-footer {
+			border-top: 1px solid #dbdbdb;
+			padding-top: 10px;
+			text-align: right;
+			color: #888;
+		}
+
+		/* 댓글 스타일 */
+		.comment-section {
+			max-height: 200px;
+			overflow-y: auto;
+			margin-top: 10px;
+			padding: 10px 0;
+			border-top: 1px solid #dbdbdb;
+		}
+
+		.comment {
+			display: flex;
+			align-items: flex-start;
+			margin-bottom: 10px;
+		}
+
+		.comment img {
+			width: 32px;
+			height: 32px;
+			border-radius: 50%;
+			margin-right: 10px;
+		}
+
+		.comment .comment-text {
+			background-color: #f1f1f1;
+			padding: 10px;
+			border-radius: 8px;
+			width: 100%;
+		}
+
+		.comment .comment-text .username {
+			font-weight: bold;
+			margin-right: 5px;
+		}
+
+		.close {
+			position: absolute;
+			top: 10px;
+			right: 20px;
+			font-size: 30px;
+			cursor: pointer;
+			color: #888;
+		}
+
+		/* 댓글 작성 폼 */
+		.comment-form {
+			display: flex;
+			margin-top: 10px;
+			border-top: 1px solid #dbdbdb;
+			padding-top: 10px;
+		}
+
+		.comment-form textarea {
+			flex: 1;
+			padding: 10px;
+			border-radius: 8px;
+			border: 1px solid #ccc;
+			resize: none;
+		}
+
+		.comment-form button {
+			margin-left: 10px;
+			padding: 10px 20px;
+			border-radius: 8px;
+			border: none;
+			background-color: #007bff;
+			color: white;
+			cursor: pointer;
+		}
+
+		.comment-form button:hover {
+			background-color: #0056b3;
+		}
+
+		.pagination {
+			display: flex;
+			justify-content: center;
+			margin-top: 20px;
+		}
+
+		.pagination a {
+			color: black;
+			padding: 8px 16px;
+			text-decoration: none;
+			transition: background-color 0.3s;
+		}
+
+		.pagination a.active {
+			background-color: #4CAF50;
+			color: white;
+			border-radius: 5px;
+		}
+
+		.pagination a:hover:not(.active) {
+			background-color: #ddd;
+			border-radius: 5px;
+		}
+	</style>
+	<link rel="stylesheet" href="/css/header.css" />
+	<link rel="stylesheet" href="/css/reset.css" />
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
+
 <body>
-    <h1>Review List</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>Title</th>
-                <th>Content</th>
-                <th>Written Time</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="review : ${reviews}">
-				<td th:text="${review.rNo}"></td>
-				<td>
-				  	<a th:href="@{/auth/evaluation/{id}(id=${review.rNo})}" th:text="${review.rTitle}"></a>
-				</td>
-				
-				<td>
-					<a th:href="@{/auth/evaluation/{id}(id=${review.rNo})}" th:text="${review.rContent}"></a>
-				</td>
-				<td>
-					<a th:href="@{/auth/evaluation/{id}(id=${review.rNo})}" th:text="${review.rWrittenTime}"></a>
-				</td>
-            </tr>
-        </tbody>
-        
-        <a href="/review_write" th:if="${session.UId} != null">작성</a>
-    </table>
-    <!--
-    <div class="width1200">
-		<ul class="review" th:each="review : ${reviews}">
-			<li class="review_photo">
-				<a href="@{/auth/evaluation/{id}(id=${review.rNo})}">
-					<img class="mainImg" th:src="${review.RMainPhoto}">
-				</a>
-			</li>
-			<li class="review_title">
-				<label 타이틀
-			</li>
-			<li class="review_user">
-				프로필, 작성자
-			</li>
-			<li class="review_count">
-				별점 조회수
-			</li>
-			
-		</ul>
-	</div>
-	-->
-	
-	<div th:if="${totalPages > 1}">
-	        <ul class="pagination">
-	            <li th:class="${currentPage == 0} ? 'page-item disabled' : 'page-item'">
-	                <a class="page-link" th:href="@{/auth/evaluation(page=0)}">First</a>
-	            </li>
-	            
-	            <li th:class="${currentPage == 0} ? 'page-item disabled' : 'page-item'">
-	                <a class="page-link" th:href="@{/auth/evaluation(page=${currentPage - 1})}">Previous</a>
-	            </li>
-
-	            <li th:each="pageNumber : ${#numbers.sequence(0, totalPages - 1)}" 
-	                th:class="${currentPage == pageNumber} ? 'page-item active' : 'page-item'">
-	                <a class="page-link" th:href="@{/auth/evaluation(page=${pageNumber})}" th:text="${pageNumber + 1}"></a>
-	            </li>
-	
-	            <li th:class="${currentPage + 1 == totalPages} ? 'page-item disabled' : 'page-item'">
-	                <a class="page-link" th:href="@{/auth/evaluation(page=${currentPage + 1})}">Next</a>
-	            </li>
-
-	            <li th:class="${currentPage + 1 == totalPages} ? 'page-item disabled' : 'page-item'">
-	                <a class="page-link" th:href="@{/auth/evaluation(page=${totalPages - 1})}">Last</a>
-	            </li>
-	        </ul>
-	    </div>
-	    
-	    <div class="ex">
-			<ul>
-				<li></li>
-			</ul>
+	<th:block th:include="~{fragments/header.html::header}"></th:block>
+	<div class="container">
+		<h1>Review List</h1>
+		<div class="review-grid">
+			<div class="review-card" th:each="review : ${reviews}" th:data-rno="${review.RNo}">
+				<img th:src="${review.RMainPhoto}" alt="Review Image">
+				<div class="review-content">
+					<div class="review-title" th:text="${review.RTitle}"></div>
+					<div class="review-text" th:text="${#strings.abbreviate(review.RContent, 100)}"></div>
+				</div>
+				<div class="review-footer">
+					<span th:text="${review.user.UId}">User ID</span>
+					<span class="written-time"
+						th:text="${#temporals.format(review.RWrittenTime, 'yyyy-MM-dd HH:mm')}"></span>
+				</div>
+			</div>
 		</div>
+		<a href="/review_write">리뷰 작성하기</a>
+		<!-- 모달 -->
+		<div id="reviewModal" class="modal">
+			<div class="modal-content">
+				<!-- 슬라이드 쇼 컨테이너 -->
+				<div class="slider">
+					<div class="slides" id="photoContainer">
+						<!-- 슬라이드 내용이 JavaScript로 동적으로 추가됨 -->
+					</div>
+					<!-- 이전 및 다음 버튼 -->
+					<button class="prev" onclick="changeSlide(-1)">&#10094;</button>
+					<button class="next" onclick="changeSlide(1)">&#10095;</button>
+				</div>
+
+				<!-- 오른쪽 정보 패널 -->
+				<div class="info-panel">
+					<div class="info-header">
+						<h2 id="modalTitle"></h2>
+						<div class="info-subheader">
+							<span id="modalUserId"></span>
+							<span id="modalWrittenTime"></span>
+						</div>
+					</div>
+					<div class="info-content">
+						<p id="modalContent"></p>
+
+						<!-- 댓글 섹션 -->
+						<div class="comment-section" id="commentSection">
+							<!-- 댓글이 JavaScript로 동적으로 추가됨 -->
+						</div>
+					</div>
+					<div class="info-footer">
+						<p>조회수: <span id="modalViews"></span></p>
+						<!-- 댓글 작성 폼 -->
+						<div class="comment-form" th:if="${session.UId != null}">
+							<textarea id="commentInput" placeholder="댓글을 입력하세요..."></textarea>
+							<button id="submitComment" onclick="submitComment()">댓글 작성</button>
+						</div>
+					</div>
+					<span class="close">&times;</span>
+				</div>
+			</div>
+		</div>
+		<div class="pagination">
+			<a th:href="@{/auth/evaluation(page=${currentPage - 1})}" th:if="${currentPage > 0}">&laquo; 이전</a>
+			<span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+				<a th:href="@{/auth/evaluation(page=${i})}" th:classappend="${i == currentPage} ? 'active'"
+					th:text="${i + 1}">1</a>
+			</span>
+			<a th:href="@{/auth/evaluation(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}">다음
+				&raquo;</a>
+		</div>
+	</div>
+
+	<script>
+		let currentSlideIndex = 0;
+		let currentReviewId = null;
+
+		function showSlides(index) {
+			const slides = document.querySelectorAll(".slides img");
+			if (index >= slides.length) {
+				currentSlideIndex = 0;
+			} else if (index < 0) {
+				currentSlideIndex = slides.length - 1;
+			} else {
+				currentSlideIndex = index;
+			}
+			slides.forEach((slide, i) => {
+				slide.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
+			});
+		}
+
+		function changeSlide(n) {
+			showSlides(currentSlideIndex + n);
+		}
+
+		function submitComment() {
+		    const commentInput = document.getElementById("commentInput");
+		    const commentText = commentInput.value.trim();
+		
+		    if (!commentText) {
+		        alert("댓글을 입력하세요.");
+		        return;
+		    }
+		
+		    console.log("currentReviewId:", currentReviewId);
+		
+		    $.ajax({
+		        url: `/review/${currentReviewId}`,
+		        type: "POST",
+		        data: {
+		            comment: commentText
+		        },
+		        success: function(newComment) {
+		            // 댓글 UI 업데이트
+		            const commentSection = document.getElementById("commentSection");
+		            const commentDiv = document.createElement("div");
+		            commentDiv.classList.add("comment");
+		
+		            commentDiv.innerHTML = `
+		                <img src="${newComment.user?.UPofile || '/path/to/default/profile.jpg'}" alt="User profile">
+		                <div class="comment-text">
+		                    <span class="username">${newComment.user?.UName || 'Unknown'}</span>
+		                    ${newComment.rcomment || 'No comment available'}
+		                </div>
+		            `;
+		            commentSection.appendChild(commentDiv);
+		
+		            // 입력 필드 비우기
+		            commentInput.value = "";
+		        },
+		        error: function(jqXHR, textStatus, errorThrown) {
+		            alert("Error: " + errorThrown);
+		        }
+		    });
+		}
+
+
+		document.addEventListener("DOMContentLoaded", function () {
+			const modal = document.getElementById("reviewModal");
+			const closeModal = document.getElementsByClassName("close")[0];
+
+			document.querySelectorAll(".review-card").forEach(card => {
+				card.addEventListener("click", function () {
+					currentReviewId = card.getAttribute("data-rno");
+
+					fetch(`/auth/evaluation/${currentReviewId}`)  // 리뷰 데이터와 댓글 데이터 동시에 가져옴
+						.then(response => response.json())
+						.then(reviewData => {
+							// 리뷰 데이터 처리
+							document.getElementById("modalTitle").textContent = reviewData.rtitle || 'N/A';
+							document.getElementById("modalUserId").textContent = reviewData.userId || 'Unknown';
+							document.getElementById("modalWrittenTime").textContent = reviewData.rwrittenTime || 'N/A';
+							document.getElementById("modalContent").textContent = reviewData.rcontent || 'N/A';
+							document.getElementById("modalViews").textContent = reviewData.rviews || '0';
+
+							// 사진 처리 코드
+							const photoContainer = document.getElementById("photoContainer");
+							photoContainer.innerHTML = '';
+							reviewData.reviewPhotos.forEach(photoUrl => {
+								const img = document.createElement("img");
+								img.src = photoUrl;
+								img.alt = "Review Photo";
+								photoContainer.appendChild(img);
+							});
+
+							// 댓글 데이터 처리
+							const commentSection = document.getElementById("commentSection");
+							commentSection.innerHTML = ''; // 기존 댓글 삭제
+
+							if (reviewData.comments.length > 0) {
+								reviewData.comments.forEach(comment => {
+									const commentDiv = document.createElement("div");
+									commentDiv.classList.add("comment");
+
+									commentDiv.innerHTML = `
+                                <img src="${comment.userProfile || '/path/to/default/profile.jpg'}" alt="User profile">
+                                <div class="comment-text">
+                                    <span class="username">${comment.userName || 'Unknown'}</span>
+                                    ${comment.rcomment || 'No comment available'}
+                                </div>
+                            `;
+									commentSection.appendChild(commentDiv);
+								});
+								commentSection.style.display = 'block'; // 댓글 섹션 보이기
+							} else {
+								commentSection.style.display = 'none'; // 댓글이 없으면 숨기기
+							}
+
+							// 모달 열기
+							modal.style.display = "block";
+							showSlides(0);  // 첫 슬라이드 표시
+						})
+						.catch(error => console.error('Error:', error));
+				});
+			});
+
+			// 모달 닫기 기능
+			closeModal.onclick = function () {
+				modal.style.display = "none";
+			};
+
+			// 모달 외부 클릭 시 닫기
+			window.onclick = function (event) {
+				if (event.target === modal) {
+					modal.style.display = "none";
+				}
+			};
+		});
+
+	</script>
 </body>
+
 </html>
