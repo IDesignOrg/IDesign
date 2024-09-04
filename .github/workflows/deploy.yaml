@@ -75,4 +75,4 @@ jobs:
             fi
             git pull origin feature-lhj
             sudo docker pull yoonjaehwan/idesign:latest
-            sudo docker-compose up --build -d
+            sudo docker-compose up --build -d --debug
