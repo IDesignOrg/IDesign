@@ -20,7 +20,7 @@ services:
     # build:
     #   context: .
     #   dockerfile: Dockerfile
-    container_name: app1
+    container_name: idesign
     # container_name: spring-app1
     environment:
       SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/idesign
