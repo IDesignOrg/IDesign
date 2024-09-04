@@ -17,9 +17,9 @@ services:
 
   app1:
     image: yoonjaehwan/idesign:latest
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: app1
     # container_name: spring-app1
     environment:
