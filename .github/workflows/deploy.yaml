@@ -28,7 +28,14 @@ jobs:
       - name: Write environment files
         run: |
           echo "${{ secrets.APPLICATIONPRIVATE }}" > src/main/resources/application-private.properties
-          echo "${{ secrets.PERSUASIVE_ENCODE }}" | base64 -d > src/main/resources/persuasive-feat-426613-s5-d313a7303956.json
+          # echo "${{ secrets.PERSUASIVE_ENCODE }}" | base64 -d > src/main/resources/persuasive-feat-426613-s5-d313a7303956.json
+      - name: 제발 되라
+        id: create-json
+        uses: jsdaniell/create-json@v1.2.3
+        with:
+          name: "${{secrets.PERSUASIVE_NAME}}.json"
+          json: ${{secrets.PERSUASIVE}}
+          dir: "src/main/resources"
 
       - name: Build with Gradle
         run: ./gradlew clean build
