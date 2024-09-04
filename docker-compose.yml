@@ -16,9 +16,10 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   app1:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: yoonjaehwan/idesign:latest
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
     container_name: app1
     # container_name: spring-app1
     environment:
