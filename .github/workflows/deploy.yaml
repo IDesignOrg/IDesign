@@ -36,7 +36,7 @@ jobs:
         uses: jsdaniell/create-json@v1.2.2
         with:
           name: "persuasive-feat-426613-s5-a789fe6d3bc5.json"
-          json: ${{ secrets.BEACHCOMBINE }}
+          json: ${{ secrets.PERSUASIVE }}
           dir: "src/main/resources/"
       # - name: 제발 되라
       #   id: create-json
