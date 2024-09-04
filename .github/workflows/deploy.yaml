@@ -28,8 +28,6 @@ jobs:
       - name: Write environment files
         run: |
           echo "${{ secrets.APPLICATIONPRIVATE }}" > src/main/resources/application-private.properties
-          # 만약 PERSUASIVE_ENCODE가 필요하다면 주석을 제거합니다.
-          # echo "${{ secrets.PERSUASIVE_ENCODE }}" | base64 -d > src/main/resources/persuasive-feat-426613-s5-d313a7303956.json
         shell: bash
 
       - name: create-json
