@@ -1,12 +1,11 @@
+#/.github/workflows/deploy.yaml
+
 name: CI/CD Pipeline
 
 on:
   push:
     branches:
       - feature-lhj
-  # pull_request:
-  #   branches:
-  #     - main
 
 jobs:
   build-and-deploy:
@@ -22,9 +21,6 @@ jobs:
           java-version: "17"
           distribution: "temurin"
 
-      # - name: Set up JDK 11
-      #   run: sudo apt-get install -y openjdk-17-jdk
-
       - name: Write environment files
         run: |
           echo "${{ secrets.APPLICATIONPRIVATE }}" > src/main/resources/application-private.properties
@@ -37,24 +33,12 @@ jobs:
           name: "persuasive-feat-426613-s5-a789fe6d3bc5.json"
           json: ${{ secrets.PERSUASIVE }}
           dir: "src/main/resources/"
-      # - name: 제발 되라
-      #   id: create-json
-      #   uses: jsdaniell/create-json@v1.2.3
-      #   with:
-      #     name: "persuasive-feat-426613-s5-a789fe6d3bc5.json"
-      #     json: ${{ secrets.PERSUASIVE }}
-      #     dir: "src/main/resources/"
 
       - name: Build with Gradle
         run: ./gradlew clean build
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-
-      # - name: Install Docker Compose
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get install -y docker-compose
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -81,14 +65,16 @@ jobs:
             sudo docker-compose down
             sudo docker-compose down || true
             CONTAINERS=$(sudo docker ps -a -q)
-            if [ -n "$CONTAINERS" ]; then
+
+            #컨테이너가 있다면 실행
+            if [ -n "$CONTAINERS" ]; then 
               sudo docker rm -f $CONTAINERS
             fi
             IMAGES=$(sudo docker images -q)
+
+            #이미지가 있다면 실행
             if [ -n "$IMAGES" ]; then
               sudo docker rmi -f $IMAGES
             fi
-            # git pull origin feature-lhj
             sudo docker pull yoonjaehwan/idesign:latest
-            # sudo docker-compose up --build -d --debug
             DEBUG=1 sudo docker-compose up --build -d
