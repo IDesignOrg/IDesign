@@ -76,39 +76,39 @@ jobs:
               sudo docker-compose -f docker-compose.yml pull
               sudo docker-compose -f docker-compose.yml up -d
               exit 1
-            fi
-
-            echo "BLUE_CONTAINER: $BLUE_CONTAINER"
-            echo "GREEN_CONTAINER: $GREEN_CONTAINER"
-
-            if [ -n "$BLUE_CONTAINER" ]; then
-              echo "Current container is blue. Switching to Green..."
-              
-              sudo docker-compose -f docker-compose.green.yml pull
-              sudo docker-compose -f docker-compose.green.yml up -d
-              
-              sudo cp ./nginx/nginx.green.conf ./nginx/nginx.conf
-              
-              sudo docker-compose -f docker-compose.blue.yml down
-              
-            elif [ -n "$GREEN_CONTAINER" ]; then
-              echo "Current container is green. Switching to Blue..."
-              
-              sudo docker-compose -f docker-compose.blue.yml pull
-              sudo docker-compose -f docker-compose.blue.yml up -d
-              
-              sudo cp ./nginx/nginx.blue.conf ./nginx/nginx.conf
-              
-              sudo docker-compose -f docker-compose.green.yml down
-              
             else
-              echo "Start Init Process"
-              RUNNING_CONTAINERS=$(sudo docker ps -q)
-              if [ -n "$RUNNING_CONTAINERS" ]; then
-                echo "Stopping and removing running containers..."
-                sudo docker stop $RUNNING_CONTAINERS
-                sudo docker rm $RUNNING_CONTAINERS
+              echo "BLUE_CONTAINER: $BLUE_CONTAINER"
+              echo "GREEN_CONTAINER: $GREEN_CONTAINER"
+
+              if [ -n "$BLUE_CONTAINER" ]; then
+                echo "Current container is blue. Switching to Green..."
+                
+                sudo docker-compose -f docker-compose.green.yml pull
+                sudo docker-compose -f docker-compose.green.yml up -d
+                
+                sudo cp ./nginx/nginx.green.conf ./nginx/nginx.conf
+                
+                sudo docker-compose -f docker-compose.blue.yml down
+                
+              elif [ -n "$GREEN_CONTAINER" ]; then
+                echo "Current container is green. Switching to Blue..."
+                
+                sudo docker-compose -f docker-compose.blue.yml pull
+                sudo docker-compose -f docker-compose.blue.yml up -d
+                
+                sudo cp ./nginx/nginx.blue.conf ./nginx/nginx.conf
+                
+                sudo docker-compose -f docker-compose.green.yml down
+                
+              else
+                echo "Start Init Process"
+                RUNNING_CONTAINERS=$(sudo docker ps -q)
+                if [ -n "$RUNNING_CONTAINERS" ]; then
+                  echo "Stopping and removing running containers..."
+                  sudo docker stop $RUNNING_CONTAINERS
+                  sudo docker rm $RUNNING_CONTAINERS
+                fi
+                sudo docker-compose -f docker-compose.yml pull
+                sudo docker-compose -f docker-compose.yml up -d
               fi
-              sudo docker-compose -f docker-compose.yml pull
-              sudo docker-compose -f docker-compose.yml up -d
             fi
