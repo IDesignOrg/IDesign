@@ -52,65 +52,67 @@ jobs:
           docker push yoonjaehwan/idesign:latest
 
       - name: SSH Commands
-        uses: appleboy/ssh-action@v0.1.6
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: 22
-          script_stop: true
-          script: |
-            echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-            cd IDesign
+  uses: appleboy/ssh-action@v0.1.6
+  with:
+    host: ${{ secrets.SERVER_IP }}
+    username: ${{ secrets.SSH_USER }}
+    key: ${{ secrets.SSH_KEY }}
+    port: 22
+    script_stop: true
+    script: |
+      echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+      cd IDesign
 
-                  # 현재 실행 중인 컨테이너의 이미지 확인
-            CURRENT_IMAGE=$(sudo docker ps -q | xargs sudo docker inspect -f '{{.Config.Image}}' | grep -E 'blue|green')
+      # 현재 실행 중인 컨테이너의 이미지 확인
+      CURRENT_IMAGE=$(sudo docker ps -q | xargs sudo docker inspect -f '{{.Config.Image}}' | grep -E 'blue|green')
 
-            if echo "$CURRENT_IMAGE" | grep -q 'blue'; then
-              echo "Current container is blue. Switching to Green..."
+      if echo "$CURRENT_IMAGE" | grep -q 'blue'; then
+        echo "Current container is blue. Switching to Green..."
+        
+        # 'blue' 컨테이너가 실행 중인 경우, 'green'으로 변경
+        sudo docker-compose -f docker-compose.green.yml pull
+        sudo docker-compose -f docker-compose.green.yml up -d
+        
+        # Nginx 설정 파일을 green으로 업데이트
+        sudo cp ./nginx/nginx.green.conf ./nginx/nginx.conf
+        
+        # 이전 컨테이너 제거
+        sudo docker-compose -f docker-compose.blue.yml down
+        
+      elif echo "$CURRENT_IMAGE" | grep -q 'green'; then
+        echo "Current container is green. Switching to Blue..."
+        
+        # 'green' 컨테이너가 실행 중인 경우, 'blue'으로 변경
+        sudo docker-compose -f docker-compose.blue.yml pull
+        sudo docker-compose -f docker-compose.blue.yml up -d
+        
+        # Nginx 설정 파일을 blue로 업데이트
+        sudo cp ./nginx/nginx.blue.conf ./nginx/nginx.conf
+        
+        # 이전 컨테이너 제거
+        sudo docker-compose -f docker-compose.green.yml down
+        
+      else
+        echo "Start Init Process"
 
-              # 'blue' 컨테이너가 실행 중인 경우, 'green'으로 변경
-              sudo docker-compose -f docker-compose.green.yml pull
-              sudo docker-compose -f docker-compose.green.yml up -d
+        # 모든 실행 중인 컨테이너 중지 및 제거
+        RUNNING_CONTAINERS=$(sudo docker ps -q)
+        if [ -n "$RUNNING_CONTAINERS" ]; then
+          echo "Stopping and removing running containers..."
+          sudo docker stop $RUNNING_CONTAINERS
+          sudo docker rm $RUNNING_CONTAINERS
+        fi
 
-              sudo cp ./nginx/nginx.green.conf ./nginx/nginx.conf
+        # 초기화 및 실행
+        sudo docker-compose -f ./docker-compose/docker-compose.db.yml pull
+        sudo docker-compose -f ./docker-compose/docker-compose.db.yml up -d
 
-              # 이전 컨테이너 제거
-              sudo docker-compose -f docker-compose.blue.yml down
-            elif echo "$CURRENT_IMAGE" | grep -q 'green'; then
-              echo "Current container is green. Switching to Blue..."
-
-              # 'green' 컨테이너가 실행 중인 경우, 'blue'으로 변경
-              sudo docker-compose -f docker-compose.blue.yml pull
-              sudo docker-compose -f docker-compose.blue.yml up -d
-              
-              sudo cp ./nginx/nginx.blue.conf ./nginx/nginx.conf
-
-              # 이전 컨테이너 제거
-              sudo docker-compose -f docker-compose.green.yml down
-            else
-            # green도 blue도 실행중이지 않으면 init으로 시작
-              echo "Start Init Process"
-              if [ -n "$RUNNING_CONTAINERS" ]; then
-                echo "Stopping and removing running containers..."
-
-                # 모든 실행 중인 컨테이너 중지
-                sudo docker stop $RUNNING_CONTAINERS
-                
-                # 모든 실행 중인 컨테이너 제거
-                sudo docker rm $RUNNING_CONTAINERS
-              
-              fi
-                sudo docker-compose -f ./docker-compose/docker-compose.db.yml pull
-                sudo docker-compose -f ./docker-compose/docker-compose.db.yml up -d
-
-                sudo docker-compose -f ./docker-compose/docker-compose.nginx.yml pull
-                sudo docker-compose -f ./docker-compose/docker-compose.nginx.yml up -d
-
-                sudo docker-compose -f ./docker-compose/docker-compose.blue.yml pull
-                sudo docker-compose -f ./docker-compose/docker-compose.blue.yml up -d
-
-            fi
+        sudo docker-compose -f ./docker-compose/docker-compose.nginx.yml pull
+        sudo docker-compose -f ./docker-compose/docker-compose.nginx.yml up -d
+        
+        sudo docker-compose -f ./docker-compose/docker-compose.blue.yml pull
+        sudo docker-compose -f ./docker-compose/docker-compose.blue.yml up -d
+      fi
       #
       #
       #
