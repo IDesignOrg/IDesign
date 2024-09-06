@@ -115,4 +115,4 @@ jobs:
               # 초기화 및 실행
               sudo docker-compose -f docker-compose.yml pull
               sudo docker-compose -f docker-compose.yml up -d
-          fi
+            fi
