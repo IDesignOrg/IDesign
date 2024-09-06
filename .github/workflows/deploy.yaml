@@ -64,6 +64,12 @@ jobs:
             echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             cd IDesign
 
+            if [ -z "$RUNNING_CONTAINERS" ]; then
+              sudo docker-compose -f docker-compose.yml pull
+              sudo docker-compose -f docker-compose.yml up
+              exit 1
+            fi
+
             # 현재 실행 중인 컨테이너의 이미지 확인
             CURRENT_IMAGE=$(sudo docker ps -q | xargs sudo docker inspect -f '{{.Config.Image}}' | grep -E 'blue|green')
 
