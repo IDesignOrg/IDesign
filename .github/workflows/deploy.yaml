@@ -70,6 +70,12 @@ jobs:
             BLUE_CONTAINER=$(sudo docker ps --filter "name=blue" -q)
             GREEN_CONTAINER=$(sudo docker ps --filter "name=green" -q)
 
+            if [ -z "$CONTAINS_BLUE" ] && [ -z "$CONTAINS_GREEN" ]; then
+              echo "현재 실행 중인 컨테이너들 중 'blue'와 'green'이 없습니다."
+              sudo docker-compose -f docker-compose.yml pull
+              sudo docker-compose -f docker-compose.yml up -d
+              exit 1
+            fi
             echo "BLUE_CONTAINER: $BLUE_CONTAINER"
             echo "GREEN_CONTAINER: $GREEN_CONTAINER"
 
