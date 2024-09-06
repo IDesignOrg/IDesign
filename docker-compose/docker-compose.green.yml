@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  app2:
+  idesign_green:
     image: yoonjaehwan/idesign:latest
     container_name: idesign_green
     environment:
