@@ -15,17 +15,17 @@ services:
       - db-data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
-  # app1:
-  #   image: yoonjaehwan/idesign:latest
-  #   container_name: idesign_blue
-  #   environment:
-  #     SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/idesign
-  #     SPRING_DATASOURCE_USERNAME: root
-  #     SPRING_DATASOURCE_PASSWORD: 1234
-  #   ports:
-  #     - "8081:8080"
-  #   depends_on:
-  #     - db
+  app1:
+    image: yoonjaehwan/idesign:latest
+    container_name: idesign_blue
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/idesign
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 1234
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
 
   # app2:
   #   image: yoonjaehwan/idesign:latest
@@ -39,15 +39,15 @@ services:
   #   depends_on:
   #     - db
 
-  # nginx:
-  #   image: nginx:latest
-  #   container_name: nginx
-  #   ports:
-  #     - "80:80" # Nginx가 사용할 포트
-  #   volumes:
-  #     - ./nginx/nginx.blue.conf:/etc/nginx/nginx.conf:ro
-  #   depends_on:
-  #     - app1
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80" # Nginx가 사용할 포트
+    volumes:
+      - ./nginx/nginx.blue.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app1
 
 volumes:
   db-data:

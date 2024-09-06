@@ -104,14 +104,16 @@ jobs:
               fi
 
               # 초기화 및 실행
-              sudo docker-compose -f ./docker-compose/docker-compose.db.yml pull
-              sudo docker-compose -f ./docker-compose/docker-compose.db.yml up -d
+              sudo docker-compose -f docker-compose.yml pull
+              sudo docker-compose -f docker-compose.yml up 
+              # sudo docker-compose -f ./docker-compose/docker-compose.db.yml pull
+              # sudo docker-compose -f ./docker-compose/docker-compose.db.yml up -d
 
-              sudo docker-compose -f ./docker-compose/docker-compose.nginx.yml pull
-              sudo docker-compose -f ./docker-compose/docker-compose.nginx.yml up -d
+              # sudo docker-compose -f ./docker-compose/docker-compose.nginx.yml pull
+              # sudo docker-compose -f ./docker-compose/docker-compose.nginx.yml up -d
               
-              sudo docker-compose -f ./docker-compose/docker-compose.blue.yml pull
-              sudo docker-compose -f ./docker-compose/docker-compose.blue.yml up -d
+              # sudo docker-compose -f ./docker-compose/docker-compose.blue.yml pull
+              # sudo docker-compose -f ./docker-compose/docker-compose.blue.yml up -d
             fi
       #
       #
