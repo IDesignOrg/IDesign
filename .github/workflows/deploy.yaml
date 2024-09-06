@@ -62,20 +62,22 @@ jobs:
           script: |
             set -x  # Debug mode enabled
             echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+                        
             cd IDesign
 
             # Debug output
             echo "Checking for running containers..."
-
             BLUE_CONTAINER=$(sudo docker ps --filter "name=blue" -q)
             GREEN_CONTAINER=$(sudo docker ps --filter "name=green" -q)
 
-            if [ -z "$CONTAINS_BLUE" ] && [ -z "$CONTAINS_GREEN" ]; then
+            # 'blue'와 'green' 컨테이너가 실행 중인지 확인합니다.
+            if [ -z "$BLUE_CONTAINER" ] && [ -z "$GREEN_CONTAINER" ]; then
               echo "현재 실행 중인 컨테이너들 중 'blue'와 'green'이 없습니다."
               sudo docker-compose -f docker-compose.yml pull
               sudo docker-compose -f docker-compose.yml up -d
               exit 1
             fi
+
             echo "BLUE_CONTAINER: $BLUE_CONTAINER"
             echo "GREEN_CONTAINER: $GREEN_CONTAINER"
 
