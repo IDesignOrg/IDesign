@@ -35,7 +35,7 @@ services:
     volumes:
       - ./nginx/nginx.blue.conf:/etc/nginx/nginx.conf:ro
     depends_on:
-      - app1
+      - idesign_blue
 
 volumes:
   db-data:
