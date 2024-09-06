@@ -88,7 +88,7 @@ jobs:
               # 이전 컨테이너 제거
               sudo docker-compose -f docker-compose.blue.yml down
               
-            elif if [ -n "$GREEN_CONTAINER" ]; then
+            elif [ -n "$GREEN_CONTAINER" ]; then
               echo "Current container is green. Switching to Blue..."
               
               # 'green' 컨테이너가 실행 중인 경우, 'blue'으로 변경
@@ -115,3 +115,4 @@ jobs:
               # 초기화 및 실행
               sudo docker-compose -f docker-compose.yml pull
               sudo docker-compose -f docker-compose.yml up -d
+          fi
