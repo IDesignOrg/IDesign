@@ -66,8 +66,7 @@ jobs:
 
             if [ -z "$RUNNING_CONTAINERS" ]; then
               sudo docker-compose -f docker-compose.yml pull
-              sudo docker-compose -f docker-compose.yml up
-              exit 1
+              sudo docker-compose -f docker-compose.yml up -d
             fi
 
             # 현재 실행 중인 컨테이너의 이미지 확인
@@ -112,4 +111,4 @@ jobs:
 
               # 초기화 및 실행
               sudo docker-compose -f docker-compose.yml pull
-              sudo docker-compose -f docker-compose.yml up
+              sudo docker-compose -f docker-compose.yml up -d
