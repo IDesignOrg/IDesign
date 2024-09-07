@@ -64,7 +64,7 @@ jobs:
             echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
                         
             cd IDesign
-            FILE_PATH="docker-compose/docker-compose.blue.yml"
+            FILE_PATH="./dockercompose/docker-compose.blue.yml"
             EXIST_BLUE=$(docker-compose -p idesign_blue -f $FILE_PATH ps | grep Up)
             echo "EXIST_BLUE: $EXIST_BLUE"
 
