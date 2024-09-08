@@ -67,7 +67,8 @@ jobs:
             # FILE_PATH="./dockercompose/docker-compose.blue.yml"
             # EXIST_BLUE=$(docker-compose -p idesign_blue -f $FILE_PATH ps | grep Up)
             EXIST_BLUE=$(docker ps --filter "name=idesign_blue" --filter "status=running" -q)
-            echo "EXIST_BLUE: $EXIST_BLUE"
+            EXIST_BLUE=$(docker ps --filter "name=idesign_green" --filter "status=running" -q)
+            echo "EXIST_BLUE zz: $EXIST_BLUE"
 
 
 
