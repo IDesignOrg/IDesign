@@ -70,6 +70,17 @@ jobs:
             EXIST_GREEN=$(docker ps --filter "name=idesign_green" --filter "status=running" -q)
             echo "EXIST_BLUE zz: $EXIST_BLUE"
 
+            if [ -z "$EXIST_BLUE" ] && [ -z "$EXIST_GREEN" ]; then
+              docker-compose -f docker-compose.yml up -d
+
+            elif [ -n "$EXIST_BLUE" ]; then
+              sudo docker-compose -f docker-compose.yml pull
+              sudo docker-compose -f ./dockercompose/docker-compose.green.yml up -d
+              cp ./nginx/nginx.green.conf /etc/nginx/nginx.conf
+
+            fi
+
+            nginx -s reload || exit 1
 
 
             # # Debug output
