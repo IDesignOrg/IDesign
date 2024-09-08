@@ -77,9 +77,9 @@ jobs:
               sudo docker-compose -f docker-compose.yml pull
               sudo docker-compose -f ./dockercompose/docker-compose.green.yml up -d
               sudo cp ./nginx/nginx.green.conf /etc/nginx/nginx.conf
-              sudo nginx -s reload
               sudo docker stop idesign_blue
               sudo docker remove idesign_blue
+              sudo nginx -s reload
 
 
             fi
