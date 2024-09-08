@@ -76,7 +76,9 @@ jobs:
             elif [ -n "$EXIST_BLUE" ]; then
               sudo docker-compose -f docker-compose.yml pull
               sudo docker-compose -f ./dockercompose/docker-compose.green.yml up -d
-              cp ./nginx/nginx.green.conf /etc/nginx/nginx.conf
+              sudo docker cp ./nginx/nginx.green.conf nginx:/etc/nginx/nginx.conf
+              sudo docker exec nginx nginx -s reload
+              
 
             fi
 
