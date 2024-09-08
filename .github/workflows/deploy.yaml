@@ -64,8 +64,6 @@ jobs:
             echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
                         
             cd IDesign
-            # FILE_PATH="./dockercompose/docker-compose.blue.yml"
-            # EXIST_BLUE=$(docker-compose -p idesign_blue -f $FILE_PATH ps | grep Up)
             EXIST_BLUE=$(docker ps --filter "name=idesign_blue" --filter "status=running" -q)
             EXIST_GREEN=$(docker ps --filter "name=idesign_green" --filter "status=running" -q)
             echo "EXIST_BLUE zz: $EXIST_BLUE"
@@ -76,7 +74,9 @@ jobs:
             elif [ -n "$EXIST_BLUE" ]; then
               sudo docker-compose -f docker-compose.yml pull
               sudo docker-compose -f ./dockercompose/docker-compose.green.yml up -d
+
               sudo cp ./nginx/nginx.green.conf /etc/nginx/nginx.conf
+
               sudo docker stop idesign_blue
               sudo docker remove idesign_blue
               sudo nginx -s reload
