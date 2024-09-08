@@ -79,9 +79,7 @@ jobs:
               sudo cp ./nginx/nginx.green.conf /etc/nginx/nginx.conf
               sudo nginx -s reload
               sudo docker stop idesign_blue
-              sudo docker rm idesign_blue
-              # sudo docker cp ./nginx/nginx.green.conf nginx:/etc/nginx/nginx.conf
-              # sudo docker exec nginx nginx -s reload
+              sudo docker remove idesign_blue
 
 
             fi
