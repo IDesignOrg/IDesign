@@ -1,6 +1,20 @@
 version: "3.8"
 
 services:
+  db:
+    image: mariadb:latest
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: idesign
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3308:3306" # 호스트의 3308 포트를 컨테이너의 3306 포트에 매핑
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
   idesign_blue:
     image: yoonjaehwan/idesign:latest
     container_name: idesign_blue
@@ -10,3 +24,5 @@ services:
       SPRING_DATASOURCE_PASSWORD: 1234
     ports:
       - "8081:8080"
+    depends_on:
+      - db
