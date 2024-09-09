@@ -74,12 +74,22 @@ jobs:
               sudo nginx -s reload
 
             elif [ -n "$EXIST_BLUE" ]; then
-              sudo docker-compose -f docker-compose.yml pull
+              sudo docker-compose -f ./dockercompose/docker-compose.green.yml pull
               sudo docker-compose -f ./dockercompose/docker-compose.green.yml up -d
 
               sudo cp ./nginx/nginx.green.conf /etc/nginx/nginx.conf
 
               sudo docker stop idesign_blue
               sudo docker remove idesign_blue
+              sudo nginx -s reload
+
+            elif [ -n "$EXIST_GREEN" ]; then
+              sudo docker-compose -f ./dockercompose/docker-compose.blue.yml pull
+              sudo docker-compose -f ./dockercompose/docker-compose.blue.yml up -d
+
+              sudo cp ./nginx/nginx.blue.conf /etc/nginx/nginx.conf
+
+              sudo docker stop idesign_green
+              sudo docker remove idesign_green
               sudo nginx -s reload
             fi
