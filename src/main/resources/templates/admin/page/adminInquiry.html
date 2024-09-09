@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>문의 리스트</title>
+	<link rel="stylesheet" href="/css/adminPage.css" />
+	<style>
+		.inquiry-table-container {
+			background-color: white;
+			padding: 20px;
+			border-radius: 10px;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			overflow-x: auto;
+		}
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			text-align: left;
+		}
+
+		table th,
+		table td {
+			padding: 12px;
+			border-bottom: 1px solid #ddd;
+		}
+
+		table th {
+			background-color: #f2f2f2;
+		}
+
+		.ellipsis {
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			max-width: 200px;
+		}
+
+		.action-btn {
+			background-color: #4CAF50;
+			color: white;
+			border: none;
+			padding: 5px 10px;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+
+		.action-btn:hover {
+			background-color: #45a049;
+		}
+
+		.pagination {
+			display: flex;
+			justify-content: center;
+			margin-top: 20px;
+		}
+
+		.pagination a {
+			color: black;
+			padding: 8px 16px;
+			text-decoration: none;
+			transition: background-color 0.3s;
+		}
+
+		.pagination a.active {
+			background-color: #4CAF50;
+			color: white;
+			border-radius: 5px;
+		}
+
+		.pagination a:hover:not(.active) {
+			background-color: #ddd;
+			border-radius: 5px;
+		}
+
+		/* 모달 창 스타일 */
+		.modal {
+			display: none;
+			position: fixed;
+			z-index: 1;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			overflow: auto;
+			background-color: rgba(0, 0, 0, 0.4);
+			padding-top: 60px;
+		}
+
+		.modal-content {
+			background-color: #fefefe;
+			margin: 5% auto;
+			padding: 20px;
+			border: 1px solid #888;
+			width: 80%;
+			max-width: 500px;
+		}
+
+		.close {
+			color: #aaa;
+			float: right;
+			font-size: 28px;
+			font-weight: bold;
+		}
+
+		.close:hover,
+		.close:focus {
+			color: black;
+			text-decoration: none;
+			cursor: pointer;
+		}
+
+		.inquiry-header {
+			display: flex;
+			justify-content: space-between;
+			margin-bottom: 5px;
+		}
+
+		.inquiry-category,
+		.inquiry-user {
+			font-size: 14px;
+			color: #555;
+		}
+
+		.inquiry-registered-date {
+			font-size: 12px;
+			color: #aaa;
+		}
+
+		.inquiry-content {
+			margin: 20px 0;
+		}
+
+		hr {
+			margin: 20px 0;
+			border: 0;
+			border-top: 1px solid #ddd;
+		}
+	</style>
+</head>
+
+<body>
+	<div th:insert="~{/admin/page/adminsidebar :: sidebar}"></div>
+	<div class="main-content">
+		<header>
+			<h1>문의 리스트</h1>
+		</header>
+		<div class="inquiry-table-container">
+			<table>
+				<thead>
+					<tr>
+						<th>번호</th>
+						<th>제목</th>
+						<th>작성자</th>
+						<th>카테고리</th>
+						<th>작성일</th>
+						<th>내용</th>
+						<th>액션</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="inquiryDTO : ${inquirys}">
+						<td th:text="${inquiryDTO.inquiry.inqNo}"></td>
+						<td th:text="${inquiryDTO.inquiry.inqTitle}"></td>
+						<td th:text="${inquiryDTO.inquiry.userEntity.uName}"></td>
+						<td th:text="${inquiryDTO.inquiry.inqCategory}"></td>
+						<td th:text="${#temporals.format(inquiryDTO.inquiry.inqRegisteredDate, 'yyyy-MM-dd')}"></td>
+						<td class="ellipsis" th:text="${#strings.abbreviate(inquiryDTO.inquiry.inqContent, 50)}"></td>
+						<td>
+							<!-- 답변 여부에 따라 버튼을 다르게 표시 -->
+							<button type="button" class="action-btn" th:if="${inquiryDTO.hasAnswer == false}"
+								th:attr="onclick=|openAnswerModal(${inquiryDTO.inquiry.inqNo})|">답변하기</button>
+
+							<button type="button" class="action-btn" th:if="${inquiryDTO.hasAnswer == true}"
+								th:attr="onclick=|openViewAnswerModal(${inquiryDTO.inquiry.inqNo})|">답변 완료</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="pagination">
+			<a th:href="@{/admin/page/inquiryList(page=${currentPage - 1})}" th:if="${currentPage > 0}">&laquo; 이전</a>
+			<span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+				<a th:href="@{/admin/page/inquiryList(page=${i})}" th:classappend="${i == currentPage} ? 'active'"
+					th:text="${i + 1}">1</a>
+			</span>
+			<a th:href="@{/admin/page/inquiryList(page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}">다음
+				&raquo;</a>
+		</div>
+	</div>
+
+	<!-- 답변 입력 모달 -->
+	<div id="answerModal" class="modal">
+		<div class="modal-content">
+			<span class="close" onclick="closeAnswerModal()">&times;</span>
+			<h2>답변하기</h2>
+			<!-- 문의 제목 -->
+			<div>
+				<label for="inquiryTitle">문의 제목:</label>
+				<p id="inquiryTitle" style="font-weight: bold;"></p>
+			</div>
+			<!-- 카테고리, 사용자 -->
+			<div class="inquiry-header">
+				<span class="inquiry-category" id="inquiryCategory"></span>
+				<span class="inquiry-user" id="inquiryUser"></span>
+			</div>
+			<!-- 등록일 -->
+			<div class="inquiry-registered-date" id="inquiryRegisteredDate"></div>
+			<!-- 문의 내용 -->
+			<div class="inquiry-content">
+				<label for="inquiryContent">문의 내용:</label>
+				<p id="inquiryContent"></p>
+			</div>
+			<hr>
+			<!-- 답변 입력 필드 -->
+			<form id="answerForm" onsubmit="event.preventDefault(); submitAnswer();">
+				<div>
+					<label for="answerContent">답변 내용:</label>
+					<textarea id="answerContent" name="answerContent" rows="4" style="width: 100%;"></textarea>
+				</div>
+				<div style="margin-top: 10px;">
+					<button type="submit">제출</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- 답변 보기 모달 -->
+	<div id="viewAnswerModal" class="modal">
+		<div class="modal-content">
+			<span class="close" onclick="closeViewAnswerModal()">&times;</span>
+			<h2>문의 및 답변 보기</h2>
+			<div>
+				<label for="inquiryTitle">문의 제목:</label>
+				<p id="ainquiryTitle" style="font-weight: bold;"></p>
+			</div>
+			<div class="inquiry-header">
+				<span class="inquiry-category" id="ainquiryCategory"></span>
+				<span class="inquiry-user" id="ainquiryUser"></span>
+			</div>
+			<div class="inquiry-registered-date" id="ainquiryRegisteredDate"></div>
+			<div class="inquiry-content">
+				<label for="inquiryContent">문의 내용:</label>
+				<p id="ainquiryContent"></p>
+			</div>
+
+			<hr>
+			<!-- 답변 내용 -->
+			<div class="answer-section">
+				<h3>답변</h3>
+				<div>
+					<label for="answerContentView">답변 내용:</label>
+					<p id="answerContentView"></p>
+				</div>
+				<div>
+					<span>작성자: <span id="answerAuthor"></span></span>
+				</div>
+				<div>
+					<span>작성일: <span id="answerRegisteredDate"></span></span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// 공통으로 데이터를 가져오는 함수
+		function fetchInquiryDetails(inqNo) {
+			return fetch('/getInquiryDetails?inqNo=' + inqNo)
+				.then(response => {
+					if (!response.ok) {
+						throw new Error('Network response was not ok');
+					}
+					return response.json();
+				});
+		}
+
+		// 답변하기 모달용 변수
+		let answerInquiryId;
+
+		// 답변하기 모달 열기
+		function openAnswerModal(inqNo) {
+			answerInquiryId = inqNo;
+
+			// 서버에서 데이터를 가져와서 모달에 표시
+			fetchInquiryDetails(inqNo)
+				.then(data => {
+					console.log(data);  // 데이터 확인
+
+					// 모달 창에 문의 데이터를 표시
+					document.getElementById('inquiryTitle').textContent = data.inqTitle || '제목 없음';
+					document.getElementById('inquiryCategory').textContent = data.inqCategory || '카테고리 없음';
+					document.getElementById('inquiryUser').textContent = data.user ? data.user.uName : '작성자 정보 없음';
+					document.getElementById('inquiryRegisteredDate').textContent = data.inqRegisteredDate || '등록일 없음';
+					document.getElementById('inquiryContent').textContent = data.inqContent || '문의 내용 없음';
+
+					// 답변 입력 모달 창 열기
+					document.getElementById('answerModal').style.display = 'block';
+				})
+				.catch(error => {
+					console.error('Error:', error);
+					alert('문의 내용을 불러오는 중 오류가 발생했습니다.');
+				});
+		}
+
+		// 답변 제출 처리
+		function submitAnswer() {
+			const answerContent = document.getElementById('answerContent').value;
+
+			// 데이터를 URL 파라미터 형식으로 전달
+			const formData = new URLSearchParams();
+			formData.append('inqNo', answerInquiryId);
+			formData.append('answerContent', answerContent);
+
+			fetch('/submitAnswer?' + formData.toString(), {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				}
+			})
+				.then(response => {
+					if (response.ok) {
+						alert('답변이 제출되었습니다.');
+						closeAnswerModal();
+						location.reload();
+					} else {
+						alert('답변 제출에 실패했습니다.');
+					}
+				})
+				.catch(error => {
+					console.error('Error:', error);
+					alert('답변 제출 중 오류가 발생했습니다.');
+				});
+		}
+
+		// 답변하기 모달 닫기
+		function closeAnswerModal() {
+			document.getElementById('answerModal').style.display = 'none';
+		}
+
+		// 답변 보기 모달용 변수
+		let viewInquiryId;
+
+		// 답변 보기 모달 열기
+		function openViewAnswerModal(inqNo) {
+			viewInquiryId = inqNo;
+
+			// 서버에서 데이터를 가져와서 모달에 표시
+			fetchInquiryDetails(inqNo)
+				.then(data => {
+					console.log(data);  // 데이터 확인
+
+					// 문의 데이터를 표시
+					console.log(document.getElementById('inquiryTitle'));
+					document.getElementById('ainquiryTitle').innerText = data.inqTitle || '제목 없음';
+					document.getElementById('ainquiryCategory').textContent = data.inqCategory || '카테고리 없음';
+					document.getElementById('ainquiryUser').textContent = data.user ? data.user.uName : '작성자 정보 없음';
+					document.getElementById('ainquiryRegisteredDate').textContent = data.inqRegisteredDate || '등록일 없음';
+					document.getElementById('ainquiryContent').textContent = data.inqContent || '문의 내용 없음';
+
+					// 답변이 있는 경우 답변 데이터를 표시
+					if (data.answer) {
+						document.getElementById('answerContentView').textContent = data.answer.ansContent || '답변 내용 없음';
+						document.getElementById('answerAuthor').textContent = data.answer.user ? data.answer.user.uName : '작성자 정보 없음';
+						document.getElementById('answerRegisteredDate').textContent = data.answer.ansRegisteredDate || '작성일 없음';
+					} else {
+						document.getElementById('answerContentView').textContent = '답변이 아직 등록되지 않았습니다.';
+						document.getElementById('answerAuthor').textContent = '';
+						document.getElementById('answerRegisteredDate').textContent = '';
+					}
+
+					// 답변 보기 모달 창 열기
+					document.getElementById('viewAnswerModal').style.display = 'block';
+				})
+				.catch(error => {
+					console.error('Error:', error);
+					alert('데이터를 불러오는 중 오류가 발생했습니다.');
+				});
+		}
+
+		// 답변 보기 모달 닫기
+		function closeViewAnswerModal() {
+			document.getElementById('viewAnswerModal').style.display = 'none';
+		}
+
+	</script>
+</body>
+
+</html>

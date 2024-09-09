@@ -103,8 +103,8 @@ const getDummyData = () => {
 };
 
 const getProjects = async () => {
-  if (!hasMoreProjects || isLaoding) return;
-  isLaoding = true;
+	if (!hasMoreProjects || isLaoding) return;
+	isLaoding = true;
 
   const filter = searchInput.value;
   const sort = selectedSort.id;

@@ -12,7 +12,7 @@
 			font-family: Arial, sans-serif;
 			color: #333;
 			background-color: #f8f9fa;
-			padding-top: 140px; /* 헤더와 겹치지 않도록 */
+			padding-top: 140px;
 		}
 
 		.product-page .container {
@@ -132,49 +132,144 @@
 			margin-bottom: 20px;
 		}
 
+		.product-page .review-section {
+			margin-top: 40px;
+		}
+
+		.product-page .review-item {
+			margin-bottom: 20px;
+			padding: 15px;
+			border: 1px solid #ddd;
+			border-radius: 8px;
+			background-color: #f5f5f5;
+		}
+
+		/* 유저 정보 섹션 */
+		.product-page .user-info {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 10px;
+		}
+
+		.product-page .user-info .review-profile {
+			display: flex;
+			align-items: center;
+		}
+
+		.product-page .user-info .review-profile img {
+			width: 50px;
+			height: 50px;
+			border-radius: 50%;
+			object-fit: cover;
+			margin-right: 10px;
+		}
+
+		.product-page .user-info .review-details {
+			text-align: right;
+			color: #666;
+		}
+
+		.product-page .review-author {
+			font-weight: bold;
+			color: #333;
+		}
+
+		.product-page .review-date {
+			font-size: 14px;
+			color: #999;
+		}
+
+		/* 리뷰 내용 섹션 */
+		.product-page .review-content {
+			margin-bottom: 10px;
+		}
+
+		.product-page .review-content p {
+			margin-bottom: 10px;
+			color: #333;
+		}
+
+		/* 리뷰 사진 섹션 */
 		.product-page .review-photos {
 			display: flex;
 			flex-wrap: wrap;
 			gap: 10px;
+			justify-content: flex-start;
+			margin-top: 10px;
 		}
 
-		.product-page .review-thumbnail {
-			width: 150px;
-			height: 150px;
+		.product-page .review-photos img {
+			width: 100px;
+			height: 100px;
 			object-fit: cover;
-			cursor: pointer;
 			border: 1px solid #ddd;
 			border-radius: 4px;
 			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 			transition: transform 0.2s;
+			cursor: pointer;
 		}
 
-		.product-page .review-thumbnail:hover {
+		.product-page .review-photos img:hover {
 			transform: scale(1.05);
 		}
 
+		/* 별점 섹션 */
+		.product-page .review-rating .stars {
+			display: inline-flex;
+			align-items: center;
+		}
+
+		.product-page .review-rating .star {
+			width: 20px;
+			height: 20px;
+			display: inline-block;
+			margin-right: 2px;
+			background-color: #ddd; /* 빈 별 색상 */
+			clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+			position: relative;
+		}
+
+		.product-page .review-rating .star.filled::before {
+			content: '';
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			background-color: #ffc107; /* 채워진 별 색상 */
+			clip-path: inherit;
+		}
+
+		.product-page .review-rating .star.half-filled::before {
+			content: '';
+			position: absolute;
+			width: 50%; /* 절반만 채우기 */
+			height: 100%;
+			background-color: #ffc107; /* 채워진 별 색상 */
+			clip-path: inherit;
+		}
+
+		/* 모달 창 */
 		.product-page .modal {
-			display: none;
+			display: none; /* 초기에는 모달을 숨김 */
 			position: fixed;
-			z-index: 10000; /* 헤더보다 높은 z-index 설정 */
+			z-index: 10000;
 			left: 0;
 			top: 0;
 			width: 100%;
 			height: 100%;
-			background-color: rgba(0, 0, 0, 0.9);
-			overflow: hidden;
+			background-color: rgba(0, 0, 0, 0.8);
+			overflow: auto;
+			align-items: center;
+			justify-content: center;
 		}
 
 		.product-page .modal-content {
-			position: relative;
-			top: 50%;
-			transform: translateY(-50%);
 			margin: auto;
 			display: block;
-			width: 90%;
-			max-width: 1000px;
-			height: 90%;
-			object-fit: contain;
+			max-width: 90%;
+			max-height: 90%;
+			width: auto;
+			height: auto;
 			border-radius: 8px;
 			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 		}
@@ -195,26 +290,10 @@
 			color: #bbb;
 		}
 
-		.product-page a {
-			display: inline-block;
-			padding: 10px 20px;
-			background-color: #007bff;
-			color: #fff;
-			border-radius: 4px;
-			text-decoration: none;
-			margin-top: 20px;
-			transition: background-color 0.3s ease;
-		}
-
-		.product-page a:hover {
-			background-color: #0056b3;
-		}
-
-		/* 모달 창이 열렸을 때 배경 콘텐츠 스크롤 방지 */
+		/* 모달이 열렸을 때 배경 콘텐츠 스크롤 방지 */
 		body.modal-open {
 			overflow: hidden;
 		}
-
 	</style>
 	<link rel="stylesheet" href="/css/header.css" />
 	<link rel="stylesheet" href="/css/reset.css" />
@@ -272,25 +351,36 @@
 			<div class="review-section">
 				<h3>리뷰</h3>
 				<div th:each="review : ${shopReviews}" class="review-item">
-					<div class="review-profile">
-						<img th:src="${review.user.UPofile}" alt="User Profile">
+					<div class="user-info">
+						<div class="review-profile">
+							<img th:src="${review.user.UPofile}" alt="User Profile">
+							<p class="review-author" th:text="${review.user.UName}"></p>
+						</div>
+						<div class="review-details">
+							<p class="review-date"
+								th:text="${#temporals.format(review.shopReviewCreated, 'yyyy-MM-dd HH:mm')}"></p>
+						</div>
 					</div>
 					<div class="review-content">
-						<p class="review-author" th:text="${review.user.UName}"></p>
-						<p class="review-date"
-							th:text="${#temporals.format(review.shopReviewCreated, 'yyyy-MM-dd HH:mm')}"></p>
-						<p class="review-rating">별점: <span th:text="${review.shopReviewStarRating}"></span></p>
-						<p th:text="${review.shopReviewContent}"></p>
-						<div class="review-photos" th:if="${reviewPhotosMap[review.shopReviewNo] != null}">
-							<div th:each="photo : ${reviewPhotosMap[review.shopReviewNo]}">
-								<img th:src="@{${photo.shopReviewPhotoUrl}}" alt="Review Photo"
-									onclick="openModal(this)">
+						<div class="review-rating">
+							<div class="stars" th:data-rating="${review.shopReviewStarRating}">
+								<span class="star"></span>
+								<span class="star"></span>
+								<span class="star"></span>
+								<span class="star"></span>
+								<span class="star"></span>
 							</div>
+							<div class="rating-number" th:text="${review.shopReviewStarRating} + ' / 5'"></div>
+						</div>
+						<p th:text="${review.shopReviewContent}"></p>
+					</div>
+					<div class="review-photos" th:if="${reviewPhotosMap[review.shopReviewNo] != null}">
+						<div th:each="photo : ${reviewPhotosMap[review.shopReviewNo]}">
+							<img th:src="@{${photo.shopReviewPhotoUrl}}" alt="Review Photo" onclick="openModal(this)">
 						</div>
 					</div>
 				</div>
 			</div>
-
 
 			<!-- 모달 창 -->
 			<div id="myModal" class="modal" onclick="closeModal(event)">
@@ -303,20 +393,44 @@
 		</div>
 	</div>
 	<script>
-		function openModal(element) {
+		document.addEventListener("DOMContentLoaded", function () {
+			console.log('DOM fully loaded and parsed');
 			var modal = document.getElementById("myModal");
-			var modalImg = document.getElementById("img01");
-			modal.style.display = "block";
-			modalImg.src = element.src;
+			modal.style.display = "none"; // 페이지 로드 후 모달 강제로 숨기기
+			document.body.classList.remove("modal-open"); // 모달로 인한 스크롤 방지 제거
 
-			// 모달이 열릴 때 배경 스크롤 막기
-			document.body.classList.add("modal-open");
+			// 별점 채우기
+			const starContainers = document.querySelectorAll('.review-rating .stars');
+			starContainers.forEach(function (starContainer) {
+				const rating = parseFloat(starContainer.getAttribute('data-rating')); // 예: 3.5
+				const stars = starContainer.querySelectorAll('.star');
+				
+				stars.forEach((star, index) => {
+					if (index < Math.floor(rating)) {
+						star.classList.add('filled');
+					}
+					if (index === Math.floor(rating) && rating % 1 !== 0) {
+						star.classList.add('half-filled');
+					}
+				});
+			});
+		});
+
+		function openModal(element) {
+		    var modal = document.getElementById("myModal");
+		    var modalImg = document.getElementById("img01");
+		    modal.style.display = "flex"; // 모달을 열 때 flex로 변경
+		
+		    modalImg.src = element.src;
+			console.log("openModal called with element: ", element);
+		    // 모달이 열릴 때 배경 스크롤 막기
+		    document.body.classList.add("modal-open");
 		}
 
 		function closeModal(event) {
 			var modal = document.getElementById("myModal");
 			if (event.target === modal || event.target.classList.contains('close')) {
-				modal.style.display = "none";
+				modal.style.display = "none"; // 모달을 숨김
 
 				// 모달이 닫힐 때 배경 스크롤 허용
 				document.body.classList.remove("modal-open");
