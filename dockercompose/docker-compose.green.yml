@@ -11,29 +11,13 @@ services:
   #     MYSQL_PASSWORD: 1234
   #   ports:
   #     - "3308:3306" # 호스트의 3308 포트를 컨테이너의 3306 포트에 매핑
-  #   volumes:
-  #     - db-data:/var/lib/mysql
-  #     - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
-  idesign_blue:
+  idesign_green:
     image: yoonjaehwan/idesign:latest
-    container_name: idesign_blue
+    container_name: idesign_green
     environment:
       SPRING_DATASOURCE_URL: jdbc:mariadb://15.164.183.12:3306/idesign
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 1234
     ports:
-      - "8081:8080"
-    # depends_on:
-    #   - db
-
-  # nginx:
-  #   image: nginx:latest
-  #   container_name: nginx
-  #   ports:
-  #     - "80:80" # Nginx가 사용할 포트
-  #   volumes:
-  #     - ./nginx/nginx.blue.conf:/etc/nginx/nginx.conf:ro
-
-volumes:
-  db-data:
+      - "8082:8080"

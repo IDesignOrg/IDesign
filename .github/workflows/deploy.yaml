@@ -5,7 +5,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - feature-lhj
+      - main
 
 jobs:
   build-and-deploy:
@@ -60,21 +60,38 @@ jobs:
           port: 22
           script_stop: true
           script: |
+            set -x  # Debug mode enabled
             echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+                        
             cd IDesign
-            sudo docker-compose down
-            sudo docker-compose down || true
-            CONTAINERS=$(sudo docker ps -a -q)
+            # git pull origin feature-lhj
+            EXIST_BLUE=$(docker ps --filter "name=idesign_blue" --filter "status=running" -q)
+            EXIST_GREEN=$(docker ps --filter "name=idesign_green" --filter "status=running" -q)
+            echo "EXIST_BLUE zz: $EXIST_BLUE"
 
-            #컨테이너가 있다면 실행
-            if [ -n "$CONTAINERS" ]; then 
-              sudo docker rm -f $CONTAINERS
-            fi
-            IMAGES=$(sudo docker images -q)
+            if [ -z "$EXIST_BLUE" ] && [ -z "$EXIST_GREEN" ]; then
+              docker-compose -f docker-compose.yml up -d
+              sudo cp ./nginx/nginx.blue.conf /etc/nginx/nginx.conf
+              sudo nginx -s reload
 
-            #이미지가 있다면 실행
-            if [ -n "$IMAGES" ]; then
-              sudo docker rmi -f $IMAGES
+            elif [ -n "$EXIST_BLUE" ]; then
+              sudo docker-compose -f ./dockercompose/docker-compose.green.yml pull
+              sudo docker-compose -f ./dockercompose/docker-compose.green.yml up -d
+
+              sudo cp ./nginx/nginx.green.conf /etc/nginx/nginx.conf
+
+              sudo docker stop idesign_blue
+              sudo docker remove idesign_blue
+              sudo nginx -s reload
+
+            elif [ -n "$EXIST_GREEN" ]; then
+              echo "green exits zzzzz"
+              sudo docker-compose -f ./dockercompose/docker-compose.blue.yml pull
+              sudo docker-compose -f ./dockercompose/docker-compose.blue.yml up -d
+
+              sudo cp ./nginx/nginx.blue.conf /etc/nginx/nginx.conf
+
+              sudo docker stop idesign_green
+              sudo docker remove idesign_green
+              sudo nginx -s reload
             fi
-            sudo docker pull yoonjaehwan/idesign:latest
-            DEBUG=1 sudo docker-compose up --build -d
