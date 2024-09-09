@@ -84,6 +84,7 @@ jobs:
               sudo nginx -s reload
 
             elif [ -n "$EXIST_GREEN" ]; then
+              echo "green exits zzzzz"
               sudo docker-compose -f ./dockercompose/docker-compose.blue.yml pull
               sudo docker-compose -f ./dockercompose/docker-compose.blue.yml up -d
 
