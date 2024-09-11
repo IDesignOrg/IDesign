@@ -5,7 +5,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - feature-lhj
 
 jobs:
   build-and-deploy:
