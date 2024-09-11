@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>비밀번호 확인</title>
+	<!--이거 4개는 항상 가져가기 -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="/css/reset.css" />
+	<link rel="stylesheet" href="/css/header.css" />
+	<script src="/js/common.js"></script>
+	<!---->
+	<style>
+		body {
+			width: 100%;
+			height: 100vh;
+			background-color: white;
+			font-family: 'Noto Sans KR', sans-serif;
+			/* 기본 폰트 설정 */
+		}
+
+		#form-container {
+			width: 100%;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 20px;
+			box-sizing: border-box;
+		}
+
+		#findPwForm {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			padding: 20px;
+			border: 1px solid #ddd;
+			border-radius: 8px;
+			background-color: #f9f9f9;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			max-width: 400px;
+			width: 100%;
+		}
+
+		#findPwForm input,
+		#findPwForm button {
+			width: 100%;
+			padding: 12px;
+			margin: 8px 0;
+			border-radius: 4px;
+			border: 1px solid #ddd;
+		}
+
+		#findPwForm input {
+			font-size: 16px;
+		}
+
+		#findPwForm button {
+			background-color: #6633ff;
+			color: white;
+			font-size: 16px;
+			font-weight: bold;
+			cursor: pointer;
+			border: none;
+		}
+
+		#findPwForm button:hover {
+			background-color: #5a2dff;
+		}
+
+		#findPwForm button:focus {
+			outline: none;
+			box-shadow: 0 0 0 2px rgba(102, 51, 255, 0.5);
+		}
+
+		#faqBox {
+			margin-top: 20px;
+			padding: 20px;
+			background-color: #f1f1f1;
+			border: 1px solid #ddd;
+			border-radius: 8px;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			width: 100%;
+			max-width: 400px;
+			text-align: center;
+		}
+
+		#faqBox p {
+			margin: 10px 0;
+			font-size: 16px;
+			color: #333;
+		}
+
+		#faqBox a {
+			color: #6633ff;
+			font-weight: bold;
+			text-decoration: none;
+		}
+
+		#faqBox a:hover {
+			text-decoration: underline;
+		}
+	</style>
+</head>
+
+<body>
+	<th:block th:include="~{fragments/header.html::header}"></th:block>
+	<div id="form-container">
+		<form id="findPwForm">
+			<input type="text" id="UName" name="UName" placeholder="이름을 입력해주세요."/>
+			<input type="text" id="UMail" name="UMail" placeholder="이메일을 입력해주세요."/>
+			<button type="button" onclick="findUPw()">비밀번호 재설정</button>
+			<div id="faqBox">
+				<p>회원가입 시 입력한 정보가 기억나지 않는다면?</p>
+				<p><a href="/board/faq">고객센터 문의하기(1234-5678)</a></p>
+			</div>
+		</form>
+	</div>
+
+	<script>
+		function findUPw() {
+			var UName = $('#UName').val();
+			var UMail = $('#UMail').val();
+			$.ajax({
+
+				type: 'GET',
+				url: '/auth/findPw/' + UName,
+				data: {
+					UName: UName,
+					UMail: UMail
+				},
+				success: function (res) {
+					alert('임시 비밀번호가 성공적으로 발급되었습니다. 이메일을 확인해주세요.');
+					window.location.href = "/auth/login";
+				},
+				fail: function (res) {
+					if (res == "fail") {
+						alert('사용자의 정보가 없습니다.')
+						window.location.href = "/auth/login";
+					} else {
+						alert('사용자의 아이디 또는 비밀번호를 다시 입력해주세요.')
+						window.location.href = "/auth/findUPw";
+					}
+				}
+
+			});
+		}		
+	</script>
+</body>
+
+</html>

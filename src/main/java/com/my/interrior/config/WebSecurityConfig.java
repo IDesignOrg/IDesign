@@ -8,21 +8,21 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
-    @Bean
-    public PasswordEncoder getPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	@Bean
+	public PasswordEncoder getPasswordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
-    @Bean
+	@Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests(authorize -> authorize.anyRequest().permitAll())
                 .cors(cors -> cors.disable())
                 .csrf(csrf -> csrf.disable())
                 .formLogin(formLogin -> formLogin.disable())
+                .logout(logout -> logout.disable())
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
 
         return http.build();

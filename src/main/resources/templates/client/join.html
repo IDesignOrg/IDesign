@@ -1,18 +1,544 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
-    <title>join</title>
+	<meta charset="UTF-8">
+	<title>Join Form</title>
+	<!--이거 4개는 항상 가져가기 -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="/css/reset.css" />
+	<link rel="stylesheet" href="/css/header.css" />
+	<script src="/js/common.js"></script>
+	<!---->
+	<style>
+		.container {
+			width: 100%;
+			height: 100vh;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			padding: 20px;
+			box-sizing: border-box;
+		}
+
+		#joinForm {
+			width: 50%;
+			max-width: 450px;
+			min-width: 400px;
+			background-color: #fff;
+			padding: 20px;
+			border-radius: 10px;
+			box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+			margin-top:15%;
+		}
+
+		.snsLogin {
+			width:40%;
+			display:flex;
+			justify-content: space-between;
+			margin: 20px auto;
+			/* joinForm과의 간격 설정 */
+		}
+
+		.snsLogin .text-center {
+			margin-bottom: 10px;
+			/* 각 SNS 버튼 간의 간격 설정 */
+		}
+
+		.snsLogin img {
+			width: 50px;
+			height: auto;
+			max-width: 100%;
+		}
+
+		/* Header section */
+		.header {
+			text-align: center;
+			margin-bottom: 1.5rem;
+		}
+
+		.header h1 {
+			font-size: 1.875rem;
+			font-weight: bold;
+		}
+
+		.header p {
+			color: #6b7280;
+		}
+
+		/* Form field styles */
+		.field {
+			margin-bottom: 1rem;
+		}
+
+		.field label {
+			display: block;
+			margin-bottom: 0.5rem;
+			font-weight: 500;
+		}
+
+		.field input {
+			padding: 0.9rem;
+			border: 1px solid #d1d5db;
+			border-radius: 0.375rem;
+			box-sizing: border-box;
+		}
+
+		.input-group {
+			display: flex;
+			align-items: center;
+		}
+
+		.input-group .button {
+			margin-left: 0.5rem;
+			padding: 0.5rem 1rem;
+			border: 1px solid #d1d5db;
+			border-radius: 0.375rem;
+			background-color: transparent;
+			cursor: pointer;
+		}
+
+		.input-group .button:hover {
+			background-color: #f3f4f6;
+		}
+
+		/* Checkbox 스타일 */
+		.checkbox-container {
+			border: 1px solid lightgray;
+			border-radius: 5px;
+			padding: 15px;
+			margin-bottom: 1rem;
+			background-color: #ffffff;
+		}
+
+		.checkbox-group input[type="checkbox"] {
+			width: 20px;
+			height: 20px;
+		}
+
+		.checkbox-group label {
+			display: flex;
+			align-items: center;
+			cursor: pointer;
+			position: relative;
+			padding-left: 35px;
+		}
+
+		.checkbox-group label::before {
+			content: "";
+			position: absolute;
+			left: 0;
+			top: 50%;
+			transform: translateY(-50%);
+			width: 20px;
+			height: 20px;
+			border: 2px solid #6633ff;
+			border-radius: 5px;
+			background-color: white;
+			transition: background-color 0.3s ease, border-color 0.3s ease;
+		}
+
+		.checkbox-group input[type="checkbox"]:checked+label::before {
+			background-color: #6633ff;
+			border-color: #6633ff;
+			box-shadow: 0 0 5px rgba(102, 51, 255, 0.5);
+		}
+
+		.checkbox-group input[type="checkbox"]:checked+label::after {
+			content: "";
+			position: absolute;
+			left: 5px;
+			top: 50%;
+			transform: translateY(-50%) rotate(45deg);
+			width: 10px;
+			height: 5px;
+			border: solid white;
+			border-width: 0 0 2px 2px;
+			transform-origin: bottom left;
+		}
+
+		/* Button styles */
+		.button {
+			width: 100%;
+			padding: 0.75rem;
+			border-radius: 0.375rem;
+			background: linear-gradient(90deg, #6633ff, #9966ff);
+			color: white;
+			border: none;
+			cursor: pointer;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+		}
+
+		.button:hover {
+			background: linear-gradient(90deg, #5026cc, #804dff);
+			transform: translateY(-2px);
+			box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+		}
+
+		.button-outline {
+			width: 100%;
+			padding: 0.75rem;
+			border-radius: 0.375rem;
+			background-color: transparent;
+			border: 2px solid #6633ff;
+			color: #6633ff;
+			cursor: pointer;
+			transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+			margin-left: 10px;
+		}
+
+		.button-outline:hover {
+			background-color: #6633ff;
+			color: white;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		}
+
+		/* Separator */
+		.separator {
+			margin: 2rem 0;
+			border: 0;
+			border-top: 1px solid #e5e7eb;
+		}
+
+		#agree {
+			font-size: 10px;
+			color: #6633ff;
+		}
+
+		#choose {
+			font-size: 10px;
+			color: #6b7280;
+		}
+
+		hr {
+			border: none;
+			border-top: 1px solid #e5e7eb;
+			margin: 2rem 0;
+		}
+		.container p{
+			text-align: center;
+			padding:10px;
+			font-size:10px;
+			color:#6b7280;
+		}
+		.enrollment{
+			text-align: left;
+			font-weight:bold;
+		}
+	</style>
 </head>
+
 <body>
-<form action = "/auth/join" method = "POST">
-    <input type = "text" id = "UId" name = "UId"/>
-    <input type = "text" id = "UPw" name = "UPw"/>
-    <input type = "text" id = "UName" name = "UName"/>
-    <input type = "text" id = "UMail" name = "UMail"/>
-    <input type = "text" id = "UBirth" name = "UBirth"/>
-    <input type = "text" id = "UTel" name = "UTel"/>
-    <button type = "submit">회원가입</button>
-</form>
+	<th:block th:include="~{fragments/header.html::header}"></th:block>
+	<div class="container">
+		<form id="joinForm" action="/auth/join" method="POST" onsubmit="return validateForm()">
+		<h2 class="enrollment">회원가입</h2>
+		<p>SNS 계정으로 간편하게 회원가입</p>
+		<!-- snsLogin -->
+		<div class="snsLogin">
+			<!-- kakao button -->
+			<div class="text-center">
+				<a href="https://kauth.kakao.com/oauth/authorize"
+					th:href="@{https://kauth.kakao.com/oauth/authorize(client_id=${kakaoApiKey}, redirect_uri=${redirectUri}, response_type='code')}">
+					<!-- <img src="images/kakao_login_medium_wide.png" alt="Kakao Login" /> -->
+					<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Kakao_Corp._symbol_-_2012.svg/2226px-Kakao_Corp._symbol_-_2012.svg.png"
+						alt="" />
+				</a>
+			</div>
+		
+			<!-- 구글 -->
+			<div class="text-center">
+				<a
+					th:href="@{https://accounts.google.com/o/oauth2/v2/auth(client_id=${googleClientId}, redirect_uri=${googleRedirectUri}, response_type='code', scope=${googleScope})}">
+					<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/2048px-Google_%22G%22_logo.svg.png"
+						alt="" />
+				</a>
+			</div>
+		
+			<!-- 네이버 -->
+			<div class="text-center">
+				<a
+					th:href="@{https://nid.naver.com/oauth2.0/authorize(response_type='code', client_id=${naverClientId}, redirect_uri=${naverRedirectUri}, state='test')}">
+					<img src="https://lh3.googleusercontent.com/proxy/qwTpVnl-P2d2blCz4hN98s627Cx4cJP99pQQYWSCvYSUEcZNOOzf3N_6mjQ3e5S31IGNd8kcf1WVkTbCrDh1Yhp_ucv-QP4dDfkeBbjMk_ZS-4xeBVN6VST5"
+						alt="" />
+				</a>
+			</div>
+		</div>
+		<hr>
+			<div class="field">
+				<label for="UId">아이디</label>
+				<div class="input-group">
+					<input type="text" id="UId" name="UId" />
+					<button type="button" class="button-outline" onclick="checkDuplicatedId()">중복 확인</button>
+				</div>
+			</div>
+
+			<div class="field">
+				<label for="UPw">비밀번호</label>
+				<input type="password" id="UPw" name="UPw" onkeyup="validatePassword()" />
+				<div id="passwordValidationMessage"></div>
+			</div>
+
+			<div class="field">
+				<label for="checkUPw">비밀번호 확인</label>
+				<input type="password" id="checkUPw" name="checkUPw" onkeyup="checkPasswordMatch()" />
+				<div id="passwordMatchMessage"></div>
+			</div>
+
+			<div class="field">
+				<label for="UName">이름</label>
+				<input type="text" id="UName" name="UName" />
+			</div>
+
+			<div class="field">
+				<label for="UMail">이메일</label>
+				<div class="input-group">
+					<input type="email" id="UMail" name="UMail" onkeyup="validateEmail()" />
+					<button type="button" class="button-outline" onclick="checkDuplicatedEmail()">중복 확인</button>
+				</div>
+				<div id="emailValidationMessage"></div>
+			</div>
+
+			<div class="field">
+				<label for="UBirth">생일</label>
+				<input type="date" id="UBirth" name="UBirth" />
+			</div>
+
+			<div class="field">
+				<label for="UTel">전화번호</label>
+				<input type="tel" id="UTel" name="UTel" />
+			</div>
+
+			<div class="field">
+				<label for="yakgwan">약관동의</label>
+			</div>
+
+			<div class="checkbox-container">
+				<div class="field">
+					<label for="allAgree" class="checkbox-group">
+						<input type="checkbox" id="allAgree" onclick="toggleAllAgreements(this)">
+						전체 동의
+						<span id="choose">선택항목에 대한 동의 포함</span>
+					</label>
+				</div>
+				<hr>
+
+				<div class="field agreement">
+					<label for="agreement1" class="checkbox-group">
+						<input type="checkbox" id="agreement1" name="agreement1">
+						<a href="#" class="link">만 14세 이상입니다<span id="agree">(필수)</span></a>
+					</label>
+				</div>
+
+				<div class="field agreement">
+					<label for="agreement2" class="checkbox-group">
+						<input type="checkbox" id="agreement2" name="agreement2">
+						<a href="#" class="link">이용약관<span id="agree">(필수)</span></a>
+					</label>
+				</div>
+
+				<div class="field agreement">
+					<label for="agreement3" class="checkbox-group">
+						<input type="checkbox" id="agreement3" name="agreement3">
+						<a href="#" class="link">개인정보수집 및 이용동의<span id="agree">(필수)</span></a>
+					</label>
+				</div>
+
+				<div class="field agreement">
+					<label for="agreement4" class="checkbox-group">
+						<input type="checkbox" id="agreement4" name="agreement4">
+						<a href="#" class="link">개인정보수집 및 이용동의<span id="choose">(선택)</span></a>
+					</label>
+				</div>
+
+				<div class="field agreement">
+					<label for="agreement5" class="checkbox-group">
+						<input type="checkbox" id="agreement5" name="agreement5">
+						<a href="#" class="link">이벤트,쿠폰,특가 알림 메일 및 SMS 등 수신<span id="choose">(선택)</span></a>
+					</label>
+				</div>
+			</div>
+			<button type="submit" class="button">회원가입</button>
+		</form>
+	</div>
+
+	<script>
+		var isIdAvailable = false;
+		var isEmailAvailable = false;
+		var valid = false;
+
+		function toggleAllAgreements(checkbox) {
+			const agreements = document.querySelectorAll('.agreement input[type="checkbox"]');
+			agreements.forEach(function (agreement) {
+				agreement.checked = checkbox.checked;
+			});
+		}
+
+		function checkDuplicatedId() {
+			var UId = $('#UId').val();
+
+			$.ajax({
+				type: 'GET',
+				url: '/auth/check/' + UId,
+				data: {
+					UId: UId
+				},
+				success: function (res) {
+					if (res == 'available') {
+						alert('사용 가능한 아이디입니다.');
+						isIdAvailable = true;
+					} else {
+						alert('이미 사용중인 아이디입니다.');
+						$('#UId').val('');
+						isIdAvailable = false;
+					}
+				}
+			});
+		}
+
+		function checkDuplicatedEmail() {
+			var UMail = $('#UMail').val();
+
+			if (valid) {
+				$.ajax({
+					type: 'GET',
+					url: '/auth/check/email/' + UMail,
+					data: {
+						UMail: UMail
+					},
+					success: function (res) {
+						if (res == 'available') {
+							alert('사용 가능한 이메일입니다.');
+							isEmailAvailable = true;
+						} else {
+							alert('이미 사용중인 이메일입니다.');
+							$('#UMail').val('');
+							isEmailAvailable = false;
+						}
+					}
+				});
+			} else {
+				alert('유효한 이메일 형식을 사용해주세요.');
+			}
+		}
+
+		function validatePassword() {
+			var password = $('#UPw').val();
+			var passwordValidationMessage = $('#passwordValidationMessage');
+			var passwordPattern = /^(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/;
+
+			if (passwordPattern.test(password) && !hasSequentialChars(password)) {
+				passwordValidationMessage.text('사용 가능한 비밀번호입니다.').css('color', 'green');
+				checkPasswordMatch();
+				return true;
+			} else if (hasSequentialChars(password)) {
+				passwordValidationMessage.text('비밀번호는 연속된 3글자를 포함할 수 없습니다.').css('color', 'red');
+				$('#passwordMatchMessage').text('');
+				return false;
+			} else {
+				passwordValidationMessage.text('비밀번호는 특수문자를 포함하여 8자 이상이어야 합니다.').css('color', 'red');
+				$('#passwordMatchMessage').text('');
+				return false;
+			}
+		}
+
+		function validateEmail() {
+			var email = $('#UMail').val();
+			var emailValidationMessage = $('#emailValidationMessage');
+			var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+			if (emailPattern.test(email)) {
+				emailValidationMessage.text('유효한 이메일 형식입니다.').css('color', 'green');
+				valid = true;
+				return true;
+			} else {
+				emailValidationMessage.text('올바른 이메일 주소를 입력해 주세요.').css('color', 'red');
+				valid = false;
+				return false;
+			}
+		}
+
+		function hasSequentialChars(password) {
+			for (var i = 0; i < password.length - 2; i++) {
+				var charCode1 = password.charCodeAt(i);
+				var charCode2 = password.charCodeAt(i + 1);
+				var charCode3 = password.charCodeAt(i + 2);
+
+				if (charCode1 + 1 === charCode2 && charCode2 + 1 === charCode3) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		function checkPasswordMatch() {
+			var password = $('#UPw').val();
+			var confirmPassword = $('#checkUPw').val();
+			var passwordMatchMessage = $('#passwordMatchMessage');
+
+			if (password !== "" && confirmPassword !== "") {
+				if (password === confirmPassword) {
+					passwordMatchMessage.text('비밀번호가 일치합니다.').css('color', 'green');
+					return true;
+				} else {
+					passwordMatchMessage.text('비밀번호가 일치하지 않습니다.').css('color', 'red');
+					return false;
+				}
+			} else {
+				passwordMatchMessage.text('');
+				return false;
+			}
+		}
+
+		function validateForm() {
+			var isPasswordValid = validatePassword();
+			var isPasswordMatching = checkPasswordMatch();
+			var isAgreement1Checked = $('#agreement1').is(':checked');
+			var isAgreement2Checked = $('#agreement2').is(':checked');
+			var isAgreement3Checked = $('#agreement3').is(':checked');
+
+			if (!isIdAvailable) {
+				alert('아이디 중복 확인을 해주세요.');
+				resetForm();
+				return false;
+			}
+
+			if (!isEmailAvailable) {
+				alert('이메일 중복 확인을 해주세요.');
+				resetForm();
+				return false;
+			}
+
+			if (!isPasswordValid) {
+				alert('비밀번호 규칙을 확인해주세요.');
+				resetForm();
+				return false;
+			}
+
+			if (!isPasswordMatching) {
+				alert('비밀번호가 일치하지 않습니다.');
+				resetForm();
+				return false;
+			}
+
+			if (!isAgreement1Checked || !isAgreement2Checked || !isAgreement3Checked) {
+				alert('필수 약관을 동의해주시기 바랍니다.');
+				return false;
+			}
+
+			return true;
+		}
+
+		function resetForm() {
+			$('#joinForm')[0].reset();
+			$('#passwordValidationMessage').text('');
+			$('#passwordMatchMessage').text('');
+			isIdAvailable = false;
+			isEmailAvailable = false;
+		}
+	</script>
 </body>
+
 </html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSC</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/header.css" />
+    <link rel="stylesheet" href="/css/reset.css" />
+    <link rel="stylesheet" href="/css/csc.css" /> <!-- 공통 CSS 파일 추가 -->
+</head>
+
+<body>
+    <th:block th:include="~{fragments/header.html::header}"></th:block>
+    <div class="container">
+        <div class="customContent">
+            <th:block th:include="~{fragments/cscHeader.html}"></th:block>
+
+            <!-- 공지사항 테이블 -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>제목</th>
+                        <th>작성자</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="notice : ${notices}">
+                        <td th:text="${notice.notNo}"></td>
+                        <td>
+                            <a th:href="@{/board/notice/{no}(no=${notice.notNo})}" th:text="${notice.notTitle}"></a>
+                        </td>
+                        <td th:text="${notice.userEntity.UName}"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- 페이지 네비게이션 -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item" th:class="${notices.first ? 'disabled' : ''}">
+                        <a th:if="${!notices.first}" class="page-link"
+                            th:href="@{/board/notices(page=${notices.number - 1}, size=${notices.size})}">이전</a>
+                    </li>
+
+                    <!-- 페이지 번호 링크 -->
+                    <li th:each="pageNum : ${#numbers.sequence(0, notices.totalPages - 1)}"
+                        th:class="${notices.number == pageNum ? 'page-item active' : 'page-item'}">
+                        <a th:if="${param!=null}" class="page-link"
+                            th:href="@{/board/notice/search(page=${pageNum}, size=${notices.size}, keyword=${param.keyword})}"
+                            th:text="${pageNum + 1}"></a>
+                        <a th:if="${param==null}" class="page-link"
+                            th:href="@{/board/notices(page=${pageNum}, size=${notices.size})}" th:text="${pageNum + 1}"></a>
+                    </li>
+
+                    <li class="page-item" th:class="${notices.last ? 'disabled' : ''}">
+                        <a th:if="${!notices.last}" class="page-link"
+                            th:href="@{/board/notices(page=${notices.number + 1}, size=${notices.size})}">다음</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</body>
+
+</html>

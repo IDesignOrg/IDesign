@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>csc</title>
+	<style>
+		/* 폼 전체에 대한 스타일 */
+		form#faqWrite {
+			width: 100%;
+			max-width: 600px;
+			margin: 0 auto;
+			padding: 20px;
+			background-color: #f9f9f9;
+			border-radius: 8px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			font-family: Arial, sans-serif;
+		}
+
+		/* 각 입력 필드의 라벨 */
+		form#faqWrite label {
+			display: block;
+			margin-bottom: 8px;
+			font-weight: bold;
+		}
+
+		/* 텍스트 입력 필드와 선택 박스 */
+		form#faqWrite input[type="text"],
+		form#faqWrite select,
+		form#faqWrite textarea {
+			width: 100%;
+			padding: 10px;
+			margin-bottom: 15px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			font-size: 14px;
+		}
+
+		/* 텍스트 입력 필드 */
+		form#faqWrite input[type="text"] {
+			height: 40px;
+		}
+
+		/* 텍스트 영역 */
+		form#faqWrite textarea {
+			height: 100px;
+			resize: vertical;
+			/* 사용자가 텍스트 영역의 크기를 조절할 수 있도록 */
+		}
+
+		/* 전송 버튼 */
+		form#faqWrite button[type="submit"] {
+			display: inline-block;
+			width: 100%;
+			padding: 12px;
+			background-color: #007BFF;
+			color: #fff;
+			border: none;
+			border-radius: 4px;
+			font-size: 16px;
+			cursor: pointer;
+		}
+
+		form#faqWrite button[type="submit"]:hover {
+			background-color: #0056b3;
+		}
+	</style>
+	<link rel="stylesheet" href="/css/adminPage.css" />
+</head>
+
+<body>
+	<div th:insert="~{/admin/page/adminsidebar :: sidebar}"></div>
+	<form id="faqWrite" action="/board/faqWrite" method="POST">
+		제목: <input type="text" id="faqTitle" name="faqTitle" />
+		카테고리: <select id="faqCategory" name="faqCategory">
+			<option>회원문의</option>
+			<option>주문-결제</option>
+			<option>배송문의</option>
+			<option>AS문의</option>
+			<option>설치문의</option>
+			<option>이벤트-포토후기</option>
+			<option>기타문의</option>
+		</select>
+		내용: <textarea id="faqContent" name="faqContent"></textarea>
+		<button type="submit">전송하기</button>
+	</form>
+
+
+</body>
+
+</html>

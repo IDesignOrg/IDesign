@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSC</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/header.css" />
+    <link rel="stylesheet" href="/css/reset.css" />
+    <link rel="stylesheet" href="/css/csc.css" /> <!-- 공통 CSS 파일 추가 -->
+</head>
+
+<body>
+    <th:block th:include="~{fragments/header.html::header}"></th:block>
+    <div class="container">
+        <div class="customContent">
+            <th:block th:include="~{fragments/cscHeader.html}"></th:block>
+            <div>
+                <a th:href="@{/board/inquiry}">전체</a>
+                <a th:each="category : ${categories}" th:href="@{|/board/inquiry/category/${category}|}"
+                    th:text="${category}"></a>
+            </div>
+            <a th:if="${session.UId} != null" th:href="@{/board/inquiry/write}">글 쓰기</a>
+            
+            <!-- 문의사항 테이블 -->
+            <table>
+                <tr th:each="inquiry : ${inquiries}">
+                    <td th:text="${inquiry.inqNo}"></td>
+                    <td>
+                        <a th:href="@{/board/inquiry/{no}(no=${inquiry.inqNo})}" th:text="${inquiry.inqTitle}"
+                            th:attr="data-user-id=${inquiry.userEntity.UId}"
+                            onclick="checkAuthorization(event, this.getAttribute('data-user-id'))"></a>
+                    </td>
+                    <td th:text="${inquiry.inqCategory}"></td>
+                    <td th:text="${inquiry.userEntity.UName}"></td>
+                </tr>
+            </table>
+
+            <!-- 페이지 네비게이션 -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item" th:class="${inquiries.first ? 'disabled' : ''}">
+                        <a th:if="${!inquiries.first}" class="page-link"
+                            th:href="@{/board/inquiry(page=${inquiries.number - 1}, size=${inquiries.size})}">이전</a>
+                    </li>
+
+                    <!-- 페이지 번호 링크 -->
+                    <li th:each="pageNum : ${#numbers.sequence(0, inquiries.totalPages - 1)}"
+                        th:class="${inquiries.number == pageNum ? 'page-item active' : 'page-item'}">
+                        <a th:if="${param!=null}" class="page-link"
+                            th:href="@{/board/inquiry/search(page=${pageNum}, size=${inquiries.size}, keyword=${param.keyword})}"
+                            th:text="${pageNum + 1}"></a>
+                        <a th:if="${param==null}" class="page-link"
+                            th:href="@{/board/inquiry(page=${pageNum}, size=${inquiries.size})}" th:text="${pageNum + 1}"></a>
+                    </li>
+
+                    <li class="page-item" th:class="${inquiries.last ? 'disabled' : ''}">
+                        <a th:if="${!inquiries.last}" class="page-link"
+                            th:href="@{/board/inquiry(page=${inquiries.number + 1}, size=${inquiries.size})}">다음</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        function checkAuthorization(event, authorUid) {
+            event.preventDefault(); // 링크의 기본 동작을 막음
+
+            var sessionUid = /*[[${session.UId}]]*/ null; // Thymeleaf 표현식을 통해 HttpSession의 UId 값을 가져옴
+            console.log("sessionUid의 값은: ", sessionUid);
+            console.log("authorUid의 값은: ", authorUid);
+            if (sessionUid !== null && sessionUid === authorUid) {
+                // 권한이 있는 경우 링크 이동
+                window.location.href = event.target.getAttribute('href');
+            } else {
+                // 권한이 없는 경우 알림창 표시
+                alert('권한이 없습니다.');
+            }
+        }
+    </script>
+</body>
+
+</html>

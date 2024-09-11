@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>상품 목록</title>
+	<!--이거 4개는 항상 가져가기 -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="/css/reset.css" />
+	<!--여긴 헤더 css-->
+	<link rel="stylesheet" href="/css/header.css" />
+	<script src="/js/common.js"></script>
+	<!--이거 4개는 항상 가져가기(헤더용) + body에서 fragments header도 한 줄 입력하면 헤더가 나옴.-->
+	<!--여기에 shopList css가 있음.-->
+	<link rel="stylesheet" href="/css/style.css">
+	<style>
+		body {
+			font-family: 'Arial', sans-serif;
+			background-color: #ffffff;
+			color: #333;
+			line-height: 1.6;
+			margin: 20px;
+		}
+
+		.container {
+			max-width: 1200px;
+			margin: 0 auto;
+			padding: 20px;
+			margin-top: 140px;
+		}
+
+		h1 {
+			font-size: 2.5rem;
+			margin-bottom: 20px;
+			text-align: center;
+			color: #333;
+		}
+	</style>
+
+</head>
+
+<body>
+	<th:block th:include="~{fragments/header.html::header}"></th:block>
+	<div class="container">
+		<h1>상품 목록</h1>
+		<div class="product-grid">
+
+			<div th:each="shop : ${shoplist}" class="product-item">
+				<a th:href="@{/auth/shopDetail/{shopNo}(shopNo=${shop.shopNo})}" class="product-link">
+					<img th:src="${shop.shopMainPhoto}" th:alt="${shop.shopTitle}">
+					<div class="product-details">
+						<h2 th:text="${shop.shopTitle}"></h2>
+						<p class="product-price" th:text="'₩' + ${shop.shopPrice}"></p>
+						<p class="product-discount" th:text="'할인율: ' + ${shop.shopDiscont} + '%'"></p>
+					</div>
+				</a>
+			</div>
+		</div>
+
+		<form method="get" action="/auth/search">
+			<label for="shopTitle">Title:</label>
+			<input type="text" id="shopTitle" name="shopTitle" th:value="${shopTitle}">
+
+			<label for="shop-category">카테고리 선택:</label>
+			<select id="shop-category" name="shopCategory">
+				<option value="디퓨저">디퓨저</option>
+				<option value="가구">가구</option>
+				<option value="벽지">벽지</option>
+				<option value="타일">타일</option>
+			</select>
+			<label for="minPrice">Min Price:</label>
+			<input type="number" id="minPrice" name="minPrice" th:value="${minPrice}">
+
+			<label for="maxPrice">Max Price:</label>
+			<input type="number" id="maxPrice" name="maxPrice" th:value="${maxPrice}">
+
+			<button type="submit">Search</button>
+		</form>
+
+		<!-- 페이징 링크 -->
+		<div class="pagination">
+			<a th:href="@{/auth/shopList(page=0)}" th:classappend="${currentPage == 0 ? 'disabled' : ''}">처음</a>
+			<a th:href="@{/auth/shopList(page=${currentPage - 1})}"
+				th:classappend="${currentPage == 0 ? 'disabled' : ''}">이전</a>
+			<!-- 페이지 번호 링크 생성 -->
+			<a th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:href="@{/auth/shopList(page=${i})}"
+				th:classappend="${currentPage == i ? 'active' : ''}" th:text="${i + 1}"></a>
+			<a th:href="@{/auth/shopList(page=${currentPage + 1})}"
+				th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">다음</a>
+			<a th:href="@{/auth/shopList(page=${totalPages - 1})}"
+				th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">마지막</a>
+		</div>
+	</div>
+</body>
+
+</html>

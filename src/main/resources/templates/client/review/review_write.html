@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>Insert title here</title>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<style>
+    #fileList {
+        list-style: none;
+        padding: 0;
+    }
+    #fileList li {
+        margin: 5px 0;
+        padding: 10px;
+        border: 1px solid #ccc;
+        background-color: #f9f9f9;
+    }
+</style>
+</head>
+<body>
+	<h1>Write a Review</h1>
+    <form id="reviewForm" action="/review_write" method="post" enctype="multipart/form-data">
+    <label for="title">리뷰 제목:</label>
+    <input type="text" id="title" name="title" placeholder="리뷰 제목"><br><br>
+    
+    <label for="category">리뷰 카테고리:</label>
+    <select id="category" name="category">
+        <option value="타일">타일</option>
+        <option value="벽지">벽지</option>
+    </select><br><br>
+    
+    <label for="content">리뷰 내용:</label>
+    <textarea id="content" name="content" placeholder="리뷰 내용"></textarea><br><br>
+    
+    <label for="starRating">별점:</label>
+    <select id="starRating" name="starRating">
+        <option value="1">1</option>
+        <option value="1.5">1.5</option>
+        <option value="2">2</option>
+        <option value="2.5">2.5</option>
+        <option value="3">3</option>
+        <option value="3.5">3.5</option>
+        <option value="4">4</option>
+        <option value="4.5">4.5</option>
+        <option value="5">5</option>
+    </select><br><br>
+    <label for="mainphoto">썸네일 사진 얿로드 :</label>
+    <input type="file" id="mainPhotoUp" name="mainPhoto" accept=".jpg, .png, .jpeg">
+    
+    <label for="files">사진 업로드:</label>
+    <input type="file" id="fileInput" name="files" accept=".jpg,.png,.jpeg" multiple><br><br>
+	
+    <!--사진 리스트-->
+    <label>맨 아래부터 1,2,3</label>
+    <ul id="fileList"></ul>
+    
+    <button type="submit">리뷰 작성 완료</button>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+
+        fileInput.addEventListener('change', (event) => {
+            fileList.innerHTML = '';
+            Array.from(event.target.files).forEach((file, index) => {
+                const listItem = document.createElement('li');
+                listItem.textContent = file.name;
+                listItem.setAttribute('data-index', index);
+                fileList.appendChild(listItem);
+            });
+        });
+
+        new Sortable(fileList, {
+            animation: 150,
+            onEnd: () => {
+                const newFileList = [];
+                fileList.querySelectorAll('li').forEach((listItem) => {
+                    const index = listItem.getAttribute('data-index');
+                    newFileList.push(fileInput.files[index]);
+                });
+                const dataTransfer = new DataTransfer();
+                newFileList.forEach((file) => dataTransfer.items.add(file));
+                fileInput.files = dataTransfer.files;
+            }
+        });
+		//입력을 하지 않았을때 의 경고 메세지를 출력하는 js
+		reviewForm.addEventListener('submit', (event) => {
+		            const title = document.getElementById('title').value.trim();
+		            const category = document.getElementById('category').value.trim();
+		            const content = document.getElementById('content').value.trim();
+		            const starRating = document.getElementById('starRating').value.trim();
+		            const mainPhotoUp = document.getElementById('mainPhotoUp').files.length;
+		            
+		            if (!title) {
+		                alert('리뷰 제목을 입력해주세요.');
+		                event.preventDefault();
+		                return;
+		            }
+
+		            if (!category) {
+		                alert('리뷰 카테고리를 선택해주세요.');
+		                event.preventDefault();
+		                return;
+		            }
+
+		            if (!content) {
+		                alert('리뷰 내용을 입력해주세요.');
+		                event.preventDefault();
+		                return;
+		            }
+
+		            if (!starRating) {
+		                alert('별점을 선택해주세요.');
+		                event.preventDefault();
+		                return;
+		            }
+
+		            if (mainPhotoUp === 0) {
+		                alert('썸네일 사진을 업로드해주세요.');
+		                event.preventDefault();
+		                return;
+		            }
+		        });
+    </script>
+</body>
+</html>

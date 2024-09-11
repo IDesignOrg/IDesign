@@ -40,3 +40,14 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+# for client
+**/node_modules
+**/dist
+**/gltf
+
+### 민감한정보 ###
+application-private.properties
+###GCS키###
+persuasive-feat-426613-s5-a789fe6d3bc5.json
+**/persuasive-feat-426613-s5-a789fe6d3bc5
