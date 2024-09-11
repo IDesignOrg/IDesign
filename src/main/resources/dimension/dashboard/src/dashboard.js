@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import { interectionObserver } from "../../utils/observer";
 import { dummy } from "./dummy";
@@ -103,29 +102,29 @@ const getDummyData = () => {
 };
 
 const getProjects = async () => {
-	if (!hasMoreProjects || isLaoding) return;
-	isLaoding = true;
+  console.log("zzzz");
+  if (!hasMoreProjects || isLaoding) return;
+  isLaoding = true;
 
   const filter = searchInput.value;
   const sort = selectedSort.id;
 
   //wook
   //밑에 주소 바꿔주셈
-  let flag = 0
-  console.log('secx');
+  let flag = 0;
   const data = await axios.get("/get/projects", {
     params: { filter, sort, flag },
   });
+  // console.log(data);
+  // /*
+  // const data = await getDummyData();
+  const receivedProjects = data.data.projects;
+  projects.push(...receivedProjects);
+  receivedProjects.forEach((project) => {
+    const projectBox = ProjectBox(project);
+    container.insertBefore(projectBox, observer);
+  });
   /*
-	const data = await getDummyData();
-	const receivedProjects = data.data.projects;
-	projects.push(...receivedProjects);
-	receivedProjects.forEach((project) => {
-		const projectBox = ProjectBox(project);
-		container.insertBefore(projectBox, observer);
-
-	});
-	/*
     
 	//data
 	{
@@ -256,14 +255,6 @@ const onSubmitProject = () => {
   const obj = { title, src };
   localStorage.setItem("pdes", JSON.stringify(obj));
   window.location.href = `${window.location.origin}/three/design`;
-  //   history.push("/three.html");
-  //   history.pushState(
-  //     JSON.stringify(obj),
-  //     `${window.location.origin}`,
-  //     `/three/design`
-  //   );
-  //woook
-  //   axios.post("http://localhost:8080/");
 };
 interectionObserver(observer, getProjects);
 
@@ -288,4 +279,3 @@ function debounce(func, delay) {
     }, delay);
   };
 }
-

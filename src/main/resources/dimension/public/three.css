@@ -21,20 +21,17 @@ aside {
   z-index: 1;
   width: 200px;
   height: 100vh;
-  background-color: red;
 }
 
 #container {
   display: flex;
   height: 100%;
   width: 240px;
-  background-color: yellowgreen;
   flex-direction: column;
 }
 
 #container > header {
   width: 100%;
-  background-color: red;
   padding: 15px;
   display: flex;
   align-items: center;
@@ -61,6 +58,15 @@ aside {
 #modeToggles {
   height: 100px;
   background-color: red;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+#modeToggles > button {
+  width: 60px;
+  height: 40px;
 }
 
 /* #container {

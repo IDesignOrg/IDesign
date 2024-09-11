@@ -18,9 +18,6 @@ module.exports = {
     path: path.resolve("./dist"),
     filename: "[name].min.js",
   },
-  // es5로 빌드 해야 할 경우 주석 제거
-  // 단, 이거 설정하면 webpack-dev-server 3번대 버전에서 live reloading 동작 안함
-  // target: ['web', 'es5'],
   devServer: {
     port: 3000,
     static: [
@@ -31,7 +28,7 @@ module.exports = {
       },
       // {
       //   directory: path.join(__dirname, "three"),
-      //   publicPath: "/",
+      //   publicPath: "/dimension/three/src/three.js",
       // },
       // {
       //   directory: path.join(__dirname, "dashboard"),
@@ -84,7 +81,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./dimension/three/three.html", // 상대 경로로 수정
       filename: "three.html",
-      chunks: ["three", "reset"],
+      chunks: ["three"],
       minify:
         process.env.NODE_ENV === "production"
           ? {
@@ -96,7 +93,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./dimension/dashboard/dashboard.html", // 상대 경로로 수정
       filename: "dashboard.html",
-      chunks: ["dashboard", "public"],
+      chunks: ["dashboard"],
       minify:
         process.env.NODE_ENV === "production"
           ? {
