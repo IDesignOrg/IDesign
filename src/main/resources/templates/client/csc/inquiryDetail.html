@@ -3,147 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inquiry Detail</title>
+    <title>Notice Detail</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- jQuery 포함 -->
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <style>
         body {
             padding-top: 50px;
-            background-color: #f0f2f5;
-            font-family: 'Arial', sans-serif;
         }
-        .container {
-            max-width: 900px;
+        .not-detail {
+            max-width: 800px;
             margin: auto;
-        }
-        .inq-detail {
-            padding: 30px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background-color: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-        .inq-title, .inq-no {
-            color: #343a40;
-            font-weight: 700;
-        }
-        .inq-title {
-            margin-bottom: 10px;
-        }
-        .inq-no {
-            margin-bottom: 20px;
-        }
-        .inq-content {
-            white-space: pre-wrap; /* Preserve whitespace and line breaks */
-            margin-bottom: 20px;
-            font-size: 1.1em;
-            line-height: 1.6;
-        }
-        .inq-detail p {
-            margin-bottom: 10px;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-            transition: background-color 0.3s, border-color 0.3s;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #004085;
-        }
-        .answerContainer {
-            margin-top: 20px;
             padding: 20px;
             border: 1px solid #ddd;
             border-radius: 8px;
-            background-color: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
         }
-        #answerContent {
-            width: 100%;
-            border-radius: 4px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            margin-bottom: 10px;
+        .not-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
         }
-        #answered p {
-            background-color: #e9ecef;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 10px;
+        .not-author-date {
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .not-author-date .separator {
+            height: 14px;
+            width: 1px;
+            background-color: #ddd;
+            margin: 0 10px;
+        }
+        .not-content {
+            white-space: pre-wrap; /* Preserve whitespace and line breaks */
+            margin-bottom: 20px;
+        }
+        .divider {
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .container {
+            margin-top: 140px;
         }
     </style>
+    <link rel="stylesheet" href="/css/header.css" />
+    <link rel="stylesheet" href="/css/reset.css" />
 </head>
 <body>
+    <th:block th:include="~{fragments/header.html::header}"></th:block>
     <div class="container">
-        <div class="inq-detail">
-            <h2 class="inq-title" th:text="${inq.inqTitle}">FAQ Title</h2>
-            <h4 class="inq-no" th:text="${inq.inqNo}">글 번호</h4>
-            <p class="inq-content" th:text="${inq.inqContent}">FAQ Content</p>
-            <p><strong>카테고리:</strong> <span th:text="${inq.inqCategory}">Category</span></p>
-            <p><strong>글쓴이:</strong> <span th:text="${inq.userEntity.UName}">Author</span></p>
-            <a th:href="@{/board/inquiry}" class="btn btn-primary">목록으로</a>
+        <div class="not-detail">
+            <h2 class="not-title" th:text="${inquiry.inqTitle}">FAQ Title</h2>
+            <div class="not-author-date">
+                <span th:text="${inquiry.user.UName}">Author</span>
+                <div class="separator"></div>
+                <span th:text="${inquiry.inqRegisteredDate}">2023-09-09</span>
+            </div>
+            <div class="divider"></div>
+            <p class="not-content" th:text="${inquiry.inqContent}">FAQ Content</p>
+			
+            <a th:if="${inquiry.answer == null}">th:href="@{/board/notices}" class="btn btn-primary">목록으로</a>
         </div>
-        
-        <div th:if="${inq.userEntity.UId} == 'admin'" class="answerContainer">
-            <textarea cols="50" rows="10" id="answerContent"></textarea>
-            <button type="button" class="btn btn-primary" id="answerBtn">답변하기</button>
-        </div>
-        <div id="answered"></div>
     </div>
 
+	<div class="container" th:if="${inquiry.answer != null}">
+	        <div class="not-detail">
+	            <h2 class="not-title">답변</h2>
+	            <div class="not-author-date">
+	                <span th:text="${inquiry.answer.user.UName}">Author</span>
+	                <div class="separator"></div>
+	                <span th:text="${inquiry.answer.ansRegisteredDate}">2023-09-09</span>
+	            </div>
+	            <div class="divider"></div>
+	            <p class="not-content" th:text="${inquiry.answer.ansContent}">FAQ Content</p>
+	            <a th:href="@{/board/notices}" class="btn btn-primary">목록으로</a>
+	        </div>
+	    </div>
+
     <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // 페이지 로드 시 초기 답변들을 가져와서 표시
-            var inqNo = $('.inq-no').text();
-            loadAnswers(inqNo);
-
-            $('#answerBtn').click(function() {
-                var answerText = $('#answerContent').val();
-
-                $.ajax({
-                    url: '/board/answer/' + inqNo,
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({
-                        answerContent: answerText
-                    }),
-                    success: function(response) {
-                        // 답변 등록 후, 업데이트된 답변들을 다시 로드하여 화면에 표시
-                        loadAnswers(inqNo);
-                        alert('답변이 성공적으로 등록되었습니다.');
-                    },
-                    error: function(xhr, status, error) {
-                        alert('답변 등록 중 오류가 발생하였습니다.');
-                        console.error(xhr.responseText);
-                    }
-                });
-            });
-
-            function loadAnswers(inqNo) {
-                $.ajax({
-                    url: '/board/answer/' + inqNo,
-                    type: 'GET',
-                    success: function(response) {
-                        var html = '';
-                        $.each(response, function(index, answer) {
-                            html += '<p>답변 내용 ' + (index + 1) + ': ' + answer.answerContent + '</p>';
-                        });
-                        $('#answered').html(html);
-                    },
-                    error: function(xhr, status, error) {
-                        alert('답변 조회 중 오류가 발생하였습니다.');
-                        console.error(xhr.responseText);
-                    }
-                });
-            }
-        });
-    </script>
 </body>
 </html>

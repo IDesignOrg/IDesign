@@ -141,6 +141,7 @@ export const calculateDistance = (p1, p2) => {
 
 const getPerpendicularVector = (dx, dz) => {
   const distance = 25;
+  console.log();
   // 변의 방향 벡터 (dx, dz)에 수직인 벡터
   // x축 우세 시, z축 방향으로 이동
   // z축 우세 시, x축 방향으로 이동

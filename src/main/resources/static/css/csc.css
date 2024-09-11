@@ -1,0 +1,120 @@
+/* 공통된 CSS 파일 (common.css) */
+
+/* 전체 컨테이너 */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 기본 텍스트 스타일 */
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    margin-top: 140px;
+    padding: 0;
+}
+
+/* 링크 스타일 */
+a {
+    text-decoration: none;
+    color: #6633ff;
+    font-weight: bold;
+}
+
+a:hover {
+    color: #5555ff;
+}
+
+/* 검색 폼 스타일 */
+form {
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    padding: 10px;
+    width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+button[type="submit"] {
+    padding: 10px 20px;
+    background-color: #6633ff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #5555ff;
+}
+
+/* 카테고리 및 메뉴 링크 스타일 */
+.customContent a {
+    display: inline-block;
+    margin-right: 20px;
+    font-weight: 700;
+    color: #272727;
+    transition: color 0.3s ease;
+}
+
+.customContent a:hover {
+    color: #6633ff;
+}
+
+/* 테이블 스타일 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+table th,
+table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+/* 페이지네이션 스타일 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    padding-left: 0;
+    list-style: none;
+    margin-top: 20px;
+}
+
+.pagination li {
+    margin: 0 5px;
+}
+
+.pagination li a {
+    padding: 8px 12px;
+    color: #6633ff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.pagination li.active a {
+    background-color: #6633ff;
+    color: #fff;
+    border-color: #6633ff;
+}
+
+.pagination li.disabled a {
+    color: #ccc;
+    pointer-events: none;
+}

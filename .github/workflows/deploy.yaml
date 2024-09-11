@@ -1,0 +1,97 @@
+#/.github/workflows/deploy.yaml
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: Write environment files
+        run: |
+          echo "${{ secrets.APPLICATIONPRIVATE }}" > src/main/resources/application-private.properties
+        shell: bash
+
+      - name: create-json
+        id: create-json
+        uses: jsdaniell/create-json@v1.2.2
+        with:
+          name: "persuasive-feat-426613-s5-a789fe6d3bc5.json"
+          json: ${{ secrets.PERSUASIVE }}
+          dir: "src/main/resources/"
+
+      - name: Build with Gradle
+        run: ./gradlew clean build
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker images
+        run: |
+          docker build -t yoonjaehwan/idesign:latest .
+          docker push yoonjaehwan/idesign:latest
+
+      - name: SSH Commands
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script_stop: true
+          script: |
+            set -x  # Debug mode enabled
+            echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+                        
+            cd IDesign
+            # git pull origin feature-lhj
+            EXIST_BLUE=$(docker ps --filter "name=idesign_blue" --filter "status=running" -q)
+            EXIST_GREEN=$(docker ps --filter "name=idesign_green" --filter "status=running" -q)
+            echo "EXIST_BLUE zz: $EXIST_BLUE"
+
+            if [ -z "$EXIST_BLUE" ] && [ -z "$EXIST_GREEN" ]; then
+              docker-compose -f docker-compose.yml up -d
+              sudo cp ./nginx/nginx.blue.conf /etc/nginx/nginx.conf
+              sudo nginx -s reload
+
+            elif [ -n "$EXIST_BLUE" ]; then
+              sudo docker-compose -f ./dockercompose/docker-compose.green.yml pull
+              sudo docker-compose -f ./dockercompose/docker-compose.green.yml up -d
+
+              sudo cp ./nginx/nginx.green.conf /etc/nginx/nginx.conf
+
+              sudo docker stop idesign_blue
+              sudo docker remove idesign_blue
+              sudo nginx -s reload
+
+            elif [ -n "$EXIST_GREEN" ]; then
+              echo "green exits zzzzz"
+              sudo docker-compose -f ./dockercompose/docker-compose.blue.yml pull
+              sudo docker-compose -f ./dockercompose/docker-compose.blue.yml up -d
+
+              sudo cp ./nginx/nginx.blue.conf /etc/nginx/nginx.conf
+
+              sudo docker stop idesign_green
+              sudo docker remove idesign_green
+              sudo nginx -s reload
+            fi

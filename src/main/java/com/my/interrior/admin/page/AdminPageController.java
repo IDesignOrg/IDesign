@@ -31,6 +31,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.my.interrior.admin.coupon.CouponMapRepository;
 import com.my.interrior.admin.coupon.CouponService;
 import com.my.interrior.client.csc.faq.FaqEntity;
+import com.my.interrior.client.csc.inquiry.InquiryAnswerDTO;
+import com.my.interrior.client.csc.inquiry.InquiryAnswerEntity;
+import com.my.interrior.client.csc.inquiry.InquiryDTO;
+import com.my.interrior.client.csc.inquiry.InquiryEntity;
+import com.my.interrior.client.csc.inquiry.InquiryListDTO;
 import com.my.interrior.client.csc.notice.NoticeEntity;
 import com.my.interrior.client.csc.recover.RecoveryEntity;
 import com.my.interrior.client.evaluation.ReviewCommentDTO;
@@ -53,6 +58,7 @@ import com.my.interrior.client.shop.ShopEntity;
 import com.my.interrior.client.shop.ShopReviewEntity;
 import com.my.interrior.client.shop.ShopReviewRepository;
 import com.my.interrior.client.shop.ShopService;
+import com.my.interrior.client.user.FindUserDTO;
 import com.my.interrior.client.user.UserDTO;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserService;
@@ -633,5 +639,72 @@ public class AdminPageController {
 			return ResponseEntity.badRequest().body("FAQ 삭제에 실패했습니다.");
 		}
 	}
+	//문의사항
+	@GetMapping("/admin/inquiry")
+    public String getInquiryList(Model model, Pageable pageable) {
+        // 서비스에서 모든 문의를 조회하여 DTO로 변환
+        Page<InquiryListDTO> inquiries = adminPageService.getAllInquiries(pageable);
+        
+        // 모델에 데이터 추가
+        model.addAttribute("inquirys", inquiries.getContent());  // 페이지 내용만 전달
+        model.addAttribute("currentPage", pageable.getPageNumber());
+        model.addAttribute("totalPages", inquiries.getTotalPages());
+
+        return "/admin/page/adminInquiry";  // Thymeleaf 템플릿 경로
+    }
+	
+	//문의사항 모달창(답변보기)
+	@GetMapping("/getInquiryDetails")
+	@ResponseBody
+	public InquiryDTO getInquiryDetails(@RequestParam("inqNo") Long inqNo) {
+		InquiryEntity inquiryEntity = adminPageService.getInquiryById(inqNo);
+		//문의테이블에서 값을 dto에 입력
+		InquiryDTO inquiryDTO = new InquiryDTO();
+		inquiryDTO.setInqNo(inquiryEntity.getInqNo());
+		inquiryDTO.setInqTitle(inquiryEntity.getInqTitle());
+		inquiryDTO.setInqRegisteredDate(inquiryEntity.getInqRegisteredDate());
+		inquiryDTO.setInqCategory(inquiryEntity.getInqCategory());
+		inquiryDTO.setInqContent(inquiryEntity.getInqContent());
+		//findUserDTO에 원하는 값을 넣고 inquiryDTO의 User에 값을 넣음
+		FindUserDTO findUserDTO = new FindUserDTO();
+		findUserDTO.setUName(inquiryEntity.getUserEntity().getUName());
+		findUserDTO.setUNo(inquiryEntity.getUserEntity().getUNo());
+		findUserDTO.setUPofile(inquiryEntity.getUserEntity().getUPofile());
+		inquiryDTO.setUser(findUserDTO);
+		System.out.println("InquiryDTO: " + inquiryDTO);
+		//답변하기
+		InquiryAnswerEntity answerEntity = adminPageService.getInquiryAnswerById(inqNo);
+        if (answerEntity != null) {
+            InquiryAnswerDTO answerDTO = new InquiryAnswerDTO();
+            answerDTO.setAnsNo(answerEntity.getAnsNo());
+            answerDTO.setAnsContent(answerEntity.getAnsContent());
+            answerDTO.setAnsRegisteredDate(answerEntity.getAnsRegisteredDate());
+
+            // UserEntity -> UserDTO for the answer
+            FindUserDTO answerUserDTO = new FindUserDTO();
+            answerUserDTO.setUName(answerEntity.getUserEntity().getUName());
+            answerUserDTO.setUPofile(answerEntity.getUserEntity().getUPofile());
+            answerUserDTO.setUNo(answerEntity.getUserEntity().getUNo());
+            answerDTO.setUser(answerUserDTO);
+
+            inquiryDTO.setAnswer(answerDTO); // 단일 답변 설정
+        }else {
+            inquiryDTO.setAnswer(null); // 답변이 없으면 null 설정
+        }
+
+        return inquiryDTO;
+	}
+	// 문의 상세 정보 조회 (답변 작성 페이지 로드용)
+	//문의사항 모달창(답변보내기)
+	@PostMapping("/submitAnswer")
+    @ResponseBody
+    public ResponseEntity<String> submitAnswer(@RequestParam("inqNo") Long inqNo, @RequestParam("answerContent") String answerContent) {
+        try {
+            adminPageService.saveInquiryAnswer(inqNo, answerContent);
+            return ResponseEntity.ok("답변이 성공적으로 저장되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("답변 저장에 실패했습니다.");
+        }
+    }
 
 }

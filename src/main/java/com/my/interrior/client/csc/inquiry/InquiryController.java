@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.my.interrior.admin.page.AdminPageService;
+import com.my.interrior.client.user.FindUserDTO;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
 
@@ -27,6 +29,7 @@ public class InquiryController {
 	private final UserRepository userRepository;
 	private final InquiryRepository inquiryRepository;
 	private final InquiryService inquiryService;
+	private final AdminPageService adminPageService;
 	
 	@GetMapping("/board/inquiry/write")
 	public String inquiryWrite(HttpSession session, Model model) {
@@ -41,11 +44,10 @@ public class InquiryController {
 		
 			inquiryEntity.setInqRegisteredDate(LocalDate.now());
 			inquiryEntity.setUserEntity(user);
-			inquiryEntity.setInqAuthor(inquiryEntity.getUserEntity().getUName());
 			
 			inquiryRepository.save(inquiryEntity);
 			//임시
-			return "admin/csc/inquiryWrite";
+			return "redirect:/board/inquiry";
 
 		
 	}
@@ -68,9 +70,41 @@ public class InquiryController {
 
 	@GetMapping("/board/inquiry/{no}")
 	public String getInquiryDetail(@PathVariable("no") Long inqNo, Model model) {
-		
-		InquiryEntity inq = inquiryService.getDetailByinqNo(inqNo);
-		model.addAttribute("inq", inq);
+		InquiryEntity inquiryEntity = adminPageService.getInquiryById(inqNo);
+		//문의테이블에서 값을 dto에 입력
+		InquiryDTO inquiryDTO = new InquiryDTO();
+		inquiryDTO.setInqNo(inquiryEntity.getInqNo());
+		inquiryDTO.setInqTitle(inquiryEntity.getInqTitle());
+		inquiryDTO.setInqRegisteredDate(inquiryEntity.getInqRegisteredDate());
+		inquiryDTO.setInqCategory(inquiryEntity.getInqCategory());
+		inquiryDTO.setInqContent(inquiryEntity.getInqContent());
+		//findUserDTO에 원하는 값을 넣고 inquiryDTO의 User에 값을 넣음
+		FindUserDTO findUserDTO = new FindUserDTO();
+		findUserDTO.setUName(inquiryEntity.getUserEntity().getUName());
+		findUserDTO.setUNo(inquiryEntity.getUserEntity().getUNo());
+		findUserDTO.setUPofile(inquiryEntity.getUserEntity().getUPofile());
+		inquiryDTO.setUser(findUserDTO);
+		System.out.println("InquiryDTO: " + inquiryDTO);
+		//답변하기
+		InquiryAnswerEntity answerEntity = adminPageService.getInquiryAnswerById(inqNo);
+        if (answerEntity != null) {
+            InquiryAnswerDTO answerDTO = new InquiryAnswerDTO();
+            answerDTO.setAnsNo(answerEntity.getAnsNo());
+            answerDTO.setAnsContent(answerEntity.getAnsContent());
+            answerDTO.setAnsRegisteredDate(answerEntity.getAnsRegisteredDate());
+
+            // UserEntity -> UserDTO for the answer
+            FindUserDTO answerUserDTO = new FindUserDTO();
+            answerUserDTO.setUName(answerEntity.getUserEntity().getUName());
+            answerUserDTO.setUPofile(answerEntity.getUserEntity().getUPofile());
+            answerUserDTO.setUNo(answerEntity.getUserEntity().getUNo());
+            answerDTO.setUser(answerUserDTO);
+
+            inquiryDTO.setAnswer(answerDTO); // 단일 답변 설정
+        }else {
+            inquiryDTO.setAnswer(null); // 답변이 없으면 null 설정
+        }
+        model.addAttribute("inquiry", inquiryDTO);
 		
 		return "client/csc/inquiryDetail";
 	}
