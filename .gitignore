@@ -49,3 +49,6 @@ bin/
 application-private.properties
 application-prod.properties
 application-dev.properties
+
+#GCS
+secure-sorter-435306-m4-17e800641c2d.json
