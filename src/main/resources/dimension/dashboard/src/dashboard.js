@@ -1,7 +1,7 @@
-
 import axios from "axios";
 import { interectionObserver } from "../../utils/observer";
 import { dummy } from "./dummy";
+import { projectNode } from "./projectNode.js";
 
 const side = document.getElementById("side");
 const sidebarArrow = document.getElementById("arrow-box");
@@ -10,6 +10,7 @@ const sortBox = document.getElementById("selected");
 const selectedSort = sortBox.getElementsByTagName("span")[0];
 const options = document.getElementById("select-options");
 const container = document.getElementById("container");
+const gridWrapper = document.getElementById("grid-wrapper");
 const trashBtn = document.getElementById("trash");
 const createProjectBtn = document.getElementById("create-project");
 const observer = document.getElementById("observer");
@@ -23,129 +24,64 @@ let isLaoding = false;
 let hasMoreProjects = true;
 let isTrashBtnClick = false;
 
-const projects = [];
-const remove_projects = {};
+let projects = {};
+let remove_projects = {};
 
 const removeAllProject = () => {
-  const projects = Array.from(container.getElementsByClassName("project"));
+  const projects = Array.from(gridWrapper.getElementsByClassName("project"));
   projects.forEach((box) => {
     if (box.classList.contains("received")) {
-      container.removeChild(box);
+      gridWrapper.removeChild(box);
     }
   });
-};
-
-const ProjectBox = (project) => {
-  const box = document.createElement("div");
-  const a = document.createElement("a");
-  // wook 눌렀을 때 이동
-  //wrapper
-  a.href = `http://localhost:8080/three/${project.project_id}`;
-  a.id = project.project_id;
-  a.className = "project-wrapper";
-  box.style.position = "relative";
-  box.appendChild(a);
-  box.className = "project received";
-
-  //img wrapper
-  const renovate_img = document.createElement("div");
-  renovate_img.className = "renovate-img";
-  const backgroundImage = document.createElement("img");
-  backgroundImage.src = project.img;
-  renovate_img.append(backgroundImage);
-  a.appendChild(renovate_img);
-
-  // 프로젝트 설명란
-  const project_src = document.createElement("div");
-  project_src.className = "project-src";
-
-  const projectName = document.createElement("div");
-  projectName.innerText = project.project_name;
-  project_src.appendChild(projectName);
-
-  const mod_dt = document.createElement("div");
-  mod_dt.innerText = new Date(project.reg_dt);
-  project_src.appendChild(mod_dt);
-
-  //삭제하기 눌렀을 때 나타남
-  const delete_div = document.createElement("button");
-  delete_div.className = "delete_bg";
-  delete_div.name = project.project_id;
-
-  const delete_background = document.createElement("div");
-  delete_background.className = "delete_background";
-  delete_div.appendChild(delete_background);
-
-  const selectInput = document.createElement("input");
-  selectInput.checked = false;
-  selectInput.type = "checkbox";
-  selectInput.className = "select_input";
-  selectInput.id = `${project.project_id}_checkBox`;
-  delete_div.appendChild(selectInput);
-
-  const label = document.createElement("label");
-  label.htmlFor = `${project.project_id}_checkBox`;
-  label.className = "radio-label";
-  delete_div.appendChild(label);
-
-  a.appendChild(project_src);
-  box.appendChild(delete_div);
-
-  return box;
 };
 
 const getDummyData = () => {
   return new Promise((res) => {
     setTimeout(() => {
       res(dummy);
-    }, 1000);
+    }, 1);
   });
 };
 
 const getProjects = async () => {
-	if (!hasMoreProjects || isLaoding) return;
-	isLaoding = true;
+  if (!hasMoreProjects || isLaoding) return;
+  isLaoding = true;
 
   const filter = searchInput.value;
   const sort = selectedSort.id;
-
-  //wook
-  //밑에 주소 바꿔주셈
-  let flag = 0
-  console.log('secx');
-  const data = await axios.get("/get/projects", {
-    params: { filter, sort, flag },
+  let data;
+  try {
+    data = await axios.get("/get/projects", {
+      params: { filter, sort },
+    });
+  } catch (err) {
+    console.log("error occured!", err);
+    data = await getDummyData();
+  }
+  if (data.status === "fail") {
+    console.log("error occured!", err);
+    return;
+  }
+  isLaoding = false;
+  if (data.data.flagNum === -1) {
+    observer.style.display = "none";
+  }
+  const receivedProjects = data.data.projects;
+  const newProjects = {};
+  receivedProjects.forEach((obj) => {
+    newProjects[obj.project_id] = obj;
   });
-  /*
-	const data = await getDummyData();
-	const receivedProjects = data.data.projects;
-	projects.push(...receivedProjects);
-	receivedProjects.forEach((project) => {
-		const projectBox = ProjectBox(project);
-		container.insertBefore(projectBox, observer);
 
-	});
-	/*
-    
-	//data
-	{
-	  status:'ssecess' or fail,
-	  response:200 errocode,
-	  data:{
-		  projects:[],
-		  flag_num:0 => 0~11, 1 => 12 ~ 23
-	  }
-   }
-	  const data = await getDummyData();
-	  const receivedProjects = data.data.projects;
-	  projects.push(...receivedProjects);
-	  receivedProjects.forEach((project) => {
-		  const projectBox = ProjectBox(project);
-		  container.insertBefore(projectBox, observer);
-	  });
-	  hasMoreProjects = data.data.hasMoreProjects;
-	  isLaoding = false;
-	  */
+  projects = {
+    ...projects,
+    ...newProjects,
+  };
+  receivedProjects.forEach((project) => {
+    //새 프로젝트 html에 추가
+    const node = projectNode(project);
+    gridWrapper.appendChild(node);
+  });
 };
 
 const onFilterChange = () => {
@@ -200,24 +136,53 @@ const onChangeSideBar = () => {
 };
 
 const reqRemoveProjects = async () => {
+  // console.log(remove_projects);
+  // return;
   // wook
   // 프로젝트 삭제
   // ex) localhost:3000/remove_projects?project_ids=[1,2,3,4]
-  const data = await axios.post("", {
-    project_ids: Object.keys(remove_projects),
-  });
+  try {
+    const data = await axios.post("", {
+      project_ids: Object.keys(remove_projects),
+    });
+
+    if (data.status === "fail") {
+      alert("오류가 발생했습니다. 다시 시도해주세요.");
+      return;
+    }
+  } catch (err) {
+    Object.keys(remove_projects).forEach((project_id) => {
+      delete projects[project_id];
+      // console.log(gridWrapper,);
+      document.getElementById(project_id).remove();
+      // gridWrapper.removeChild(document.getElementById(project_id));
+    });
+
+    remove_projects = {};
+    removeBackgroundChanger("none");
+    alert("오류가 발생했습니다. 다시 시도해주세요.");
+  }
+
   //
+};
+
+const removeBackgroundChanger = (style) => {
+  const nodes = Array.from(document.getElementsByClassName("delete_bg"));
+  nodes.forEach((node) => (node.style.display = style));
 };
 
 const onTrashClick = () => {
   isTrashBtnClick = !isTrashBtnClick;
-  const nodes = Array.from(document.getElementsByClassName("delete_bg"));
   if (isTrashBtnClick) {
-    nodes.forEach((node) => (node.style.display = "block"));
+    removeBackgroundChanger("block");
   } else {
     reqRemoveProjects();
-    nodes.forEach((node) => (node.style.display = "none"));
   }
+  // if (isTrashBtnClick) {
+  //   nodes.forEach((node) => (node.style.display = "block"));
+  // } else {
+  //   reqRemoveProjects();
+  // }
 };
 
 const onProjectClick = (e) => {
@@ -256,14 +221,6 @@ const onSubmitProject = () => {
   const obj = { title, src };
   localStorage.setItem("pdes", JSON.stringify(obj));
   window.location.href = `${window.location.origin}/three/design`;
-  //   history.push("/three.html");
-  //   history.pushState(
-  //     JSON.stringify(obj),
-  //     `${window.location.origin}`,
-  //     `/three/design`
-  //   );
-  //woook
-  //   axios.post("http://localhost:8080/");
 };
 interectionObserver(observer, getProjects);
 
@@ -288,4 +245,3 @@ function debounce(func, delay) {
     }, delay);
   };
 }
-
