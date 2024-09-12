@@ -29,6 +29,7 @@ public class GetProjectsResponse {
 	@Setter
 	@ToString
 	public static class GetProjectsData {
+		private String projectId;
 		private String thumbnail;
 		private String title;
 		private String src;
