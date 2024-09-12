@@ -105,6 +105,7 @@ public class ThreeRestController {
 	// ThreeEntity를 GetProjectsResponse.GetProjectsData로 매핑하는 메서드
 	private GetProjectsResponse.GetProjectsData mapToProjectData(ThreeEntity entity) {
 	    GetProjectsResponse.GetProjectsData data = new GetProjectsResponse.GetProjectsData();
+	    data.setProjectId(entity.getProjectId());
 	    data.setThumbnail(entity.getThumbnail());
 	    data.setTitle(entity.getTitle());
 	    data.setSrc(entity.getSrc());

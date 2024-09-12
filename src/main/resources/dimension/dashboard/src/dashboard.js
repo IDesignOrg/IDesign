@@ -9,6 +9,7 @@ const sortBox = document.getElementById("selected");
 const selectedSort = sortBox.getElementsByTagName("span")[0];
 const options = document.getElementById("select-options");
 const container = document.getElementById("container");
+const gridWrapper = document.getElementById("grid-wrapper");
 const trashBtn = document.getElementById("trash");
 const createProjectBtn = document.getElementById("create-project");
 const observer = document.getElementById("observer");
@@ -26,10 +27,10 @@ const projects = [];
 const remove_projects = {};
 
 const removeAllProject = () => {
-  const projects = Array.from(container.getElementsByClassName("project"));
+  const projects = Array.from(gridWrapper.getElementsByClassName("project"));
   projects.forEach((box) => {
     if (box.classList.contains("received")) {
-      container.removeChild(box);
+      gridWrapper.removeChild(box);
     }
   });
 };
@@ -38,7 +39,7 @@ const ProjectBox = (project) => {
   const box = document.createElement("div");
   const a = document.createElement("a");
 
-  const { project_id, thumnail, title, regDt, src } = project;
+  const { project_id, thumbnail, title, regDt, src } = project;
   // wook 눌렀을 때 이동
   //wrapper
   a.href = `http://localhost:8080/three/${project_id}`;
@@ -52,7 +53,8 @@ const ProjectBox = (project) => {
   const renovate_img = document.createElement("div");
   renovate_img.className = "renovate-img";
   const backgroundImage = document.createElement("img");
-  backgroundImage.src = thumnail;
+  backgroundImage.loading = "lazy";
+  backgroundImage.src = thumbnail;
   renovate_img.append(backgroundImage);
   a.appendChild(renovate_img);
 
@@ -112,7 +114,7 @@ const getDummyData = () => {
   return new Promise((res) => {
     setTimeout(() => {
       res(dummy);
-    }, 1000);
+    }, 2000);
   });
 };
 
@@ -123,49 +125,27 @@ const getProjects = async () => {
   const filter = searchInput.value;
   const sort = selectedSort.id;
 
-  //wook
-  //밑에 주소 바꿔주셈
   let flag = 0;
   let data;
   try {
     data = await axios.get("/get/projects", {
       params: { filter, sort, flag },
     });
-    // const receivedProjects = data.data.projects;
-    // projects.push(...receivedProjects);
-    // receivedProjects.forEach((project) => {
-    //   const projectBox = ProjectBox(project);
-    //   container.insertBefore(projectBox, observer);
-    // });
   } catch (err) {
     console.log("error occured!", err);
     data = await getDummyData();
   }
-  // console.log(data);
+  if (data.status === "fail") {
+    console.log("실패했음");
+    return;
+  }
   const receivedProjects = data.data.projects;
   projects.push(...receivedProjects);
   receivedProjects.forEach((project) => {
     const projectBox = ProjectBox(project);
-    container.insertBefore(projectBox, observer);
+    gridWrapper.appendChild(projectBox, observer);
   });
   isLaoding = false;
-
-  // /*
-  /*
-    
-	//data
-	{
-	  status:'ssecess' or fail,
-	  response:200 errocode,
-	  data:{
-		  projects:[],
-		  flag_num:0 => 0~11, 1 => 12 ~ 23
-	  }
-   }
-	  const 
-	 
-	  hasMoreProjects = data.data.hasMoreProjects;
-	  */
 };
 
 const onFilterChange = () => {

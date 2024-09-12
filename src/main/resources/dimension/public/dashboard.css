@@ -218,18 +218,24 @@ header img {
   flex: 1;
   width: 100%;
   padding: 20px;
-  /* max-width: 1450px; */
+  overflow-y: auto;
   position: relative;
-  overflow-y: scroll;
+}
+
+#grid-wrapper {
+  width: 100%;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: 402px;
   gap: 10px;
+  background-color: red;
 }
 
 .project {
-  height: auto;
+  /* height: auto; */
+  height: 402px;
   user-select: none;
+  overflow: hidden;
   cursor: pointer;
   border: 1px solid rgb(233, 233, 233);
   border-radius: 16px;
@@ -281,6 +287,7 @@ header img {
 
 .project-src {
   flex: 1;
+  width: 100%;
   height: 100px;
   overflow: hidden;
   border-radius: 0 0 16px 16px;
@@ -498,6 +505,51 @@ header img {
   border-radius: 12px;
 }
 #observer {
+  width: 100%;
+  height: 50px;
+  background-color: blue;
+}
+
+@-webkit-keyframes spin {
+  to {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  to {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+/**
+  * Spinning dots
+  *
+  * @author jh3y
+*/
+.spinning-dots:before {
+  -webkit-animation: spin 1.5s infinite linear;
+  animation: spin 1.5s infinite linear;
+  border-radius: 10px;
+  -webkit-box-shadow: 25px 0px 0 0 var(--primary),
+    15.58725px 19.54579px 0 0 var(--primary),
+    -5.56302px 24.3732px 0 0 var(--primary),
+    -22.52422px 10.84709px 0 0 var(--primary),
+    -22.52422px -10.84709px 0 0 var(--primary),
+    -5.56302px -24.3732px 0 0 var(--primary),
+    15.58725px -19.54579px 0 0 var(--primary);
+  box-shadow: 25px 0px 0 0 var(--primary),
+    15.58725px 19.54579px 0 0 var(--primary),
+    -5.56302px 24.3732px 0 0 var(--primary),
+    -22.52422px 10.84709px 0 0 var(--primary),
+    -22.52422px -10.84709px 0 0 var(--primary),
+    -5.56302px -24.3732px 0 0 var(--primary),
+    15.58725px -19.54579px 0 0 var(--primary);
+  content: "";
+  height: 10px;
+  width: 10px;
 }
 
 @media (max-width: 1250px) {

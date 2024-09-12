@@ -723,7 +723,6 @@ const onSave = async () => {
       : null,
   };
 
-  // JSON 데이터를 문자열로 변환하여 FormData에 추가
   formData.append(
     "jsonData",
     new Blob([JSON.stringify(req)], {
@@ -733,7 +732,6 @@ const onSave = async () => {
 
   console.log("formData", formData);
   try {
-    // axios로 POST 요청 보내기
     const { data } = await axios.post(
       "http://localhost:8080/save/project",
       formData,
