@@ -114,7 +114,7 @@ const getDummyData = () => {
   return new Promise((res) => {
     setTimeout(() => {
       res(dummy);
-    }, 2000);
+    }, 10000);
   });
 };
 
