@@ -37,10 +37,12 @@ const removeAllProject = () => {
 const ProjectBox = (project) => {
   const box = document.createElement("div");
   const a = document.createElement("a");
+
+  const { project_id, thumnail, title, regDt, src } = project;
   // wook 눌렀을 때 이동
   //wrapper
-  a.href = `http://localhost:8080/three/${project.project_id}`;
-  a.id = project.project_id;
+  a.href = `http://localhost:8080/three/${project_id}`;
+  a.id = project_id;
   a.className = "project-wrapper";
   box.style.position = "relative";
   box.appendChild(a);
@@ -50,7 +52,7 @@ const ProjectBox = (project) => {
   const renovate_img = document.createElement("div");
   renovate_img.className = "renovate-img";
   const backgroundImage = document.createElement("img");
-  backgroundImage.src = project.img;
+  backgroundImage.src = thumnail;
   renovate_img.append(backgroundImage);
   a.appendChild(renovate_img);
 
@@ -59,17 +61,31 @@ const ProjectBox = (project) => {
   project_src.className = "project-src";
 
   const projectName = document.createElement("div");
-  projectName.innerText = project.project_name;
+  projectName.innerText = title;
   project_src.appendChild(projectName);
 
-  const mod_dt = document.createElement("div");
-  mod_dt.innerText = new Date(project.reg_dt);
-  project_src.appendChild(mod_dt);
+  const regDt_div = document.createElement("div");
+  const formattedDate = new Intl.DateTimeFormat("ko-KR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false, // 24시간 형식
+  }).format(new Date(regDt));
+
+  regDt_div.innerText = formattedDate;
+  project_src.appendChild(regDt_div);
+
+  const srcDiv = document.createElement("div");
+  srcDiv.className = "srcDiv";
+  srcDiv.innerText = src;
+  project_src.appendChild(srcDiv);
 
   //삭제하기 눌렀을 때 나타남
   const delete_div = document.createElement("button");
   delete_div.className = "delete_bg";
-  delete_div.name = project.project_id;
+  delete_div.name = project_id;
 
   const delete_background = document.createElement("div");
   delete_background.className = "delete_background";
@@ -83,13 +99,12 @@ const ProjectBox = (project) => {
   delete_div.appendChild(selectInput);
 
   const label = document.createElement("label");
-  label.htmlFor = `${project.project_id}_checkBox`;
+  label.htmlFor = `${project_id}_checkBox`;
   label.className = "radio-label";
   delete_div.appendChild(label);
 
   a.appendChild(project_src);
   box.appendChild(delete_div);
-
   return box;
 };
 
@@ -102,7 +117,6 @@ const getDummyData = () => {
 };
 
 const getProjects = async () => {
-  console.log("zzzz");
   if (!hasMoreProjects || isLaoding) return;
   isLaoding = true;
 
@@ -112,18 +126,31 @@ const getProjects = async () => {
   //wook
   //밑에 주소 바꿔주셈
   let flag = 0;
-  const data = await axios.get("/get/projects", {
-    params: { filter, sort, flag },
-  });
+  let data;
+  try {
+    data = await axios.get("/get/projects", {
+      params: { filter, sort, flag },
+    });
+    // const receivedProjects = data.data.projects;
+    // projects.push(...receivedProjects);
+    // receivedProjects.forEach((project) => {
+    //   const projectBox = ProjectBox(project);
+    //   container.insertBefore(projectBox, observer);
+    // });
+  } catch (err) {
+    console.log("error occured!", err);
+    data = await getDummyData();
+  }
   // console.log(data);
-  // /*
-  // const data = await getDummyData();
   const receivedProjects = data.data.projects;
   projects.push(...receivedProjects);
   receivedProjects.forEach((project) => {
     const projectBox = ProjectBox(project);
     container.insertBefore(projectBox, observer);
   });
+  isLaoding = false;
+
+  // /*
   /*
     
 	//data
@@ -135,15 +162,9 @@ const getProjects = async () => {
 		  flag_num:0 => 0~11, 1 => 12 ~ 23
 	  }
    }
-	  const data = await getDummyData();
-	  const receivedProjects = data.data.projects;
-	  projects.push(...receivedProjects);
-	  receivedProjects.forEach((project) => {
-		  const projectBox = ProjectBox(project);
-		  container.insertBefore(projectBox, observer);
-	  });
+	  const 
+	 
 	  hasMoreProjects = data.data.hasMoreProjects;
-	  isLaoding = false;
 	  */
 };
 

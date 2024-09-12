@@ -42,7 +42,7 @@ import { throttle } from "../../utils/throttling.js";
 import { debounce } from "../../utils/debounce.js";
 import { saveFactory } from "./saveFactory.js";
 import { loadFurnitures } from "./lib/loader/furnitures.js";
-
+console.log("gdgd");
 const save = document.getElementById("save");
 const hudIcon = document.getElementById("hud-icon");
 const modeToggles = document.getElementById("modeToggles");

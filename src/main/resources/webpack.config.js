@@ -61,6 +61,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: "three.html",
       template: "./dimension/three/three.html",
+      chunks: ["three"],
       minify:
         process.env.NODE_ENV === "production"
           ? {
@@ -72,6 +73,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: "dashboard.html",
       template: "./dimension/dashboard/dashboard.html",
+      chunks: ["dashboard"],
       minify:
         process.env.NODE_ENV === "production"
           ? {
