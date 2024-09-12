@@ -92,7 +92,7 @@ public class ThreeService {
 	}
 
 	@Transactional
-	public void saveData(SaveProjectRequest request, MultipartFile thumbnail, String userId) throws IOException {
+	public String saveData(SaveProjectRequest request, MultipartFile thumbnail, String userId) throws IOException {
 		UserEntity user = userRepository.findByUId(userId);
 		String projectId = request.getProjectId();
 
@@ -142,5 +142,6 @@ public class ThreeService {
 				}
 			}
 		}
+		return projectId;
 	}
 }
