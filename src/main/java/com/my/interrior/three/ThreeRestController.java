@@ -1,6 +1,7 @@
 package com.my.interrior.three;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,15 +27,16 @@ public class ThreeRestController {
 	private final ThreeService threeService;
 
 	@PostMapping("/save/project")
-	public ResponseEntity<?> saveProject(@RequestPart("jsonData") SaveProjectRequest request,
+	public ResponseEntity<String> saveProject(@RequestPart("jsonData") SaveProjectRequest request,
 			@RequestPart("file") MultipartFile thumbnail, HttpSession session) throws IOException {
 		String userId = (String) session.getAttribute("UId");
 
 		log.info("request DATA: {}, request FILE: {}", request, thumbnail);
 
-		threeService.saveData(request, thumbnail, userId);
+		String projectId = threeService.saveData(request, thumbnail, userId);
 
-		return ResponseEntity.ok().build();
+		if(projectId != null) return ResponseEntity.ok(projectId);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("fail");
 	}
 
 	// filter : 빈 문자열, sort : 문자열, flag : 정수형 Request
@@ -62,10 +64,32 @@ public class ThreeRestController {
 	        GetProjectsResponse response = new GetProjectsResponse();
 	        response.setStatus("success");
 	        response.setResponse(200);
-	        GetProjectsResponse.GetProjectDataResponse data = new GetProjectsResponse.GetProjectDataResponse();
-	        data.setProjects(List.of()); // 빈 리스트 설정
-	        data.setFlagNum(-1); // 데이터 없음 플래그
-	        response.setData(data);
+//	        GetProjectsResponse.GetProjectDataResponse data = new GetProjectsResponse.GetProjectDataResponse();
+//	        data.setProjects(List.of()); // 빈 리스트 설정
+//	        data.setFlagNum(-1); // 데이터 없음 플래그
+//	        response.setData(data);
+	     // 임의의 데이터 생성
+	        GetProjectsResponse.GetProjectsData project1 = new GetProjectsResponse.GetProjectsData();
+	        project1.setProjectId("1");
+	        project1.setThumbnail("https://어쩌구저쩌구.jpg");
+	        project1.setTitle("테스트 1 테스트 11111111111111111111111");
+	        project1.setSrc("이건 설명입니다.");
+	        project1.setRegDt(LocalDateTime.now());
+
+	        GetProjectsResponse.GetProjectsData project2 = new GetProjectsResponse.GetProjectsData();
+	        project2.setProjectId("2");
+	        project2.setThumbnail("https://어쩌구저쩌구.jpghttps://어쩌구저쩌구.jpghttps://어쩌구저쩌구.jpg");
+	        project2.setTitle("테스트222222222222222222");
+	        project2.setSrc("이것도 설명입니다.");
+	        project2.setRegDt(LocalDateTime.now());
+
+	        // 데이터 리스트로 설정
+	        GetProjectsResponse.GetProjectDataResponse test = new GetProjectsResponse.GetProjectDataResponse();
+	        test.setProjects(List.of(project1, project2)); // 임의의 프로젝트 리스트
+	        test.setFlagNum(-1); // 데이터 없음 플래그
+	        
+	        // 응답에 데이터를 담아서 반환
+	        response.setData(test);
 	        return ResponseEntity.ok(response);
 	    }
 
