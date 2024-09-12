@@ -67,7 +67,7 @@ public class ShopController {
         shopService.shopWrite(shopTitle, shopPrice,  shopContent, shopMainPhotoUrl, descriptionImageUrls, shopCategory, optionNames, options, price, shopDiscountRate);
         System.out.println("확인");
 
-        return "client/shop/shopList";
+        return "redirect:/admin/adminShopList";
 
     }
     //shop 리스트 
