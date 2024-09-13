@@ -1,4 +1,4 @@
-import { GLTFLoader } from "/dimension/three/src/lib/loader/GLTFLoader";
+import { GLTFLoader } from "./GLTFLoader";
 
 const loader = new GLTFLoader();
 

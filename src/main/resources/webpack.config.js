@@ -10,8 +10,8 @@ const webpackMode = process.env.NODE_ENV || "development";
 module.exports = {
   mode: webpackMode,
   entry: {
-    dashboard: "./dimension/dashboard/src/dashboard.js",
-    three: "./dimension/three/src/three.js",
+    dashboard: "./dimension/src/dashboard.js",
+    three: "./dimension/src/three.js",
   },
   output: {
     path: path.resolve("./dist"),
@@ -60,7 +60,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       filename: "three.html",
-      template: "./dimension/three/three.html",
+      template: "./dimension/page/three.html",
       chunks: ["three"],
       minify:
         process.env.NODE_ENV === "production"
@@ -72,7 +72,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       filename: "dashboard.html",
-      template: "./dimension/dashboard/dashboard.html",
+      template: "./dimension/page/dashboard.html",
       chunks: ["dashboard"],
       minify:
         process.env.NODE_ENV === "production"

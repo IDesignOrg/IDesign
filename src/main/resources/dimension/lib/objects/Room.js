@@ -1,6 +1,5 @@
 import { Circles } from "./circles.js";
 import { D2Floor, Shape } from "./floor.js";
-import { ShadowLines } from "./shadowLines.js";
 import { D2Wall, D3Wall } from "./wall.js";
 import { Arrow } from "./Arrow.js";
 import { THREE } from "../loader/three.js";
@@ -15,7 +14,6 @@ import {
   getStraightLineZ,
 } from "../calculater.js";
 import { Text } from "./text.js";
-import { RotationController } from "./rotationController.js";
 import {
   areaRenderOrder,
   arrowsRenderOrder,
@@ -32,7 +30,6 @@ import {
   roomName,
   wallsName,
 } from "../objectConf/objectNames.js";
-import { uuidv4 as uuid } from "../uuid.js";
 
 import { MILLPerWidth, wallHeight } from "../objectConf/length.js";
 
@@ -62,15 +59,8 @@ export class D3Room extends THREE.Group {
     console.log(object);
     object.children.forEach((obj) => {
       if (obj.name === chairName || obj.name === deskName) {
-        // ...create object
-        const f = obj.clone();
-        this.add(f);
-        // if (furnitureObjects[obj.name].status !== "fulfilled") return;
-        // const furniture = furnitureObjects[obj.name].value;
-        // this.add(furniture);
-        // const points = obj.userData.points;
-        // furniture.position.set(points.x, points.y, points.z);
-        // furniture.rotation.y = -furniture.userData.rotation;
+        const cloneObject = obj.clone();
+        this.add(cloneObject);
       }
     });
   }
@@ -118,17 +108,11 @@ export class D2Room extends THREE.Group {
       shadowLines.visible = false;
     }
 
-    const rotationController = new RotationController({ cameraZoom });
-    rotationController.visible = false;
-
     this.addArrow({ cameraZoom });
     this.add(floor);
-    this.add(rotationController);
     this.addArea();
     this.addWalls({ points, center });
     this.createDots({ points, center });
-
-    // this.getObjectByName("floor").updateMatrix();
   };
 
   addWalls = ({ points, center }) => {

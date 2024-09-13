@@ -1,8 +1,7 @@
 // const savedObjects = ['room','desk','floor','circle']
 
-import { MilliName, roomName } from "./lib/objectConf/objectNames";
 import { furnitureObjects } from "./three";
-
+import { roomName } from "../lib/objectConf/objectNames";
 export const saveFactory = (scene) => {
   const arr = [];
   console.log(scene);

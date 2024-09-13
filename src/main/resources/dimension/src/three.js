@@ -8,16 +8,15 @@ import { OutlinePass } from "three/examples/jsm/postprocessing/OutlinePass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader.js";
 
-import { D2Shapes } from "./lib/three/geomentryFactory.js";
-import { D2Room } from "./lib/objects/Room.js";
-import { THREE } from "./lib/loader/three.js";
+import { D2Room } from "../lib/objects/Room.js";
+import { THREE } from "../lib/loader/three.js";
 
-import { create3DRoom } from "./lib/Dimension/dimension.js";
+import { create3DRoom } from "../lib/Dimension/dimension.js";
 
-import { RotationController } from "./lib/objects/rotationController.js";
-import { calculateCenter, getClickedCircleIndex } from "./lib/calculater.js";
-import { OrbitControls } from "./lib/loader/OrbitControls.js";
-import { WEBGL } from "./lib/webgl.js";
+import { RotationController } from "../lib/objects/rotationController.js";
+import { calculateCenter, getClickedCircleIndex } from "../lib/calculater.js";
+import { OrbitControls } from "../lib/loader/OrbitControls.js";
+import { WEBGL } from "../lib/webgl.js";
 import {
   backgroundName,
   chairName,
@@ -27,21 +26,20 @@ import {
   floorName,
   moveConrollerName,
   moveControllerChildrenName,
-  roomName,
   rotationConrollerName,
   shadowName,
-} from "./lib/objectConf/objectNames.js";
+} from "../lib/objectConf/objectNames.js";
 import {
   gridHelperY,
   objectY,
   roomY,
   wallY,
-} from "./lib/objectConf/renderOrders.js";
-import { MoveController } from "./lib/objects/moveController.js";
-import { throttle } from "../../utils/throttling.js";
-import { debounce } from "../../utils/debounce.js";
+} from "../lib/objectConf/renderOrders.js";
+import { MoveController } from "../lib/objects/moveController.js";
+import { throttle } from "../lib/throttling.js";
+import { debounce } from "../lib/debounce.js";
 import { saveFactory } from "./saveFactory.js";
-import { loadFurnitures } from "./lib/loader/furnitures.js";
+import { loadFurnitures } from "../lib/loader/furnitures.js";
 console.log("gdgd");
 const save = document.getElementById("save");
 const hudIcon = document.getElementById("hud-icon");
@@ -201,14 +199,6 @@ const updateShadows = ({ object, background }) => {
     new THREE.Vector3(background.point.x, wallY, background.point.z),
     new THREE.Vector3(object.clickedPoints.x, wallY, background.point.z),
   ];
-  // const y = 0;
-  // const w = 200;
-  // const points = [
-  //   { x: 0, y, z: 0 },
-  //   { x: w, y, z: 0 },
-  //   { x: w, y, z: w },
-  //   { x: 0, y, z: w },
-  // ];
   object.drawLines(points);
 };
 
@@ -220,7 +210,7 @@ const onMouseDown = (event) => {
   const background = raycaster.find((obj) => obj.object.name === "background");
   if (!background) return;
   const objectArr = getIntersectsArray(raycaster);
-
+  console.log(objectArr);
   if (
     !isChangingObject.isDBClick &&
     !isCreating.isSelect &&

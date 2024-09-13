@@ -1,4 +1,3 @@
-import { maxZoom, minZoom } from "../../three";
 import { THREE } from "../loader/three";
 
 export const RotationControllerY = 3;
