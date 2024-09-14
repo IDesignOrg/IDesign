@@ -5,7 +5,8 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>csc</title>
-	<link rel="stylesheet" href="/css/adminPage.css" />
+	<link rel="stylesheet" href="/css/adminpage.css" />
+		<link rel="stylesheet" href="/css/adminsidebar.css" />
 	<style>
 		/* Notice 작성 폼 컨테이너 */
 		.notice-form-container {
@@ -64,7 +65,7 @@
 </head>
 
 <body>
-	<div th:insert="~{/admin/page/adminsidebar :: sidebar}"></div>
+	<th:block th:include="~{fragments/adminsidebar.html :: sidebar}"></th:block>
 	<div class="notice-form-container">
 		<form id="notWrite" action="/board/notice/write" method="POST">
 			<div>

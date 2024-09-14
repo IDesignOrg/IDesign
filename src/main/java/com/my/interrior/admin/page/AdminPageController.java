@@ -186,7 +186,7 @@ public class AdminPageController {
 		model.addAttribute("totalPages", usersWithCounts.getTotalPages());
 		model.addAttribute("pageSize", size);
 
-		return "/admin/page/adminUsers";
+		return "admin/page/adminUsers";
 	}
 
 	// 리뷰 리스트
@@ -202,7 +202,7 @@ public class AdminPageController {
 		model.addAttribute("totalPages", reviewAndCounts.getTotalPages());
 		model.addAttribute("pageSize", size);
 
-		return "/admin/page/adminReview";
+		return "admin/page/adminReview";
 	}
 
 	@GetMapping("/fetchRComments")
@@ -274,7 +274,7 @@ public class AdminPageController {
 		model.addAttribute("notices", notices);
 		model.addAttribute("currentPage", pageable.getPageNumber());
 		model.addAttribute("totalPages", notices.getTotalPages());
-		return "/admin/page/adminNotice";
+		return "admin/page/adminNotice";
 	}
 
 	// 공지사항 삭제
@@ -311,7 +311,7 @@ public class AdminPageController {
 		model.addAttribute("recovers", recovers);
 		model.addAttribute("currentPage", pageable.getPageNumber());
 		model.addAttribute("totalPages", recovers.getTotalPages());
-		return "/admin/page/adminRecovery";
+		return "admin/page/adminRecovery";
 	}
 
 	@GetMapping("/admin/page/adminRecovery/search")
@@ -399,7 +399,7 @@ public class AdminPageController {
 		model.addAttribute("couponMaps", couponMaps);
 		model.addAttribute("currentPage", pageable.getPageNumber());
 		model.addAttribute("totalPages", couponMaps.getTotalPages());
-		return "/admin/page/adminUserCoupon";
+		return "admin/page/adminUserCoupon";
 	}
 
 	// 유저 쿠폰 삭제
@@ -440,7 +440,7 @@ public class AdminPageController {
 		model.addAttribute("shops", shops);
 		model.addAttribute("currentPage", pageable.getPageNumber());
 		model.addAttribute("totalPages", shops.getTotalPages());
-		return "/admin/page/adminShopList";
+		return "admin/page/adminShopList";
 	}
 
 	@GetMapping("/adminsearch")
@@ -464,7 +464,7 @@ public class AdminPageController {
 		model.addAttribute("minPrice", minPrice);
 		model.addAttribute("maxPrice", maxPrice);
 
-		return "/admin/page/adminShopList";
+		return "admin/page/adminShopList";
 	}
 
 	// ordered 모달창
@@ -498,7 +498,7 @@ public class AdminPageController {
 		model.addAttribute("orders", orders);
 		model.addAttribute("currentPage", pageable.getPageNumber());
 		model.addAttribute("totalPages", orders.getTotalPages());
-		return "/admin/page/adminOrdered";
+		return "/dmin/page/adminOrdered";
 	}
 
 	// ㅂ지활성화 할거임
@@ -521,7 +521,7 @@ public class AdminPageController {
 		model.addAttribute("events", events);
 		model.addAttribute("currentPage", pageable.getPageNumber());
 		model.addAttribute("totalPages", events.getTotalPages());
-		return "/admin/page/adminEvent";
+		return "admin/page/adminEvent";
 	}
 
 	@GetMapping("/admin/page/adminEventSearch")
@@ -540,7 +540,7 @@ public class AdminPageController {
 		model.addAttribute("events", events);
 		model.addAttribute("currentPage", pageable.getPageNumber());
 		model.addAttribute("totalPages", events.getTotalPages());
-		return "/admin/page/adminEvent";
+		return "admin/page/adminEvent";
 	}
 
 	// 환불
@@ -600,7 +600,7 @@ public class AdminPageController {
 		model.addAttribute("faqs", faqs);
 		model.addAttribute("currentPage", pageable.getPageNumber());
 		model.addAttribute("totalPages", faqs.getTotalPages());
-		return "/admin/page/adminFAQ";
+		return "admin/page/adminFAQ";
 	}
 
 	// 자주 묻는 질문 수정 모달창
@@ -650,7 +650,7 @@ public class AdminPageController {
         model.addAttribute("currentPage", pageable.getPageNumber());
         model.addAttribute("totalPages", inquiries.getTotalPages());
 
-        return "/admin/page/adminInquiry";  // Thymeleaf 템플릿 경로
+        return "admin/page/adminInquiry";  // Thymeleaf 템플릿 경로
     }
 	
 	//문의사항 모달창(답변보기)

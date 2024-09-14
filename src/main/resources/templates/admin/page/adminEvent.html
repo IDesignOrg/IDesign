@@ -5,11 +5,12 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>이벤트 관리</title>
-	<link rel="stylesheet" href="/css/adminPage.css" />
+	<link rel="stylesheet" href="/css/adminpage.css" />
+		<link rel="stylesheet" href="/css/adminsidebar.css" />
 </head>
 
 <body>
-	<div th:insert="~{/admin/page/adminsidebar :: sidebar}"></div>
+	<th:block th:include="~{fragments/adminsidebar.html :: sidebar}"></th:block>
 	<div class="main-content">
 		<header>
 			<h1>이벤트 관리</h1>
