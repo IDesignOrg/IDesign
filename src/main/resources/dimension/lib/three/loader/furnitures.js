@@ -1,4 +1,5 @@
-import { GLTFLoader } from "./GLTFLoader";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+// import { GLTFLoader } from "./GLTFLoader";
 
 const loader = new GLTFLoader();
 

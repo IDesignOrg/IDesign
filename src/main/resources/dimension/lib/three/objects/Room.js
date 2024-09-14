@@ -12,7 +12,7 @@ import {
   caclulateIntersectionPoint,
   getStraightLineX,
   getStraightLineZ,
-} from "../calculater.js";
+} from "../../calculater.js";
 import { Text } from "./text.js";
 import {
   areaRenderOrder,

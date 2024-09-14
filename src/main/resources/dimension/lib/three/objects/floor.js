@@ -2,7 +2,6 @@ import { ceilingMaterial, floorMaterial } from "../loader/papers";
 import { THREE } from "../loader/three";
 import { floorName } from "../objectConf/objectNames";
 import { floorY } from "../objectConf/renderOrders";
-import { uuidv4 as uuid } from "../uuid";
 
 export class D2Floor {
   constructor({ points, height, center, name }) {

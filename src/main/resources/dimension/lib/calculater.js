@@ -1,15 +1,10 @@
-import { THREE } from "./loader/three.js";
-import { MILLPerWidth } from "./objectConf/length.js";
+import { THREE } from "/dimension/lib/three/loader/three";
 
 function sum(arr) {
   return arr.reduce(
     (accumulator, currentValue) => accumulator + currentValue,
     0
   );
-}
-
-function degrees(radians) {
-  return radians * (180 / Math.PI);
 }
 
 export const calculateAngle = (p1, p2) => {

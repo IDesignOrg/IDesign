@@ -224,15 +224,15 @@ header img {
 
 #grid-wrapper {
   width: 100%;
+  display: flex;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   grid-template-rows: 402px;
   gap: 10px;
 }
 
 .project {
-  /* height: auto; */
-  height: 402px;
+  height: 326px;
   user-select: none;
   overflow: hidden;
   cursor: pointer;
@@ -250,7 +250,7 @@ header img {
   flex-direction: column;
 }
 .renovate-img {
-  height: 302px;
+  height: 240px;
   position: relative;
   padding: 5px;
   border: 16px 16px 0 0;
@@ -542,22 +542,6 @@ header img {
   }
 }
 
-@media (max-width: 1250px) {
-  #container {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (max-width: 1000px) {
-  #container {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (max-width: 600px) {
-  #container {
-    grid-template-columns: repeat(1, 1fr);
-  }
-}
 @media (max-width: 760px) {
   #side {
     width: 60px;

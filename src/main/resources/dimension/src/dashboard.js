@@ -64,10 +64,10 @@ const getProjects = async () => {
     return;
   }
   isLaoding = false;
+  const receivedProjects = data.data.projects;
   if (data.data.flagNum === -1) {
     observer.style.display = "none";
   }
-  const receivedProjects = data.data.projects;
   const newProjects = {};
   receivedProjects.forEach((obj) => {
     newProjects[obj.project_id] = obj;
@@ -228,13 +228,13 @@ sidebarArrow.addEventListener("click", onChangeSideBar);
 window.addEventListener("click", onClickWindow);
 window.removeEventListener("beforeunload", onClickWindow);
 searchInput.addEventListener("input", debounce(onFilterChange, 200));
-function debounce(func, delay) {
-  let timer;
-  return function () {
-    const args = arguments;
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      func.apply(this, args);
-    }, delay);
-  };
-}
+// function debounce(func, delay) {
+//   let timer;
+//   return function () {
+//     const args = arguments;
+//     clearTimeout(timer);
+//     timer = setTimeout(() => {
+//       func.apply(this, args);
+//     }, delay);
+//   };
+// }

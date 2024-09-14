@@ -4,10 +4,9 @@ import {
   calculateAngle,
   calculateDistance,
   calculateOffsetPoints,
-} from "../calculater.js";
+} from "../../calculater.js";
 import { wallName, wallsName } from "../objectConf/objectNames.js";
 import { Shape } from "./floor.js";
-import { uuidv4 as uuid } from "../uuid.js";
 import { wallHeight } from "../objectConf/length.js";
 import { wallMaterial } from "../loader/papers.js";
 
@@ -16,7 +15,6 @@ export class D3Wall extends THREE.Group {
     super();
     this.userData = {
       ...this.userData,
-      oid: uuid(),
     };
     this.name = "walls";
     for (let i = 0; i < points.length; i++) {
@@ -31,7 +29,6 @@ export class D3Wall extends THREE.Group {
       wall.name = "wall";
       wall.userData = {
         ...wall.userData,
-        oid: uuid(),
       };
       wall.position.set(
         (currentPoint.x + nextPoint.x) / 2 - center.x,
@@ -40,7 +37,6 @@ export class D3Wall extends THREE.Group {
       );
       wall.userData = {
         ...wall.userData,
-        oid: uuid(),
       };
       wall.rotation.y = -angle;
       this.add(wall);

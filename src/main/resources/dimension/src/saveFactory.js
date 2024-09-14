@@ -1,10 +1,9 @@
 // const savedObjects = ['room','desk','floor','circle']
 
+import { roomName } from "../lib/three/objectConf/objectNames";
 import { furnitureObjects } from "./three";
-import { roomName } from "../lib/objectConf/objectNames";
 export const saveFactory = (scene) => {
   const arr = [];
-  console.log(scene);
   function dfs(object, parent) {
     if (
       object.name === roomName ||

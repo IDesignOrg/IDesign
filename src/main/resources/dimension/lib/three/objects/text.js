@@ -1,7 +1,4 @@
 import { THREE } from "../loader/three";
-import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
-import { loadedFont } from "../loader/FontLoader/FontLoader";
-import { uuidv4 as uuid } from "../uuid";
 import { Text as TroikaText } from "troika-three-text";
 import { distanceTextY } from "../objectConf/renderOrders";
 
