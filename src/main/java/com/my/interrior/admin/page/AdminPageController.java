@@ -498,7 +498,7 @@ public class AdminPageController {
 		model.addAttribute("orders", orders);
 		model.addAttribute("currentPage", pageable.getPageNumber());
 		model.addAttribute("totalPages", orders.getTotalPages());
-		return "/dmin/page/adminOrdered";
+		return "admin/page/adminOrdered";
 	}
 
 	// ㅂ지활성화 할거임
@@ -549,7 +549,10 @@ public class AdminPageController {
 			@RequestParam("refundReason") String refundReason, HttpSession session) throws Exception {
 		String userid = (String) session.getAttribute("UId");
 		String token = paymentService.getAccessToken();
+		System.out.println("멀천튜유아이딩 : "+merchantUId);
+		System.out.println("뤼펀드우느랒 : " + refundReason);
 		paymentService.refundRequest(token, merchantUId);
+		
 
 		// 여기에 주문 내역에서 삭제해야 됨.
 		// ordered랑 payment랑 payment_user_mapping 테이블 전부인데 payment_user_mapping부터 지워야 됨.
