@@ -686,3 +686,8 @@ form button:hover {
   background-color: #2980b9;
   color: white;
 }
+
+#messageTextArea{
+	width:100%;
+	resize:none;
+}
