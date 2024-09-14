@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,7 +40,7 @@ public class NaverLoginController {
 	private static final String PROFILE_REQUEST_URL = "https://openapi.naver.com/v1/nid/me";
 
 	@RequestMapping("/auth/login/naver")
-	public String naverCallback(@RequestParam("code") String code, @RequestParam("code") String state, HttpSession session) throws JsonProcessingException {
+	public String naverCallback(@RequestParam("code") String code, @RequestParam("code") String state, HttpSession session, Model model) throws JsonProcessingException {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("grant_type", "authorization_code");
 		params.add("client_id", naverApi.getClientId());
@@ -81,6 +82,11 @@ public class NaverLoginController {
 		System.out.println("아이디 확인 : " + existingUser);
 		
 		if(existingUser != null) {
+			if (existingUser.isUDeactivated()) {
+                // 비활성화된 계정일 경우
+                model.addAttribute("loginError", "비활성화된 아이디입니다.");
+                return "client/login"; // 로그인 페이지로 이동
+            }
 			session.setAttribute("UId", existingUser.getUId());
 			System.out.println("네이버 세션 등록 : " + existingUser.getUId());
 			return "redirect:/";

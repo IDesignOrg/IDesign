@@ -46,7 +46,6 @@ public class MypageService {
     
     public void deleteUserInfo(String UId) {
     	mypageRepository.deleteByUId(UId);
-    	
     } 
    
     public String uploadFile(MultipartFile file) throws IOException {

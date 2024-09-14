@@ -446,6 +446,43 @@
 			// mypageUpdatePassword.html로 이동
 			window.location.href = "/mypage/mypageUpdatePassword";
 		}
+		/* 유저 비활성화 */
+		function deleteUserInfo() {
+		    // 유저 ID 가져오기 (폼 필드에서 가져옴)
+		    var userUNo = document.getElementById('UNo').value;
+
+		    // Ajax 요청으로 서버에 POST 요청을 보냄
+		    fetch('/deactivateUserin', {
+		        method: 'POST',
+		        headers: {
+		            'Content-Type': 'application/x-www-form-urlencoded',
+		        },
+		        body: new URLSearchParams({
+		            userUNo: userUNo
+		        })
+		    })
+		    .then(response => {
+		        if (response.redirected) {
+		            // 리다이렉션이 발생하면 해당 URL로 이동
+		            window.location.href = response.url;
+		        } else if (response.ok) {
+		            return response.text(); // 서버로부터 메시지 받기
+		        } else {
+		            throw new Error('유저 비활성화에 실패했습니다.');
+		        }
+		    })
+		    .then(result => {
+		        if (result) {
+		            alert(result); // 서버 응답 메시지를 알림으로 표시 (비활성화 실패 시)
+		        }
+		    })
+		    .catch(error => {
+		        console.error('Error:', error);
+		        alert('서버 오류로 인해 유저 비활성화에 실패했습니다.');
+		    });
+		}
+
+
 
 	</script>
 </head>
