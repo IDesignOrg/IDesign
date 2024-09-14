@@ -58,11 +58,12 @@
 		}
 
 	</style>
-	<link rel="stylesheet" href="/css/adminPage.css" />
+	<link rel="stylesheet" href="/css/adminpage.css" />
+		<link rel="stylesheet" href="/css/adminsidebar.css" />
 </head>
 
 <body>
-	<div th:insert="~{/admin/page/adminsidebar :: sidebar}"></div>
+	<th:block th:include="~{fragments/adminsidebar.html :: sidebar}"></th:block>
 	<div class="coupon-form-container">
 		<form action="/admin/coupon/write" method="post">
 			<div>
