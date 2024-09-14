@@ -1,3 +1,4 @@
+import { MILLPerWidth } from "./three/objectConf/length";
 import { THREE } from "/dimension/lib/three/loader/three";
 
 function sum(arr) {

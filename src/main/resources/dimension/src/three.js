@@ -69,16 +69,6 @@ let isCreating = {
   target: null,
 };
 
-let isControllerClick = false;
-
-let isFloorChange = {
-  isCircleClick: false,
-  isDragging: false,
-  circleIdx: null,
-  circleId: null,
-  name: null,
-};
-
 let isChangingObject = {
   isDBClick: false, //circle을 통해 드래깅 중인지
   isHover: false, //마우스에 무언가 올라가있
@@ -221,61 +211,7 @@ const onMouseDown = (event) => {
 
   const objectArr = getIntersectsArray(raycaster);
 
-  if (isControllerClick) {
-  }
-
-  // isDragging = true;
-  // previousMousePosition = { x: event.clientX, y: event.clientY };
-  // return;
-  if (
-    !isChangingObject.isDBClick &&
-    !isCreating.isSelect &&
-    objectArr.length > 0
-  ) {
-    const { name, id } = objectArr[0].object;
-    const { object } = objectArr[0];
-
-    let room;
-    switch (name) {
-      case circleName:
-        room = object.parent.parent;
-        const circleId = room.getObjectById(id);
-
-        const cg = room.getObjectByName(circleGroupName);
-
-        const clickedIdx = getClickedCircleIndex({ cg, object });
-        if (clickedIdx === null) {
-          isChangingObject = {
-            isDBClick: false,
-            isHover: false,
-            isDragging: false,
-            changingObjectId: null,
-            circleIdx: null,
-            name: null,
-            circleId: null,
-          };
-          break;
-        }
-        isChangingObject = {
-          ...isChangingObject,
-          changingObjectId: room.id,
-          isDragging: true,
-          circleIdx: clickedIdx,
-          circleId: object.id,
-          name,
-        };
-
-        return;
-
-      case floorName:
-        //
-        isRoomClick = {
-          isClick: true,
-          object: object,
-        };
-        break;
-    }
-  } else if (isChangingObject.isDBClick) {
+  if (isChangingObject.isDBClick) {
     if (objectArr.length > 0) {
       let controller = objectArr.find((obj) =>
         obj.object.name.includes("controller")
@@ -396,8 +332,51 @@ const onMouseDown = (event) => {
       default:
         return;
     }
-  }
-  isDragging = true;
+  } else if (objectArr.length > 0) {
+    // 그 외 방의 모양 변경 등
+    const { object } = objectArr[0];
+    const { name } = object;
+
+    let room;
+    switch (name) {
+      case circleName:
+        room = object.parent.parent;
+
+        const cg = room.getObjectByName(circleGroupName);
+
+        const clickedIdx = getClickedCircleIndex({ cg, object });
+        if (clickedIdx === null) {
+          isChangingObject = {
+            isDBClick: false,
+            isHover: false,
+            isDragging: false,
+            changingObjectId: null,
+            circleIdx: null,
+            name: null,
+            circleId: null,
+          };
+          break;
+        }
+        isChangingObject = {
+          ...isChangingObject,
+          changingObjectId: room.id,
+          isDragging: true,
+          circleIdx: clickedIdx,
+          circleId: object.id,
+          name,
+        };
+
+        return;
+
+      case floorName:
+        //
+        isRoomClick = {
+          isClick: true,
+          object: object,
+        };
+        break;
+    }
+  } else isDragging = true;
   previousMousePosition = { x: event.clientX, y: event.clientY };
 };
 
