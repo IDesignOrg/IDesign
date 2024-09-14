@@ -1,9 +1,7 @@
 "use strict";
 
 import axios from "axios";
-
 import { THREE } from "../lib/three/loader/three.js";
-
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { OutlinePass } from "three/examples/jsm/postprocessing/OutlinePass.js";
@@ -15,7 +13,6 @@ import { D2Room, D3Room } from "../lib/three/objects/Room.js";
 import { RotationController } from "../lib/three/objects/rotationController.js";
 import { calculateCenter, getClickedCircleIndex } from "../lib/calculater.js";
 import { WEBGL } from "../lib/webgl.js";
-
 import {
   backgroundName,
   chairName,
@@ -28,7 +25,6 @@ import {
   rotationConrollerName,
   shadowName,
 } from "../lib/three/objectConf/objectNames.js";
-
 import {
   gridHelperY,
   objectY,
@@ -295,8 +291,6 @@ const onMouseDown = (event) => {
             isDragging: true,
           };
           return;
-
-          // floor를 만들기 시작
         }
         break;
       case chairName:
@@ -471,7 +465,6 @@ const onMouseMove = (event) => {
 
 const onMouseUp = () => {
   if (controls.enabled) return;
-  console.log();
   if (isRoomClick.isClick) {
     // 방 옮기기
     const room = isRoomClick.object.parent;
@@ -771,7 +764,7 @@ const animate = () => {
 if (!WEBGL.isWebGLAvailable()) {
   // webgl 가능한지 체크
   const warning = WEBGL.getWebGLErrorMessage();
-  document.body.appendChild(warning);
+  alert(warning);
 } else {
   animate();
 }
