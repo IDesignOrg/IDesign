@@ -16,7 +16,7 @@ services:
   #     - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   idesign_blue:
-    image: yoonjaehwan/idesign:latest
+    image: yoonjaehwan/idesign:v23
     container_name: idesign_blue
     environment:
       SPRING_DATASOURCE_URL: jdbc:mariadb://15.164.183.12:3306/idesign
