@@ -661,7 +661,8 @@ function dataURLtoBlob(dataURL) {
 }
 
 const onSave = async () => {
-  const projectId = new Date().getTime().toString();
+  const urlParams = new URLSearchParams(window.location.search);
+  const project_id = urlParams.get("project_id");
   const dataEntities = saveFactory(scene);
 
   // 스크린샷 타입
@@ -672,8 +673,6 @@ const onSave = async () => {
   // base64 데이터를 Blob으로 변환
   const blobData = dataURLtoBlob(imageData);
   const userId = "123123";
-  const urlParams = new URLSearchParams(window.location.search);
-  const project_id = urlParams.get("project_id");
 
   // FormData 객체 생성
   const formData = new FormData();
@@ -681,21 +680,9 @@ const onSave = async () => {
   // Blob 데이터와 파일명으로 파일 추가
   formData.append("file", blobData, `${userId}_${project_id}_screenshot.jpg`);
 
-  // JSON 데이터 생성
-  let pDes = localStorage.getItem("pdes");
-  if (pDes) {
-    pDes = JSON.parse(pDes);
-  }
-
   const req = {
-    projectId,
+    project_id,
     dataEntities,
-    projectSrc: pDes
-      ? {
-          title: pDes.title,
-          src: pDes.src,
-        }
-      : null,
   };
 
   formData.append(
@@ -705,7 +692,6 @@ const onSave = async () => {
     })
   );
 
-  console.log("formData", formData);
   try {
     const { data } = await axios.post(
       "http://localhost:8080/save/project",
@@ -713,7 +699,6 @@ const onSave = async () => {
       {
         headers: {
           "Content-Type": "multipart/form-data",
-          // "Content-Type": "application/json",
         },
       }
     );
@@ -732,6 +717,20 @@ const onWindowResize = () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 };
+
+const getProjectNode = async () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const project_id = urlParams.get("project_id");
+
+  const data = await axios.get("/api/get/project_nodes", {
+    params: {
+      project_id,
+    },
+  });
+  console.log(data);
+};
+
+getProjectNode();
 
 canvas.addEventListener("mousedown", onMouseDown);
 canvas.addEventListener("mousemove", onMouseMove);
