@@ -220,14 +220,14 @@ const onSubmitProject = async () => {
     if (data.status === "fail") {
       return alert("공습경보");
     }
+
+    // data: null; => 에러
+    // data:{project_id:1} => 에러안남
     const { project_id } = data.data;
     window.location.href = `$${window.location.origin}/three?project_id=${project_id}`;
   } catch (e) {
     alert("공습경고", e);
   }
-
-  // localStorage.setItem("pdes", JSON.stringify(obj));
-  // window.location.href = `${window.location.origin}/three/design`;
 };
 interectionObserver(observer, getProjects);
 
