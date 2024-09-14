@@ -224,7 +224,7 @@ const onSubmitProject = async () => {
     // data: null; => 에러
     // data:{project_id:1} => 에러안남
     const { project_id } = data.data;
-    window.location.href = `$${window.location.origin}/three?project_id=${project_id}`;
+    window.location.href = `${window.location.origin}/three?project_id=${project_id}`;
   } catch (e) {
     alert("공습경고", e);
   }
