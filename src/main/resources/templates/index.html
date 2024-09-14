@@ -46,14 +46,15 @@
 		<div id="chatContainer" class = "hidden">
 			<!-- 채팅 영역 -->
 			<div id="chatForm">
-				<form>
+				<form id = "chatBox">
 					<!-- 텍스트 박스에 채팅의 내용을 작성한다. -->
 					<input id="textMessage" type="text" onkeydown="return enter()" />
 					<!-- 서버로 메시지를 전송하는 버튼 -->
 					<input onclick="sendMessage()" value="Send" type="button" />
+					<button type ="button" id = "chatCloseBtn" onclick="toggleChatContainer()">X</button>
 				</form>
-			</div>
 			<!-- 서버와 메시지를 주고 받는 콘솔 텍스트 영역 -->
+			</div>
 			<textarea id="messageTextArea" rows="10" cols="50" disabled="disabled"></textarea>
 		</div>
 		<!-- main wrapper -->
