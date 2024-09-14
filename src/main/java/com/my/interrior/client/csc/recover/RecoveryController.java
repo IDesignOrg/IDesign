@@ -99,7 +99,7 @@ public class RecoveryController {
 
 	        // 성공 메시지 추가
 	        model.addAttribute("message", "복구 신청이 성공적으로 제출되었습니다.");
-	        return "recoverySuccess"; // 복구 성공 페이지로 이동
+	        return "redirect:/"; // 복구 성공 페이지로 이동
 
 	    } catch (Exception e) {
 	        e.printStackTrace();
