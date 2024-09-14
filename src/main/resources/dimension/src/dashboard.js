@@ -52,7 +52,7 @@ const getProjects = async () => {
   const sort = selectedSort.id;
   let data;
   try {
-    data = await axios.get("/get/projects", {
+    data = await axios.get("/api/get/projects", {
       params: { filter, sort },
     });
   } catch (err) {
@@ -205,15 +205,29 @@ const onCreateProject = () => {
   }
   projectDescriptionContainer.style.display = s;
 };
-const onSubmitProject = () => {
+const onSubmitProject = async () => {
   //프로젝트 생성(타이틀, 설명)
   const title = document.getElementById("description-title").value;
 
   const src = textArea.value;
 
-  const obj = { title, src };
-  localStorage.setItem("pdes", JSON.stringify(obj));
-  window.location.href = `${window.location.origin}/three/design`;
+  // const obj = { title, src };
+  try {
+    const data = await axios.post("api/create_project", {
+      src,
+      title,
+    });
+    if (data.status === "fail") {
+      return alert("공습경보");
+    }
+
+    // data: null; => 에러
+    // data:{project_id:1} => 에러안남
+    const { project_id } = data.data;
+    window.location.href = `$${window.location.origin}/three?project_id=${project_id}`;
+  } catch (e) {
+    alert("공습경고", e);
+  }
 };
 interectionObserver(observer, getProjects);
 
