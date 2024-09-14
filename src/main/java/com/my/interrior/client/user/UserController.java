@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.my.interrior.common.GoogleApi;
 import com.my.interrior.common.KakaoApi;
@@ -153,4 +154,28 @@ public class UserController {
 		System.out.println("로그아웃 됨");
 		return "redirect:/";
 	}
+
+	// 유저 비활성화
+	@PostMapping("/deactivateUserin")
+	public String deactivateUser(@RequestParam("userUNo") Long userUNo, Model model) {
+	    try {
+	        // 사용자 비활성화 서비스 호출
+	        boolean isDeactivated = userService.deactivateUser(userUNo);
+
+	        if (isDeactivated) {
+	            // 유저가 비활성화되면 리다이렉트
+	        	session.invalidate();
+	            return "redirect:/";
+	        } else {
+	            // 유저 비활성화 실패 시 메시지를 추가하고 현재 페이지에 머무르도록 설정
+	            model.addAttribute("error", "유저 비활성화에 실패했습니다.");
+	            return "client/error"; // 오류 처리용 뷰 페이지로 변경 가능
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        model.addAttribute("error", "서버 오류로 인해 유저 비활성화에 실패했습니다.");
+	        return "client/error"; // 서버 오류 처리용 뷰 페이지로 변경 가능
+	    }
+	}
+
 }
