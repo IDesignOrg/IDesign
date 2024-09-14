@@ -4,16 +4,18 @@ import {
   calculateAngle,
   calculateDistance,
   calculateOffsetPoints,
-} from "../calculater.js";
-import { wallMaterial } from "../../three.js";
+} from "../../calculater.js";
 import { wallName, wallsName } from "../objectConf/objectNames.js";
 import { Shape } from "./floor.js";
-
-export const wallHeight = 50;
+import { wallHeight } from "../objectConf/length.js";
+import { wallMaterial } from "../loader/papers.js";
 
 export class D3Wall extends THREE.Group {
   constructor({ points, center }) {
     super();
+    this.userData = {
+      ...this.userData,
+    };
     this.name = "walls";
     for (let i = 0; i < points.length; i++) {
       const currentPoint = points[i];
@@ -21,17 +23,21 @@ export class D3Wall extends THREE.Group {
       const angle = calculateAngle(currentPoint, nextPoint);
       const width = calculateDistance(currentPoint, nextPoint);
       const wallGeo = new THREE.PlaneGeometry(width, wallHeight);
-      // const material = new THREE.MeshBasicMaterial({
-      //   map: texture,
-      //   side: THREE.FrontSide,
-      // });
+
       const material = wallMaterial;
       const wall = new THREE.Mesh(wallGeo, material);
+      wall.name = "wall";
+      wall.userData = {
+        ...wall.userData,
+      };
       wall.position.set(
         (currentPoint.x + nextPoint.x) / 2 - center.x,
         wallHeight / 2,
         (currentPoint.z + nextPoint.z) / 2 - center.z
       );
+      wall.userData = {
+        ...wall.userData,
+      };
       wall.rotation.y = -angle;
       this.add(wall);
     }
@@ -40,27 +46,10 @@ export class D3Wall extends THREE.Group {
   }
 }
 
-// export class D2Wall extends THREE.Group {
-//   constructor({ points }) {
-//     const walls = super();
-//     walls.name = "walls";
-//     const material = new THREE.LineBasicMaterial({
-//       color: 0x0000ff,
-//       linewidth: 5,
-//     });
-//     const geometry = new THREE.BufferGeometry().setFromPoints(points);
-//     const line = new THREE.Line(geometry, material);
-//     line.name = "walls";
-//     return line;
-//   }
-// }
-
-// 변의 방향에 수직 방향 벡터 계산 함수
-
 export class D2Wall extends THREE.Group {
-  constructor({ points, parentPosition, center }) {
+  constructor({ points, center, color }) {
     super();
-    // this.parentPosition = parentPosition
+    // this.parentPosiion = parentPosition
     this.name = wallsName;
     const offsetLines = [];
     points.forEach((point, idx) => {
@@ -69,13 +58,13 @@ export class D2Wall extends THREE.Group {
       const p1 = point;
       const p2 = points[(i + 1) % points.length];
       const offsetPoints = calculateOffsetPoints(p1, p2, distance);
+      // console.log(p1, p2, offsetPoints);
       offsetLines.push(offsetPoints);
     });
     // console.log(offsetLines);
     // const newPoints = []
 
     const pointsArray = [];
-    // console.log(offsetLines);
     offsetLines.forEach((current, idx) => {
       const prev =
         offsetLines[(idx - 1 + offsetLines.length) % offsetLines.length];
@@ -89,21 +78,13 @@ export class D2Wall extends THREE.Group {
       const z3 = prev[0].z;
       const x4 = prev[1].x;
       const z4 = prev[1].z;
+      // console.log(x1, z1, x2, z2, x3, z3, x4, z4, offsetLines  );
+      let p = caclulateIntersectionPoint(x1, z1, x2, z2, x3, z3, x4, z4);
+      const x = p.x,
+        y = p.y;
 
-      const { x, y } = caclulateIntersectionPoint(
-        x1,
-        z1,
-        x2,
-        z2,
-        x3,
-        z3,
-        x4,
-        z4
-      );
-      // console.log(x, y);
       pointsArray.push({ x, z: y, y: 1 });
     });
-    console.log(pointsArray);
 
     points.forEach((point, idx) => {
       const current = point;
@@ -116,16 +97,16 @@ export class D2Wall extends THREE.Group {
         points[nextIdx],
       ];
 
-      this.newDraw({ newPoints });
+      this.newDraw({ newPoints, color });
     });
 
     this.position.set(-center.x, center.y, -center.z);
   }
 
-  newDraw = ({ newPoints }) => {
+  newDraw = ({ newPoints, color }) => {
     const shape = new Shape({ points: newPoints });
     const geometry = new THREE.ShapeGeometry(shape);
-    const material = new THREE.MeshBasicMaterial({ color: "red" });
+    const material = new THREE.MeshBasicMaterial({ color });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.rotation.x = -Math.PI / 2;
     mesh.name = wallName;
@@ -139,16 +120,6 @@ export class D2Wall extends THREE.Group {
   draw = (current, nextPoint, idx, nextIdx, prev) => {
     let angle_next = Math.abs(calculateAngle(current, nextPoint) / Math.PI);
     let angle_prev = Math.abs(calculateAngle(prev, current) / Math.PI);
-    // console.log(
-    //   "prev=",
-    //   angle_prev,
-    //   "prev도 =",
-    //   Math.PI * angle_prev * (180 / Math.PI),
-    //   "next = ",
-    //   angle_next,
-    //   "next도=",
-    //   Math.PI * angle_next * (180 / Math.PI)
-    // );
 
     const offset = 25;
     let offsetPrev = offset * Math.abs(angle_prev);
@@ -176,7 +147,6 @@ export class D2Wall extends THREE.Group {
         ...nextPoint,
       },
     ];
-    console.log("current=", current, "newPoint=", newPoints);
     const shape = new Shape({ points: newPoints });
     const geometry = new THREE.ShapeGeometry(shape);
     const material = new THREE.MeshBasicMaterial({ color: "red" });

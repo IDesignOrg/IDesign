@@ -1,6 +1,6 @@
 import axios from "axios";
-import { interectionObserver } from "../../utils/observer";
-import { dummy } from "./dummy";
+import { interectionObserver } from "../lib/observer.js";
+import { dummy } from "./dummy.js";
 import { projectNode } from "./projectNode.js";
 
 const side = document.getElementById("side");
@@ -64,10 +64,10 @@ const getProjects = async () => {
     return;
   }
   isLaoding = false;
+  const receivedProjects = data.data.projects;
   if (data.data.flagNum === -1) {
     observer.style.display = "none";
   }
-  const receivedProjects = data.data.projects;
   const newProjects = {};
   receivedProjects.forEach((obj) => {
     newProjects[obj.project_id] = obj;
@@ -136,8 +136,6 @@ const onChangeSideBar = () => {
 };
 
 const reqRemoveProjects = async () => {
-  // console.log(remove_projects);
-  // return;
   // wook
   // 프로젝트 삭제
   // ex) localhost:3000/remove_projects?project_ids=[1,2,3,4]
@@ -153,9 +151,7 @@ const reqRemoveProjects = async () => {
   } catch (err) {
     Object.keys(remove_projects).forEach((project_id) => {
       delete projects[project_id];
-      // console.log(gridWrapper,);
       document.getElementById(project_id).remove();
-      // gridWrapper.removeChild(document.getElementById(project_id));
     });
 
     remove_projects = {};
@@ -178,11 +174,6 @@ const onTrashClick = () => {
   } else {
     reqRemoveProjects();
   }
-  // if (isTrashBtnClick) {
-  //   nodes.forEach((node) => (node.style.display = "block"));
-  // } else {
-  //   reqRemoveProjects();
-  // }
 };
 
 const onProjectClick = (e) => {
@@ -207,6 +198,7 @@ const onClickWindow = () => {
 };
 
 const onCreateProject = () => {
+  //프로젝트 타이틀, 설명 팝업
   let s = "block";
   if (projectDescriptionContainer.style.display === "block") {
     s = "none";
@@ -214,6 +206,7 @@ const onCreateProject = () => {
   projectDescriptionContainer.style.display = s;
 };
 const onSubmitProject = () => {
+  //프로젝트 생성(타이틀, 설명)
   const title = document.getElementById("description-title").value;
 
   const src = textArea.value;
@@ -235,13 +228,13 @@ sidebarArrow.addEventListener("click", onChangeSideBar);
 window.addEventListener("click", onClickWindow);
 window.removeEventListener("beforeunload", onClickWindow);
 searchInput.addEventListener("input", debounce(onFilterChange, 200));
-function debounce(func, delay) {
-  let timer;
-  return function () {
-    const args = arguments;
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      func.apply(this, args);
-    }, delay);
-  };
-}
+// function debounce(func, delay) {
+//   let timer;
+//   return function () {
+//     const args = arguments;
+//     clearTimeout(timer);
+//     timer = setTimeout(() => {
+//       func.apply(this, args);
+//     }, delay);
+//   };
+// }

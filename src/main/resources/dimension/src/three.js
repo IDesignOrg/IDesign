@@ -2,22 +2,20 @@
 
 import axios from "axios";
 
+import { THREE } from "../lib/three/loader/three.js";
+
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { OutlinePass } from "three/examples/jsm/postprocessing/OutlinePass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader.js";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-import { D2Shapes } from "./lib/three/geomentryFactory.js";
-import { D2Room } from "./lib/objects/Room.js";
-import { THREE } from "./lib/loader/three.js";
+import { D2Room, D3Room } from "../lib/three/objects/Room.js";
+import { RotationController } from "../lib/three/objects/rotationController.js";
+import { calculateCenter, getClickedCircleIndex } from "../lib/calculater.js";
+import { WEBGL } from "../lib/webgl.js";
 
-import { create3DRoom } from "./lib/Dimension/dimension.js";
-
-import { RotationController } from "./lib/objects/rotationController.js";
-import { calculateCenter, getClickedCircleIndex } from "./lib/calculater.js";
-import { OrbitControls } from "./lib/loader/OrbitControls.js";
-import { WEBGL } from "./lib/webgl.js";
 import {
   backgroundName,
   chairName,
@@ -27,22 +25,22 @@ import {
   floorName,
   moveConrollerName,
   moveControllerChildrenName,
-  roomName,
   rotationConrollerName,
   shadowName,
-} from "./lib/objectConf/objectNames.js";
+} from "../lib/three/objectConf/objectNames.js";
+
 import {
   gridHelperY,
   objectY,
   roomY,
   wallY,
-} from "./lib/objectConf/renderOrders.js";
-import { MoveController } from "./lib/objects/moveController.js";
-import { throttle } from "../../utils/throttling.js";
-import { debounce } from "../../utils/debounce.js";
+} from "../lib/three/objectConf/renderOrders.js";
+import { MoveController } from "../lib/three/objects/moveController.js";
+import { throttle } from "../lib/throttling.js";
+import { debounce } from "../lib/debounce.js";
 import { saveFactory } from "./saveFactory.js";
-import { loadFurnitures } from "./lib/loader/furnitures.js";
-console.log("gdgd");
+import { loadFurnitures } from "../lib/three/loader/furnitures.js";
+
 const save = document.getElementById("save");
 const hudIcon = document.getElementById("hud-icon");
 const modeToggles = document.getElementById("modeToggles");
@@ -201,14 +199,6 @@ const updateShadows = ({ object, background }) => {
     new THREE.Vector3(background.point.x, wallY, background.point.z),
     new THREE.Vector3(object.clickedPoints.x, wallY, background.point.z),
   ];
-  // const y = 0;
-  // const w = 200;
-  // const points = [
-  //   { x: 0, y, z: 0 },
-  //   { x: w, y, z: 0 },
-  //   { x: w, y, z: w },
-  //   { x: 0, y, z: w },
-  // ];
   object.drawLines(points);
 };
 
@@ -216,61 +206,13 @@ const onMouseDown = (event) => {
   if (controls.enabled) return;
   let points;
   const raycaster = getIntersects(event);
-
   const background = raycaster.find((obj) => obj.object.name === "background");
   if (!background) return;
+
   const objectArr = getIntersectsArray(raycaster);
 
-  if (
-    !isChangingObject.isDBClick &&
-    !isCreating.isSelect &&
-    objectArr.length > 0
-  ) {
-    const name = objectArr[0].object.name;
-    const { object } = objectArr[0];
-
-    let room;
-    switch (name) {
-      case circleName:
-        room = object.parent.parent;
-        const cg = room.getObjectByName(circleGroupName);
-        const clickedIdx = getClickedCircleIndex({ cg, object });
-        if (clickedIdx === null) {
-          isChangingObject = {
-            isDBClick: false,
-            isHover: false, //for mouse pointer and for clicked circle changer
-            isDragging: false, //is changer circle moving ?
-            changingObjectId: null, // change object...
-            circleIdx: null, // 몇 번째 원을 통해 도형을 바꾸는지
-            name: null,
-            circleId: null,
-          };
-          break;
-        }
-        isChangingObject = {
-          ...isChangingObject,
-          changingObjectId: room.id,
-          isDragging: true,
-          circleIdx: clickedIdx,
-          circleId: object.id,
-          name,
-        };
-
-        return;
-
-      case floorName:
-        //
-        isRoomClick = {
-          isClick: true,
-          object: object,
-        };
-        break;
-    }
-  } else if (isChangingObject.isDBClick) {
+  if (isChangingObject.isDBClick) {
     if (objectArr.length > 0) {
-      // let controller = objectArr.find((obj) =>
-      //   obj.object.name.incldues("controller")
-      // );
       let controller = objectArr.find((obj) =>
         obj.object.name.includes("controller")
       );
@@ -390,8 +332,51 @@ const onMouseDown = (event) => {
       default:
         return;
     }
-  }
-  isDragging = true;
+  } else if (objectArr.length > 0) {
+    // 그 외 방의 모양 변경 등
+    const { object } = objectArr[0];
+    const { name } = object;
+
+    let room;
+    switch (name) {
+      case circleName:
+        room = object.parent.parent;
+
+        const cg = room.getObjectByName(circleGroupName);
+
+        const clickedIdx = getClickedCircleIndex({ cg, object });
+        if (clickedIdx === null) {
+          isChangingObject = {
+            isDBClick: false,
+            isHover: false,
+            isDragging: false,
+            changingObjectId: null,
+            circleIdx: null,
+            name: null,
+            circleId: null,
+          };
+          break;
+        }
+        isChangingObject = {
+          ...isChangingObject,
+          changingObjectId: room.id,
+          isDragging: true,
+          circleIdx: clickedIdx,
+          circleId: object.id,
+          name,
+        };
+
+        return;
+
+      case floorName:
+        //
+        isRoomClick = {
+          isClick: true,
+          object: object,
+        };
+        break;
+    }
+  } else isDragging = true;
   previousMousePosition = { x: event.clientX, y: event.clientY };
 };
 
@@ -633,9 +618,6 @@ const create2DScene = () => {
     if (obj.name === "room") {
       create2DRoom(obj);
       scene.remove(obj);
-
-      // D3Objects.push(obj);
-      // scene.add(D2Shapes({ object: obj, cameraZoom }));
     }
   });
   D3Objects.forEach((obj) => scene.remove(obj));
@@ -645,7 +627,7 @@ const create3DScene = () => {
   if (!scene) return;
   scene.children.forEach((obj) => {
     if (obj.name === "room") {
-      const newRoom = create3DRoom(obj);
+      const newRoom = new D3Room({ object: obj });
       scene.add(newRoom);
       scene.remove(obj);
     }

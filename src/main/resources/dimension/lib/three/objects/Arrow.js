@@ -1,7 +1,4 @@
 import { THREE } from "../loader/three";
-import { MilliName } from "../objectConf/objectNames";
-import { Text } from "./text";
-import { uuidv4 as uuid } from "../uuid";
 import { arrowsY } from "../objectConf/renderOrders";
 
 export class Arrow extends THREE.Mesh {
