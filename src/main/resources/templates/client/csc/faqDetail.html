@@ -1,45 +1,57 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAQ Detail</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            padding-top: 50px;
-        }
-        .faq-detail {
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background-color: #f9f9f9;
-        }
-        .faq-title {
-            margin-bottom: 20px;
-        }
-        .faq-content {
-            white-space: pre-wrap; /* Preserve whitespace and line breaks */
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="faq-detail">
-            <h2 class="faq-title" th:text="${faq.faqTitle}">FAQ Title</h2>
-            <p class="faq-content" th:text="${faq.faqContent}">FAQ Content</p>
-            <p><strong>카테고리</strong> <span th:text="${faq.faqCategory}">Category</span></p>
-            <p><strong>글쓴이</strong> <span th:text="${faq.userEntity.UName}">Author</span></p>
-            <a th:href="@{/board/faq}" class="btn btn-primary">목록으로</a>
-        </div>
-    </div>
 
-    <!-- Bootstrap JS and dependencies -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>FAQ Detail</title>
+	<!-- Bootstrap CSS -->
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+	<style>
+		.faqbody {
+			margin-top: 140px;
+		}
+
+		.faq-detail {
+			max-width: 800px;
+			margin: auto;
+			padding: 20px;
+			border: 1px solid #ddd;
+			border-radius: 8px;
+			background-color: #f9f9f9;
+		}
+
+		.faq-title {
+			margin-bottom: 20px;
+		}
+
+		.faq-content {
+			white-space: pre-wrap;
+			/* Preserve whitespace and line breaks */
+		}
+	</style>
+	<link rel="stylesheet" href="/css/header.css" />
+	<link rel="stylesheet" href="/css/reset.css" />
+</head>
+
+<body>
+	<div class="faqbody">
+		<th:block th:include="~{fragments/header.html::header}"></th:block>
+		<div class="container">
+			<div class="faq-detail">
+				<h2 class="faq-title" th:text="${faq.faqTitle}">FAQ Title</h2>
+				<p class="faq-content" th:text="${faq.faqContent}">FAQ Content</p>
+				<p><strong>카테고리</strong> <span th:text="${faq.faqCategory}">Category</span></p>
+				<p><strong>글쓴이</strong> <span th:text="${faq.userEntity.UName}">Author</span></p>
+				<a th:href="@{/board/faq}" class="btn btn-primary">목록으로</a>
+			</div>
+		</div>
+
+		<!-- Bootstrap JS and dependencies -->
+		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	</div>
 </body>
+
 </html>
