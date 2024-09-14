@@ -288,8 +288,7 @@
 					buttonHtml = `<button onclick="showRefundReasonModal('${order.merchantUId}')">환불 사유 보기</button>`;
 				} else {
 					buttonHtml = `<button onclick="cancelPay(this)">환불하기</button>`;
-				}
-
+				}console.log('order',order)
 				orderItem.innerHTML = `
 		            <div class="order-details">
 		                <h3>주문 번호: ${order.orderedNumber}</h3>
@@ -307,7 +306,7 @@
 		                    <p><strong>배송 상태:</strong> ${order.shipmentState}</p>
 		                </div>
 		                <hr>
-						<input type = "hidden" data-merchant-uid = "${order.merchantUId}"/>
+						<input type = "hidden" id="merchantUId" th:text = "${order.merchantUId}"/>
 						${buttonHtml}
 		            </div>
 		        `;
@@ -316,19 +315,13 @@
 			});
 		}
 		function cancelPay(button) {
-			// 버튼 근처의 input 요소에서 merchantUId 값을 가져옵니다.
-			var merchantUId = button.closest('.order-item').querySelector('input[data-merchant-uid]').dataset.merchantUid;
-
-			// 모달창을 띄우기 전에 selectedMerchantUId를 설정합니다.
-			selectedMerchantUId = merchantUId;
-
-			// 모달창을 표시합니다.
 			document.getElementById("refundModal").style.display = "block";
 		}
 
 		// 모달 관련 코드
 		document.addEventListener("DOMContentLoaded", function () {
 			var refundModal = document.getElementById("refundModal");
+				
 			var refundReasonModal = document.getElementById("refundReasonModal");
 
 			var refundReasonInput = document.getElementById("refundReasonInput");
@@ -372,12 +365,16 @@
 
 			// 환불 요청 처리
 			confirmRefundBtn.addEventListener("click", function () {
+				
+				var merchantUId = document.getElementById("merchantUId").value;
+				
+				console.log(merchantUId);
 				var refundReason = refundReasonInput.value.trim();
 				if (refundReason === "") {
 					alert("환불 사유를 입력하세요.");
 					return;
 				}
-				refundOrder(selectedMerchantUId, refundReason);
+				refundOrder(merchantUId, refundReason);
 			});
 
 			function refundOrder(merchantUId, refundReason) {
