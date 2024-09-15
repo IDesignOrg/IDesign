@@ -1,90 +1,139 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notice Detail</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            padding-top: 50px;
-        }
-        .not-detail {
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background-color: #f9f9f9;
-        }
-        .not-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .not-author-date {
-            font-size: 14px;
-            color: #666;
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .not-author-date .separator {
-            height: 14px;
-            width: 1px;
-            background-color: #ddd;
-            margin: 0 10px;
-        }
-        .not-content {
-            white-space: pre-wrap; /* Preserve whitespace and line breaks */
-            margin-bottom: 20px;
-        }
-        .divider {
-            border-bottom: 1px solid #ddd;
-            margin-bottom: 20px;
-        }
-        .container {
-            margin-top: 140px;
-        }
-    </style>
-    <link rel="stylesheet" href="/css/header.css" />
-    <link rel="stylesheet" href="/css/reset.css" />
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Notice Detail</title>
+	<!-- Bootstrap CSS -->
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="/css/header.css" />
+	<link rel="stylesheet" href="/css/reset.css" />
+	<style>
+		body {
+			padding-top: 50px;
+			font-family: 'Noto Sans KR', '맑은 고딕', sans-serif;
+			/* 한글 폰트 설정 */
+			line-height: 1.7;
+			/* 줄 간격 */
+			color: #333;
+			/* 기본 텍스트 색상 */
+		}
+
+		.not-detail {
+			max-width: 800px;
+			margin: auto;
+			padding: 25px;
+			border: 1px solid #ddd;
+			border-radius: 10px;
+			background-color: #f9f9f9;
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+		}
+
+		.not-title {
+			font-size: 28px;
+			/* 제목 크기 설정 */
+			font-weight: 700;
+			/* 제목 굵기 */
+			color: #000;
+			/* 제목 색상 */
+			margin-bottom: 15px;
+			/* 제목과 다른 요소들 간의 여백 */
+		}
+
+		.not-author-date {
+			font-size: 16px;
+			/* 작성자와 날짜 크기 */
+			color: #666;
+			/* 작성자와 날짜는 회색 */
+			display: flex;
+			align-items: center;
+			margin-bottom: 20px;
+		}
+
+		.not-author-date .separator {
+			height: 14px;
+			width: 1px;
+			background-color: #ddd;
+			margin: 0 10px;
+		}
+
+		.not-content {
+			font-size: 18px;
+			/* 내용 글자 크기 */
+			color: #444;
+			/* 내용은 짙은 회색 */
+			line-height: 1.8;
+			/* 내용의 줄 간격 */
+			white-space: pre-wrap;
+			/* 줄 바꿈 유지 */
+			margin-bottom: 25px;
+			/* 하단 여백 */
+		}
+
+		.divider {
+			border-bottom: 1px solid #ddd;
+			margin-bottom: 20px;
+		}
+
+		.btn-primary {
+			font-size: 16px;
+			font-weight: 600;
+			padding: 10px 20px;
+			background-color: #007bff;
+			/* 버튼 색상 */
+			border: none;
+			border-radius: 5px;
+			color: white;
+		}
+
+		.btn-primary:hover {
+			background-color: #0056b3;
+			/* 호버 시 색상 변경 */
+		}
+
+		.container {
+			margin-top: 100px;
+		}
+	</style>
+
 </head>
+
 <body>
-    <th:block th:include="~{fragments/header.html::header}"></th:block>
-    <div class="container">
-        <div class="not-detail">
-            <h2 class="not-title" th:text="${inquiry.inqTitle}">FAQ Title</h2>
-            <div class="not-author-date">
-                <span th:text="${inquiry.user.UName}">Author</span>
-                <div class="separator"></div>
-                <span th:text="${inquiry.inqRegisteredDate}">2023-09-09</span>
-            </div>
-            <div class="divider"></div>
-            <p class="not-content" th:text="${inquiry.inqContent}">FAQ Content</p>
-			
-            <a th:if="${inquiry.answer == null}">th:href="@{/board/notices}" class="btn btn-primary">목록으로</a>
-        </div>
-    </div>
+	<th:block th:include="~{fragments/header.html::header}"></th:block>
+	<div class="container">
+		<div class="not-detail">
+			<h2 class="not-title" th:text="${inquiry.inqTitle}">FAQ Title</h2>
+			<div class="not-author-date">
+				<span th:text="${inquiry.user.UName}">Author</span>
+				<div class="separator"></div>
+				<span th:text="${inquiry.inqRegisteredDate}">2023-09-09</span>
+			</div>
+			<div class="divider"></div>
+			<p class="not-content" th:text="${inquiry.inqContent}">FAQ Content</p>
+
+			<a th:if="${inquiry.answer == null}">th:href="@{/board/notices}" class="btn btn-primary">목록으로</a>
+		</div>
+	</div>
 
 	<div class="container" th:if="${inquiry.answer != null}">
-	        <div class="not-detail">
-	            <h2 class="not-title">답변</h2>
-	            <div class="not-author-date">
-	                <span th:text="${inquiry.answer.user.UName}">Author</span>
-	                <div class="separator"></div>
-	                <span th:text="${inquiry.answer.ansRegisteredDate}">2023-09-09</span>
-	            </div>
-	            <div class="divider"></div>
-	            <p class="not-content" th:text="${inquiry.answer.ansContent}">FAQ Content</p>
-	            <a th:href="@{/board/notices}" class="btn btn-primary">목록으로</a>
-	        </div>
-	    </div>
+		<div class="not-detail">
+			<h2 class="not-title">답변</h2>
+			<div class="not-author-date">
+				<span th:text="${inquiry.answer.user.UName}">Author</span>
+				<div class="separator"></div>
+				<span th:text="${inquiry.answer.ansRegisteredDate}">2023-09-09</span>
+			</div>
+			<div class="divider"></div>
+			<p class="not-content" th:text="${inquiry.answer.ansContent}">FAQ Content</p>
+			<a th:href="@{/board/notices}" class="btn btn-primary">목록으로</a>
+		</div>
+	</div>
 
-    <!-- Bootstrap JS and dependencies -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<!-- Bootstrap JS and dependencies -->
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>
