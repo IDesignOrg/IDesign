@@ -118,15 +118,15 @@
 
     <script>
         function findUserID() {
-            var formData = {
-                UMail: $('#UMail').val(),
-            };
+      
+           var UMail = $('#UMail').val();
 
             $.ajax({
-                type: 'POST',
+                type: 'GET',
                 url: '/auth/find/user/id',
-                contentType: "application/json",
-                data: JSON.stringify(formData),
+                data: {
+					UMail: UMail
+				},
                 success: function (response) {
                     if (response) {
                         alert("회원님의 아이디는 : " + response + "입니다.");
@@ -134,9 +134,14 @@
                     }
                 },
                 error: function (xhr, status, error) {
-                    if (xhr.status == 401) {
-                        alert("아이디를 찾을 수 없습니다.");
-                    }
+                    var res = xhr.responseText;
+					if(res == "NoMail"){
+						alert("이메일을 입력해주세요.");
+						window.location.href="/auth/findUId";
+					}else{
+						alert("사용자의 정보가 존재하지 않습니다.");
+						window.location.href="/auth/findUId";
+					}
                 }
             });
         }

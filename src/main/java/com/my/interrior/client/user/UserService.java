@@ -57,6 +57,11 @@ public class UserService {
         dto.setMessage("안녕하세요. 아이디자인 임시비밀번호 안내 관련 이메일 입니다." + " 회원님의 임시 비밀번호는 "
                 + str + " 입니다." + "로그인 후에 마이페이지에서 비밀번호 변경을 해주세요");
         UserEntity user = userRepository.findByUMail(mail);
+        
+        if(user == null) {
+        	return null;
+        }
+        
         user.setUPw(passwordEncoder.encode(str));
         
         userRepository.save(user);
