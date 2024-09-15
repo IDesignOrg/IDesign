@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>이벤트 페이지</title>
+    <link rel="stylesheet" href="/public/css/header.css" />
+    <link rel="stylesheet" href="/public/css/reset.css" />
+    <link rel="stylesheet" href="/public/css/event.css" />
+  </head>
+
+  <body>
+    <th:block th:include="~{fragments/header.html::header}"></th:block>
+    <div class="event-page">
+      <div class="container">
+        <h1>이벤트 목록</h1>
+
+        <ul class="event-list">
+          <li th:if="${session.UId} == admin">
+            <a th:href="@{/board/event/write}">글 쓰기</a>
+          </li>
+          <li th:each="event : ${events.content}">
+            <div class="event-details">
+              <a
+                th:href="@{/board/eventDetail(eventNo=${event.eventNo})}"
+                class="event-title"
+                th:text="${event.eventTitle}"
+              ></a>
+              <img th:src="${event.eventImg}" />
+            </div>
+          </li>
+        </ul>
+
+        <!-- Pagination links -->
+        <nav aria-label="Page navigation">
+          <ul class="pagination">
+            <li th:class="${events.first ? 'page-item disabled' : 'page-item'}">
+              <a class="page-link" th:href="@{/board/event(page=0)}">&laquo;</a>
+            </li>
+            <li
+              th:each="pageNum : ${#numbers.sequence(0, events.totalPages - 1)}"
+              th:class="${events.number == pageNum ? 'page-item active' : 'page-item'}"
+            >
+              <a
+                class="page-link"
+                th:href="@{/board/event(page=${pageNum})}"
+                th:text="${pageNum + 1}"
+              ></a>
+            </li>
+            <li th:class="${events.last ? 'page-item disabled' : 'page-item'}">
+              <a
+                class="page-link"
+                th:href="@{/board/event(page=${events.totalPages - 1})}"
+                >&raquo;</a
+              >
+            </li>
+          </ul>
+        </nav>
+
+        <!-- Home button -->
+        <div class="home-button">
+          <a href="/" class="btn">홈으로</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

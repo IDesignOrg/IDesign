@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>이벤트 쿠폰 만들기</title>
+    <link rel="stylesheet" href="/css/adminpage.css" />
+    <link rel="stylesheet" href="/public/css/eventWrite.css" />
+    <link rel="stylesheet" href="/css/adminsidebar.css" />
+  </head>
+  <body>
+    <th:block th:include="~{fragments/adminsidebar.html :: sidebar}"></th:block>
+
+    <form
+      action="/board/event/write"
+      method="post"
+      enctype="multipart/form-data"
+    >
+      <h2>이벤트 쿠폰 만들기</h2>
+      <label for="eventTitle">이벤트 제목:</label>
+      <input
+        type="text"
+        id="eventTitle"
+        name="eventTitle"
+        class="event_input"
+        required
+      />
+
+      <label for="eventContent">이벤트 내용:</label>
+      <textarea
+        cols="50"
+        rows="5"
+        id="eventContent"
+        name="eventContent"
+        class="event_input"
+        required
+      ></textarea>
+
+      <label for="eventImg">이벤트 이미지:</label>
+      <input
+        type="file"
+        id="eventImg"
+        name="eventImg"
+        class="event_input"
+        required
+      />
+
+      <label for="couponNo">쿠폰 선택:</label>
+      <input
+        type="text"
+        id="couponNo"
+        name="couponNo"
+        class="event_input"
+        readonly
+        required
+      />
+      <button type="button" id="selectCouponBtn" class="event_button">
+        쿠폰 선택
+      </button>
+
+      <input type="submit" value="이벤트 등록" class="event_submit" />
+    </form>
+
+    <!-- 모달 창 -->
+    <div id="couponModal" class="event_modal hidden">
+      <div class="event_modal-content">
+        <span class="event_close" id="close-btn">&times;</span>
+        <h2>쿠폰 선택</h2>
+        <table id="couponTable" class="event_table">
+          <thead>
+            <tr>
+              <th>쿠폰 번호</th>
+              <th>쿠폰 이름</th>
+              <th>할인율</th>
+              <th>선택</th>
+            </tr>
+          </thead>
+          <tbody id="coupon-table">
+            <!-- 쿠폰 데이터를 반복문으로 표시 -->
+            <tr th:each="coupon : ${coupons}">
+              <td th:text="${coupon.couponNo}"></td>
+              <td th:text="${coupon.couponName}"></td>
+              <td th:text="${coupon.couponDiscount} + '%'"></td>
+              <td>
+                <button
+                  type="button"
+                  class="event_button selectCoupon"
+                  th:data-coupon-id="${coupon.couponNo}"
+                  th:text="${coupon.couponName}"
+                >
+                  선택
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="modal_bg" />
+    </div>
+    <!-- 
+    <script>
+      // 모달 창 열기
+      var modal = document.getElementById("couponModal");
+      var btn = document.getElementById("selectCouponBtn");
+      var span = document.getElementsByClassName("event_close")[0];
+
+      btn.onclick = function () {
+        modal.style.display = "block";
+      };
+
+      span.onclick = function () {
+        modal.style.display = "none";
+      };
+
+      window.onclick = function (event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
+
+      // 쿠폰 선택 시 처리
+      $(document).on("click", ".selectCoupon", function () {
+        var couponId = $(this).data("coupon-id");
+        $("#couponNo").val(couponId);
+        modal.style.display = "none";
+      });
+    </script> -->
+  </body>
+</html>

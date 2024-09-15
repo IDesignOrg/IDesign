@@ -1,20 +1,34 @@
 const path = require("path");
+const glob = require("glob");
 const webpack = require("webpack");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 const webpackMode = process.env.NODE_ENV || "development";
 
 module.exports = {
   mode: webpackMode,
-  entry: {
-    dashboard: "./dimension/src/dashboard.js",
-    three: "./dimension/src/three.js",
-  },
+  // entry: {
+  //   dashboard: "./dimension/src/dashboard.js",
+  //   three: "./dimension/src/three.js",
+  // },
+  entry: glob
+    .sync(path.resolve(__dirname, "src/*.js"))
+    .reduce((entries, filePath) => {
+      const entryName = path.basename(filePath, path.extname(filePath)); // 파일명만 추출
+      entries[entryName] = filePath;
+      return entries;
+    }, {}),
+  // entry: glob.sync("./src/*.js").reduce((entries, filePath) => {
+  //   // console.log("entries", entries);
+  //   const entryName = path.basename(filePath, path.extname(filePath)); // 파일명만 추출
+  //   entries[entryName] = filePath;
+  //   return entries;
+  // }, {}),
   output: {
-    path: path.resolve("./dist"),
+    path: path.resolve("./dist/src"),
     filename: "[name].min.js",
     publicPath: "/",
   },
@@ -58,29 +72,46 @@ module.exports = {
     ],
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      filename: "three.html",
-      template: "./dimension/page/three.html",
-      chunks: ["three"],
-      minify:
-        process.env.NODE_ENV === "production"
-          ? {
-              collapseWhitespace: true,
-              removeComments: true,
-            }
-          : false,
-    }),
-    new HtmlWebpackPlugin({
-      filename: "dashboard.html",
-      template: "./dimension/page/dashboard.html",
-      chunks: ["dashboard"],
-      minify:
-        process.env.NODE_ENV === "production"
-          ? {
-              collapseWhitespace: true,
-              removeComments: true,
-            }
-          : false,
+    // new HtmlWebpackPlugin({
+    //   filename: "three.html",
+    //   template: "./dimension/page/three.html",
+    //   chunks: ["three"],
+    //   minify:
+    //     process.env.NODE_ENV === "production"
+    //       ? {
+    //           collapseWhitespace: true,
+    //           removeComments: true,
+    //         }
+    //       : false,
+    // }),
+    // new HtmlWebpackPlugin({
+    //   filename: "dashboard.html",
+    //   template: "./dimension/page/dashboard.html",
+    //   chunks: ["dashboard"],
+    //   minify:
+    //     process.env.NODE_ENV === "production"
+    //       ? {
+    //           collapseWhitespace: true,
+    //           removeComments: true,
+    //         }
+    //       : false,
+    // }),
+    ...glob.sync("./pages/*.html").map((file) => {
+      const fileName = path.basename(file); // 파일명 추출 (확장자 포함)
+      const chunkName = path.basename(file, path.extname(file)); // 확장자 제외한 파일명으로 chunk 설정
+
+      return new HtmlWebpackPlugin({
+        filename: fileName, // 출력할 HTML 파일 이름
+        template: file, // 원본 HTML 파일 경로
+        chunks: [chunkName], // 해당 HTML에 포함될 JS 번들 (entry에서 같은 이름을 사용해야 함)
+        minify:
+          process.env.NODE_ENV === "production"
+            ? {
+                collapseWhitespace: true,
+                removeComments: true,
+              }
+            : false,
+      });
     }),
     new CleanWebpackPlugin(),
     // CopyWebpackPlugin: 그대로 복사할 파일들을 설정하는 플러그인

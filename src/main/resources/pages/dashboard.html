@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/public/css/reset.css" />
+    <link rel="stylesheet" href="/public/css/dashboard.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"
+    />
+    <title>대쉬보드</title>
+  </head>
+
+  <body>
+    <div id="app">
+      <div id="side" class="block-border spread">
+        <div id="side-top">
+          <header class="block-border">
+            <!--아이디자인 로고 wook-->
+            <img src="/dist/public/img/logo.png" />
+            <div id="arrow-box">
+              <i class="arrow left"></i>
+              <i class="arrow right"></i>
+            </div>
+          </header>
+        </div>
+
+        <div id="side-bottom">
+          <nav>
+            <a class="sidebar-nav" href="#">
+              <div>
+                <i class="fas fa-home"></i>
+              </div>
+              <span>HOME</span>
+            </a>
+            <a class="sidebar-nav" href="#">
+              <div>
+                <i class="fas fa-home"></i>
+              </div>
+              <span>HOME</span>
+            </a>
+            <a class="sidebar-nav" href="#">
+              <div>
+                <i class="fas fa-home"></i>
+              </div>
+              <span>HOME</span>
+            </a>
+          </nav>
+        </div>
+      </div>
+      <div id="main">
+        <div id="main-top" class="block-border">
+          <div id="searching-box">
+            <span id="searching-span">내 프로젝트 찾기</span>
+            <div id="input-box">
+              <input type="text" id="searching-input" />
+              <div class="search-icon">
+                <i class="fas fa-search"></i>
+              </div>
+            </div>
+          </div>
+          <div id="user-info" th:text="${userId}"></div>
+        </div>
+        <div id="main-bottom">
+          <div id="sort-bar">
+            <div>
+              <div id="selected-sort">
+                <div id="selected">
+                  <span id="recent">최신순</span>
+                  <i class="fas fa-angle-down"></i>
+                </div>
+                <ul id="select-options">
+                  <li class="select-option" id="recent">최신순</li>
+                  <li class="select-option" id="asc">오름차순</li>
+                  <li class="select-option" id="desc">내림차순</li>
+                </ul>
+              </div>
+            </div>
+            <button id="trash">
+              <span>삭제하기</span>
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+          <div id="container">
+            <div id="grid-wrapper">
+              <div class="project" id="create-project">
+                <div class="renovate-img">
+                  <div id="plus-btn">
+                    <div>
+                      <i class="fas fa-plus"></i>
+                    </div>
+                  </div>
+                  <img
+                    src="/dimension/public/img/renovate.png"
+                    alt="https://kr.freepik.com/icons/%EC%9D%B8%ED%85%8C%EB%A6%AC%EC%96%B4"
+                  />
+                </div>
+                <div class="project-src">
+                  <div>새로운 프로젝트</div>
+                </div>
+              </div>
+            </div>
+            <div id="observer">
+              <span class="loader"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="project-description" id="pdc">
+        <div class="description-wrapper">
+          <div class="d-w-">프로젝트에 대한 간단한 설명을 적어주세요.</div>
+          <div class="dw-t">
+            <div>제목</div>
+            <input type="text" id="description-title" />
+          </div>
+          <div class="dw-d">
+            <div>제목</div>
+            <textarea id="description-des" style="resize: none"></textarea>
+          </div>
+          <div class="submit-btns">
+            <button id="create-p-btn">시작하기</button>
+          </div>
+        </div>
+
+        <div class="description-bg" id="pdbg" />
+      </div>
+    </div>
+  </body>
+</html>
