@@ -106,8 +106,8 @@
 	<th:block th:include="~{fragments/header.html::header}"></th:block>
 	<div id="form-container">
 		<form id="findPwForm">
-			<input type="text" id="UName" name="UName" placeholder="이름을 입력해주세요."/>
-			<input type="text" id="UMail" name="UMail" placeholder="이메일을 입력해주세요."/>
+			<input type="text" id="UName" name="UName" placeholder="이름을 입력해주세요." />
+			<input type="text" id="UMail" name="UMail" placeholder="이메일을 입력해주세요." />
 			<button type="button" onclick="findUPw()">비밀번호 재설정</button>
 			<div id="faqBox">
 				<p>회원가입 시 입력한 정보가 기억나지 않는다면?</p>
@@ -125,19 +125,22 @@
 				type: 'GET',
 				url: '/auth/findPw/' + UName,
 				data: {
-					UName: UName,
 					UMail: UMail
 				},
 				success: function (res) {
 					alert('임시 비밀번호가 성공적으로 발급되었습니다. 이메일을 확인해주세요.');
 					window.location.href = "/auth/login";
 				},
-				fail: function (res) {
-					if (res == "fail") {
-						alert('사용자의 정보가 없습니다.')
-						window.location.href = "/auth/login";
+				error: function (xhr, status, error) {
+					var res = xhr.responseText;
+					if (res == "NoMail") {
+						alert('이메일을 입력해주세요.');
+						window.location.href = "/auth/findUPw";
+					} else if (res == "NoName") {
+						alert('이름을 입력해주세요.');
+						window.location.href = "/auth/findUPw";
 					} else {
-						alert('사용자의 아이디 또는 비밀번호를 다시 입력해주세요.')
+						alert('유효하지 않은 사용자입니다.');
 						window.location.href = "/auth/findUPw";
 					}
 				}

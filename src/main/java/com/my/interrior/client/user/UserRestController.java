@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.my.interrior.common.MailDTO;
 
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
+@Slf4j
 public class UserRestController {
 
 	@Autowired
@@ -27,18 +29,23 @@ public class UserRestController {
 	public ResponseEntity<String> findUPw(@ModelAttribute UserMailDTO dto, @PathVariable("UName") String UName,
 			Model model) {
 		String mail = dto.getUMail();
-		String name = dto.getUName();
 
-		MailDTO user = userService.checkMailAndName(mail, name);
+		log.info("mail: {}, name :{}", mail, UName);
+		// mail을 입력 안 했을 때
+		if (mail == null || mail.isEmpty())
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("NoMail");
+		// 이름을 입력 안 했을 때
+		if (UName == null || UName.isEmpty())
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("NoName");
 
-		if (user != null) {
+		MailDTO user = userService.checkMailAndName(mail, UName);
 
-			userService.mailSend(user);
-			return ResponseEntity.ok("success");
-		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("fail");
-		}
+		// 맞는 데이터가 없을 때
+		if (user == null)
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NoData");
 
+		userService.mailSend(user);
+		return ResponseEntity.ok("success");
 	}
 
 	@GetMapping("/auth/check/{UId}")
@@ -49,13 +56,13 @@ public class UserRestController {
 		return ResponseEntity.ok(user != null ? "duplicated" : "available");
 
 	}
-	
+
 	@GetMapping("/auth/check/email/{UMail}")
-	public ResponseEntity<String> checkDuplicatedEmail(@PathVariable("UMail") String email){
-		
+	public ResponseEntity<String> checkDuplicatedEmail(@PathVariable("UMail") String email) {
+
 		UserEntity user = userRepository.findByUMail(email);
-		
+
 		return ResponseEntity.ok(user != null ? "duplicated" : "available");
 	}
-	
+
 }

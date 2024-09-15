@@ -133,17 +133,19 @@ public class UserController {
 		return "client/findUPw";
 	}
 
-	@PostMapping("/auth/find/user/id")
-	public ResponseEntity<String> findUserID(@RequestBody Map<String, String> requestData) throws Exception {
-		String UMail = requestData.get("UMail");
+	@GetMapping("/auth/find/user/id")
+	public ResponseEntity<String> findUserID(@RequestParam("UMail") String UMail) throws Exception {
 
+		if(UMail == null || UMail.isEmpty())
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("NoMail");
+		
 		UserEntity user = userRepository.findByUMail(UMail);
 
 		if (user != null) {
 			String ID = user.getUId();
 			return ResponseEntity.ok(ID);
 		} else {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NoData");
 		}
 	}
 
