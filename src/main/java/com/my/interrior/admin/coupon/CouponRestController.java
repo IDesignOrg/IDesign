@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.my.interrior.admin.page.CouponDTO;
 import com.my.interrior.client.event.coupon.CouponEntity;
 import com.my.interrior.client.event.coupon.CouponMapEntity;
 import com.my.interrior.client.user.UserEntity;
@@ -34,9 +36,10 @@ public class CouponRestController {
 	private final UserRepository userRepository;
 
 	// 나중에 couponLimit으로 사용했는지 안했는지 파악하자.(아마 결제에서)
-	@PostMapping("/get/coupon/{couponNo}")
-	public ResponseEntity<String> getCoupon(@PathVariable("couponNo") Long couponNo, HttpSession session) {
-		CouponEntity coupon = couponService.findCouponNumber(couponNo);
+	@PostMapping("/post/issue_coupon/{couponNo}")
+	public ResponseEntity<String> getCoupon(@RequestBody CouponDTO couponNo, HttpSession session) {
+		Long CNo = couponNo.getCouponNo();
+		CouponEntity coupon = couponService.findCouponNumber(CNo);
 
 		CouponMapEntity couponMapEntity = new CouponMapEntity();
 		String userId = (String) session.getAttribute("UId");
