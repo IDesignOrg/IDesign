@@ -13,7 +13,7 @@ import lombok.ToString;
 @ToString
 public class SaveProjectRequest {
 
-	private String projectId;
+	private String project_id;
 	private List<DataRequest> dataEntities;
 	private ProjectRequest projectSrc;
 	

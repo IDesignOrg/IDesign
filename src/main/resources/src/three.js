@@ -682,7 +682,7 @@ const onSave = async () => {
 
   // Blob 데이터와 파일명으로 파일 추가
   formData.append("file", blobData, `${userId}_${project_id}_screenshot.jpg`);
-
+	console.log("project_id: ", project_id);
   const req = {
     project_id,
     dataEntities,

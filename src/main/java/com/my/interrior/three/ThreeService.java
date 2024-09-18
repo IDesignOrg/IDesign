@@ -1,7 +1,9 @@
 package com.my.interrior.three;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -94,22 +96,18 @@ public class ThreeService {
 	@Transactional
 	public String saveData(SaveProjectRequest request, MultipartFile thumbnail, String userId) throws IOException {
 		UserEntity user = userRepository.findByUId(userId);
-		String projectId = request.getProjectId();
+		String projectId = request.getProject_id();
 
 		String file = uploadFile(thumbnail);
 
 		System.out.println("file : " + file);
 
 		log.info("userId : {}, projectId : {}, user : {}", userId, projectId, user);
-		log.info(" src: {}, title: {}", request.getProjectSrc().getSrc(), request.getProjectSrc().getTitle());
 
 		// 저장하기 전에 ThreeEntity 먼저 저장시켜야 함.
-		ThreeEntity threeEntity = new ThreeEntity();
+		ThreeEntity threeEntity = threeRepository.findByProjectId(projectId);
 		threeEntity.setProjectId(projectId);
-		threeEntity.setUserEntity(user);
 		threeEntity.setThumbnail(file);
-		threeEntity.setSrc(request.getProjectSrc().getSrc());
-		threeEntity.setTitle(request.getProjectSrc().getTitle());
 		// three 저장
 		threeRepository.save(threeEntity);
 
@@ -143,5 +141,49 @@ public class ThreeService {
 			}
 		}
 		return projectId;
+	}
+	
+	public SaveProjectRequest getProjectData(String projectId) {
+		ThreeEntity three = threeRepository.findByProjectId(projectId);
+		
+		if(three == null) return null;
+		
+		SaveProjectRequest request = new SaveProjectRequest();
+		
+		request.setProject_id(projectId);
+		request.setProjectSrc(new SaveProjectRequest.ProjectRequest());
+		request.getProjectSrc().setTitle(three.getTitle());
+		request.getProjectSrc().setSrc(three.getSrc());
+		
+		List<SaveProjectRequest.DataRequest> dataRequests = new ArrayList<>();
+		List<DataEntity> dataEntities = dataRepository.findByThreeEntity(three);
+		
+		if(dataEntities == null) return null;
+		
+		for(DataEntity dataEntity : dataEntities) {
+			SaveProjectRequest.DataRequest dataRequest = new SaveProjectRequest.DataRequest();
+			dataRequest.setOid(dataEntity.getOid());
+			dataRequest.setType(dataEntity.getType());
+			dataRequest.setRotation(dataEntity.getRotation());
+			dataRequest.setParent(dataEntity.getParent());
+			dataRequest.setChildren(dataEntity.getChildren());
+			
+			List<SaveProjectRequest.PointRequest> pointRequests = new ArrayList<>();
+			List<PointEntity> pointEntities = pointRepository.findByData(dataEntity);
+			
+			for(PointEntity pointEntity : pointEntities) {
+				SaveProjectRequest.PointRequest pointRequest = new SaveProjectRequest.PointRequest();
+				
+				pointRequest.setX(pointEntity.getX());
+				pointRequest.setY(pointEntity.getY());
+				pointRequest.setZ(pointEntity.getZ());
+				pointRequests.add(pointRequest);
+			}
+			dataRequest.setPoints(pointRequests);
+			dataRequests.add(dataRequest);
+		}
+		request.setDataEntities(dataRequests);
+		
+		return request;
 	}
 }
