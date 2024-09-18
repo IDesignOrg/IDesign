@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>비밀번호 확인</title>
+    <!--이거 4개는 항상 가져가기 -->
+    <link rel="stylesheet" href="/css/reset.css" />
+    <link rel="stylesheet" href="/css/header.css" />
+    <link rel="stylesheet" href="/public/css/findUPw.css" />
+    <script src="/js/common.js"></script>
+  </head>
+
+  <body>
+    <th:block th:include="~{fragments/header.html::header}"></th:block>
+    <div id="form-container">
+      <form id="findPwForm">
+        <input
+          type="text"
+          id="UName"
+          name="UName"
+          placeholder="이름을 입력해주세요."
+        />
+        <input
+          type="text"
+          id="UMail"
+          name="UMail"
+          placeholder="이메일을 입력해주세요."
+        />
+        <button type="button" id="find-PW-btn">비밀번호 재설정</button>
+        <div id="faqBox">
+          <p>회원가입 시 입력한 정보가 기억나지 않는다면?</p>
+          <p><a href="/board/faq">고객센터 문의하기(1234-5678)</a></p>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

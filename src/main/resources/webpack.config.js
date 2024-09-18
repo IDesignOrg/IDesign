@@ -15,7 +15,7 @@ module.exports = {
   //   three: "./dimension/src/three.js",
   // },
   entry: glob
-    .sync(path.resolve(__dirname, "src/*.js"))
+    .sync(path.resolve(__dirname, "src/**/*.js"))
     .reduce((entries, filePath) => {
       const entryName = path.basename(filePath, path.extname(filePath)); // 파일명만 추출
       entries[entryName] = filePath;
@@ -96,7 +96,7 @@ module.exports = {
     //         }
     //       : false,
     // }),
-    ...glob.sync("./pages/*.html").map((file) => {
+    ...glob.sync("./pages/**/*.html").map((file) => {
       const fileName = path.basename(file); // 파일명 추출 (확장자 포함)
       const chunkName = path.basename(file, path.extname(file)); // 확장자 제외한 파일명으로 chunk 설정
 

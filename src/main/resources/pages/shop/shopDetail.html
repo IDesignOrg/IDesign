@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>상품 상세 페이지</title>
+    <link rel="stylesheet" href="/public/css/style.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="/public/css/shop/shopDetail.css" />
+    <link rel="stylesheet" href="/public/css/header.css" />
+    <link rel="stylesheet" href="/public/css/reset.css" />
+    <link rel="stylesheet" href="/public/css/reset.css" />
+  </head>
+
+  <body>
+    <th:block th:include="~{fragments/header.html::header}"></th:block>
+    <div class="product-page">
+      <div class="container">
+        <div class="product-detail">
+          <!-- 왼쪽: 상품 사진 -->
+          <div class="left">
+            <img
+              th:src="${shops.shopMainPhoto}"
+              alt="메인 사진"
+              class="main-image"
+            />
+          </div>
+          <!-- 오른쪽: 상품 정보 -->
+          <div class="right">
+            <h1 th:text="${shops.shopTitle}"></h1>
+            <p class="product-price" th:text="'₩' + ${shops.shopPrice}"></p>
+            <p
+              class="product-discount"
+              th:text="'할인율: ' + ${shops.shopDiscont} + '%'"
+            ></p>
+            <p class="product-description" th:text="${shops.shopContent}"></p>
+            <label>카테고리:</label>
+            <p th:text="${shops.shopCategory}"></p>
+
+            <h3>옵션</h3>
+            <form action="/auth/cart" method="post" id="cartForm">
+              <input type="hidden" name="shopNo" th:value="${shops.shopNo}" />
+              <div class="options" th:each="option : ${shopOption}">
+                <label th:text="${option.shopOptionName}"></label>
+                <select name="options" multiple>
+                  <option selected disabled th:text="${option.shopOptionName}">
+                    Select an option
+                  </option>
+                  <option
+                    th:each="value : ${option.shopOptionValues}"
+                    th:value="${value.shopOptionValueNo}"
+                    th:text="${value.shopOptionValue}"
+                  ></option>
+                </select>
+              </div>
+              <label for="quantity">수량:</label>
+              <input
+                type="number"
+                id="quantity"
+                name="quantity"
+                value="1"
+                min="1"
+              />
+              <button type="submit">장바구니에 담기</button>
+            </form>
+          </div>
+        </div>
+        <div class="shop_content">
+          <div class="description-images">
+            <img
+              th:each="image : ${shopPhotos}"
+              th:src="${image.shopPhotoUrl}"
+              alt="상품 설명 이미지"
+              class="description-image"
+            />
+          </div>
+        </div>
+        <div class="">
+          <div>
+            <a
+              th:href="@{/shopReview/{shopNo}(shopNo=${shops.shopNo})}"
+              class="product-link"
+            >
+              <h3>리뷰작성하기</h3>
+            </a>
+          </div>
+        </div>
+        <div class="review-section">
+          <h3>리뷰</h3>
+          <div th:each="review : ${shopReviews}" class="review-item">
+            <div class="user-info">
+              <div class="review-profile">
+                <img th:src="${review.user.UPofile}" alt="User Profile" />
+                <p class="review-author" th:text="${review.user.UName}"></p>
+              </div>
+              <div class="review-details">
+                <p
+                  class="review-date"
+                  th:text="${#temporals.format(review.shopReviewCreated, 'yyyy-MM-dd HH:mm')}"
+                ></p>
+              </div>
+            </div>
+            <div class="review-content">
+              <div class="review-rating">
+                <div
+                  class="stars"
+                  id="stars-container"
+                  th:data-rating="${review.shopReviewStarRating}"
+                >
+                  <span class="star"></span>
+                  <span class="star"></span>
+                  <span class="star"></span>
+                  <span class="star"></span>
+                  <span class="star"></span>
+                </div>
+                <div
+                  class="rating-number"
+                  th:text="${review.shopReviewStarRating} + ' / 5'"
+                ></div>
+              </div>
+              <p th:text="${review.shopReviewContent}"></p>
+            </div>
+            <div
+              class="review-photos"
+              id="photos-wrapper"
+              th:if="${reviewPhotosMap[review.shopReviewNo] != null}"
+            >
+              <div th:each="photo : ${reviewPhotosMap[review.shopReviewNo]}">
+                <img
+                  th:src="@{${photo.shopReviewPhotoUrl}}"
+                  alt="Review Photo"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 모달 창 -->
+        <div id="myModal" class="modal">
+          <span class="close">&times;</span>
+          <img class="modal-content" id="img01" />
+        </div>
+
+        <!-- 뒤로가기 버튼 -->
+        <a href="#" onclick="history.back()">뒤로가기</a>
+      </div>
+    </div>
+    <script src="/staic/js/a.js"></script>
+  </body>
+</html>

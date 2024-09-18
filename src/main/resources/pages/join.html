@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Join Form</title>
+    <!--이거 4개는 항상 가져가기 -->
+    <link rel="stylesheet" href="/public/css/reset.css" />
+    <link rel="stylesheet" href="/public/css/header.css" />
+    <link rel="stylesheet" href="/public/css/join.css" />
+    <script src="/js/common.js"></script>
+  </head>
+
+  <body>
+    <th:block th:include="~{fragments/header.html::header}"></th:block>
+    <div class="container">
+      <form
+        id="joinForm"
+        action="/auth/join"
+        method="POST"
+        onsubmit="return validateForm()"
+      >
+        <h2 class="enrollment">회원가입</h2>
+        <p>SNS 계정으로 간편하게 회원가입</p>
+        <!-- snsLogin -->
+        <div class="snsLogin">
+          <!-- kakao button -->
+          <div class="text-center">
+            <a
+              href="https://kauth.kakao.com/oauth/authorize"
+              th:href="@{https://kauth.kakao.com/oauth/authorize(client_id=${kakaoApiKey}, redirect_uri=${redirectUri}, response_type='code')}"
+            >
+              <!-- <img src="images/kakao_login_medium_wide.png" alt="Kakao Login" /> -->
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Kakao_Corp._symbol_-_2012.svg/2226px-Kakao_Corp._symbol_-_2012.svg.png"
+                alt=""
+              />
+            </a>
+          </div>
+
+          <!-- 구글 -->
+          <div class="text-center">
+            <a
+              th:href="@{https://accounts.google.com/o/oauth2/v2/auth(client_id=${googleClientId}, redirect_uri=${googleRedirectUri}, response_type='code', scope=${googleScope})}"
+            >
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/2048px-Google_%22G%22_logo.svg.png"
+                alt=""
+              />
+            </a>
+          </div>
+
+          <!-- 네이버 -->
+          <div class="text-center">
+            <a
+              th:href="@{https://nid.naver.com/oauth2.0/authorize(response_type='code', client_id=${naverClientId}, redirect_uri=${naverRedirectUri}, state='test')}"
+            >
+              <img
+                src="https://lh3.googleusercontent.com/proxy/qwTpVnl-P2d2blCz4hN98s627Cx4cJP99pQQYWSCvYSUEcZNOOzf3N_6mjQ3e5S31IGNd8kcf1WVkTbCrDh1Yhp_ucv-QP4dDfkeBbjMk_ZS-4xeBVN6VST5"
+                alt=""
+              />
+            </a>
+          </div>
+        </div>
+        <hr />
+        <div class="field">
+          <label for="UId">아이디</label>
+          <div class="input-group">
+            <input type="text" id="UId" name="UId" />
+            <button type="button" class="button-outline" id="duplicated-btn">
+              중복 확인
+            </button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="UPw">비밀번호</label>
+          <input
+            type="password"
+            id="UPw"
+            name="UPw"
+            onkeyup="validatePassword()"
+          />
+          <div id="passwordValidationMessage"></div>
+        </div>
+
+        <div class="field">
+          <label for="checkUPw">비밀번호 확인</label>
+          <input
+            type="password"
+            id="checkUPw"
+            name="checkUPw"
+            onkeyup="checkPasswordMatch()"
+          />
+          <div id="passwordMatchMessage"></div>
+        </div>
+
+        <div class="field">
+          <label for="UName">이름</label>
+          <input type="text" id="UName" name="UName" />
+        </div>
+
+        <div class="field">
+          <label for="UMail">이메일</label>
+          <div class="input-group">
+            <input
+              type="email"
+              id="UMail"
+              name="UMail"
+              onkeyup="validateEmail()"
+            />
+            <button
+              type="button"
+              class="button-outline"
+              onclick="checkDuplicatedEmail()"
+            >
+              중복 확인
+            </button>
+          </div>
+          <div id="emailValidationMessage"></div>
+        </div>
+
+        <div class="field">
+          <label for="UBirth">생일</label>
+          <input type="date" id="UBirth" name="UBirth" />
+        </div>
+
+        <div class="field">
+          <label for="UTel">전화번호</label>
+          <input type="tel" id="UTel" name="UTel" />
+        </div>
+
+        <div class="field">
+          <label for="yakgwan">약관동의</label>
+        </div>
+
+        <div class="checkbox-container">
+          <div class="field">
+            <label for="allAgree" class="checkbox-group">
+              <input type="checkbox" id="allAgree" />
+              전체 동의
+              <span id="choose">선택항목에 대한 동의 포함</span>
+            </label>
+          </div>
+          <hr />
+
+          <div class="field agreement">
+            <label for="agreement1" class="checkbox-group">
+              <input type="checkbox" id="agreement1" name="agreement1" />
+              <a href="#" class="link"
+                >만 14세 이상입니다<span id="agree">(필수)</span></a
+              >
+            </label>
+          </div>
+
+          <div class="field agreement">
+            <label for="agreement2" class="checkbox-group">
+              <input type="checkbox" id="agreement2" name="agreement2" />
+              <a href="#" class="link"
+                >이용약관<span id="agree">(필수)</span></a
+              >
+            </label>
+          </div>
+
+          <div class="field agreement">
+            <label for="agreement3" class="checkbox-group">
+              <input type="checkbox" id="agreement3" name="agreement3" />
+              <a href="#" class="link"
+                >개인정보수집 및 이용동의<span id="agree">(필수)</span></a
+              >
+            </label>
+          </div>
+
+          <div class="field agreement">
+            <label for="agreement4" class="checkbox-group">
+              <input type="checkbox" id="agreement4" name="agreement4" />
+              <a href="#" class="link"
+                >개인정보수집 및 이용동의<span id="choose">(선택)</span></a
+              >
+            </label>
+          </div>
+
+          <div class="field agreement">
+            <label for="agreement5" class="checkbox-group">
+              <input type="checkbox" id="agreement5" name="agreement5" />
+              <a href="#" class="link"
+                >이벤트,쿠폰,특가 알림 메일 및 SMS 등 수신<span id="choose"
+                  >(선택)</span
+                ></a
+              >
+            </label>
+          </div>
+        </div>
+        <button type="submit" class="button">회원가입</button>
+      </form>
+    </div>
+
+    <script>
+      var isIdAvailable = false;
+      var isEmailAvailable = false;
+      var valid = false;
+
+      function toggleAllAgreements(checkbox) {
+        const agreements = document.querySelectorAll(
+          '.agreement input[type="checkbox"]'
+        );
+        agreements.forEach(function (agreement) {
+          agreement.checked = checkbox.checked;
+        });
+      }
+
+      function checkDuplicatedId() {
+        var UId = $("#UId").val();
+
+        $.ajax({
+          type: "GET",
+          url: "/auth/check/" + UId,
+          data: {
+            UId: UId,
+          },
+          success: function (res) {
+            if (res == "available") {
+              alert("사용 가능한 아이디입니다.");
+              isIdAvailable = true;
+            } else {
+              alert("이미 사용중인 아이디입니다.");
+              $("#UId").val("");
+              isIdAvailable = false;
+            }
+          },
+        });
+      }
+
+      function checkDuplicatedEmail() {
+        var UMail = $("#UMail").val();
+
+        if (valid) {
+          $.ajax({
+            type: "GET",
+            url: "/auth/check/email/" + UMail,
+            data: {
+              UMail: UMail,
+            },
+            success: function (res) {
+              if (res == "available") {
+                alert("사용 가능한 이메일입니다.");
+                isEmailAvailable = true;
+              } else {
+                alert("이미 사용중인 이메일입니다.");
+                $("#UMail").val("");
+                isEmailAvailable = false;
+              }
+            },
+          });
+        } else {
+          alert("유효한 이메일 형식을 사용해주세요.");
+        }
+      }
+
+      function validatePassword() {
+        var password = $("#UPw").val();
+        var passwordValidationMessage = $("#passwordValidationMessage");
+        var passwordPattern =
+          /^(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/;
+
+        if (passwordPattern.test(password) && !hasSequentialChars(password)) {
+          passwordValidationMessage
+            .text("사용 가능한 비밀번호입니다.")
+            .css("color", "green");
+          checkPasswordMatch();
+          return true;
+        } else if (hasSequentialChars(password)) {
+          passwordValidationMessage
+            .text("비밀번호는 연속된 3글자를 포함할 수 없습니다.")
+            .css("color", "red");
+          $("#passwordMatchMessage").text("");
+          return false;
+        } else {
+          passwordValidationMessage
+            .text("비밀번호는 특수문자를 포함하여 8자 이상이어야 합니다.")
+            .css("color", "red");
+          $("#passwordMatchMessage").text("");
+          return false;
+        }
+      }
+
+      function validateEmail() {
+        var email = $("#UMail").val();
+        var emailValidationMessage = $("#emailValidationMessage");
+        var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (emailPattern.test(email)) {
+          emailValidationMessage
+            .text("유효한 이메일 형식입니다.")
+            .css("color", "green");
+          valid = true;
+          return true;
+        } else {
+          emailValidationMessage
+            .text("올바른 이메일 주소를 입력해 주세요.")
+            .css("color", "red");
+          valid = false;
+          return false;
+        }
+      }
+
+      function hasSequentialChars(password) {
+        for (var i = 0; i < password.length - 2; i++) {
+          var charCode1 = password.charCodeAt(i);
+          var charCode2 = password.charCodeAt(i + 1);
+          var charCode3 = password.charCodeAt(i + 2);
+
+          if (charCode1 + 1 === charCode2 && charCode2 + 1 === charCode3) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      function checkPasswordMatch() {
+        var password = $("#UPw").val();
+        var confirmPassword = $("#checkUPw").val();
+        var passwordMatchMessage = $("#passwordMatchMessage");
+
+        if (password !== "" && confirmPassword !== "") {
+          if (password === confirmPassword) {
+            passwordMatchMessage
+              .text("비밀번호가 일치합니다.")
+              .css("color", "green");
+            return true;
+          } else {
+            passwordMatchMessage
+              .text("비밀번호가 일치하지 않습니다.")
+              .css("color", "red");
+            return false;
+          }
+        } else {
+          passwordMatchMessage.text("");
+          return false;
+        }
+      }
+
+      function validateForm() {
+        var isPasswordValid = validatePassword();
+        var isPasswordMatching = checkPasswordMatch();
+        var isAgreement1Checked = $("#agreement1").is(":checked");
+        var isAgreement2Checked = $("#agreement2").is(":checked");
+        var isAgreement3Checked = $("#agreement3").is(":checked");
+
+        if (!isIdAvailable) {
+          alert("아이디 중복 확인을 해주세요.");
+          resetForm();
+          return false;
+        }
+
+        if (!isEmailAvailable) {
+          alert("이메일 중복 확인을 해주세요.");
+          resetForm();
+          return false;
+        }
+
+        if (!isPasswordValid) {
+          alert("비밀번호 규칙을 확인해주세요.");
+          resetForm();
+          return false;
+        }
+
+        if (!isPasswordMatching) {
+          alert("비밀번호가 일치하지 않습니다.");
+          resetForm();
+          return false;
+        }
+
+        if (
+          !isAgreement1Checked ||
+          !isAgreement2Checked ||
+          !isAgreement3Checked
+        ) {
+          alert("필수 약관을 동의해주시기 바랍니다.");
+          return false;
+        }
+
+        return true;
+      }
+
+      function resetForm() {
+        $("#joinForm")[0].reset();
+        $("#passwordValidationMessage").text("");
+        $("#passwordMatchMessage").text("");
+        isIdAvailable = false;
+        isEmailAvailable = false;
+      }
+    </script>
+  </body>
+</html>
