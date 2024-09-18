@@ -55,6 +55,7 @@ const getProjects = async () => {
     data = await axios.get("/api/get/projects", {
       params: { filter, sort },
     });
+    data = data.data;
   } catch (err) {
     console.log("error occured!", err);
     data = await getDummyData();
@@ -140,8 +141,11 @@ const reqRemoveProjects = async () => {
   // 프로젝트 삭제
   // ex) localhost:3000/remove_projects?project_ids=[1,2,3,4]
   try {
-    const data = await axios.post("", {
-      project_ids: Object.keys(remove_projects),
+    // 요청 URL에 쿼리 파라미터를 추가하여 데이터 전달
+    const data = await axios.delete("/api/remove/projects", {
+      params: {
+        project_ids: Object.keys(remove_projects)
+      }
     });
 
     if (data.status === "fail") {
@@ -213,10 +217,11 @@ const onSubmitProject = async () => {
 
   // const obj = { title, src };
   try {
-    const data = await axios.post("api/create_project", {
+    const data = await axios.post("/api/create_project", {
       src,
       title,
     });
+    console.log("data: ", data);
     if (data.status === "fail") {
       return alert("공습경보");
     }

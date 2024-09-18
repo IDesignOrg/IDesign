@@ -21,4 +21,6 @@ public interface ThreeRepository extends JpaRepository<ThreeEntity, String> {
 	@Query("SELECT t FROM ThreeEntity t WHERE t.userEntity.UId = :userId AND (:title IS NULL OR t.title LIKE %:title%)")
 	Page<ThreeEntity> findByUserEntity_UIdAndTitle(@Param("userId") String userId, @Param("title") String title,
 			Pageable pageable);
+	
+	ThreeEntity findByProjectId(String projectId);
 }

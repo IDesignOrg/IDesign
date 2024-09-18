@@ -14,6 +14,7 @@ import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
 
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 public class CartService {
@@ -49,6 +50,7 @@ public class CartService {
 
 		List<CartOptionEntity> cartOptions = new ArrayList<>();
 
+		
 		for (Long id : optionValueIds) {
 		    ShopOptionValueEntity optionValue = shopOptionValueRepository.findById(id)
 		        .orElseThrow(() -> new RuntimeException("Option value not found: " + id));
