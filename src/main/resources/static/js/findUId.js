@@ -5,11 +5,9 @@ const startFindID = async () => {
   if (!UMail || UMail === "") return;
 
   try {
-    const data = await axios.get("/auth/find/user/id", {
-      params: {
-        UMail,
-      },
-    });
+    let data = await fetch(`/auth/find/user/id?UMail=${UMail}`);
+    data = await data.json();
+
     if (data.status === "fail") return alert("오류가 발생했습니다.");
     alert("아이디는 ", data.data.ID);
     window.location.href = "/auth/login";

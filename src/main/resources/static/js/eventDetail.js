@@ -1,4 +1,4 @@
-import axios from "axios";
+// import axios from "axios";
 
 const getCouponBtn = document.getElementById("get-coupon");
 
@@ -8,9 +8,14 @@ const getCoupon = async () => {
   if (!couponNo) return alert("공습경보"); // 에러처리
 
   try {
-    const data = await axios.post("/post/issue_coupon", {
-      couponNo,
+    // const data = await axios.post("/post/issue_coupon", {
+    //   couponNo,
+    // });
+
+    let data = await fetch("/post/issue_coupon", {
+      body: couponNo,
     });
+    data = await data.json();
 
     if (data.status === "fail") return alert("공습경보");
     alert("쿠폰 발급이 성공했음");

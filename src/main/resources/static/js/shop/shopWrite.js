@@ -128,7 +128,7 @@ function dataURLtoBlob(dataURL) {
   return new Blob([ab], { type: mimeString });
 }
 
-const onSubmitProduct = () => {
+const onSubmitProduct = async () => {
   const obj = [];
   const title = titleInput.value;
   const category = categoryBox.value;
@@ -138,8 +138,10 @@ const onSubmitProduct = () => {
 
   const formData = new FormData();
   formData.append("thumbnail", thumbnail);
+  productImages.forEach((img) => {
+    formData.append("srcImage", img);
+  });
 
-  productImages.forEach();
   Array.from(options).forEach((option, idx) => {
     const optionSrc = option.getElementsByClassName("option-src");
     const title = option.getElementsByClassName("option-title")[0].value;
@@ -173,7 +175,7 @@ const onSubmitProduct = () => {
     })
   );
 
-  fetch("", {
+  const resData = await fetch("http://localhost:1111", {
     method: "POST",
     headers: {
       "Content-Type": "multipart/form-data",

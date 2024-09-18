@@ -7,7 +7,7 @@ export const projectNode = (project) => {
   box.id = project_id;
   // wook 눌렀을 때 이동
   //wrapper
-  a.href = `http://localhost:8080/three/${project_id}`;
+  a.href = `http://localhost:8080/three?project_id=${project_id}`;
   a.className = "project-wrapper";
   box.style.position = "relative";
   box.appendChild(a);

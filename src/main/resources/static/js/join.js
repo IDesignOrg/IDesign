@@ -1,5 +1,3 @@
-import axios from "axios";
-
 let isIdAvailable = false,
   isEmailAvailable = false,
   valid = false;
@@ -23,9 +21,8 @@ const checkDuplicatedEmail = async () => {
   if (!valid) return alert("유효한 이메일 형식을 사용해주세요.");
 
   try {
-    const data = await axios.get("/auth/check/email", {
-      params: { UMail },
-    });
+    let data = await fetch(`/auth/check/email?UMail=${UMail}`);
+    data = await data.json();
 
     if (data.status === "fail") return;
   } catch (e) {

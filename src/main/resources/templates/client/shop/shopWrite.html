@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/shop/shopWrite.css" />
+    <link rel="stylesheet" href="/css/reset.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script src="/js/shop/shopWrite.js" defer></script>
+  </head>
+  <body>
+    <div id="container">
+      <div id="title" class="section-wrapper">
+        <h1>상품등록</h1>
+      </div>
+      <div id="under-line" class="section-wrapper" />
+
+      <main class="section-wrapper product-wrapper">
+        <div>
+          <section id="product-thumbnail">
+            <div>
+              <div class="sub-title">
+                썸네일을 등록해주세요.(한장만 등록 가능합니다.)
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                id="product-main-image"
+                style="display: none"
+              />
+              <div class="thubnail-wrapper">
+                <div id="thumbnail-preview">
+                  <img />
+                </div>
+                <label for="product-main-image">
+                  <i class="fa-solid fa-image fa-2x"></i>
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <section id="product-options" class="section-wrapper">
+            <div>
+              <div class="sub-title">제목을 입력해주세요.</div>
+              <input type="text" id="product-title" />
+            </div>
+            <div id="prices">
+              <div class="prices-section">
+                <div class="section-wrapper sub-title">가격을 적어주세요.</div>
+                <div class="prices-input-wrapper" id="price-wrapper">
+                  <input
+                    type="text"
+                    name="price"
+                    class="prices-input"
+                    id="price-input"
+                  />
+                </div>
+              </div>
+              <div class="prices-section">
+                <div class="section-wrapper sub-title">
+                  할인율을 적어주세요.
+                </div>
+                <div class="prices-input-wrapper" id="discount-wrapper">
+                  <input
+                    type="text"
+                    name="discount price"
+                    class="prices-input"
+                    id="discount-input"
+                  />
+                </div>
+              </div>
+            </div>
+            <div id="options" class="section-wrapper">
+              <div class="sub-title">카테고리</div>
+              <select id="select">
+                <option value="furniture" selected>가구</option>
+                <option value="diffuser">디퓨저</option>
+                <option value="wallpaper">벽지</option>
+                <option value="tile">타일</option>
+              </select>
+            </div>
+
+            <div class="section-wrapper">
+              <div class="sub-title">
+                옵션(*옵션은 제품의 상이한 값들입니다.)
+              </div>
+              <div class="add-option">
+                <button id="add-option-btn"></button>
+                <label for="add-option-btn">옵션 추가 +</label>
+              </div>
+            </div>
+          </section>
+          <section class="option-wrapper section-wrapper" id="option-wrapper">
+            <div class="section-wrapper option">
+              <div class="sub-title">옵션 이름</div>
+              <div class="option-values">
+                <input
+                  type="text"
+                  placeholder="예)사이즈"
+                  class="sub-title option-title"
+                  name="optionName-1"
+                />
+              </div>
+
+              <div class="option-src section-wrapper">
+                <div>
+                  <div class="sub-title">이름</div>
+                  <div>
+                    <input
+                      type="text"
+                      name="optionValue-1"
+                      class="optionName"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <div class="sub-title">가격</div>
+                  <div class="prices-input-wrapper">
+                    <input
+                      type="text"
+                      name="optionPrice-1 price"
+                      class="prices-input"
+                    />
+                  </div>
+                </div>
+                <div class="add-value-wrapper">
+                  <button
+                    id="option-value-add-btn-0"
+                    class="option-v-b-0"
+                  ></button>
+                  <label for="option-value-add-btn-0"> 값 추가하기 +</label>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section-wrapper">
+            <div class="section-wrapper">
+              <div class="sub-title">상품 이미지를 등록해주세요.</div>
+              <div id="product-images-wrapper" class="section-wrapper">
+                <div id="submit-product-image">
+                  <input
+                    type="file"
+                    multiple
+                    id="product-files"
+                    accept="image/*"
+                    style="display: none"
+                  />
+                  <label for="product-files" class="product-images-input"
+                    ><i class="fa-solid fa-plus fa-2x"></i
+                  ></label>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section class="section-wrapper">
+            <div class="submit-wrapper">
+              <button id="submit-product">등록하기</button>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const thumbnailInput = document.getElementById("product-main-image");
+      const thumbnailPreview = document.getElementById("thumbnail-preview");
+      const titleInput = document.getElementById("product-title");
+      const productPrice = document.getElementById("prices");
+      const categoryBox = document.getElementById("select");
+      const addOptionBtn = document.getElementById("add-option-btn");
+      const optionWrapper = document.getElementById("option-wrapper");
+      const submitProductImageWrapper = document.getElementById(
+        "submit-product-image"
+      );
+      const productsImagesInput = document.getElementById("product-files");
+      const productImagesWrapper = document.getElementById(
+        "product-images-wrapper"
+      );
+
+      const submitProductBtn = document.getElementById("submit-product");
+      // const option
+      // const optionsContainer = document.getElementById("product-options");
+
+      let thumbnail = null;
+      let productImages = [];
+      // let title = "";
+      let category = "furniture";
+
+      const formattingCommas = (num) => {
+        if (typeof num !== "number") {
+          throw new Error("Price is Must be NUMBER");
+        }
+
+        return num.toLocaleString();
+      };
+
+      const verificationPrice = (price) => {
+        // price => string;
+        if (price === "") {
+          return "";
+        }
+        const replaceCommaValue = Number(price.replaceAll(",", ""));
+        if (Number.isNaN(replaceCommaValue) || replaceCommaValue < 0) {
+          // price is NaN
+          return null;
+        }
+
+        return formattingCommas(replaceCommaValue);
+      };
+
+      const verifyPriceIsNaN = (e) => {
+        const input = e.target.closest('input[type="text"]');
+        const { value, name } = input;
+        if (!input || !name.includes("price")) return;
+        const verificatedPrice = verificationPrice(value);
+        if (!verificatedPrice) {
+          input.value = formattingCommas(
+            Number(value.replaceAll(",", "").slice(0, -1))
+          );
+          return;
+        }
+
+        input.value = verificatedPrice;
+      };
+
+      // const onTitleChange = (e) => {
+      //   title = e.target.value;
+      // };
+
+      const onFileUpload = (e) => {
+        if (e.target.id === "product-files") {
+          console.log(e.target, "zzz");
+          //상품 이미지
+          const { files } = e.target;
+          Array.from(files).forEach((file) => {
+            productImages.push(file);
+            const src = URL.createObjectURL(file);
+            const imageWrapper = new ProductImage(src);
+            productImagesWrapper.insertBefore(
+              imageWrapper.wrapper,
+              submitProductImageWrapper
+            );
+          });
+          return;
+        }
+        //thumbnail
+        const file = e.target.files[0];
+        thumbnailPreview.style.display = "inline-block";
+
+        const img = thumbnailPreview.querySelector("img");
+        img.src = URL.createObjectURL(file);
+        thumbnail = file;
+      };
+
+      // const onCategoryChange = (e) => {
+      //   category = e.target.value;
+      // };
+
+      const onAddOption = () => {
+        // 옵션추가 버튼
+        // const idx = document
+        const idx = document.getElementsByClassName("option").length;
+
+        const newOption = new NewOption(idx);
+        optionWrapper.appendChild(newOption.container);
+      };
+
+      const onAddSubOption = (e) => {
+        //값 추가
+        const btn = e.target.closest("button");
+        //   console.log(e.target);
+        if (!btn) return;
+
+        const classNames = btn.className.split("-");
+        const idx = classNames[classNames.length - 1];
+        const wrapper = document.getElementsByClassName("option")[idx];
+        if (!wrapper) return;
+        const addOptionButtonWrapper =
+          wrapper.getElementsByClassName("add-value-wrapper");
+        const oldButton =
+          addOptionButtonWrapper[addOptionButtonWrapper.length - 1];
+        oldButton.remove();
+        const newValueDiv = new newOptionValue(idx);
+        wrapper.appendChild(newValueDiv.wrapper);
+      };
+
+      function dataURLtoBlob(dataURL) {
+        const byteString = atob(dataURL.split(",")[1]);
+        const mimeString = dataURL.split(",")[0].split(":")[1].split(";")[0];
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+        return new Blob([ab], { type: mimeString });
+      }
+
+      const onSubmitProduct = async () => {
+        const obj = [];
+        const title = titleInput.value;
+        const category = categoryBox.value;
+        const options = document.getElementsByClassName("option");
+        // console.log(options);
+        // const reqThumbnail = dataURLtoBlob(thumbnail)
+
+        const formData = new FormData();
+        formData.append("thumbnail", thumbnail);
+        productImages.forEach((img) => {
+          formData.append("srcImage", img);
+        });
+
+        Array.from(options).forEach((option, idx) => {
+          const optionSrc = option.getElementsByClassName("option-src");
+          const title = option.getElementsByClassName("option-title")[0].value;
+          const arr = {
+            optionName: title,
+            options: [],
+          };
+          Array.from(optionSrc).forEach((div, idx2) => {
+            const name = div.getElementsByClassName("optionName")[0].value;
+            const price = Number(
+              div
+                .getElementsByClassName("prices-input")[0]
+                .value.replaceAll(",", "")
+            );
+            arr["options"].push({
+              name,
+              price,
+            });
+          });
+          obj.push(arr);
+        });
+        const reqObjectData = {
+          title,
+          category,
+          option: obj,
+          thumbnail: "z",
+        };
+
+        formData.append(
+          "productData",
+          new Blob([JSON.stringify(reqObjectData)], {
+            type: "application/json",
+          })
+        );
+
+        const resData = await fetch("http://localhost:1111", {
+          method: "POST",
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          body: formData,
+        });
+      };
+
+      thumbnailInput.addEventListener("change", onFileUpload);
+      productsImagesInput.addEventListener("change", onFileUpload);
+      // titleInput.addEventListener("input", onTitleChange);
+      productPrice.addEventListener("input", verifyPriceIsNaN);
+      // categoryBox.addEventListener("change", onCategoryChange);
+      addOptionBtn.addEventListener("click", onAddOption);
+      optionWrapper.addEventListener("input", verifyPriceIsNaN);
+      optionWrapper.addEventListener("click", onAddSubOption);
+      submitProductBtn.addEventListener("click", onSubmitProduct);
+
+      class newOptionValue {
+        //값 추가 눌렀을 때
+        constructor(idx = 0) {
+          this.wrapper = document.createElement("div");
+          this.wrapper.className = "option-src section-wrapper";
+
+          const optionValueDiv = document.createElement("div");
+
+          const subTitle = document.createElement("div");
+          subTitle.className = "sub-title";
+          subTitle.textContent = "이름";
+          optionValueDiv.appendChild(subTitle);
+
+          const valueDiv = document.createElement("div");
+          const optionValueInput = document.createElement("input");
+          optionValueInput.type = "text";
+          optionValueInput.className = "optionName";
+          optionValueInput.name = "optionValue-";
+
+          valueDiv.appendChild(optionValueInput);
+          optionValueDiv.appendChild(valueDiv);
+
+          this.wrapper.appendChild(optionValueDiv);
+
+          //
+          const priceDiv = document.createElement("div");
+
+          const priceTitle = document.createElement("div");
+          priceTitle.className = "sub-title";
+          priceTitle.textContent = "가격";
+          priceDiv.appendChild(priceTitle);
+
+          const priceInputDiv = document.createElement("div");
+          priceInputDiv.className = "prices-input-wrapper";
+          const priceInput = document.createElement("input");
+          priceInput.type = "text";
+          priceInput.name = "optionPrice- price";
+          priceInput.className = "prices-input";
+
+          priceInputDiv.appendChild(priceInput);
+          priceDiv.appendChild(priceInputDiv);
+          this.wrapper.appendChild(priceDiv);
+
+          const newButton = document.createElement("button");
+          const buttonId = `option-value-add-btn-${idx}`;
+          newButton.className = `option-v-b-${idx}`;
+          newButton.id = buttonId;
+          newButton.class = `option-v-b-${idx}`;
+          const label = document.createElement("label");
+          label.setAttribute("for", buttonId);
+          label.textContent = "값 추가하기 +";
+
+          const btnWrapper = document.createElement("div");
+          btnWrapper.className = "add-value-wrapper";
+          btnWrapper.appendChild(newButton);
+          btnWrapper.appendChild(label);
+
+          this.wrapper.appendChild(btnWrapper);
+        }
+      }
+
+      class NewOption {
+        // 옵션 추가 눌렀을 때
+        constructor(idx) {
+          this.container = document.createElement("div");
+          this.container.className = "section-wrapper option";
+
+          this.addTitle();
+          this.addOptionSrc(idx);
+        }
+
+        addOptionSrc = (idx) => {
+          const v = new newOptionValue(idx);
+          this.container.appendChild(v.wrapper);
+        };
+
+        addTitle = () => {
+          const titleDiv = document.createElement("div");
+          titleDiv.className = "sub-title";
+          titleDiv.textContent = "옵션이름";
+
+          const optionValuesDiv = document.createElement("div");
+          optionValuesDiv.className = "option-values";
+
+          const optionNameInput = document.createElement("input");
+          optionNameInput.type = "text";
+          optionNameInput.name = "optionName";
+          optionNameInput.className = "option-title";
+
+          optionValuesDiv.appendChild(optionNameInput);
+
+          this.container.appendChild(titleDiv);
+          this.container.appendChild(optionValuesDiv);
+        };
+      }
+
+      class ProductImage {
+        constructor(src) {
+          this.wrapper = document.createElement("div");
+          this.wrapper.className = "product-src-image";
+
+          const imageTag = document.createElement("img");
+          imageTag.src = src;
+
+          this.wrapper.appendChild(imageTag);
+        }
+      }
+    </script>
+  </body>
+</html>

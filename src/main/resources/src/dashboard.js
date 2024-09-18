@@ -139,6 +139,7 @@ const reqRemoveProjects = async () => {
   // wook
   // 프로젝트 삭제
   // ex) localhost:3000/remove_projects?project_ids=[1,2,3,4]
+  console.log(remove_projects);
   try {
     const data = await axios.post("", {
       project_ids: Object.keys(remove_projects),

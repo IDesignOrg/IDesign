@@ -12,7 +12,6 @@ const SetModalToggle = () => {
 const onCouponClick = (e) => {
   const btn = e.target.closest("button");
   if (!btn) return;
-  const couponId = e.target.getAttribute("th:data-coupon-id");
   const couponName = e.target.getAttribute("th:text");
   couponNo.value = couponName;
   SetModalToggle();
