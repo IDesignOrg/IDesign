@@ -139,6 +139,7 @@ const onSubmitProduct = () => {
   const formData = new FormData();
   formData.append("thumbnail", thumbnail);
 
+  productImages.forEach();
   Array.from(options).forEach((option, idx) => {
     const optionSrc = option.getElementsByClassName("option-src");
     const title = option.getElementsByClassName("option-title")[0].value;
@@ -164,6 +165,13 @@ const onSubmitProduct = () => {
     option: obj,
     thumbnail: "z",
   };
+
+  formData.append(
+    "productData",
+    new Blob([JSON.stringify(reqObjectData)], {
+      type: "application/json",
+    })
+  );
 
   fetch("", {
     method: "POST",
