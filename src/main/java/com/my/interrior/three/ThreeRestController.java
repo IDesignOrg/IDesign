@@ -102,7 +102,7 @@ public class ThreeRestController {
 		three.setDataEntity(null);
 		three.setModDate(null);
 		three.setRegDate(null);
-		three.setThumbnail("pre");
+		three.setThumbnail("none");
 		three.setUserEntity(user);
 		System.out.println("projectId: " + project_id);
 
@@ -206,7 +206,7 @@ public class ThreeRestController {
 	// ThreeEntity를 GetProjectsResponse.GetProjectsData로 매핑하는 메서드
 	private GetProjectsResponse.GetProjectsData mapToProjectData(ThreeEntity entity) {
 		GetProjectsResponse.GetProjectsData data = new GetProjectsResponse.GetProjectsData();
-		data.setProjectId(entity.getProjectId());
+		data.setProject_id(entity.getProjectId());
 		data.setThumbnail(entity.getThumbnail());
 		data.setTitle(entity.getTitle());
 		data.setSrc(entity.getSrc());
