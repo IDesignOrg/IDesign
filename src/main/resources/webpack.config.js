@@ -120,6 +120,7 @@ module.exports = {
         filename: fileName, // 출력할 HTML 파일 이름
         template: file, // 원본 HTML 파일 경로
         chunks: [chunkName], // 해당 HTML에 포함될 JS 번들 (entry에서 같은 이름을 사용해야 함)
+        publicPath: webpackMode === "production" ? "/dist/" : "/",
         minify:
           process.env.NODE_ENV === "production"
             ? {
