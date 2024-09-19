@@ -1,6 +1,8 @@
 package com.my.interrior.three;
 
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,4 +25,8 @@ public interface ThreeRepository extends JpaRepository<ThreeEntity, String> {
 			Pageable pageable);
 	
 	ThreeEntity findByProjectId(String projectId);
+	
+	List<ThreeEntity> findByProjectIdIn(List<String> projectIds);
+	
+	void deleteByProjectIdIn(List<String> projectIds);
 }
