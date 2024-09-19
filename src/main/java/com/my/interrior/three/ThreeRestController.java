@@ -53,11 +53,15 @@ public class ThreeRestController {
 	}
 
 	@DeleteMapping("/api/remove/projects")
-	public ResponseEntity<?> removeProjects(@RequestParam("project_ids") List<String> projectIds){
+	public ResponseEntity<?> removeProjects(@RequestParam("project_ids") List<String> projectIds) throws IOException {
 		System.out.println("projectIds: " + projectIds);
+
+		// point -> data -> three 순서로 삭제
+		String response = threeService.removeProjects(projectIds);
 		
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok(response);
 	}
+
 	@GetMapping("/api/get/project_nodes")
 	public ResponseEntity<SaveProjectRequest> getProjectNodes(@RequestParam("project_id") String projectId)
 			throws IOException {

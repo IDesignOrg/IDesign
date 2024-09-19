@@ -7,5 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface PointRepository extends JpaRepository<PointEntity, Long>{
 	
 	List<PointEntity> findByData(DataEntity data);
+	void deleteByData_Oid(String data);
 
 }
