@@ -5,8 +5,17 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
+const fs = require("fs");
 
 const webpackMode = process.env.NODE_ENV || "development";
+const jsFiles = fs
+  .readdirSync(path.resolve(__dirname, "./jsFiles"))
+  .filter((file) => file.endsWith(".js"))
+  .reduce((entries, file) => {
+    const name = path.basename(file, ".js");
+    entries[name] = path.resolve(__dirname, "./jsFiles", file);
+    return entries;
+  }, {});
 
 module.exports = {
   mode: webpackMode,
@@ -14,19 +23,26 @@ module.exports = {
   //   dashboard: "./dimension/src/dashboard.js",
   //   three: "./dimension/src/three.js",
   // },
-  entry: glob
-    .sync(path.resolve(__dirname, "./jsFiles/*.js"))
-    .reduce((entries, filePath) => {
-      const entryName = path.basename(filePath, path.extname(filePath)); // 파일명만 추출
-      entries[entryName] = filePath;
-      return entries;
-    }, {}),
+
+  // entry: glob
+  //   .sync(path.resolve(__dirname, "./jsFiles/*.js"))
+  //   .reduce((entries, filePath) => {
+  //     const entryName = path.basename(filePath, path.extname(filePath)); // 파일명만 추출
+  //     entries[entryName] = filePath;
+  //     return entries;
+  //   }, {}),
+
   // entry: glob.sync("./src/*.js").reduce((entries, filePath) => {
   //   // console.log("entries", entries);
   //   const entryName = path.basename(filePath, path.extname(filePath)); // 파일명만 추출
   //   entries[entryName] = filePath;
   //   return entries;
   // }, {}),
+  entry: jsFiles,
+  // output: {
+  //   filename: "[name].bundle.js",
+  //   path: path.resolve(__dirname, "dist"),
+  // },
   output: {
     path: path.resolve("./dist/"),
     filename: "[name].min.js",
