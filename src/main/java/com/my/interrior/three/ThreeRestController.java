@@ -66,7 +66,7 @@ public class ThreeRestController {
 		String exec = three.get().getThumbnail();
 
 		// 빈 데이터 반환
-		if (exec.equals("pre"))
+		if (exec.equals("none"))
 			return ResponseEntity.ok().build();
 
 		SaveProjectRequest projectData = threeService.getProjectData(projectId);
