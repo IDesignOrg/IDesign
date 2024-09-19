@@ -204,7 +204,7 @@ public class AdminPageController {
 
 		return "admin/page/adminReview";
 	}
-
+	//리뷰 댓글 
 	@GetMapping("/fetchRComments")
 	public ResponseEntity<List<ReviewCommentDTO>> fetchRComments(@RequestParam("reviewNo") Long reviewNo) {
 		List<ReviewCommentDTO> comments = reviewService.getCommentsByReviewId(reviewNo).stream()
@@ -214,6 +214,18 @@ public class AdminPageController {
 
 		return ResponseEntity.ok(comments);
 	}
+	//어드민페이지 리뷰 삭
+	@DeleteMapping("/deleteReview")
+    public ResponseEntity<String> deleteReview(@RequestParam("rNo") Long rNo) {
+        try {
+            // 리뷰 삭제 로직 호출 (댓글, 사진, GCS 파일 삭제 포함)
+            adminPageService.deleteReviewById(rNo);
+            return ResponseEntity.ok("리뷰가 성공적으로 삭제되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("리뷰 삭제에 실패했습니다.");
+        }
+    }
 
 	@GetMapping("/searchUsers")
 	@ResponseBody
