@@ -140,12 +140,13 @@ const reqRemoveProjects = async () => {
   // wook
   // 프로젝트 삭제
   // ex) localhost:3000/remove_projects?project_ids=[1,2,3,4]
-  console.log(remove_projects);
+  const project_ids = Object.keys(remove_projects).map((key) => key);
+
   try {
     // 요청 URL에 쿼리 파라미터를 추가하여 데이터 전달
     const data = await axios.delete("/api/remove/projects", {
       params: {
-        project_ids: Object.keys(remove_projects).map((key) => key),
+        project_ids: JSON.stringify(project_ids),
       },
     });
 

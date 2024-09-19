@@ -1,3 +1,6 @@
+const defaultImg =
+  "https://storage.googleapis.com/idesign_dev/static/KakaoTalk_Photo_2024-09-19-17-31-16.jpeg";
+
 export const projectNode = (project) => {
   const box = document.createElement("div");
 
@@ -18,7 +21,7 @@ export const projectNode = (project) => {
   renovate_img.className = "renovate-img";
   const backgroundImage = document.createElement("img");
   backgroundImage.loading = "lazy";
-  backgroundImage.src = thumbnail === "none" ? "" : thumbnail;
+  backgroundImage.src = thumbnail === "none" ? defaultImg : thumbnail;
   renovate_img.append(backgroundImage);
   a.appendChild(renovate_img);
 
