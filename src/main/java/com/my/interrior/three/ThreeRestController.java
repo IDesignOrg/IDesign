@@ -53,7 +53,7 @@ public class ThreeRestController {
 	}
 
 	@DeleteMapping("/api/remove/projects")
-	public ResponseEntity<?> removeProjects(@RequestParam("project_ids") List<Integer> projectIds){
+	public ResponseEntity<?> removeProjects(@RequestParam("project_ids") List<String> projectIds){
 		System.out.println("projectIds: " + projectIds);
 		
 		return ResponseEntity.ok().build();
@@ -66,7 +66,7 @@ public class ThreeRestController {
 		String exec = three.get().getThumbnail();
 
 		// 빈 데이터 반환
-		if (exec.equals("pre"))
+		if (exec.equals("none"))
 			return ResponseEntity.ok().build();
 
 		SaveProjectRequest projectData = threeService.getProjectData(projectId);
@@ -102,7 +102,7 @@ public class ThreeRestController {
 		three.setDataEntity(null);
 		three.setModDate(null);
 		three.setRegDate(null);
-		three.setThumbnail("pre");
+		three.setThumbnail("none");
 		three.setUserEntity(user);
 		System.out.println("projectId: " + project_id);
 
@@ -206,7 +206,7 @@ public class ThreeRestController {
 	// ThreeEntity를 GetProjectsResponse.GetProjectsData로 매핑하는 메서드
 	private GetProjectsResponse.GetProjectsData mapToProjectData(ThreeEntity entity) {
 		GetProjectsResponse.GetProjectsData data = new GetProjectsResponse.GetProjectsData();
-		data.setProjectId(entity.getProjectId());
+		data.setProject_id(entity.getProjectId());
 		data.setThumbnail(entity.getThumbnail());
 		data.setTitle(entity.getTitle());
 		data.setSrc(entity.getSrc());
