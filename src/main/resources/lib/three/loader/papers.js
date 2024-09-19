@@ -1,8 +1,8 @@
 import { THREE } from "./three.js";
 
-const ceilingPaper = "/dimension/public/img/ceiling.jpg";
-const floorPaper = "/dimension/public/img/floor.jpg";
-const wallpaper = "/dimension/public/img/wallpaper.jpeg";
+const ceilingPaper = "/public/img/ceiling.jpg";
+const floorPaper = "/public/img/floor.jpg";
+const wallpaper = "/public/img/wallpaper.jpeg";
 
 const floorTexture = new THREE.TextureLoader().load(floorPaper);
 const wallTexture = new THREE.TextureLoader().load(wallpaper);

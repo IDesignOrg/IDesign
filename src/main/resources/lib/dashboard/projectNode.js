@@ -18,7 +18,7 @@ export const projectNode = (project) => {
   renovate_img.className = "renovate-img";
   const backgroundImage = document.createElement("img");
   backgroundImage.loading = "lazy";
-  backgroundImage.src = thumbnail;
+  backgroundImage.src = thumbnail === "none" ? "" : thumbnail;
   renovate_img.append(backgroundImage);
   a.appendChild(renovate_img);
 

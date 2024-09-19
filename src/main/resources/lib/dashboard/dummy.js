@@ -9,8 +9,7 @@ export const dummy = {
         title: "test_name",
         src: " 설명,s",
         regDt: new Date().getTime(),
-        thumbnail:
-          "https://cdn.pixabay.com/photo/2018/04/26/16/31/marine-3352341_1280.jpg",
+        thumbnail: "none",
       },
       {
         project_id: "2",

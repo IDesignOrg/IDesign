@@ -5,20 +5,23 @@ import { floorY } from "../objectConf/renderOrders";
 
 export class D2Floor {
   constructor({ points, height, center, name }) {
+    //바닥
     const shape = new Shape({ points });
     const geometry = new THREE.ShapeGeometry(shape);
+
+    //바닥 material
     geometry.computeBoundingBox();
     const boundingBox = geometry.boundingBox;
     const offset = boundingBox.min;
     const range = boundingBox.max.clone().sub(offset);
     const uvAttribute = geometry.attributes.uv;
-
     for (let i = 0; i < uvAttribute.count; i++) {
       const x = (uvAttribute.getX(i) - offset.x) / range.x;
       const y = (uvAttribute.getY(i) - offset.y) / range.y;
       uvAttribute.setXY(i, x, y);
     }
     uvAttribute.needsUpdate = true;
+
     // Mesh 생성
     const material = height ? ceilingMaterial : floorMaterial;
     const mesh = new THREE.Mesh(geometry, material);
@@ -30,11 +33,6 @@ export class D2Floor {
     mesh.userData = {
       ...mesh.userData,
     };
-    if (height) {
-      // mesh.material.side = 1;
-      // mesh.position.y = height;
-    }
-    console.log(mesh.material.side, name);
     return mesh;
   }
 }
