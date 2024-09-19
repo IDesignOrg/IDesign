@@ -2,6 +2,7 @@ import axios from "axios";
 import { interectionObserver } from "../lib/observer.js";
 import { dummy } from "../lib/dashboard/dummy.js";
 import { projectNode } from "../lib/dashboard/projectNode.js";
+import { debounce } from "../lib/debounce.js";
 
 const side = document.getElementById("side");
 const sidebarArrow = document.getElementById("arrow-box");
@@ -139,16 +140,16 @@ const onChangeSideBar = () => {
 const reqRemoveProjects = async () => {
   // 프로젝트 삭제
   console.log(remove_projects);
-  
+
   try {
     // project_ids 파라미터를 쿼리 스트링으로 직접 구성
     const queryString = Object.keys(remove_projects)
       .map((key) => `project_ids=${key}`)
-      .join('&');
-      console.log(queryString)
+      .join("&");
+    console.log(queryString);
 
     const url = `/api/remove/projects?${queryString}`;
-    
+
     // DELETE 요청에 URL로 직접 전달
     const data = await axios.delete(url);
 
@@ -167,7 +168,6 @@ const reqRemoveProjects = async () => {
     alert("오류가 발생했습니다. 다시 시도해주세요.");
   }
 };
-
 
 const removeBackgroundChanger = (style) => {
   const nodes = Array.from(document.getElementsByClassName("delete_bg"));
