@@ -145,8 +145,8 @@ const reqRemoveProjects = async () => {
     // 요청 URL에 쿼리 파라미터를 추가하여 데이터 전달
     const data = await axios.delete("/api/remove/projects", {
       params: {
-        project_ids: Object.keys(remove_projects)
-      }
+        project_ids: Object.keys(remove_projects).map((key) => key),
+      },
     });
 
     if (data.status === "fail") {
