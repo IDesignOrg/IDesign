@@ -2,6 +2,7 @@ import axios from "axios";
 import { interectionObserver } from "../lib/observer.js";
 import { dummy } from "../lib/dashboard/dummy.js";
 import { projectNode } from "../lib/dashboard/projectNode.js";
+import { debounce } from "../lib/debounce.js";
 
 const side = document.getElementById("side");
 const sidebarArrow = document.getElementById("arrow-box");
