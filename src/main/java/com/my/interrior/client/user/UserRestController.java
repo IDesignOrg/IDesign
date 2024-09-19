@@ -25,12 +25,12 @@ public class UserRestController {
 	private UserRepository userRepository;
 
 	@Transactional
-	@GetMapping("/auth/findPw/{UName}")
-	public ResponseEntity<String> findUPw(@ModelAttribute UserMailDTO dto, @PathVariable("UName") String UName,
+	@GetMapping("/auth/findPw")
+	public ResponseEntity<String> findUPw(@ModelAttribute UserMailDTO dto,
 			Model model) {
 		String mail = dto.getUMail();
-
-		log.info("mail: {}, name :{}", mail, UName);
+		String UName = dto.getUName();
+		log.info("mail: {}, name :{}", mail);
 		// mail을 입력 안 했을 때
 		if (mail == null || mail.isEmpty())
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("NoMail");

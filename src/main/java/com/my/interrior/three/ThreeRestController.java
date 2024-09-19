@@ -53,7 +53,7 @@ public class ThreeRestController {
 	}
 
 	@DeleteMapping("/api/remove/projects")
-	public ResponseEntity<?> removeProjects(@RequestParam("project_ids") List<Integer> projectIds){
+	public ResponseEntity<?> removeProjects(@RequestParam("project_ids") List<String> projectIds){
 		System.out.println("projectIds: " + projectIds);
 		
 		return ResponseEntity.ok().build();
