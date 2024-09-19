@@ -137,17 +137,20 @@ const onChangeSideBar = () => {
 };
 
 const reqRemoveProjects = async () => {
-  // wook
   // 프로젝트 삭제
-  // ex) localhost:3000/remove_projects?project_ids=[1,2,3,4]
   console.log(remove_projects);
+  
   try {
-    // 요청 URL에 쿼리 파라미터를 추가하여 데이터 전달
-    const data = await axios.delete("/api/remove/projects", {
-      params: {
-        project_ids: Object.keys(remove_projects).map((key) => key),
-      },
-    });
+    // project_ids 파라미터를 쿼리 스트링으로 직접 구성
+    const queryString = Object.keys(remove_projects)
+      .map((key) => `project_ids=${key}`)
+      .join('&');
+      console.log(queryString)
+
+    const url = `/api/remove/projects?${queryString}`;
+    
+    // DELETE 요청에 URL로 직접 전달
+    const data = await axios.delete(url);
 
     if (data.status === "fail") {
       alert("오류가 발생했습니다. 다시 시도해주세요.");
@@ -163,9 +166,8 @@ const reqRemoveProjects = async () => {
     removeBackgroundChanger("none");
     alert("오류가 발생했습니다. 다시 시도해주세요.");
   }
-
-  //
 };
+
 
 const removeBackgroundChanger = (style) => {
   const nodes = Array.from(document.getElementsByClassName("delete_bg"));
