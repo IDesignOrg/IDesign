@@ -15,7 +15,7 @@ module.exports = {
   //   three: "./dimension/src/three.js",
   // },
   entry: glob
-    .sync(path.resolve(__dirname, "src/*.js"))
+    .sync(path.resolve(__dirname, "jsFiles/*.js"))
     .reduce((entries, filePath) => {
       const entryName = path.basename(filePath, path.extname(filePath)); // 파일명만 추출
       entries[entryName] = filePath;

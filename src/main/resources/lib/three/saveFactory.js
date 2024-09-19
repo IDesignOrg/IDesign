@@ -1,7 +1,7 @@
 // const savedObjects = ['room','desk','floor','circle']
 
 import { roomName } from "./objectConf/objectNames";
-import { furnitureObjects } from "../../src/three";
+import { furnitureObjects } from "../../jsFiles/three";
 export const saveFactory = (scene) => {
   const arr = [];
   function dfs(object, parent) {
