@@ -10,6 +10,7 @@ const submitProductImageWrapper = document.getElementById(
 );
 const productsImagesInput = document.getElementById("product-files");
 const productImagesWrapper = document.getElementById("product-images-wrapper");
+const price = document.getElementById("price-input");
 
 const submitProductBtn = document.getElementById("submit-product");
 // const option
@@ -164,6 +165,7 @@ const onSubmitProduct = async () => {
   const reqObjectData = {
     title,
     category,
+    price: price.value,
     option: obj,
     thumbnail: "z",
   };

@@ -39,6 +39,7 @@ import { throttle } from "../lib/throttling.js";
 import { debounce } from "../lib/debounce.js";
 import { saveFactory } from "../lib/three/saveFactory.js";
 import { loadFurnitures } from "../lib/three/loader/furnitures.js";
+import { getDummy } from "../lib/three/dummy.js";
 
 const save = document.getElementById("save");
 const hudIcon = document.getElementById("hud-icon");
@@ -666,23 +667,19 @@ function dataURLtoBlob(dataURL) {
 const onSave = async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const project_id = urlParams.get("project_id");
+
+  // three노드들 정리
   const dataEntities = saveFactory(scene);
 
-  // 스크린샷 타입
   const strMime = "image/jpeg";
-  // base64 썸네일
   const imageData = renderer.domElement.toDataURL(strMime);
-
-  // base64 데이터를 Blob으로 변환
   const blobData = dataURLtoBlob(imageData);
-  const userId = "123123";
 
   // FormData 객체 생성
   const formData = new FormData();
+  //스크린샷 추가
+  formData.append("file", blobData, `${project_id}_screenshot.jpg`);
 
-  // Blob 데이터와 파일명으로 파일 추가
-  formData.append("file", blobData, `${userId}_${project_id}_screenshot.jpg`);
-  console.log("project_id: ", project_id);
   const req = {
     project_id,
     dataEntities,
@@ -721,20 +718,30 @@ const onWindowResize = () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 };
 
-const getProjectNode = async () => {
-  if (window.location.origin.includes("3000")) return;
+const getProjectNodes = async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const project_id = urlParams.get("project_id");
 
-  const data = await axios.get("/api/get/project_nodes", {
-    params: {
-      project_id,
-    },
-  });
+  let data = null;
+  if (window.location.origin.includes("3000")) {
+    data = await getDummy();
+  } else {
+    data = await axios.get("/api/get/project_nodes", {
+      params: {
+        project_id,
+      },
+    });
+  }
   console.log(data);
+  // const nodes = data.data.dataEntities;
+  // console.log(nodes);
+  // const visit = Array(Object.keys(nodes).length).fill(false);
+  // console.log(visit);
+  // console.log(data);
+  if (data.status === "fail") return alert("공습경보");
 };
 
-getProjectNode();
+getProjectNodes();
 
 canvas.addEventListener("mousedown", onMouseDown);
 canvas.addEventListener("mousemove", onMouseMove);
