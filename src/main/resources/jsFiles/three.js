@@ -717,6 +717,8 @@ const onWindowResize = () => {
 };
 
 const getProjectNodes = async () => {
+  // todo
+  // 코드 더러움
   const urlParams = new URLSearchParams(window.location.search);
   const project_id = urlParams.get("project_id");
   console.log("start!!");
