@@ -56,7 +56,6 @@ export class D3Room extends THREE.Group {
     const walls = new D3Wall({ points, center, name: "floor" });
     walls.name = "walls";
     this.add(walls);
-    console.log(object);
     object.children.forEach((obj) => {
       if (obj.name === chairName || obj.name === deskName) {
         const cloneObject = obj.clone();
@@ -67,15 +66,26 @@ export class D3Room extends THREE.Group {
 }
 
 export class D2Room extends THREE.Group {
-  lines = null;
-  clickedPoints = null;
-
-  constructor({ points }) {
+  constructor({ points, nodeInfo, cameraZoom }) {
     super();
     this.name = "shadow";
-    this.userData.points = points;
-    this.clickedPoints = points[0];
-    this.drawLines(points);
+    if (nodeInfo) {
+      this.userData = {
+        ...this.userData,
+        points: nodeInfo.points,
+        oid: nodeInfo.oid,
+        rotation: nodeInfo.rotation,
+      };
+      this.rotation.y = nodeInfo.rotation;
+      this.createRoom({ cameraZoom });
+    } else {
+      this.userData = {
+        ...this.userData,
+        rotation: 0,
+        points,
+      };
+      this.drawLines(points);
+    }
   }
 
   getShadowPoints = () => {
@@ -95,11 +105,11 @@ export class D2Room extends THREE.Group {
     const center = calculateCenter(points);
     this.position.set(center.x, roomY, center.z);
     const floor = new D2Floor({ points, center });
+
     this.userData = {
       ...this.userData,
       center,
-      points,
-      rotation: 0,
+      // points,
     };
 
     const shadowLines = this.getObjectByName("shadowLine");

@@ -22,7 +22,7 @@ export const saveFactory = (scene) => {
         parent,
         rotation: object.userData.rotation || 0,
         points: object.userData.points,
-        oid: object.uuid,
+        oid: object.userData.oid,
         children: children.length === 0 ? null : children,
       };
       arr.push(obj);

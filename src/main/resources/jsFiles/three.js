@@ -684,6 +684,7 @@ const onSave = async () => {
     project_id,
     dataEntities,
   };
+  console.log("save dataEntities", dataEntities);
 
   formData.append(
     "jsonData",
@@ -702,9 +703,6 @@ const onSave = async () => {
         },
       }
     );
-
-    if (pDes) localStorage.removeItem("pdes");
-    console.log(data);
   } catch (e) {
     console.error(e);
   }
@@ -721,7 +719,7 @@ const onWindowResize = () => {
 const getProjectNodes = async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const project_id = urlParams.get("project_id");
-
+  console.log("start!!");
   let data = null;
   if (window.location.origin.includes("3000")) {
     data = await getDummy();
@@ -732,13 +730,35 @@ const getProjectNodes = async () => {
       },
     });
   }
-  console.log(data);
-  // const nodes = data.data.dataEntities;
-  // console.log(nodes);
-  // const visit = Array(Object.keys(nodes).length).fill(false);
-  // console.log(visit);
-  // console.log(data);
   if (data.status === "fail") return alert("공습경보");
+  const nodes = data.data.dataEntities;
+  const visit = Array(Object.keys(nodes).length).fill(false);
+
+  Object.keys(nodes).forEach((key, idx) => {
+    const node = nodes[key];
+
+    if (node.type === "room") {
+      visit[idx] = true;
+      const room = new D2Room({ nodeInfo: node, cameraZoom });
+      if (node.children && node.children.length > 0) {
+        node.children.forEach((child) => {
+          const childNode = nodes[child];
+          switch (childNode.type) {
+            case chairName:
+              if (!isFunitureLoadSuccess(chairName)) break;
+              const cloneChair = furnitureObjects[chairName].value.clone();
+              cloneChair.position.copy(childNode.points[0]);
+              room.add(cloneChair);
+              break;
+
+            default:
+              break;
+          }
+        });
+      }
+      scene.add(room);
+    }
+  });
 };
 
 getProjectNodes();

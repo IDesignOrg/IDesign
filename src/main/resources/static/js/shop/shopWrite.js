@@ -176,14 +176,23 @@ const onSubmitProduct = async () => {
       type: "application/json",
     })
   );
+  try {
+    const resData = await fetch("/shopWrite", {
+      method: "POST",
+      body: formData,
+    });
+    const response = await resData.json();
 
-  const resData = await fetch("http://localhost:1111", {
-    method: "POST",
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-    body: formData,
-  });
+    if (response.ok) {
+      // 성공적으로 처리된 경우, 원하는 페이지로 리다이렉트
+      window.location.href = "/shopList"; // 원하는 리다이렉트 경로
+    } else {
+      alert("상품 등록 중 오류가 발생했습니다.");
+    }
+  } catch (error) {
+    console.error("상품 등록 오류:", error);
+    alert("상품 등록 중 오류가 발생했습니다.");
+  }
 };
 
 thumbnailInput.addEventListener("change", onFileUpload);
