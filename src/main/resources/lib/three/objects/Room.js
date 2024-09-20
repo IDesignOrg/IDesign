@@ -70,6 +70,7 @@ export class D2Room extends THREE.Group {
     super();
     this.name = "shadow";
     if (nodeInfo) {
+      this.name = roomName;
       this.userData = {
         ...this.userData,
         points: nodeInfo.points,

@@ -193,11 +193,16 @@ const getIntersectsArray = (raycaster) => {
 //
 
 const updateShadows = ({ object, background }) => {
+  console.log(background, object);
   const points = [
-    new THREE.Vector3(object.clickedPoints.x, wallY, object.clickedPoints.z),
-    new THREE.Vector3(background.point.x, wallY, object.clickedPoints.z),
+    new THREE.Vector3(
+      object.userData.points[0].x,
+      wallY,
+      object.userData.points[0].z
+    ),
+    new THREE.Vector3(background.point.x, wallY, object.userData.points[0].z),
     new THREE.Vector3(background.point.x, wallY, background.point.z),
-    new THREE.Vector3(object.clickedPoints.x, wallY, background.point.z),
+    new THREE.Vector3(object.userData.points[0].x, wallY, background.point.z),
   ];
   object.drawLines(points);
 };
@@ -624,6 +629,7 @@ const create3DScene = () => {
   if (!scene) return;
   scene.children.forEach((obj) => {
     if (obj.name === "room") {
+      console.log(obj);
       const newRoom = new D3Room({ object: obj });
       scene.add(newRoom);
       scene.remove(obj);
@@ -721,7 +727,6 @@ const getProjectNodes = async () => {
   // 코드 더러움
   const urlParams = new URLSearchParams(window.location.search);
   const project_id = urlParams.get("project_id");
-  console.log("start!!");
   let data = null;
   if (window.location.origin.includes("3000")) {
     data = await getDummy();
@@ -734,13 +739,11 @@ const getProjectNodes = async () => {
   }
   if (data.status === "fail") return alert("공습경보");
   const nodes = data.data.dataEntities;
-  const visit = Array(Object.keys(nodes).length).fill(false);
 
   Object.keys(nodes).forEach((key, idx) => {
     const node = nodes[key];
 
     if (node.type === "room") {
-      visit[idx] = true;
       const room = new D2Room({ nodeInfo: node, cameraZoom });
       if (node.children && node.children.length > 0) {
         node.children.forEach((child) => {
@@ -759,6 +762,7 @@ const getProjectNodes = async () => {
         });
       }
       scene.add(room);
+      console.log(room);
     }
   });
 };
