@@ -40,7 +40,7 @@ public class WebConfig implements WebMvcConfigurer {
 		registry.addResourceHandler("/dist/**")
 				.addResourceLocations("classpath:/dist/");
 		
-		registry.addResourceHandler("/dimension/**")
-		.addResourceLocations("classpath:/dimension/");
+		registry.addResourceHandler("/public/**")
+		.addResourceLocations("classpath:/public/");
 	}
 }
