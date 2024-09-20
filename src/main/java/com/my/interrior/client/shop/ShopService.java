@@ -27,6 +27,9 @@ import com.my.interrior.client.cart.CartEntity;
 import com.my.interrior.client.cart.CartOptionEntity;
 import com.my.interrior.client.cart.CartRepository;
 import com.my.interrior.client.gcs.GCSFileDeleter;
+import com.my.interrior.client.shop.shopDTO.ShopDTO;
+import com.my.interrior.client.shop.shopDTO.ShopOptionDTO;
+import com.my.interrior.client.shop.shopDTO.ShopOptionValueDTO;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
 
@@ -86,83 +89,50 @@ public class ShopService {
 	//
 	//
 	@Transactional
-	public void shopWrite(String shopTitle, String shopPrice, String shopContent, String shopMainPhotoUrl,
-			List<String> descriptionImageUrls, String shopCategory, List<String> optionNames, List<String> options,
-			List<String> price, String shopDiscountRate) {
-		// ShopEntity 저장
-		ShopEntity shopEntity = new ShopEntity();
-		int hits = 0;
-		int sell = 0;
-		shopEntity.setShopTitle(shopTitle);
-		shopEntity.setShopDiscont(shopDiscountRate);
-		shopEntity.setShopContent(shopContent);
-		shopEntity.setShopMainPhoto(shopMainPhotoUrl);
-		shopEntity.setShopPrice(shopPrice);
-		shopEntity.setShopHit(hits);
-		shopEntity.setShopSell(sell);
-		shopEntity.setShopCategory(shopCategory);
-		shopEntity.setShopWriteTime(LocalDateTime.now());
+	public void shopWrite(ShopDTO shopData, String shopMainPhotoUrl,
+	                      List<String> descriptionImageUrls) {
 
-		shopRepository.save(shopEntity);
+		System.out.println("할인률 : " + shopData.getDiscountRate());
+		System.out.println("카테고리 : " +shopData.getCategory());
+		System.out.println("타이틀 : " +shopData.getTitle());
+	    // ShopEntity 저장
+	    ShopEntity shopEntity = new ShopEntity();
+	    shopEntity.setShopTitle(shopData.getTitle());
+	    shopEntity.setShopCategory(shopData.getCategory());
+	    shopEntity.setShopDiscont(shopData.getDiscountRate());
+	    shopEntity.setShopMainPhoto(shopMainPhotoUrl);
+	    shopEntity.setShopWriteTime(LocalDateTime.now());
+	    shopEntity.setShopPrice(shopData.getPrice());
+	    shopEntity.setShopContent("임시값");
 
-		for (String option : options) {
-			System.out.println(option);
-		}
+	    shopRepository.save(shopEntity);
 
-		for (int i = 0; i < optionNames.size(); i++) {
-			String optionName = optionNames.get(i);
-			String[] optionValues = options.get(i).split(";");
-			String[] optionPrice = price.get(i).split(";");
-			// 들어갔는지 확
+	    // 옵션 저장
+	    for (ShopOptionDTO option : shopData.getOption()) {
+	        ShopOptionEntity optionEntity = new ShopOptionEntity();
+	        optionEntity.setShopEntity(shopEntity);
+	        optionEntity.setShopOptionName(option.getOptionName());
 
-			System.out.println("옵션 이름 : " + optionName);
-			for (String value : optionValues) {
-				System.out.println("옵션값들 : " + value);
-			}
-			for (String priceq : optionPrice) {
-				System.out.println("재고 값들 : " + priceq);
-			}
-			ShopOptionEntity optionEntity = new ShopOptionEntity();
-			optionEntity.setShopEntity(shopEntity);
-			optionEntity.setShopOptionName(optionName);
+	        for (ShopOptionValueDTO optionValue : option.getOptions()) {
+	            ShopOptionValueEntity valueEntity = new ShopOptionValueEntity();
+	            valueEntity.setShopOptionValue(optionValue.getName());
+	            valueEntity.setShopOptionPrice(optionValue.getPrice());
+	            valueEntity.setShopOptionEntity(optionEntity);
+	            shopOptionValueRepository.save(valueEntity);
+	        }
 
-			for (int j = 0; j < optionValues.length; j++) {
-				String value = optionValues[j].trim();
+	        shopOptionRepository.save(optionEntity);
+	    }
 
-				System.out.println("들어갈 value의 값 : " + value);
-
-				String priceq = optionPrice[j].trim();
-				int priceInt = Integer.parseInt(priceq);
-
-				System.out.println("들어갈 stockInt의 값 : " + priceInt);
-
-				ShopOptionValueEntity valueEntity = new ShopOptionValueEntity();
-				valueEntity.setShopOptionValue(value);
-				valueEntity.setShopOptionPrice(priceInt);
-				valueEntity.setShopOptionEntity(optionEntity);
-				shopOptionRepository.save(optionEntity);
-				shopOptionValueRepository.save(valueEntity);
-			}
-		}
-
-		// ShopOptionEntity 저장
-		/*
-		 * for (int i = 0; i < optionNames.size(); i++) { ShopOptionEntity optionEntity
-		 * = new ShopOptionEntity(); optionEntity.setShopEntity(shopEntity);
-		 * optionEntity.setShopOptionName(optionNames.get(i));
-		 * optionEntity.setShopOptionValue(options.get(i));
-		 * optionEntity.setShopOptionStock(stocks.get(i));
-		 * shopOptionRepository.save(optionEntity); }
-		 */
-
-		// Description Images URL 저장
-		for (String url : descriptionImageUrls) {
-			ShopPhotoEntity photoEntity = new ShopPhotoEntity();
-			photoEntity.setShopEntity(shopEntity);
-			photoEntity.setShopPhotoUrl(url);
-			shopPhotoRepository.save(photoEntity);
-		}
+	    // 설명 이미지 URL 저장
+	    for (String url : descriptionImageUrls) {
+	        ShopPhotoEntity photoEntity = new ShopPhotoEntity();
+	        photoEntity.setShopEntity(shopEntity);
+	        photoEntity.setShopPhotoUrl(url);
+	        shopPhotoRepository.save(photoEntity);
+	    }
 	}
+
 
 	// 샵 페이지 리스트
 	public Page<ShopEntity> getAllShop(Pageable pageable) {
