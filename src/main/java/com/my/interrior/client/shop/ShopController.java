@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,9 +20,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.my.interrior.client.shop.shopDTO.ShopDTO;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -41,33 +46,31 @@ public class ShopController {
     
     //shop작성 
     @PostMapping("/shopWrite")
-    public String shopWrite(
-            @RequestParam("shopTitle") String shopTitle,
-            @RequestParam("shopPrice") String shopPrice,
-            @RequestParam("shopContent") String shopContent,
-            @RequestParam("shopCategory") String shopCategory,
-            @RequestParam("shopMainPhoto") MultipartFile shopMainPhoto,
-            @RequestParam("descriptionImages") MultipartFile[] descriptionImages,
-            @RequestParam("optionName[]") List<String> optionNames,
-            @RequestParam("shopDiscountRate") String shopDiscountRate,
-            @RequestParam("option[]") List<String> options,
-            @RequestParam("price[]") List<String> price) throws IOException {
-    	System.out.println("우선 보내긴");
-        // Main Photo 업로드
-        String shopMainPhotoUrl = shopService.uploadFile(shopMainPhoto);
-        
-        // Description Images 업로드
+    public ResponseEntity<?> shopWrite(
+    		@RequestPart("thumbnail") MultipartFile thumbnail, // 썸네일 파일
+    	    @RequestPart("srcImage") List<MultipartFile> descriptionImages, // 설명 이미지 파일들
+    	    @RequestPart("productData") String productDataJson) throws IOException {
+    	// JSON 데이터를 객체로 변환 (productDataJson은 JavaScript에서 보낸 JSON)
+        ObjectMapper objectMapper = new ObjectMapper();
+        ShopDTO shopDTO = objectMapper.readValue(productDataJson, ShopDTO.class);
+
+        // 썸네일 이미지 업로드 처리
+        String shopMainPhotoUrl = shopService.uploadFile(thumbnail);
+
+        // 설명 이미지 업로드 처리
         List<String> descriptionImageUrls = new ArrayList<>();
         for (MultipartFile file : descriptionImages) {
             String url = shopService.uploadFile(file);
             descriptionImageUrls.add(url);
         }
-        
-        // Shop 정보 저장
-        shopService.shopWrite(shopTitle, shopPrice,  shopContent, shopMainPhotoUrl, descriptionImageUrls, shopCategory, optionNames, options, price, shopDiscountRate);
-        System.out.println("확인");
 
-        return "redirect:/admin/adminShopList";
+        // 데이터 저장 로직 실행
+        shopService.shopWrite(shopDTO, shopMainPhotoUrl, descriptionImageUrls);
+        Map<String, String> response = new HashMap<>();
+        String success = "success";
+        response.put("response", success);
+        
+        return ResponseEntity.ok(response);
 
     }
     //shop 리스트 
