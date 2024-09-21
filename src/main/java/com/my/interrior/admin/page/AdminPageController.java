@@ -535,6 +535,17 @@ public class AdminPageController {
 		model.addAttribute("totalPages", events.getTotalPages());
 		return "admin/page/adminEvent";
 	}
+	
+	//이벤트 삭제
+	@DeleteMapping("/deleteEvent")
+    public ResponseEntity<String> deleteEvent(@RequestParam("eventNo") Long eventNo) {
+        try {
+            adminPageService.deleteEvent(eventNo);
+            return ResponseEntity.ok("이벤트가 성공적으로 삭제되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("이벤트 삭제 중 오류가 발생했습니다.");
+        }
+    }
 
 	@GetMapping("/admin/page/adminEventSearch")
 	public String searchEvents(@RequestParam("type") String type, @RequestParam("keyword") String keyword,

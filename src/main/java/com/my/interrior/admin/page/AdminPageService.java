@@ -243,6 +243,15 @@ public class AdminPageService {
 	public Page<EventEntity> getAllEvent(Pageable pageable) {
 		return eventRepository.findAll(pageable);
 	}
+	//이벤트 삭제
+	@Transactional
+    public void deleteEvent(Long eventNo) throws Exception {
+        if (eventRepository.existsById(eventNo)) {
+            eventRepository.deleteById(eventNo);
+        } else {
+            throw new Exception("이벤트를 찾을 수 없습니다.");
+        }
+    }
 
 	// 이벤트 제목 검색
 	public Page<EventEntity> searchEventsByTitle(String title, Pageable pageable) {
