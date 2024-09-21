@@ -7,29 +7,22 @@
     <link rel="stylesheet" href="/css/header.css" />
     <link rel="stylesheet" href="/css/reset.css" />
     <link rel="stylesheet" href="/css/event.css" />
+	<link rel="stylesheet" href="/css/review/reviewlist.css" />
   </head>
 
   <body>
     <th:block th:include="~{fragments/header.html::header}"></th:block>
-    <div class="event-page">
-      <div class="container">
-        <h1>이벤트 목록</h1>
-
-        <ul class="event-list">
-          <li th:if="${session.UId} == admin">
-            <a th:href="@{/board/event/write}">글 쓰기</a>
-          </li>
-          <li th:each="event : ${events.content}">
-            <div class="event-details">
-              <a
-                th:href="@{/board/eventDetail(eventNo=${event.eventNo})}"
-                class="event-title"
-                th:text="${event.eventTitle}"
-              ></a>
-              <img th:src="${event.eventImg}" />
-            </div>
-          </li>
-        </ul>
+		<div class="container">
+				<h1>리뷰</h1>
+				<div class="review-grid">
+					<div class="review-card" th:each="event : ${events.content}">
+						<img th:src="${event.eventImg}" alt="Review Image">
+						<div class="review-content">
+							<div class="review-title" th:text="${event.eventTitle}"></div>
+							<div class="review-text" th:text="${#strings.abbreviate(event.eventContent, 100)}"></div>
+						</div>
+					</div>
+				</div>
 
         <!-- Pagination links -->
         <nav aria-label="Page navigation">
@@ -56,11 +49,6 @@
             </li>
           </ul>
         </nav>
-
-        <!-- Home button -->
-        <div class="home-button">
-          <a href="/" class="btn">홈으로</a>
-        </div>
       </div>
     </div>
   </body>
