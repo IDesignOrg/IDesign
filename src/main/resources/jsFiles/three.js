@@ -25,6 +25,7 @@ import {
   floorName,
   moveConrollerName,
   moveControllerChildrenName,
+  roomName,
   rotationConrollerName,
   shadowName,
 } from "../lib/three/objectConf/objectNames.js";
@@ -193,7 +194,6 @@ const getIntersectsArray = (raycaster) => {
 //
 
 const updateShadows = ({ object, background }) => {
-  console.log(background, object);
   const points = [
     new THREE.Vector3(
       object.userData.points[0].x,
@@ -609,7 +609,6 @@ const create2DRoom = (room) => {
     }
     newRoom.rotation.y = room.userData.rotation;
   });
-
   scene.add(newRoom);
 };
 
@@ -626,15 +625,21 @@ const create2DScene = () => {
 };
 
 const create3DScene = () => {
+  console.log("scene children=", scene.children);
   if (!scene) return;
+  // return;
+  const D2Rooms = [];
+  // const arr = scene.children;
   scene.children.forEach((obj) => {
     if (obj.name === "room") {
       console.log(obj);
       const newRoom = new D3Room({ object: obj });
       scene.add(newRoom);
-      scene.remove(obj);
+      D2Rooms.push(obj.id);
     }
   });
+  console.log(D2Rooms);
+  D2Rooms.forEach((i) => scene.remove(i));
 };
 
 const onChangeMode = (e) => {
@@ -690,7 +695,6 @@ const onSave = async () => {
     project_id,
     dataEntities,
   };
-  console.log("save dataEntities", dataEntities);
 
   formData.append(
     "jsonData",
@@ -740,9 +744,14 @@ const getProjectNodes = async () => {
   if (data.status === "fail") return alert("공습경보");
   const nodes = data.data.dataEntities;
 
+  let a = false;
+
+  return;
   Object.keys(nodes).forEach((key, idx) => {
     const node = nodes[key];
-
+    if (a === false) {
+      a = true;
+    }
     if (node.type === "room") {
       const room = new D2Room({ nodeInfo: node, cameraZoom });
       if (node.children && node.children.length > 0) {
@@ -752,6 +761,7 @@ const getProjectNodes = async () => {
             case chairName:
               if (!isFunitureLoadSuccess(chairName)) break;
               const cloneChair = furnitureObjects[chairName].value.clone();
+              cloneChair.name = chairName;
               cloneChair.position.copy(childNode.points[0]);
               room.add(cloneChair);
               break;
@@ -762,9 +772,10 @@ const getProjectNodes = async () => {
         });
       }
       scene.add(room);
-      console.log(room);
     }
   });
+
+  console.log(scene.children.filter((c) => c.name === "room"));
 };
 
 getProjectNodes();
