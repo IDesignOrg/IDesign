@@ -162,24 +162,37 @@ public class ReviewService {
 		return reviewCommentRepository.findByReviewEntity(reviewEntity);
 	}
 
-	public ReviewCommentEntity addComment(Long reviewId, String userIdFromSession, String comment) {
-		ReviewEntity reviewEntity = reviewRepository.findById(reviewId)
-				.orElseThrow(() -> new IllegalArgumentException("Invalid review ID: " + reviewId));
+	public ReviewCommentDTO addComment(Long reviewId, String userIdFromSession, String comment) {
+	    // ReviewEntity를 조회
+	    ReviewEntity reviewEntity = reviewRepository.findById(reviewId)
+	            .orElseThrow(() -> new IllegalArgumentException("Invalid review ID: " + reviewId));
 
-		// 세션에서 가져온 userId로 UserEntity를 조회
-		UserEntity userEntity = userRepository.findByUId(userIdFromSession);
-		if (userEntity == null) {
-			throw new IllegalArgumentException("Invalid user ID: " + userIdFromSession);
-		}
+	    // UserEntity를 조회
+	    UserEntity userEntity = userRepository.findByUId(userIdFromSession);
+	    if (userEntity == null) {
+	        throw new IllegalArgumentException("Invalid user ID: " + userIdFromSession);
+	    }
 
-		ReviewCommentEntity reviewCommentEntity = new ReviewCommentEntity();
-		reviewCommentEntity.setReviewEntity(reviewEntity);
-		reviewCommentEntity.setUser(userEntity);
-		reviewCommentEntity.setRComment(comment);
-		reviewCommentEntity.setRCommentCreated(LocalDateTime.now());
+	    // ReviewCommentEntity 생성 및 설정
+	    ReviewCommentEntity reviewCommentEntity = new ReviewCommentEntity();
+	    reviewCommentEntity.setReviewEntity(reviewEntity);
+	    reviewCommentEntity.setUser(userEntity);
+	    reviewCommentEntity.setRComment(comment);
+	    reviewCommentEntity.setRCommentCreated(LocalDateTime.now());
 
-		return reviewCommentRepository.save(reviewCommentEntity);
+	    // 엔티티를 저장
+	    ReviewCommentEntity savedComment = reviewCommentRepository.save(reviewCommentEntity);
+
+	    // 엔티티에서 필요한 값 추출하여 DTO로 변환
+	    return new ReviewCommentDTO(
+	        savedComment.getRCommentNo(),              // 댓글 번호
+	        savedComment.getRComment(),                // 댓글 내용
+	        savedComment.getRCommentCreated(),         // 댓글 작성 시간
+	        userEntity.getUName(),                      // 사용자 이름 (UserEntity에서 추출)
+	        userEntity.getUPofile()                    // 사용자 프로필 이미지 (UserEntity에서 추출)
+	    );
 	}
+
 
 	public void deleteComment(Long commentId) {
 		reviewCommentRepository.deleteById(commentId);

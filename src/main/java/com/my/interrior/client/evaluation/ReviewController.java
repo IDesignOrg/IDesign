@@ -109,19 +109,20 @@ public class ReviewController {
 
 	// 리뷰 댓글 쓰기
 	@PostMapping("/review/{reviewId}")
-	public ResponseEntity<ReviewCommentEntity> addComment(@PathVariable("reviewId") Long reviewId,
-			@RequestParam("comment") String comment, HttpSession session) {
+	public ResponseEntity<ReviewCommentDTO> addComment(@PathVariable("reviewId") Long reviewId,
+	        @RequestParam("comment") String comment, HttpSession session) {
 
-		// 세션에서 userId를 가져오기
-		String userId = (String) session.getAttribute("UId");
-		System.out.println("reviewId는" + reviewId);
-		System.out.println("유저 아이디 " + userId);
-		if (userId == null) {
-			return ResponseEntity.status(401).build(); // Unauthorized
-		}
+	    // 세션에서 userId를 가져옴
+	    String userId = (String) session.getAttribute("UId");
+	    if (userId == null) {
+	        return ResponseEntity.status(401).build(); // 로그인되지 않은 경우
+	    }
 
-		ReviewCommentEntity newComment = reviewService.addComment(reviewId, userId, comment);
-		return ResponseEntity.ok(newComment);
+	    // 서비스에서 댓글을 추가하고 DTO를 반환받음
+	    ReviewCommentDTO commentDTO = reviewService.addComment(reviewId, userId, comment);
+
+	    // 클라이언트에 DTO 반환
+	    return ResponseEntity.ok(commentDTO);
 	}
 
 	// 리뷰 삭제
