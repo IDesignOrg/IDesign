@@ -15,6 +15,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.my.interrior.client.user.UserDTO;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserService;
+import com.my.interrior.common.GoogleApi;
+import com.my.interrior.common.KakaoApi;
+import com.my.interrior.common.NaverApi;
 
 
 @Controller
@@ -29,8 +32,28 @@ public class RecoveryController {
 	@Autowired
 	private RecoveryService recoveryService;
 	
+	@Autowired
+	private KakaoApi kakaoApi;
+
+	@Autowired
+	private GoogleApi googleApi;
+
+	@Autowired
+	private NaverApi naverApi;
+	
 	@GetMapping("/board/recoverLogin")
-	public String recoverLogin() {
+	public String recoverLogin(Model model) {
+		model.addAttribute("kakaoApiKey", kakaoApi.getKakaoApiKey());
+		model.addAttribute("redirectUri", kakaoApi.getKakaoRedirectUri());
+		model.addAttribute("googleClientId", googleApi.getClientId());
+		model.addAttribute("googleRedirectUri", googleApi.getRedirectUri());
+		model.addAttribute("googleScope", googleApi.getScope());
+		model.addAttribute("naverClientId", naverApi.getClientId());
+		model.addAttribute("naverRedirectUri", naverApi.getRedirectUri());
+
+		System.out.println("googleClientId: " + googleApi.getClientId());
+		System.out.println("googleRedirectUri: " + googleApi.getRedirectUri());
+		System.out.println("googleScope: " + googleApi.getScope());
 		return "client/csc/recoverLogin";
 	}
 
