@@ -37,7 +37,7 @@ public class ReviewCommentEntity {
 	private UserEntity user;
 	
 	@ManyToOne
-	@JoinColumn(name = "r_no")
+	@JoinColumn(name = "r_no", referencedColumnName = "r_no")
 	@JsonBackReference
 	private ReviewEntity reviewEntity;
 }

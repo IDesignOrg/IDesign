@@ -313,7 +313,7 @@
 <body>
 	<th:block th:include="~{fragments/header.html::header}"></th:block>
 	<div class="container">
-		<h1>Review List</h1>
+		<h1>리뷰</h1>
 		<div class="review-grid">
 			<div class="review-card" th:each="review : ${reviews}" th:data-rno="${review.RNo}">
 				<img th:src="${review.RMainPhoto}" alt="Review Image">
