@@ -124,27 +124,30 @@
 		        data: {
 		            comment: commentText  // 서버가 기대하는 'comment' 파라미터로 전송
 		        },
-		        success: function(newComment) {
-		            // 서버 응답 확인
-		            console.log("서버 응답:", newComment);
-		            
-		            // 댓글 UI 업데이트
-		            const commentSection = document.getElementById("commentSection");
-		            const commentDiv = document.createElement("div");
-		            commentDiv.classList.add("comment");
+				success: function(newComment) {
+				    // 서버에서 받은 데이터를 콘솔에 출력하여 확인
+				    console.log("서버 응답 데이터:", newComment);
 
-		            commentDiv.innerHTML = `
-		                <img src="${newComment.user?.UPofile || '/path/to/default/profile.jpg'}" alt="User profile">
-		                <div class="comment-text">
-		                    <span class="username">${newComment.user?.UName || 'Unknown'}</span>
-		                    ${newComment.rcomment || 'No comment available'}
-		                </div>
-		            `;
-		            commentSection.appendChild(commentDiv);
+				    const commentSection = document.getElementById("commentSection");
+				    const commentDiv = document.createElement("div");
+				    commentDiv.classList.add("comment");
 
-		            // 입력 필드 비우기
-		            commentInput.value = "";
-		        },
+				    // 데이터를 HTML에 추가
+				    commentDiv.innerHTML = `
+				        <img src="${newComment.userProfile || 'https://storage.googleapis.com/idesign_dev/static/static_static_blank-profile-picture-973460_640.png'}" alt="User profile">
+				        <div class="comment-text">
+				            <span class="username">${newComment.userName || 'Unknown'}</span>
+				            ${newComment.rcomment || 'No comment available'}
+				        </div>
+				    `;
+				    
+				    // 댓글 섹션에 새 댓글 추가
+				    commentSection.appendChild(commentDiv);
+
+				    // 입력 필드 비우기
+				    document.getElementById("commentInput").value = "";
+				}
+,
 		        error: function(jqXHR, textStatus, errorThrown) {
 		            alert("Error: " + errorThrown);
 		        }
