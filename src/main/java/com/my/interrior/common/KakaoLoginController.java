@@ -9,6 +9,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
 
@@ -26,7 +29,7 @@ public class KakaoLoginController {
 
 	//인증 시 코드 받는 곳
 	@RequestMapping("/auth/login/kakao")
-	public String kakaoLogin(@RequestParam("code") String code, HttpSession session, Model model) {
+	public String kakaoLogin(@RequestParam("code") String code, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
 		System.out.println("code : " + code);
 		String access_Token = kakaoService.getAccessToken(code);
 		System.out.println("controller access_token : " + access_Token);
@@ -54,9 +57,10 @@ public class KakaoLoginController {
             session.setAttribute("UId", newUser.getUId()); // 세션에 새로운 사용자 ID 설정
         }else {
         	if (existingUser.isUDeactivated()) {
-                // 비활성화된 계정일 경우
-                model.addAttribute("loginError", "비활성화된 아이디입니다.");
-                return "client/login"; // 로그인 페이지로 이동
+                // 비활성화된 계정일 경우 메시지만 전달
+        		redirectAttributes.addFlashAttribute("deactivatedError", "비활성화된 아이디입니다. 복구신청을 하시겠습니까?");
+				redirectAttributes.addFlashAttribute("userNo", existingUser.getUNo());
+                return "redirect:/auth/login";
             }
         	session.setAttribute("access_Token", access_Token);
         	session.setAttribute("UId", existingUser.getUId());

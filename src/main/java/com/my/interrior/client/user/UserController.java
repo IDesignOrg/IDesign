@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.my.interrior.common.GoogleApi;
 import com.my.interrior.common.KakaoApi;
@@ -96,7 +97,7 @@ public class UserController {
 	}
 
 	@PostMapping("/auth/login")
-	public String login(@ModelAttribute UserDTO userDTO, HttpSession session, Model model) throws Exception {
+	public String login(@ModelAttribute UserDTO userDTO, HttpSession session, Model model,  RedirectAttributes redirectAttributes) throws Exception {
 		try {
 			if (userDTO.getUId() == null || userDTO.getUPw() == null)
 				return "redirect:/auth/login";
@@ -107,8 +108,9 @@ public class UserController {
 			System.out.println("user" + user);
 			if (user != null && passwordEncoder.matches(UPw, user.getUPw())) {
 				if (user.isUDeactivated()) {
-					model.addAttribute("loginError", "비활성화된 아이디입니다.");
-					return "client/login";
+					redirectAttributes.addFlashAttribute("deactivatedError", "비활성화된 아이디입니다. 복구신청을 하시겠습니까?");
+					redirectAttributes.addFlashAttribute("userNo", user.getUNo());
+	                return "redirect:/auth/login";
 				}
 				session.setAttribute("UId", user.getUId());
 				return "redirect:/";

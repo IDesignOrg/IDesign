@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.my.interrior.client.user.UserDTO;
 import com.my.interrior.client.user.UserEntity;
+import com.my.interrior.client.user.UserRepository;
 import com.my.interrior.client.user.UserService;
 import com.my.interrior.common.GoogleApi;
 import com.my.interrior.common.KakaoApi;
@@ -27,66 +28,14 @@ public class RecoveryController {
 	private UserService userService;
 	
 	@Autowired
-	private PasswordEncoder passwordEncoder;
-	
-	@Autowired
 	private RecoveryService recoveryService;
 	
 	@Autowired
-	private KakaoApi kakaoApi;
-
-	@Autowired
-	private GoogleApi googleApi;
-
-	@Autowired
-	private NaverApi naverApi;
-	
-	@GetMapping("/board/recoverLogin")
-	public String recoverLogin(Model model) {
-		model.addAttribute("kakaoApiKey", kakaoApi.getKakaoApiKey());
-		model.addAttribute("redirectUri", kakaoApi.getKakaoRedirectUri());
-		model.addAttribute("googleClientId", googleApi.getClientId());
-		model.addAttribute("googleRedirectUri", googleApi.getRedirectUri());
-		model.addAttribute("googleScope", googleApi.getScope());
-		model.addAttribute("naverClientId", naverApi.getClientId());
-		model.addAttribute("naverRedirectUri", naverApi.getRedirectUri());
-
-		System.out.println("googleClientId: " + googleApi.getClientId());
-		System.out.println("googleRedirectUri: " + googleApi.getRedirectUri());
-		System.out.println("googleScope: " + googleApi.getScope());
-		return "client/csc/recoverLogin";
-	}
-
-	@PostMapping("/board/recoverLogin")
-	public String login(@ModelAttribute UserDTO userDTO, Model model, RedirectAttributes redirectAttributes) throws Exception {
-	    try {
-	        if (userDTO.getUId() == null || userDTO.getUPw() == null)
-	            return "redirect:/board/recoverLogin";
-
-	        String UId = userDTO.getUId();
-	        String UPw = userDTO.getUPw();
-	        UserEntity user = userService.checkLogin(UId);
-	        System.out.println("user: " + user);
-
-	        if (user != null && passwordEncoder.matches(UPw, user.getUPw())) {
-
-	            // 리다이렉트 시 엔티티를 그대로 전달
-	            redirectAttributes.addFlashAttribute("user", user);
-
-	            // 복구 신청 페이지로 리다이렉트
-	            return "redirect:/board/recoverWrite";
-	        } else {
-	            model.addAttribute("loginError", "입력하신 정보를 확인하세요.");
-	            return "/board/recoverLogin";
-	        }
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return "error";
-	    }
-	}
+	private UserRepository userRepository;
 
 	@GetMapping("/board/recoverWrite")
-	public String showRecoveryForm(@ModelAttribute("user") UserEntity user, Model model) {
+	public String showRecoveryForm(@RequestParam("userNo") Long userNo, Model model) {
+		UserEntity user = userRepository.findById(userNo).orElse(null);
 	    if (user == null) {
 	        // 만약 유저 정보가 없다면 로그인 페이지로 리다이렉트
 	        return "redirect:/board/recoverLogin";
