@@ -1,3 +1,4 @@
+const price = document.getElementById("price-input");
 const thumbnailInput = document.getElementById("product-main-image");
 const thumbnailPreview = document.getElementById("thumbnail-preview");
 const titleInput = document.getElementById("product-title");
@@ -8,6 +9,7 @@ const optionWrapper = document.getElementById("option-wrapper");
 const submitProductImageWrapper = document.getElementById(
   "submit-product-image"
 );
+const discountInput = document.getElementById("discount-input");
 const productsImagesInput = document.getElementById("product-files");
 const productImagesWrapper = document.getElementById("product-images-wrapper");
 const price = document.getElementById("price-input");
@@ -162,12 +164,14 @@ const onSubmitProduct = async () => {
     });
     obj.push(arr);
   });
+  
   const reqObjectData = {
+	price: price.value,
     title,
     category,
     price: price.value,
+    discountRate: discountInput.value,
     option: obj,
-    thumbnail: "z",
   };
 
   formData.append(
@@ -176,23 +180,34 @@ const onSubmitProduct = async () => {
       type: "application/json",
     })
   );
-  try {
-    const resData = await fetch("/shopWrite", {
-      method: "POST",
-      body: formData,
-    });
-    const response = await resData.json();
 
-    if (response.ok) {
-      // 성공적으로 처리된 경우, 원하는 페이지로 리다이렉트
-      window.location.href = "/shopList"; // 원하는 리다이렉트 경로
-    } else {
-      alert("상품 등록 중 오류가 발생했습니다.");
+
+  try {
+      const resData = await fetch("/shopWrite", {
+        method: "POST",
+        body: formData,
+      });
+	  console.log(resData)
+	  if(!resData.ok) return alert('공습경보')
+  const response = await resData.json();
+  console.log(response)
+  if (response.response ==='success') {
+       // 성공적으로 처리된 경우, 원하는 페이지로 리다이렉트
+       window.location.href = "/admin/adminShopList"; // 원하는 리다이렉트 경로
+     } else {
+       alert("상품 등록 중 오류가 발생했습니다.");
+     }
+/*
+      if (response.ok) {
+        // 성공적으로 처리된 경우, 원하는 페이지로 리다이렉트
+        window.location.href = "/shopList";  // 원하는 리다이렉트 경로
+      } else {
+        alert('상품 등록 중 오류가 발생했습니다.');
+      }*/
+    } catch (error) {
+      console.error('상품 등록 오류:', error);
+      alert('상품 등록 중 오류가 발생했습니다.');
     }
-  } catch (error) {
-    console.error("상품 등록 오류:", error);
-    alert("상품 등록 중 오류가 발생했습니다.");
-  }
 };
 
 thumbnailInput.addEventListener("change", onFileUpload);
