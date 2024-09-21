@@ -1,32 +1,39 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title th:text="${event.eventTitle} + ' 상세 정보'">이벤트 상세 정보</title>
-    <link rel="stylesheet" href="/css/eventDetail.css" />
-  </head>
 
-  <body>
-    <div class="container">
-      <div class="event-detail">
-        <input
-          type="hidden"
-          id="couponNo"
-          readonly
-          th:value="${event.coupon.couponNo}"
-        />
-        <h1 class="event-title" th:text="${event.eventTitle}"></h1>
-        <p class="event-content" th:text="${event.eventContent}"></p>
-        <img th:src="${event.eventImg}" />
-        <!-- <button type="button" onclick="getCoupon()" id="get-coupon">
-          쿠폰 발급받기
-        </button> -->
-        <button type="button" id="get-coupon">쿠폰 발급받기</button>
-      </div>
-      <a href="/board/event" class="back-link">이벤트 목록으로 돌아가기</a>
-    </div>
-    <!-- <script>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<title th:text="${event.eventTitle} + ' 상세 정보'">이벤트 상세 정보</title>
+	<link rel="stylesheet" href="/css/eventDetail.css" />
+	<link rel="stylesheet" href="/css/header.css" />
+	<link rel="stylesheet" href="/css/reset.css" />
+	<script src="/js/eventDetail.js" defer></script>
+</head>
+
+<body>
+	<th:block th:include="~{fragments/header.html::header}"></th:block>
+	<div class="container">
+	    <div class="event-detail">
+	        <!-- 쿠폰 번호를 저장하는 숨겨진 input 필드 -->
+	        <input type="hidden" id="couponNo" readonly th:value="${event.coupon.couponNo}" />
+	        
+	        <!-- 이벤트 제목 및 내용 -->
+	        <h1 class="event-title" th:text="${event.eventTitle}"></h1>
+	        <p class="event-content" th:text="${event.eventContent}"></p>
+	        
+	        <!-- 이벤트 이미지 -->
+	        <img th:src="${event.eventImg}" alt="Event Image" />
+
+	        <!-- 쿠폰 발급 버튼 -->
+	        <button type="button" id="get-coupon">쿠폰 발급받기</button>
+	    </div>
+	    
+	    <!-- 이벤트 목록으로 돌아가는 링크 -->
+	    <a href="/board/event" class="back-link">이벤트 목록으로 돌아가기</a>
+	</div>
+	<!-- <script>
       function getCoupon() {
         var couponNo = $("#couponNo").val(); // couponNo 가져오기
         console.log("couponNo는: ", couponNo);
@@ -48,5 +55,6 @@
         });
       }
     </script> -->
-  </body>
+</body>
+
 </html>
