@@ -109,26 +109,30 @@
 		function submitComment() {
 		    const commentInput = document.getElementById("commentInput");
 		    const commentText = commentInput.value.trim();
-		
+
 		    if (!commentText) {
 		        alert("댓글을 입력하세요.");
 		        return;
 		    }
-		
+
 		    console.log("currentReviewId:", currentReviewId);
-		
+
 		    $.ajax({
 		        url: `/review/${currentReviewId}`,
 		        type: "POST",
+		        contentType: "application/x-www-form-urlencoded",  // URL 인코딩 방식
 		        data: {
-		            comment: commentText
+		            comment: commentText  // 서버가 기대하는 'comment' 파라미터로 전송
 		        },
 		        success: function(newComment) {
+		            // 서버 응답 확인
+		            console.log("서버 응답:", newComment);
+		            
 		            // 댓글 UI 업데이트
 		            const commentSection = document.getElementById("commentSection");
 		            const commentDiv = document.createElement("div");
 		            commentDiv.classList.add("comment");
-		
+
 		            commentDiv.innerHTML = `
 		                <img src="${newComment.user?.UPofile || '/path/to/default/profile.jpg'}" alt="User profile">
 		                <div class="comment-text">
@@ -137,7 +141,7 @@
 		                </div>
 		            `;
 		            commentSection.appendChild(commentDiv);
-		
+
 		            // 입력 필드 비우기
 		            commentInput.value = "";
 		        },
@@ -157,7 +161,12 @@
 					currentReviewId = card.getAttribute("data-rno");
 
 					fetch(`/auth/evaluation/${currentReviewId}`)  // 리뷰 데이터와 댓글 데이터 동시에 가져옴
-						.then(response => response.json())
+						//.then(response => response.json())
+						.then(response => response.text()) 
+						.then(text => {
+						    console.log(text);  // JSON 텍스트 출력
+						    return JSON.parse(text);  // 이후에 파싱 시도
+						  })
 						.then(reviewData => {
 							// 리뷰 데이터 처리
 							document.getElementById("modalTitle").textContent = reviewData.rtitle || 'N/A';
