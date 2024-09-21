@@ -1,0 +1,48 @@
+body {
+			padding-top: 50px;
+		}
+
+		.not-detail {
+			max-width: 800px;
+			margin: auto;
+			padding: 20px;
+			border: 1px solid #ddd;
+			border-radius: 8px;
+			background-color: #f9f9f9;
+		}
+
+		.not-title {
+			font-size: 24px;
+			font-weight: bold;
+			margin-bottom: 5px;
+		}
+
+		.not-author-date {
+			font-size: 14px;
+			color: #666;
+			display: flex;
+			align-items: center;
+			margin-bottom: 20px;
+		}
+
+		.not-author-date .separator {
+			height: 14px;
+			width: 1px;
+			background-color: #ddd;
+			margin: 0 10px;
+		}
+
+		.not-content {
+			white-space: pre-wrap;
+			/* Preserve whitespace and line breaks */
+			margin-bottom: 20px;
+		}
+
+		.divider {
+			border-bottom: 1px solid #ddd;
+			margin-bottom: 20px;
+		}
+
+		.container {
+			margin-top: 140px;
+		}

@@ -4,10 +4,11 @@
     <meta charset="UTF-8" />
     <title>Join Form</title>
     <!--이거 4개는 항상 가져가기 -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="/css/reset.css" />
     <link rel="stylesheet" href="/css/header.css" />
     <link rel="stylesheet" href="/css/join.css" />
-    <script src="/js/common.js"></script>
+    <script src="/js/common.js" defer></script>
   </head>
 
   <body>
@@ -66,7 +67,7 @@
           <label for="UId">아이디</label>
           <div class="input-group">
             <input type="text" id="UId" name="UId" />
-            <button type="button" class="button-outline" id="duplicated-btn">
+            <button type="button" class="button-outline" id="duplicated-btn" onclick="checkDuplicatedId()">
               중복 확인
             </button>
           </div>
@@ -136,7 +137,7 @@
         <div class="checkbox-container">
           <div class="field">
             <label for="allAgree" class="checkbox-group">
-              <input type="checkbox" id="allAgree" />
+              <input type="checkbox" id="allAgree" onclick="toggleAllAgreements(this)"/>
               전체 동의
               <span id="choose">선택항목에 대한 동의 포함</span>
             </label>

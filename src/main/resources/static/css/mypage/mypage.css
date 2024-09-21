@@ -1,0 +1,191 @@
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #f5f5f5;
+			margin: 0;
+			padding: 0;
+		}
+
+		.container {
+			max-width: 900px;
+			margin: 140px auto;
+			background-color: #ffffff;
+			border-radius: 8px;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			padding: 20px;
+		}
+
+		.tab {
+			overflow: hidden;
+			border-bottom: 2px solid #007bff;
+			margin-bottom: 20px;
+		}
+
+		.tab button {
+			background-color: #f5f5f5;
+			border: none;
+			outline: none;
+			cursor: pointer;
+			padding: 12px 24px;
+			font-size: 16px;
+			margin-right: 8px;
+			transition: background-color 0.3s, color 0.3s;
+			border-radius: 5px 5px 0 0;
+		}
+
+		.tab button.active {
+			background-color: #007bff;
+			color: #ffffff;
+			border-bottom: 2px solid #0056b3;
+		}
+
+		.tab button:hover {
+			background-color: #e9ecef;
+		}
+
+		.tabcontent {
+			display: none;
+			padding: 20px;
+			background-color: #ffffff;
+			border-radius: 5px;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		}
+
+		.tabcontent.active {
+			display: block;
+		}
+
+		.section {
+			margin-top: 20px;
+		}
+
+		.section-title {
+			font-size: 26px;
+			font-weight: 600;
+			color: #333333;
+			margin-bottom: 15px;
+		}
+
+		.form-group {
+			margin-bottom: 20px;
+		}
+
+		.form-group p {
+			margin: 0;
+			font-size: 16px;
+		}
+
+		.form-group input[type="text"],
+		.form-group input[type="email"] {
+			width: calc(100% - 22px);
+			padding: 12px;
+			font-size: 16px;
+			border: 1px solid #ccc;
+			border-radius: 5px;
+			background-color: #fafafa;
+		}
+
+		.form-group input[type="hidden"] {
+			display: none;
+		}
+
+		.form-group button {
+			padding: 12px 24px;
+			font-size: 16px;
+			background-color: #007bff;
+			color: #ffffff;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			transition: background-color 0.3s;
+		}
+
+		.form-group button:hover {
+			background-color: #0056b3;
+		}
+
+		.order-item,
+		.coupon-item {
+			padding: 15px;
+			margin-bottom: 20px;
+			background-color: #ffffff;
+			border: 1px solid #e1e1e1;
+			border-radius: 5px;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		}
+
+		.order-item img,
+		.coupon-item img {
+			max-width: 100px;
+			height: auto;
+			border-radius: 5px;
+			margin-top: 10px;
+		}
+
+		hr {
+			border: 0;
+			border-top: 1px solid #e1e1e1;
+			margin: 20px 0;
+		}
+
+		/* 모달창 스타일*/
+		.modal {
+			display: none;
+			position: fixed;
+			z-index: 1;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			overflow: auto;
+			background-color: rgb(0, 0, 0);
+			background-color: rgba(0, 0, 0, 0.4);
+		}
+
+		.modal-content {
+			background-color: #fefefe;
+			margin: 15% auto;
+			padding: 20px;
+			border: 1px solid #888;
+			width: 80%;
+			max-width: 500px;
+			border-radius: 5px;
+		}
+
+		.close {
+			color: #aaa;
+			float: right;
+			font-size: 28px;
+			font-weight: bold;
+		}
+
+		.close:hover,
+		.close:focus {
+			color: black;
+			text-decoration: none;
+			cursor: pointer;
+		}
+
+		.modal-header,
+		.modal-body,
+		.modal-footer {
+			padding: 10px;
+		}
+
+		.modal-footer {
+			text-align: right;
+		}
+
+		.form-group button {
+			padding: 12px 24px;
+			font-size: 16px;
+			background-color: #007bff;
+			color: #ffffff;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			transition: background-color 0.3s;
+		}
+
+		.form-group button:hover {
+			background-color: #0056b3;
+		}

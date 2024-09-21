@@ -36,22 +36,32 @@ public class CouponRestController {
 	private final UserRepository userRepository;
 
 	// 나중에 couponLimit으로 사용했는지 안했는지 파악하자.(아마 결제에서)
-	@PostMapping("/post/issue_coupon/{couponNo}")
-	public ResponseEntity<String> getCoupon(@RequestBody CouponDTO couponNo, HttpSession session) {
-		Long CNo = couponNo.getCouponNo();
-		CouponEntity coupon = couponService.findCouponNumber(CNo);
-
-		CouponMapEntity couponMapEntity = new CouponMapEntity();
+	@PostMapping("/get/coupon/{couponNo}")
+	public ResponseEntity<String> getCoupon(@PathVariable("couponNo") Long couponNo, HttpSession session) {
+		// 세션에서 사용자 ID를 가져오기
 		String userId = (String) session.getAttribute("UId");
-		UserEntity user = userRepository.findByUId(userId);
-		Optional<CouponMapEntity> existingCouponMapEntity = couponMap.findByuserEntityAndCouponEntity(user, coupon);
 
-		if (existingCouponMapEntity.isPresent() && existingCouponMapEntity.get().isUsed()) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("이미 쿠폰이 발급되었습니다.");
-		}
 		if (userId == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 시 발급 가능합니다.");
-		} else {
+			return ResponseEntity.status(401).body("로그인이 필요합니다."); // 인증되지 않은 사용자
+		}
+
+		try {
+			// 쿠폰 번호로 쿠폰을 찾기
+			CouponEntity coupon = couponService.findCouponNumber(couponNo);
+			if (coupon == null) {
+				return ResponseEntity.status(404).body("해당 쿠폰을 찾을 수 없습니다.");
+			}
+
+			// 쿠폰 발급 로직 처리
+			UserEntity user = userRepository.findByUId(userId);
+			Optional<CouponMapEntity> existingCouponMapEntity = couponMap.findByuserEntityAndCouponEntity(user, coupon);
+
+			if (existingCouponMapEntity.isPresent() && existingCouponMapEntity.get().isUsed()) {
+				return ResponseEntity.status(403).body("이미 발급된 쿠폰입니다.");
+			}
+
+			// 쿠폰 발급 처리
+			CouponMapEntity couponMapEntity = new CouponMapEntity();
 			couponMapEntity.setUserEntity(user);
 			couponMapEntity.setCouponEntity(coupon);
 			couponMapEntity.setUsed(true);
@@ -60,7 +70,9 @@ public class CouponRestController {
 
 			couponMap.save(couponMapEntity);
 
-			return ResponseEntity.ok("쿠폰 발급이 완료되었습니다. 마이페이지의 내 쿠폰함에서 확인해주세요.");
+			return ResponseEntity.ok("쿠폰 발급이 완료되었습니다. 마이페이지에서 확인하세요.");
+		} catch (Exception e) {
+			return ResponseEntity.status(500).body("서버 오류가 발생했습니다.");
 		}
 	}
 

@@ -1,27 +1,31 @@
-// import axios from "axios";
+document.addEventListener("DOMContentLoaded", function() {
+  const getCouponBtn = document.getElementById("get-coupon");
 
-const getCouponBtn = document.getElementById("get-coupon");
+  // 버튼이 제대로 선택되었는지 확인
+  console.log("getCouponBtn: ", getCouponBtn);
 
-const getCoupon = async () => {
-  const couponNo = document.getElementById("couponNo").value;
-
-  if (!couponNo) return alert("공습경보"); // 에러처리
-
-  try {
-    // const data = await axios.post("/post/issue_coupon", {
-    //   couponNo,
-    // });
-
-    let data = await fetch("/post/issue_coupon", {
-      body: couponNo,
+  getCouponBtn.addEventListener("click", function() {
+    console.log("쿠폰 받기 버튼 클릭됨"); // 버튼 클릭 시 로그 남기기
+    var couponNo = document.getElementById("couponNo").value; // couponNo 가져오기
+    console.log("couponNo는: ", couponNo);
+    
+    $.ajax({
+      type: "POST",
+      url: "/get/coupon/" + couponNo,
+      contentType: "application/json",
+      data: JSON.stringify({ couponNo: couponNo }), // couponNo를 JSON으로 보냄
+      success: function (res) {
+        alert(res);
+      },
+      error: function (xhr, status, error) {
+        if (xhr.status === 401) {
+          alert("로그인이 필요합니다.");
+          // 로그인 페이지로 리다이렉트
+          window.location.href = "/auth/login"; // 로그인 페이지 경로
+        } else {
+          alert(xhr.responseText);
+        }
+      },
     });
-    data = await data.json();
-
-    if (data.status === "fail") return alert("공습경보");
-    alert("쿠폰 발급이 성공했음");
-  } catch (e) {
-    return alert("공습경보", e);
-  }
-};
-
-getCouponBtn.addEventListener("click", getCoupon);
+  });
+});
