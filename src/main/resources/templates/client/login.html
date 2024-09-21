@@ -92,22 +92,37 @@
 
     <!-- JavaScript를 사용하여 알림창 표시 -->
     <script th:inline="javascript">
-      /*<![CDATA[*/
-      // 페이지 로드 시 알림창 표시
-      window.onload = function () {
-        var errorMessage = document.querySelector(".error-message");
-        var cartMsg = /*[[${cartMsg}]]*/ "";
+		/*<![CDATA[*/
+		  window.onload = function () {
+		    var errorMessage = document.querySelector(".error-message");
+		    var cartMsg = /*[[${cartMsg}]]*/ ''; // cartMsg 변수를 렌더링
+		    var deactivatedError = /*[[${deactivatedError}]]*/ ''; // 비활성화된 계정 에러 메시지
+			var userNo = /*[[${userNo}]]*/ '';
 
-        if (cartMsg) {
-          alert(cartMsg);
-          window.location.href = "/auth/login";
-        }
+		    // 카트 메시지가 있을 경우 처리
+		    if (cartMsg) {
+		      alert(cartMsg);
+		      window.location.href = '/auth/login';
+		    }
 
-        if (errorMessage && errorMessage.innerText.trim() !== "") {
-          alert(errorMessage.innerText.trim());
-        }
-      };
-      /*]]>*/
+		    // 비활성화된 계정에 대한 메시지 처리
+		    if (deactivatedError) {
+		      var confirmRecovery = confirm(deactivatedError);
+		      if (confirmRecovery) {
+		        // 확인 시 복구 페이지로 이동
+		        window.location.href = '/board/recoverWrite?userNo=' + userNo;
+		      } else {
+		        // 취소 시 명시적으로 로그인 페이지로 이동
+		        window.location.href = '/auth/login';
+		      }
+		    }
+
+		    // 일반 에러 메시지가 있을 경우 처리
+		    if (errorMessage && errorMessage.innerText.trim() !== "") {
+		      alert(errorMessage.innerText.trim());
+		    }
+		  };
+		  /*]]>*/
     </script>
   </body>
 </html>
