@@ -41,6 +41,7 @@ import { debounce } from "../lib/debounce.js";
 import { saveFactory } from "../lib/three/saveFactory.js";
 import { loadFurnitures } from "../lib/three/loader/furnitures.js";
 import { getDummy } from "../lib/three/dummy.js";
+import { dataURLtoBlob } from "../lib/URLtoBlob.js";
 
 const save = document.getElementById("save");
 const hudIcon = document.getElementById("hud-icon");
@@ -618,7 +619,7 @@ const create2DScene = () => {
   scene.children.forEach((obj) => {
     if (obj.name === "room") {
       create2DRoom(obj);
-      scene.remove(obj);
+      D3Objects.push(obj);
     }
   });
   D3Objects.forEach((obj) => scene.remove(obj));
@@ -629,7 +630,6 @@ const create3DScene = () => {
   const D2Rooms = [];
   scene.children.forEach((obj) => {
     if (obj.name === "room") {
-      console.log(obj);
       const newRoom = new D3Room({ object: obj });
       scene.add(newRoom);
       D2Rooms.push(obj);
@@ -659,17 +659,6 @@ const onChangeMode = (e) => {
       create3DScene();
   }
 };
-
-function dataURLtoBlob(dataURL) {
-  const byteString = atob(dataURL.split(",")[1]);
-  const mimeString = dataURL.split(",")[0].split(":")[1].split(";")[0];
-  const ab = new ArrayBuffer(byteString.length);
-  const ia = new Uint8Array(ab);
-  for (let i = 0; i < byteString.length; i++) {
-    ia[i] = byteString.charCodeAt(i);
-  }
-  return new Blob([ab], { type: mimeString });
-}
 
 const onSave = async () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -740,37 +729,21 @@ const getProjectNodes = async () => {
   if (data.status === "fail") return alert("공습경보");
   const nodes = data.data.dataEntities;
 
-  let a = false;
-
-  Object.keys(nodes).forEach((key, idx) => {
+  Object.keys(nodes).forEach((key) => {
     const node = nodes[key];
-    if (a === false) {
-      a = true;
-    }
-    if (node.type === "room") {
+    if (node.type === roomName) {
       const room = new D2Room({ nodeInfo: node, cameraZoom });
-      if (node.children && node.children.length > 0) {
-        node.children.forEach((child) => {
-          const childNode = nodes[child];
-          switch (childNode.type) {
-            case chairName:
-              if (!isFunitureLoadSuccess(chairName)) break;
-              const cloneChair = furnitureObjects[chairName].value.clone();
-              cloneChair.name = chairName;
-              cloneChair.position.copy(childNode.points[0]);
-              room.add(cloneChair);
-              break;
-
-            default:
-              break;
-          }
-        });
-      }
+      node.children.forEach((child) => {
+        const childNode = nodes[child];
+        if (!isFunitureLoadSuccess(childNode.type));
+        const cloneChair = furnitureObjects[childNode.type].value.clone();
+        cloneChair.name = childNode.type;
+        cloneChair.position.copy(childNode.points[0]);
+        room.add(cloneChair);
+      });
       scene.add(room);
     }
   });
-
-  console.log(scene.children.filter((c) => c.name === "room"));
 };
 
 getProjectNodes();
@@ -792,9 +765,9 @@ window.addEventListener("beforeunload", () => {
 hudIcon.addEventListener("click", onCreateBtnClick);
 save.addEventListener("click", onSave);
 modeToggles.addEventListener("click", onChangeMode);
-// 애니메이션 루프
 
 const animate = () => {
+  // 애니메이션 루프
   requestAnimationFrame(animate);
   composer.render();
   if (controls.enabled) {
