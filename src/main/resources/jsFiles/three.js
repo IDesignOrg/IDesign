@@ -739,7 +739,6 @@ const getProjectNodes = async () => {
   }
   if (data.status === "fail") return alert("공습경보");
   const nodes = data.data.dataEntities;
-
   let a = false;
 
   Object.keys(nodes).forEach((key, idx) => {

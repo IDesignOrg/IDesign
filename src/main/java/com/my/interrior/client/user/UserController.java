@@ -143,9 +143,10 @@ public class UserController {
 
 		if (user != null) {
 			String ID = user.getUId();
+			log.info("ID: {}", ID);
 			return ResponseEntity.ok(ID);
 		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NoData");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("fail");
 		}
 	}
 
