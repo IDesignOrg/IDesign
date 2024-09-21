@@ -33,28 +33,6 @@
 	    <!-- 이벤트 목록으로 돌아가는 링크 -->
 	    <a href="/board/event" class="back-link">이벤트 목록으로 돌아가기</a>
 	</div>
-	<!-- <script>
-      function getCoupon() {
-        var couponNo = $("#couponNo").val(); // couponNo 가져오기
-        console.log("couponNo는: ", couponNo);
-        $.ajax({
-          type: "POST",
-          url: "/get/coupon/" + couponNo,
-          contentType: "application/json",
-          data: JSON.stringify({ couponNo: couponNo }), // couponNo를 JSON으로 보냄
-          success: function (res) {
-            alert(res);
-          },
-          error: function (xhr, status, error) {
-            if (xhr.status === 401) {
-              alert("로그인이 필요합니다.");
-            } else {
-              alert(xhr.responseText);
-            }
-          },
-        });
-      }
-    </script> -->
 </body>
 
 </html>
