@@ -12,6 +12,7 @@ const submitProductImageWrapper = document.getElementById(
 const discountInput = document.getElementById("discount-input");
 const productsImagesInput = document.getElementById("product-files");
 const productImagesWrapper = document.getElementById("product-images-wrapper");
+const price = document.getElementById("price-input");
 
 const submitProductBtn = document.getElementById("submit-product");
 // const option
@@ -168,6 +169,7 @@ const onSubmitProduct = async () => {
 	price: price.value,
     title,
     category,
+    price: price.value,
     discountRate: discountInput.value,
     option: obj,
   };
@@ -178,6 +180,7 @@ const onSubmitProduct = async () => {
       type: "application/json",
     })
   );
+
 
   try {
       const resData = await fetch("/shopWrite", {

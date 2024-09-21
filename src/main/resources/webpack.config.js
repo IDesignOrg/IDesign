@@ -8,6 +8,8 @@ const TerserPlugin = require("terser-webpack-plugin");
 const fs = require("fs");
 
 const webpackMode = process.env.NODE_ENV || "development";
+console.log("webpackMode===", webpackMode);
+// const webpackMode = "development";
 const jsFiles = fs
   .readdirSync(path.resolve(__dirname, "./jsFiles"))
   .filter((file) => file.endsWith(".js"))

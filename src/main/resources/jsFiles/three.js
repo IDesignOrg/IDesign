@@ -25,6 +25,7 @@ import {
   floorName,
   moveConrollerName,
   moveControllerChildrenName,
+  roomName,
   rotationConrollerName,
   shadowName,
 } from "../lib/three/objectConf/objectNames.js";
@@ -39,6 +40,7 @@ import { throttle } from "../lib/throttling.js";
 import { debounce } from "../lib/debounce.js";
 import { saveFactory } from "../lib/three/saveFactory.js";
 import { loadFurnitures } from "../lib/three/loader/furnitures.js";
+import { getDummy } from "../lib/three/dummy.js";
 
 const save = document.getElementById("save");
 const hudIcon = document.getElementById("hud-icon");
@@ -193,10 +195,14 @@ const getIntersectsArray = (raycaster) => {
 
 const updateShadows = ({ object, background }) => {
   const points = [
-    new THREE.Vector3(object.clickedPoints.x, wallY, object.clickedPoints.z),
-    new THREE.Vector3(background.point.x, wallY, object.clickedPoints.z),
+    new THREE.Vector3(
+      object.userData.points[0].x,
+      wallY,
+      object.userData.points[0].z
+    ),
+    new THREE.Vector3(background.point.x, wallY, object.userData.points[0].z),
     new THREE.Vector3(background.point.x, wallY, background.point.z),
-    new THREE.Vector3(object.clickedPoints.x, wallY, background.point.z),
+    new THREE.Vector3(object.userData.points[0].x, wallY, background.point.z),
   ];
   object.drawLines(points);
 };
@@ -603,7 +609,6 @@ const create2DRoom = (room) => {
     }
     newRoom.rotation.y = room.userData.rotation;
   });
-
   scene.add(newRoom);
 };
 
@@ -621,13 +626,16 @@ const create2DScene = () => {
 
 const create3DScene = () => {
   if (!scene) return;
+  const D2Rooms = [];
   scene.children.forEach((obj) => {
     if (obj.name === "room") {
+      console.log(obj);
       const newRoom = new D3Room({ object: obj });
       scene.add(newRoom);
-      scene.remove(obj);
+      D2Rooms.push(obj);
     }
   });
+  D2Rooms.forEach((i) => scene.remove(i));
 };
 
 const onChangeMode = (e) => {
@@ -666,23 +674,19 @@ function dataURLtoBlob(dataURL) {
 const onSave = async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const project_id = urlParams.get("project_id");
+
+  // three노드들 정리
   const dataEntities = saveFactory(scene);
 
-  // 스크린샷 타입
   const strMime = "image/jpeg";
-  // base64 썸네일
   const imageData = renderer.domElement.toDataURL(strMime);
-
-  // base64 데이터를 Blob으로 변환
   const blobData = dataURLtoBlob(imageData);
-  const userId = "123123";
 
   // FormData 객체 생성
   const formData = new FormData();
+  //스크린샷 추가
+  formData.append("file", blobData, `${project_id}_screenshot.jpg`);
 
-  // Blob 데이터와 파일명으로 파일 추가
-  formData.append("file", blobData, `${userId}_${project_id}_screenshot.jpg`);
-  console.log("project_id: ", project_id);
   const req = {
     project_id,
     dataEntities,
@@ -705,9 +709,6 @@ const onSave = async () => {
         },
       }
     );
-
-    if (pDes) localStorage.removeItem("pdes");
-    console.log(data);
   } catch (e) {
     console.error(e);
   }
@@ -721,20 +722,58 @@ const onWindowResize = () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 };
 
-const getProjectNode = async () => {
-  if (window.location.origin.includes("3000")) return;
+const getProjectNodes = async () => {
+  // todo
+  // 코드 더러움
   const urlParams = new URLSearchParams(window.location.search);
   const project_id = urlParams.get("project_id");
+  let data = null;
+  if (window.location.origin.includes("3000")) {
+    data = await getDummy();
+  } else {
+    data = await axios.get("/api/get/project_nodes", {
+      params: {
+        project_id,
+      },
+    });
+  }
+  if (data.status === "fail") return alert("공습경보");
+  const nodes = data.data.dataEntities;
 
-  const data = await axios.get("/api/get/project_nodes", {
-    params: {
-      project_id,
-    },
+  let a = false;
+
+  Object.keys(nodes).forEach((key, idx) => {
+    const node = nodes[key];
+    if (a === false) {
+      a = true;
+    }
+    if (node.type === "room") {
+      const room = new D2Room({ nodeInfo: node, cameraZoom });
+      if (node.children && node.children.length > 0) {
+        node.children.forEach((child) => {
+          const childNode = nodes[child];
+          switch (childNode.type) {
+            case chairName:
+              if (!isFunitureLoadSuccess(chairName)) break;
+              const cloneChair = furnitureObjects[chairName].value.clone();
+              cloneChair.name = chairName;
+              cloneChair.position.copy(childNode.points[0]);
+              room.add(cloneChair);
+              break;
+
+            default:
+              break;
+          }
+        });
+      }
+      scene.add(room);
+    }
   });
-  console.log(data);
+
+  console.log(scene.children.filter((c) => c.name === "room"));
 };
 
-getProjectNode();
+getProjectNodes();
 
 canvas.addEventListener("mousedown", onMouseDown);
 canvas.addEventListener("mousemove", onMouseMove);
