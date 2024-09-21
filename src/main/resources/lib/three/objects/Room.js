@@ -51,6 +51,7 @@ export class D3Room extends THREE.Group {
       name: "ceil",
     });
     ceiling.name = "ceiling";
+    this.rotation.y = this.userData.rotation;
     this.add(ceiling);
 
     const walls = new D3Wall({ points, center, name: "floor" });

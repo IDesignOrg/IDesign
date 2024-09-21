@@ -625,20 +625,16 @@ const create2DScene = () => {
 };
 
 const create3DScene = () => {
-  console.log("scene children=", scene.children);
   if (!scene) return;
-  // return;
   const D2Rooms = [];
-  // const arr = scene.children;
   scene.children.forEach((obj) => {
     if (obj.name === "room") {
       console.log(obj);
       const newRoom = new D3Room({ object: obj });
       scene.add(newRoom);
-      D2Rooms.push(obj.id);
+      D2Rooms.push(obj);
     }
   });
-  console.log(D2Rooms);
   D2Rooms.forEach((i) => scene.remove(i));
 };
 
@@ -746,7 +742,6 @@ const getProjectNodes = async () => {
 
   let a = false;
 
-  return;
   Object.keys(nodes).forEach((key, idx) => {
     const node = nodes[key];
     if (a === false) {
