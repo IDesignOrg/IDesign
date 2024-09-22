@@ -107,10 +107,11 @@ function displayOrdered(orderedDTO) {
 		                <div class="order-status">
 		                    <p><strong>주문 상태:</strong> ${order.orderedState}</p>
 		                    <p><strong>배송 상태:</strong> ${order.shipmentState}</p>
-							<a
-							             th:href="@{/shopReview/{shopNo}(shopNo=${order.shopNo})}"
-							             class="product-link"
-							           >
+							
+							<a href="/shopReview/${order.shopNo}" class="product-link">
+							<h5>리뷰작성하기</h5>
+							</a>
+							
 		                </div>
 		                <hr>
 						<input type="hidden" id="merchantUId" value="${order.merchantUId}"/>
