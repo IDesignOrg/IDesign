@@ -77,16 +77,6 @@
             />
           </div>
         </div>
-        <div class="">
-          <div>
-            <a
-              th:href="@{/shopReview/{shopNo}(shopNo=${shops.shopNo})}"
-              class="product-link"
-            >
-              <h3>리뷰작성하기</h3>
-            </a>
-          </div>
-        </div>
         <div class="review-section">
           <h3>리뷰</h3>
           <div th:each="review : ${shopReviews}" class="review-item">
