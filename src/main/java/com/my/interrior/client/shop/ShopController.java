@@ -170,7 +170,7 @@ public class ShopController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "리뷰 작성 중 오류가 발생했습니다: " + e.getMessage());
         }
-    return "redirect:/client/shop/shopList";
+    return "redirect:/auth/shopDetail/" + shopNo;
     }
     //리뷰 삭제
     @DeleteMapping("/shopReview/{shopReviewNo}")
