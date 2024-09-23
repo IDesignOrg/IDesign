@@ -74,31 +74,6 @@ export const getClickedCircleIndex = ({ cg, object }) => {
   return null;
 };
 
-// export const getStraightLineZ = ({ point, prevPoint, index }) => {
-//   const tolerance = 10;
-//   if (Math.abs(prevPoint.z - point.z) <= tolerance) {
-//     return prevPoint.z;
-//   }
-//   if (Math.abs(nextPoint.z - point.z) <= tolerance) {
-//     return nextPoint.z;
-//   }
-//   return point.z;
-// };
-
-// export const getStraightLineX = ({ point, prevPoint, nextPoint }) => {
-//   const tolerance = 10;
-
-//   if (Math.abs(prevPoint.x - point.x) <= tolerance) {
-//     return prevPoint.x;
-//   }
-
-//   if (Math.abs(nextPoint.x - point.x) <= tolerance) {
-//     return nextPoint.x;
-//   }
-
-//   return point.x;
-// };
-
 export const getStraightLineX = ({ point, prevPoint, nextPoint }) => {
   const tolerance = 10;
 
@@ -137,7 +112,6 @@ export const calculateDistance = (p1, p2) => {
 
 const getPerpendicularVector = (dx, dz) => {
   const distance = 25;
-  console.log();
   // 변의 방향 벡터 (dx, dz)에 수직인 벡터
   // x축 우세 시, z축 방향으로 이동
   // z축 우세 시, x축 방향으로 이동

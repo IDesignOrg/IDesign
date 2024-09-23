@@ -105,6 +105,7 @@ camera.position.set(0, cameraZoom, 0);
 camera.lookAt(0, 0, 0);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enabled = false;
+
 // EffectComposer 및 OutlinePass 설정
 const composer = new EffectComposer(renderer);
 const renderPass = new RenderPass(scene, camera);
@@ -712,6 +713,7 @@ const onWindowResize = () => {
 };
 
 const getProjectNodes = async () => {
+  return;
   // todo
   // 코드 더러움
   const urlParams = new URLSearchParams(window.location.search);
@@ -735,7 +737,7 @@ const getProjectNodes = async () => {
       const room = new D2Room({ nodeInfo: node, cameraZoom });
       node.children.forEach((child) => {
         const childNode = nodes[child];
-        if (!isFunitureLoadSuccess(childNode.type));
+        if (!isFunitureLoadSuccess(childNode.type)) return alert("공습경보");
         const cloneChair = furnitureObjects[childNode.type].value.clone();
         cloneChair.name = childNode.type;
         cloneChair.position.copy(childNode.points[0]);
