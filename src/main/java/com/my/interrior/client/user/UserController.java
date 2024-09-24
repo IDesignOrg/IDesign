@@ -135,23 +135,6 @@ public class UserController {
 		return "client/findUPw";
 	}
 
-	@GetMapping("/api/forgot-id")
-	public ResponseEntity<String> findUserID(@RequestParam("mail") String UMail) throws Exception {
-
-		if(UMail == null || UMail.isEmpty())
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("NoMail");
-		
-		UserEntity user = userRepository.findByUMail(UMail);
-
-		if (user != null) {
-			String ID = user.getUId();
-			log.info("ID: {}", ID);
-			return ResponseEntity.ok(ID);
-		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("fail");
-		}
-	}
-
 	// 로그아웃
 	@RequestMapping("/logout")
 	public String logout() {

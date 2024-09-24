@@ -89,4 +89,21 @@ public class UserRestController {
 			return ResponseEntity.badRequest().build(); // 서버 오류 처리용 뷰 페이지로 변경 가능
 		}
 	}
+	
+	@GetMapping("/forgot-id")
+	public ResponseEntity<String> findUserID(@RequestParam("mail") String UMail) throws Exception {
+
+		if(UMail == null || UMail.isEmpty())
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("NoMail");
+		
+		UserEntity user = userRepository.findByUMail(UMail);
+
+		if (user != null) {
+			String ID = user.getUId();
+			log.info("ID: {}", ID);
+			return ResponseEntity.ok(ID);
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("fail");
+		}
+	}
 }

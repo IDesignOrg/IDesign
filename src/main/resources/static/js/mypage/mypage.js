@@ -285,12 +285,7 @@ function deleteUserInfo() {
 				alert("회원 탈퇴가 정상적으로 완료되었습니다.");
 				window.location.href = "/";
 			} else {
-				throw new Error("유저 비활성화에 실패했습니다.");
-			}
-		})
-		.then((result) => {
-			if (result) {
-				alert(result); // 서버 응답 메시지를 알림으로 표시 (비활성화 실패 시)
+				alert("유저 비활성화에 실패했습니다.");
 			}
 		})
 		.catch((error) => {
