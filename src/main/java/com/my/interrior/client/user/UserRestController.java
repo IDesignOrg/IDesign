@@ -12,12 +12,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.my.interrior.common.CommonResponse;
 import com.my.interrior.common.MailDTO;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
+@Tag(name = "Account", description = "Account API")
 @RestController
 @Slf4j
 @RequestMapping("/api")
@@ -31,25 +37,33 @@ public class UserRestController {
 
 	@Transactional
 	@GetMapping("/forgot-password")
-	public ResponseEntity<String> findUPw(@ModelAttribute UserMailDTO dto, Model model) {
+	@Operation(summary = "비밀번호 찾기", description = "회원의 비밀번호를 찾습니다.")
+	@ApiResponse(responseCode = "200", description = "성공")
+	@ApiResponse(responseCode = "400", description = "잘못된 요청: 이메일 또는 이름이 입력되지 않음.")
+	@ApiResponse(responseCode = "404", description = "일치하는 회원 정보가 없음.")
+	public ResponseEntity<CommonResponse<String>> findUPw(
+			@Parameter(name = "dto", description = "이메일과 이름을 받는 DTO")
+			@ModelAttribute UserMailDTO dto,
+			Model model) {
 		String mail = dto.getMail();
 		String UName = dto.getName();
 		log.info("mail: {}, name :{}", mail);
 		// mail을 입력 안 했을 때
-		if (mail == null || mail.isEmpty())
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("NoMail");
 		// 이름을 입력 안 했을 때
 		if (UName == null || UName.isEmpty())
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("NoName");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(CommonResponse.failure("이름이 입력되지 않았습니다."));
+
+		if (mail == null || mail.isEmpty())
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(CommonResponse.failure("이메일이 입력되지 않았습니다."));
 
 		MailDTO user = userService.checkMailAndName(mail, UName);
 
 		// 맞는 데이터가 없을 때
 		if (user == null)
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NoData");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CommonResponse.failure("일치하는 회원 정보가 없습니다."));
 
 		userService.mailSend(user);
-		return ResponseEntity.ok("success");
+		return ResponseEntity.ok(CommonResponse.success("success"));
 	}
 
 	@GetMapping("/check/id/{userID}")
@@ -89,13 +103,13 @@ public class UserRestController {
 			return ResponseEntity.badRequest().build(); // 서버 오류 처리용 뷰 페이지로 변경 가능
 		}
 	}
-	
+
 	@GetMapping("/forgot-id")
 	public ResponseEntity<String> findUserID(@RequestParam("mail") String UMail) throws Exception {
 
-		if(UMail == null || UMail.isEmpty())
+		if (UMail == null || UMail.isEmpty())
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("NoMail");
-		
+
 		UserEntity user = userRepository.findByUMail(UMail);
 
 		if (user != null) {
