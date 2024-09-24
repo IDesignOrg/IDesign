@@ -49,7 +49,7 @@ public class UserController {
 	@Autowired
 	private HttpSession session;
 
-	@GetMapping("/auth/login")
+	@GetMapping("/signin")
 	public String LoginPage(Model model) {
 
 		model.addAttribute("kakaoApiKey", kakaoApi.getKakaoApiKey());
@@ -66,7 +66,7 @@ public class UserController {
 		return "client/login";
 	}
 
-	@GetMapping("/auth/join")
+	@GetMapping("/signup")
 	public String join(Model model) {
 		model.addAttribute("kakaoApiKey", kakaoApi.getKakaoApiKey());
 		model.addAttribute("redirectUri", kakaoApi.getKakaoRedirectUri());
@@ -78,7 +78,7 @@ public class UserController {
 		return "client/join";
 	}
 
-	@PostMapping("/auth/join")
+	@PostMapping("/signup")
 	public String join(@ModelAttribute UserEntity userEntity) throws Exception {
 		try {
 			userEntity.setURegister(LocalDate.now());
@@ -89,18 +89,18 @@ public class UserController {
 			// insert
 			userRepository.save(userEntity);
 
-			return "redirect:/auth/login";
+			return "redirect:/signin";
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "error";
 		}
 	}
 
-	@PostMapping("/auth/login")
+	@PostMapping("/signin")
 	public String login(@ModelAttribute UserDTO userDTO, HttpSession session, Model model,  RedirectAttributes redirectAttributes) throws Exception {
 		try {
 			if (userDTO.getUId() == null || userDTO.getUPw() == null)
-				return "redirect:/auth/login";
+				return "redirect:/signin";
 
 			String UId = userDTO.getUId();
 			String UPw = userDTO.getUPw();
@@ -110,7 +110,7 @@ public class UserController {
 				if (user.isUDeactivated()) {
 					redirectAttributes.addFlashAttribute("deactivatedError", "비활성화된 아이디입니다. 복구신청을 하시겠습니까?");
 					redirectAttributes.addFlashAttribute("userNo", user.getUNo());
-	                return "redirect:/auth/login";
+	                return "redirect:/signin";
 				}
 				session.setAttribute("UId", user.getUId());
 				return "redirect:/";
@@ -125,18 +125,18 @@ public class UserController {
 
 	}
 
-	@GetMapping("/auth/findUId")
+	@GetMapping("/forgot-id")
 	public String findPasswordPage() {
 		return "client/findUId";
 	}
 
-	@GetMapping("/auth/findUPw")
+	@GetMapping("/forgot-password")
 	public String findUPw() {
 		return "client/findUPw";
 	}
 
-	@GetMapping("/auth/find/user/id")
-	public ResponseEntity<String> findUserID(@RequestParam("UMail") String UMail) throws Exception {
+	@GetMapping("/api/forgot-id")
+	public ResponseEntity<String> findUserID(@RequestParam("mail") String UMail) throws Exception {
 
 		if(UMail == null || UMail.isEmpty())
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("NoMail");
@@ -159,28 +159,4 @@ public class UserController {
 		System.out.println("로그아웃 됨");
 		return "redirect:/";
 	}
-
-	// 유저 비활성화
-	@PostMapping("/deactivateUserin")
-	public String deactivateUser(@RequestParam("userUNo") Long userUNo, Model model) {
-	    try {
-	        // 사용자 비활성화 서비스 호출
-	        boolean isDeactivated = userService.deactivateUser(userUNo);
-
-	        if (isDeactivated) {
-	            // 유저가 비활성화되면 리다이렉트
-	        	session.invalidate();
-	            return "redirect:/";
-	        } else {
-	            // 유저 비활성화 실패 시 메시지를 추가하고 현재 페이지에 머무르도록 설정
-	            model.addAttribute("error", "유저 비활성화에 실패했습니다.");
-	            return "client/error"; // 오류 처리용 뷰 페이지로 변경 가능
-	        }
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        model.addAttribute("error", "서버 오류로 인해 유저 비활성화에 실패했습니다.");
-	        return "client/error"; // 서버 오류 처리용 뷰 페이지로 변경 가능
-	    }
-	}
-
 }
