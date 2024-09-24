@@ -7,10 +7,12 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
@@ -33,7 +35,7 @@ public class GoogleLoginController {
 	
 	//토큰, 사용자 정보 가져오기
 	@GetMapping(value="/auth/login/google")
-    public String loginGoogle(@RequestParam(value = "code") String authCode, HttpSession session){
+    public String loginGoogle(@RequestParam(value = "code") String authCode, HttpSession session,Model model, RedirectAttributes redirectAttributes){
         RestTemplate restTemplate = new RestTemplate();
         
         GoogleRequest googleOAuthRequestParam = GoogleRequest
@@ -71,9 +73,13 @@ public class GoogleLoginController {
         System.out.println("내 이메일은 : " + email);
         //이메일을 통해 비교 후 데이터베이스의 이메일과 일치하면 로그인을, 아니면 회원가입으로 이동
         UserEntity existingUser = userRepository.findByUId("Google_"+uid);
-
         if(existingUser != null) {
-        	
+        	if (existingUser.isUDeactivated()) {
+        		//비활성화 계정일경우 비활성화아이디 복구 페이지로 이동 
+        		redirectAttributes.addFlashAttribute("deactivatedError", "비활성화된 아이디입니다. 복구신청을 하시겠습니까?");
+				redirectAttributes.addFlashAttribute("userNo", existingUser.getUNo());
+                return "redirect:/auth/login";
+            }
         	session.setAttribute("UId", existingUser.getUId());
         	
         	return "redirect:/";

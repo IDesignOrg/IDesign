@@ -1,44 +1,62 @@
 const path = require("path");
+const glob = require("glob");
 const webpack = require("webpack");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
+const fs = require("fs");
 
 const webpackMode = process.env.NODE_ENV || "development";
+console.log("webpackMode===", webpackMode);
+// const webpackMode = "development";
+const jsFiles = fs
+  .readdirSync(path.resolve(__dirname, "./jsFiles"))
+  .filter((file) => file.endsWith(".js"))
+  .reduce((entries, file) => {
+    const name = path.basename(file, ".js");
+    entries[name] = path.resolve(__dirname, "./jsFiles", file);
+    return entries;
+  }, {});
 
 module.exports = {
   mode: webpackMode,
-  entry: {
-    dashboard: "./dimension/dashboard/src/dashboard.js",
-    three: "./dimension/three/src/three.js",
-  },
+  // entry: {
+  //   dashboard: "./dimension/src/dashboard.js",
+  //   three: "./dimension/src/three.js",
+  // },
+
+  // entry: glob
+  //   .sync(path.resolve(__dirname, "./jsFiles/*.js"))
+  //   .reduce((entries, filePath) => {
+  //     const entryName = path.basename(filePath, path.extname(filePath)); // 파일명만 추출
+  //     entries[entryName] = filePath;
+  //     return entries;
+  //   }, {}),
+
+  // entry: glob.sync("./src/*.js").reduce((entries, filePath) => {
+  //   // console.log("entries", entries);
+  //   const entryName = path.basename(filePath, path.extname(filePath)); // 파일명만 추출
+  //   entries[entryName] = filePath;
+  //   return entries;
+  // }, {}),
+  entry: jsFiles,
+  // output: {
+  //   filename: "[name].bundle.js",
+  //   path: path.resolve(__dirname, "dist"),
+  // },
   output: {
-    publicPath: "/dist/",
-    path: path.resolve("./dist"),
+    path: path.resolve("./dist/"),
     filename: "[name].min.js",
+    publicPath: "/",
   },
-  // es5로 빌드 해야 할 경우 주석 제거
-  // 단, 이거 설정하면 webpack-dev-server 3번대 버전에서 live reloading 동작 안함
-  // target: ['web', 'es5'],
   devServer: {
     port: 3000,
-    static: [
-      {
-        directory: path.join(__dirname),
-        publicPath: "/",
-        serveIndex: true,
-      },
-      // {
-      //   directory: path.join(__dirname, "three"),
-      //   publicPath: "/",
-      // },
-      // {
-      //   directory: path.join(__dirname, "dashboard"),
-      //   publicPath: "/",
-      // },
-    ],
     liveReload: true,
+    static: {
+      directory: path.join(__dirname),
+    },
+    historyApiFallback: true, // For single-page applications
   },
   optimization: {
     minimizer:
@@ -47,7 +65,7 @@ module.exports = {
             new TerserPlugin({
               terserOptions: {
                 compress: {
-                  drop_console: true,
+                  drop_console: false,
                 },
               },
             }),
@@ -59,10 +77,6 @@ module.exports = {
   },
   module: {
     rules: [
-      // {
-      //   test: /\.(png|jpe?g|gif|svg)$/i, // 이미지 파일 로더
-      //   type: "public/resource", // Webpack 5에서는 기본적으로 asset/resource를 사용하여 이미지를 처리
-      // },
       {
         test: /\.js$/,
         loader: "babel-loader",
@@ -73,54 +87,62 @@ module.exports = {
         enforce: "pre",
         use: ["source-map-loader"],
       },
-      {
-        test: /\.css$/,
-        include: path.resolve(__dirname, "dimension/public"), // 특정 폴더만 포함
-        use: ["style-loader", "css-loader"],
-      },
     ],
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: "./dimension/three/three.html", // 상대 경로로 수정
-      filename: "three.html",
-      chunks: ["three", "reset"],
-      minify:
-        process.env.NODE_ENV === "production"
-          ? {
-              collapseWhitespace: true,
-              removeComments: true,
-            }
-          : false,
-    }),
-    new HtmlWebpackPlugin({
-      template: "./dimension/dashboard/dashboard.html", // 상대 경로로 수정
-      filename: "dashboard.html",
-      chunks: ["dashboard", "public"],
-      minify:
-        process.env.NODE_ENV === "production"
-          ? {
-              collapseWhitespace: true,
-              removeComments: true,
-            }
-          : false,
-    }),
+    // new HtmlWebpackPlugin({
+    //   filename: "three.html",
+    //   template: "./dimension/page/three.html",
+    //   chunks: ["three"],
+    //   minify:
+    //     process.env.NODE_ENV === "production"
+    //       ? {
+    //           collapseWhitespace: true,
+    //           removeComments: true,
+    //         }
+    //       : false,
+    // }),
+    // new HtmlWebpackPlugin({
+    //   filename: "dashboard.html",
+    //   template: "./dimension/page/dashboard.html",
+    //   chunks: ["dashboard"],
+    //   minify:
+    //     process.env.NODE_ENV === "production"
+    //       ? {
+    //           collapseWhitespace: true,
+    //           removeComments: true,
+    //         }
+    //       : false,
+    // }),
+    ...glob.sync("./pages/**/*.html").map((file) => {
+      const fileName = path.basename(file); // 파일명 추출 (확장자 포함)
+      const chunkName = path.basename(file, path.extname(file)); // 확장자 제외한 파일명으로 chunk 설정
 
+      return new HtmlWebpackPlugin({
+        filename: fileName, // 출력할 HTML 파일 이름
+        template: file, // 원본 HTML 파일 경로
+        chunks: [chunkName], // 해당 HTML에 포함될 JS 번들 (entry에서 같은 이름을 사용해야 함)
+        publicPath: webpackMode === "production" ? "/dist/" : "/",
+        minify:
+          process.env.NODE_ENV === "production"
+            ? {
+                collapseWhitespace: true,
+                removeComments: true,
+              }
+            : false,
+      });
+    }),
     new CleanWebpackPlugin(),
     // CopyWebpackPlugin: 그대로 복사할 파일들을 설정하는 플러그인
     // 아래 patterns에 설정한 파일/폴더는 빌드 시 dist 폴더에 자동으로 생성됩니다.
     // patterns에 설정한 경로에 해당 파일이 없으면 에러가 발생합니다.
     // 사용하는 파일이나 폴더 이름이 다르다면 변경해주세요.
     // 그대로 사용할 파일들이 없다면 CopyWebpackPlugin을 통째로 주석 처리 해주세요.
-    new CopyWebpackPlugin({
-      patterns: [
-        { from: "./dimension/public/reset.css", to: "public/reset.css" }, // 공용 CSS 파일은 별도로 복사
-        { from: "./dimension/public/three.css", to: "public/three.css" },
-        {
-          from: "./dimension/public/",
-          to: "public",
-        },
-      ],
-    }),
+    // new CopyWebpackPlugin({
+    //   patterns: [
+    //     { from: "./src/main.css", to: "./main.css" },
+    //     { from: "./src/images", to: "./images" },
+    //   ],
+    // }),
   ],
 };

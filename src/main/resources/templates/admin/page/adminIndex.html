@@ -5,12 +5,16 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>관리자 페이지</title>
-	<link rel="stylesheet" href="/css/adminPage.css" />
+	<!--
+	<link th:href="@{/css/adminpage.css}" rel="stylesheet" />
+	<link th:href="@{/css/adminsidebar.css}" rel="stylesheet" />-->
+	<link rel="stylesheet" href="/css/adminpage.css" />
+	<link rel="stylesheet" href="/css/adminsidebar.css" />
 
 </head>
 
 <body>
-	<div th:insert="~{/admin/page/adminsidebar :: sidebar}"></div>
+	<th:block th:include="~{fragments/adminsidebar.html :: sidebar}"></th:block>
 	<div class="main-content">
 		<header>
 			<h1>Dashboard</h1>

@@ -5,12 +5,117 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>csc</title>
+	<link rel="stylesheet" href="/css/header.css" />
+	<link rel="stylesheet" href="/css/reset.css" />
+	<style>
+		/* 폼 전체 스타일 */
+		.inqbody{
+			margin-top: 140px;
+		}
+		#inquiryWrite {
+		    max-width: 600px;
+		    margin: 50px auto;
+		    background-color: #f9f9f9;
+		    padding: 20px;
+		    border-radius: 10px;
+		    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+		}
+
+		/* 제목 입력 필드 스타일 */
+		#inqTitle {
+		    width: 100%;
+		    padding: 10px;
+		    margin-bottom: 15px;
+		    border: 1px solid #ccc;
+		    border-radius: 6px;
+		    font-size: 16px;
+		    box-sizing: border-box;
+		    transition: border-color 0.3s ease;
+		}
+
+		#inqTitle:focus {
+		    border-color: #4CAF50;
+		    outline: none;
+		}
+
+		/* 카테고리 선택 필드 스타일 */
+		#inqCategory {
+		    width: 100%;
+		    padding: 10px;
+		    margin-bottom: 15px;
+		    border: 1px solid #ccc;
+		    border-radius: 6px;
+		    font-size: 16px;
+		    box-sizing: border-box;
+		    transition: border-color 0.3s ease;
+		}
+
+		#inqCategory:focus {
+		    border-color: #4CAF50;
+		    outline: none;
+		}
+
+		/* 내용 텍스트 영역 스타일 */
+		#inqContent {
+		    width: 100%;
+		    height: 200px;
+		    padding: 10px;
+		    margin-bottom: 15px;
+		    border: 1px solid #ccc;
+		    border-radius: 6px;
+		    font-size: 16px;
+		    box-sizing: border-box;
+		    transition: border-color 0.3s ease;
+		    resize: vertical; /* 사용자에게 높이를 조정할 수 있는 옵션 제공 */
+		}
+
+		#inqContent:focus {
+		    border-color: #4CAF50;
+		    outline: none;
+		}
+
+		/* 전송 버튼 스타일 */
+		#inquiryWrite button {
+		    width: 100%;
+		    padding: 12px 0;
+		    background-color: #4CAF50;
+		    color: white;
+		    border: none;
+		    border-radius: 6px;
+		    font-size: 18px;
+		    cursor: pointer;
+		    transition: background-color 0.3s ease;
+		}
+
+		#inquiryWrite button:hover {
+		    background-color: #45a049;
+		}
+
+		/* 반응형 조정 */
+		@media screen and (max-width: 768px) {
+		    #inquiryWrite {
+		        padding: 15px;
+		    }
+
+		    #inqTitle, #inqCategory, #inqContent {
+		        font-size: 14px;
+		        padding: 8px;
+		    }
+
+		    #inquiryWrite button {
+		        font-size: 16px;
+		        padding: 10px;
+		    }
+		}
+	</style>
 </head>
 
-<body>
+<body class="inqbody">
+	<th:block th:include="~{fragments/header.html::header}"></th:block>
 	<form id="inquiryWrite" action="/board/inquiry/write" method="POST">
 		제목: <input type="text" id="inqTitle" name="inqTitle" />
-		카테고리: <select id="inqCategory" name="inqCategory">
+		카테고리: 
+		<select id="inqCategory" name="inqCategory">
 			<option>제품-입고</option>
 			<option>배송문의</option>
 			<option>설치문의</option>
@@ -18,10 +123,10 @@
 			<option>AS문의</option>
 			<option>기타문의</option>
 		</select>
-		내용: <textarea id="inqContent" name="inqContent"></textarea>
+		내용: 
+		<textarea id="inqContent" name="inqContent"></textarea>
 		<button type="submit">전송하기</button>
 	</form>
-
 
 </body>
 

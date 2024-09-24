@@ -5,11 +5,12 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>쿠폰 관리</title>
-	<link rel="stylesheet" href="/css/adminPage.css" />
+	<link rel="stylesheet" href="/css/adminpage.css" />
+	<link rel="stylesheet" href="/css/adminsidebar.css" />
 </head>
 
 <body>
-	<div th:insert="~{/admin/page/adminsidebar :: sidebar}"></div>
+	<th:block th:include="~{fragments/adminsidebar.html :: sidebar}"></th:block>
 	<div class="main-content">
 		<header>
 			<h1>쿠폰 관리</h1>
@@ -66,9 +67,9 @@
 
 		<!-- JavaScript 모달 제어 및 데이터 로드 -->
 		<script>
-			document.addEventListener("DOMContentLoaded", function () {
+			
 				// 활성화 버튼 이벤트 추가
-				var activateButtons = document.querySelectorAll(".activate-btn");
+				const activateButtons = document.querySelectorAll(".activate-btn");
 				activateButtons.forEach(function (button) {
 					button.addEventListener("click", function () {
 						var couponNo = button.getAttribute("data-couponno");
@@ -106,7 +107,7 @@
 							alert('쿠폰 상태 업데이트 중 오류가 발생했습니다.');
 						});
 				}
-			});
+			
 		</script>
 	</div>
 </body>

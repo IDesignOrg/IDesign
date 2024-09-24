@@ -1,6 +1,8 @@
 package com.my.interrior.three;
 
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,4 +23,10 @@ public interface ThreeRepository extends JpaRepository<ThreeEntity, String> {
 	@Query("SELECT t FROM ThreeEntity t WHERE t.userEntity.UId = :userId AND (:title IS NULL OR t.title LIKE %:title%)")
 	Page<ThreeEntity> findByUserEntity_UIdAndTitle(@Param("userId") String userId, @Param("title") String title,
 			Pageable pageable);
+	
+	ThreeEntity findByProjectId(String projectId);
+	
+	List<ThreeEntity> findByProjectIdIn(List<String> projectIds);
+	
+	void deleteByProjectIdIn(List<String> projectIds);
 }

@@ -186,7 +186,7 @@ public class AdminPageController {
 		model.addAttribute("totalPages", usersWithCounts.getTotalPages());
 		model.addAttribute("pageSize", size);
 
-		return "/admin/page/adminUsers";
+		return "admin/page/adminUsers";
 	}
 
 	// 리뷰 리스트
@@ -202,9 +202,9 @@ public class AdminPageController {
 		model.addAttribute("totalPages", reviewAndCounts.getTotalPages());
 		model.addAttribute("pageSize", size);
 
-		return "/admin/page/adminReview";
+		return "admin/page/adminReview";
 	}
-
+	//리뷰 댓글 
 	@GetMapping("/fetchRComments")
 	public ResponseEntity<List<ReviewCommentDTO>> fetchRComments(@RequestParam("reviewNo") Long reviewNo) {
 		List<ReviewCommentDTO> comments = reviewService.getCommentsByReviewId(reviewNo).stream()
@@ -214,6 +214,18 @@ public class AdminPageController {
 
 		return ResponseEntity.ok(comments);
 	}
+	//어드민페이지 리뷰 삭
+	@DeleteMapping("/deleteReview")
+    public ResponseEntity<String> deleteReview(@RequestParam("rNo") Long rNo) {
+        try {
+            // 리뷰 삭제 로직 호출 (댓글, 사진, GCS 파일 삭제 포함)
+            adminPageService.deleteReviewById(rNo);
+            return ResponseEntity.ok("리뷰가 성공적으로 삭제되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("리뷰 삭제에 실패했습니다.");
+        }
+    }
 
 	@GetMapping("/searchUsers")
 	@ResponseBody
@@ -274,7 +286,7 @@ public class AdminPageController {
 		model.addAttribute("notices", notices);
 		model.addAttribute("currentPage", pageable.getPageNumber());
 		model.addAttribute("totalPages", notices.getTotalPages());
-		return "/admin/page/adminNotice";
+		return "admin/page/adminNotice";
 	}
 
 	// 공지사항 삭제
@@ -311,7 +323,7 @@ public class AdminPageController {
 		model.addAttribute("recovers", recovers);
 		model.addAttribute("currentPage", pageable.getPageNumber());
 		model.addAttribute("totalPages", recovers.getTotalPages());
-		return "/admin/page/adminRecovery";
+		return "admin/page/adminRecovery";
 	}
 
 	@GetMapping("/admin/page/adminRecovery/search")
@@ -399,7 +411,7 @@ public class AdminPageController {
 		model.addAttribute("couponMaps", couponMaps);
 		model.addAttribute("currentPage", pageable.getPageNumber());
 		model.addAttribute("totalPages", couponMaps.getTotalPages());
-		return "/admin/page/adminUserCoupon";
+		return "admin/page/adminUserCoupon";
 	}
 
 	// 유저 쿠폰 삭제
@@ -440,7 +452,7 @@ public class AdminPageController {
 		model.addAttribute("shops", shops);
 		model.addAttribute("currentPage", pageable.getPageNumber());
 		model.addAttribute("totalPages", shops.getTotalPages());
-		return "/admin/page/adminShopList";
+		return "admin/page/adminShopList";
 	}
 
 	@GetMapping("/adminsearch")
@@ -464,7 +476,7 @@ public class AdminPageController {
 		model.addAttribute("minPrice", minPrice);
 		model.addAttribute("maxPrice", maxPrice);
 
-		return "/admin/page/adminShopList";
+		return "admin/page/adminShopList";
 	}
 
 	// ordered 모달창
@@ -498,7 +510,7 @@ public class AdminPageController {
 		model.addAttribute("orders", orders);
 		model.addAttribute("currentPage", pageable.getPageNumber());
 		model.addAttribute("totalPages", orders.getTotalPages());
-		return "/admin/page/adminOrdered";
+		return "admin/page/adminOrdered";
 	}
 
 	// ㅂ지활성화 할거임
@@ -521,8 +533,19 @@ public class AdminPageController {
 		model.addAttribute("events", events);
 		model.addAttribute("currentPage", pageable.getPageNumber());
 		model.addAttribute("totalPages", events.getTotalPages());
-		return "/admin/page/adminEvent";
+		return "admin/page/adminEvent";
 	}
+	
+	//이벤트 삭제
+	@DeleteMapping("/deleteEvent")
+    public ResponseEntity<String> deleteEvent(@RequestParam("eventNo") Long eventNo) {
+        try {
+            adminPageService.deleteEvent(eventNo);
+            return ResponseEntity.ok("이벤트가 성공적으로 삭제되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("이벤트 삭제 중 오류가 발생했습니다.");
+        }
+    }
 
 	@GetMapping("/admin/page/adminEventSearch")
 	public String searchEvents(@RequestParam("type") String type, @RequestParam("keyword") String keyword,
@@ -540,7 +563,7 @@ public class AdminPageController {
 		model.addAttribute("events", events);
 		model.addAttribute("currentPage", pageable.getPageNumber());
 		model.addAttribute("totalPages", events.getTotalPages());
-		return "/admin/page/adminEvent";
+		return "admin/page/adminEvent";
 	}
 
 	// 환불
@@ -549,7 +572,10 @@ public class AdminPageController {
 			@RequestParam("refundReason") String refundReason, HttpSession session) throws Exception {
 		String userid = (String) session.getAttribute("UId");
 		String token = paymentService.getAccessToken();
+		System.out.println("멀천튜유아이딩 : "+merchantUId);
+		System.out.println("뤼펀드우느랒 : " + refundReason);
 		paymentService.refundRequest(token, merchantUId);
+		
 
 		// 여기에 주문 내역에서 삭제해야 됨.
 		// ordered랑 payment랑 payment_user_mapping 테이블 전부인데 payment_user_mapping부터 지워야 됨.
@@ -600,7 +626,7 @@ public class AdminPageController {
 		model.addAttribute("faqs", faqs);
 		model.addAttribute("currentPage", pageable.getPageNumber());
 		model.addAttribute("totalPages", faqs.getTotalPages());
-		return "/admin/page/adminFAQ";
+		return "admin/page/adminFAQ";
 	}
 
 	// 자주 묻는 질문 수정 모달창
@@ -650,7 +676,7 @@ public class AdminPageController {
         model.addAttribute("currentPage", pageable.getPageNumber());
         model.addAttribute("totalPages", inquiries.getTotalPages());
 
-        return "/admin/page/adminInquiry";  // Thymeleaf 템플릿 경로
+        return "admin/page/adminInquiry";  // Thymeleaf 템플릿 경로
     }
 	
 	//문의사항 모달창(답변보기)

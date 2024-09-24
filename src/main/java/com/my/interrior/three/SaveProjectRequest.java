@@ -2,7 +2,8 @@ package com.my.interrior.three;
 
 import java.util.List;
 
-import org.springframework.web.multipart.MultipartFile;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.my.interrior.config.SingleOrListDeserializer;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +14,7 @@ import lombok.ToString;
 @ToString
 public class SaveProjectRequest {
 
-	private String projectId;
+	private String project_id;
 	private List<DataRequest> dataEntities;
 	private ProjectRequest projectSrc;
 	
@@ -25,6 +26,7 @@ public class SaveProjectRequest {
 		private String type;
 		private Double rotation;
 		private String parent;
+		@JsonDeserialize(using = SingleOrListDeserializer.class)
 		private List<PointRequest> points;
 		private List<String> children;
 	}
@@ -45,28 +47,4 @@ public class SaveProjectRequest {
 		private String title;
 		private String src;
 	}
-	
-//	private long userNo;
-//	private String projectId;
-//	private List<DataEntityRequest> dataEntities;
-//	
-//	@Getter
-//	@Setter
-//	@ToString
-//	public static class DataEntityRequest {
-//		private String type;
-//		private Double rotation;
-//		private Double angle;
-//		private List<PointRequest> points;
-//		private List<DataEntityRequest> children = new ArrayList<>();
-//	}
-//	
-//	@Getter
-//	@Setter
-//	@ToString
-//	public static class PointRequest{
-//		private Double x;
-//		private Double y;
-//		private Double z;
-//	}
 }

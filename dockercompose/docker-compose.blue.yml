@@ -18,9 +18,9 @@ services:
   idesign_blue:
     image: yoonjaehwan/idesign:latest
     container_name: idesign_blue
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mariadb://15.164.183.12:3306/idesign
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 1234
+    # environment:
+    #   SPRING_DATASOURCE_URL: jdbc:mariadb://15.164.183.12:3306/idesign
+    #   SPRING_DATASOURCE_USERNAME: root
+    #   SPRING_DATASOURCE_PASSWORD: 1234
     ports:
       - "8081:8080"
