@@ -27,7 +27,7 @@
       <form
         class="login-form"
         method="post"
-        action="/auth/login"
+        action="/signin"
         onsubmit="return validateForm()"
       >
         <!-- 사용자 입력 필드 -->
@@ -40,9 +40,9 @@
       </form>
 
       <div class="find">
-        <a href="/auth/findUId">아이디 찾기</a>
-        <a href="/auth/findUPw">비밀번호 찾기</a>
-        <a href="/auth/join" class="memberJoin">회원가입</a>
+        <a href="/forgot-id">아이디 찾기</a>
+        <a href="/forgot-password">비밀번호 찾기</a>
+        <a href="/signup" class="memberJoin">회원가입</a>
       </div>
 
       <!-- snsLogin -->
@@ -102,7 +102,7 @@
 		    // 카트 메시지가 있을 경우 처리
 		    if (cartMsg) {
 		      alert(cartMsg);
-		      window.location.href = '/auth/login';
+		      window.location.href = '/signin';
 		    }
 
 		    // 비활성화된 계정에 대한 메시지 처리
@@ -113,7 +113,7 @@
 		        window.location.href = '/board/recoverWrite?userNo=' + userNo;
 		      } else {
 		        // 취소 시 명시적으로 로그인 페이지로 이동
-		        window.location.href = '/auth/login';
+		        window.location.href = '/signin';
 		      }
 		    }
 

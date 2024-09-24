@@ -3,7 +3,7 @@ const startFindID = async () => {
 	if (!UMail || UMail === "") return;
 
 	try {
-		let response = await fetch(`/auth/find/user/id?UMail=${UMail}`);
+		let response = await fetch(`/api/forgot-id?mail=${UMail}`);
 
 		if (!response.ok) {
 			throw new Error("네트워크 응답에 문제가 있습니다.");
@@ -11,7 +11,7 @@ const startFindID = async () => {
 
 		let data = await response.text();
 		alert(`아이디는 ${data}`);
-		window.location.href = "/auth/login";
+		window.location.href = "/signin";
 	} catch (e) {
 
 		console.error("에러 발생:", e);

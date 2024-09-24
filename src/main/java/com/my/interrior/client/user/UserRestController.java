@@ -6,16 +6,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.my.interrior.common.MailDTO;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
+@RequestMapping("/api")
 public class UserRestController {
 
 	@Autowired
@@ -25,11 +30,10 @@ public class UserRestController {
 	private UserRepository userRepository;
 
 	@Transactional
-	@GetMapping("/auth/findPw")
-	public ResponseEntity<String> findUPw(@ModelAttribute UserMailDTO dto,
-			Model model) {
-		String mail = dto.getUMail();
-		String UName = dto.getUName();
+	@GetMapping("/forgot-password")
+	public ResponseEntity<String> findUPw(@ModelAttribute UserMailDTO dto, Model model) {
+		String mail = dto.getMail();
+		String UName = dto.getName();
 		log.info("mail: {}, name :{}", mail);
 		// mail을 입력 안 했을 때
 		if (mail == null || mail.isEmpty())
@@ -48,8 +52,8 @@ public class UserRestController {
 		return ResponseEntity.ok("success");
 	}
 
-	@GetMapping("/auth/check/{UId}")
-	public ResponseEntity<String> checkDuplicatedId(@PathVariable("UId") String userId) {
+	@GetMapping("/check/id/{userID}")
+	public ResponseEntity<String> checkDuplicatedId(@PathVariable("userID") String userId) {
 
 		UserEntity user = userRepository.findByUId(userId);
 
@@ -57,12 +61,32 @@ public class UserRestController {
 
 	}
 
-	@GetMapping("/auth/check/email/{UMail}")
-	public ResponseEntity<String> checkDuplicatedEmail(@PathVariable("UMail") String email) {
+	@GetMapping("/check/mail/{mail}")
+	public ResponseEntity<String> checkDuplicatedEmail(@PathVariable("mail") String email) {
 
 		UserEntity user = userRepository.findByUMail(email);
 
 		return ResponseEntity.ok(user != null ? "duplicated" : "available");
 	}
 
+	// 유저 비활성화
+	@PatchMapping("/user/{userNo}/disabled")
+	public ResponseEntity<?> deactivateUser(@PathVariable("userNo") Long userNo, Model model, HttpSession session) {
+		try {
+			// 사용자 비활성화 서비스 호출
+			boolean isDeactivated = userService.deactivateUser(userNo);
+
+			if (isDeactivated) {
+				// 유저가 비활성화되면 리다이렉트
+				session.invalidate();
+				return ResponseEntity.ok().body("success");
+			} else {
+				// 유저 비활성화 실패 시 메시지를 추가하고 현재 페이지에 머무르도록 설정
+				return ResponseEntity.notFound().build(); // 오류 처리용 뷰 페이지로 변경 가능
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().build(); // 서버 오류 처리용 뷰 페이지로 변경 가능
+		}
+	}
 }
