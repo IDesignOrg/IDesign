@@ -75,6 +75,7 @@ export const getClickedCircleIndex = ({ cg, object }) => {
 };
 
 export const getStraightLineX = ({ point, prevPoint, nextPoint }) => {
+  //90도 또는 180도 확인
   const tolerance = 10;
 
   if (Math.abs(prevPoint.x - point.x) <= tolerance) {
@@ -88,6 +89,7 @@ export const getStraightLineX = ({ point, prevPoint, nextPoint }) => {
 };
 
 export const getStraightLineZ = ({ point, prevPoint, nextPoint }) => {
+  //90도 또는 180도 확인
   const tolerance = 6;
   if (Math.abs(prevPoint.z - point.z) <= tolerance) {
     return prevPoint.z;
@@ -146,9 +148,9 @@ export const calculateOffsetPoints = (p1, p2) => {
 
 export function caclulateIntersectionPoint(x1, y1, x2, y2, x3, y3, x4, y4) {
   // 선 1: (x1, y1)과 (x2, y2) 를 지나는 직선
-  const A1 = y2 - y1;
-  const B1 = x1 - x2;
-  const C1 = A1 * x1 + B1 * y1;
+  const A1 = y2 - y1; // y축 증가량
+  const B1 = x1 - x2; // x축 증가량
+  const C1 = A1 * x1 + B1 * y1; //일반형 방정식, c = Ax + By
 
   // 선 2: (x3, y3)과 (x4, y4) 를 지나는 직선
   const A2 = y4 - y3;
