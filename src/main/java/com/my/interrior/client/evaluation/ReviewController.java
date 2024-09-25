@@ -83,7 +83,16 @@ public class ReviewController {
 	// 후기 상세페이지 및 댓글 포함 데이터 반환
 	@GetMapping("/auth/evaluation/{rNo}")
 	@ResponseBody
-	public ResponseEntity<ReviewDTO> getReviewDetail(@PathVariable("rNo") Long rNo) {
+	public ResponseEntity<ReviewDTO> getReviewDetail(@PathVariable("rNo") Long rNo,  HttpSession session) {
+		String pageKey = "viewedShop_" + rNo;
+        LocalDateTime lastViewedTime = (LocalDateTime) session.getAttribute(pageKey);
+
+        if (lastViewedTime == null || lastViewedTime.isBefore(LocalDateTime.now().minusHours(1))) {
+            reviewService.increaseViewCount(rNo);
+
+            // 현재 시간을 세션에 저장
+            session.setAttribute(pageKey, LocalDateTime.now());
+        }
 		// 리뷰와 리뷰 사진 데이터를 가져옵니다.
 		Optional<ReviewEntity> review = reviewService.getReviewById(rNo);
 		if (!review.isPresent()) {
