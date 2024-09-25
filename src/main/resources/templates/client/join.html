@@ -242,7 +242,7 @@
               mail: UMail,
             },
             success: function (res) {
-              if (res == "available") {
+              if (res.data == "available") {
                 alert("사용 가능한 이메일입니다.");
                 isEmailAvailable = true;
               } else {
