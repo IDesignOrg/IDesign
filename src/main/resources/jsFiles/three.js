@@ -724,7 +724,6 @@ const onWindowResize = () => {
 };
 
 const getProjectNodes = async () => {
-  return;
   // todo
   // 코드 더러움
   const urlParams = new URLSearchParams(window.location.search);
