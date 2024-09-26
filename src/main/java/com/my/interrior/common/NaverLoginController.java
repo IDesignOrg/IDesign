@@ -14,6 +14,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,7 +41,7 @@ public class NaverLoginController {
 	private static final String PROFILE_REQUEST_URL = "https://openapi.naver.com/v1/nid/me";
 
 	@RequestMapping("/auth/login/naver")
-	public String naverCallback(@RequestParam("code") String code, @RequestParam("code") String state, HttpSession session, Model model) throws JsonProcessingException {
+	public String naverCallback(@RequestParam("code") String code, @RequestParam("code") String state, HttpSession session, Model model, RedirectAttributes redirectAttributes) throws JsonProcessingException {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("grant_type", "authorization_code");
 		params.add("client_id", naverApi.getClientId());
@@ -84,8 +85,9 @@ public class NaverLoginController {
 		if(existingUser != null) {
 			if (existingUser.isUDeactivated()) {
                 // 비활성화된 계정일 경우
-                model.addAttribute("loginError", "비활성화된 아이디입니다.");
-                return "client/login"; // 로그인 페이지로 이동
+				redirectAttributes.addFlashAttribute("deactivatedError", "비활성화된 아이디입니다. 복구신청을 하시겠습니까?");
+				redirectAttributes.addFlashAttribute("userNo", existingUser.getUNo());
+                return "redirect:/auth/login";
             }
 			session.setAttribute("UId", existingUser.getUId());
 			System.out.println("네이버 세션 등록 : " + existingUser.getUId());

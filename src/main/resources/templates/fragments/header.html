@@ -28,11 +28,11 @@
         </div>
 
         <div class="userWrap">
-          <a href="/auth/login" class="login" th:if="${session.UId} == null"
+          <a href="/signin" class="login" th:if="${session.UId} == null"
             >로그인</a
           >
           <span class="line" th:if="${session.UId} == null"></span>
-          <a href="/auth/join" class="memberJoin" th:if="${session.UId} == null"
+          <a href="/signup" class="memberJoin" th:if="${session.UId} == null"
             >회원가입</a
           >
           <a href="/my/cart" th:if="${session.UId} != null">장바구니ICON</a>

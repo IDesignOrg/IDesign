@@ -107,6 +107,11 @@ function displayOrdered(orderedDTO) {
 		                <div class="order-status">
 		                    <p><strong>주문 상태:</strong> ${order.orderedState}</p>
 		                    <p><strong>배송 상태:</strong> ${order.shipmentState}</p>
+							
+							<a href="/shopReview/${order.shopNo}" class="product-link">
+							<h5>리뷰작성하기</h5>
+							</a>
+							
 		                </div>
 		                <hr>
 						<input type="hidden" id="merchantUId" value="${order.merchantUId}"/>
@@ -265,31 +270,22 @@ function changePassword() {
 /* 유저 비활성화 */
 function deleteUserInfo() {
 	// 유저 ID 가져오기 (폼 필드에서 가져옴)
-	var userUNo = document.getElementById("UNo").value;
+	var userNo = document.getElementById("UNo").value;
 
 	// Ajax 요청으로 서버에 POST 요청을 보냄
-	fetch("/deactivateUserin", {
-		method: "POST",
+	fetch(`/api/user/${userNo}/disabled`, {
+		method: "PATCH",
 		headers: {
 			"Content-Type": "application/x-www-form-urlencoded",
 		},
-		body: new URLSearchParams({
-			userUNo: userUNo,
-		}),
 	})
 		.then((response) => {
-			if (response.redirected) {
+			if (response.ok) {
 				// 리다이렉션이 발생하면 해당 URL로 이동
-				window.location.href = response.url;
-			} else if (response.ok) {
-				return response.text(); // 서버로부터 메시지 받기
+				alert("회원 탈퇴가 정상적으로 완료되었습니다.");
+				window.location.href = "/";
 			} else {
-				throw new Error("유저 비활성화에 실패했습니다.");
-			}
-		})
-		.then((result) => {
-			if (result) {
-				alert(result); // 서버 응답 메시지를 알림으로 표시 (비활성화 실패 시)
+				alert("유저 비활성화에 실패했습니다.");
 			}
 		})
 		.catch((error) => {

@@ -28,8 +28,6 @@ public class MypageRestController {
 
         UserEntity user =  mypageService.getUserInfo(id);
 
-        System.out.println("user2323:" +user);
-
         return ResponseEntity.ok(user);
     }
     

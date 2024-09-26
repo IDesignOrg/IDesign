@@ -16,7 +16,7 @@
     <div class="container">
       <form
         id="joinForm"
-        action="/auth/join"
+        action="/signup"
         method="POST"
         onsubmit="return validateForm()"
       >
@@ -214,9 +214,9 @@
 
         $.ajax({
           type: "GET",
-          url: "/auth/check/" + UId,
+          url: "/api/check/id/" + UId,
           data: {
-            UId: UId,
+            userID: UId,
           },
           success: function (res) {
             if (res == "available") {
@@ -237,12 +237,12 @@
         if (valid) {
           $.ajax({
             type: "GET",
-            url: "/auth/check/email/" + UMail,
+            url: "/api/check/mail/" + UMail,
             data: {
-              UMail: UMail,
+              mail: UMail,
             },
             success: function (res) {
-              if (res == "available") {
+              if (res.data == "available") {
                 alert("사용 가능한 이메일입니다.");
                 isEmailAvailable = true;
               } else {

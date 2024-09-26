@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="/css/adminpage.css" />
     <link rel="stylesheet" href="/css/eventWrite.css" />
     <link rel="stylesheet" href="/css/adminsidebar.css" />
+	<script src="/js/eventWrite.js" defer></script>
   </head>
   <body>
     <th:block th:include="~{fragments/adminsidebar.html :: sidebar}"></th:block>
@@ -43,18 +44,10 @@
         required
       />
 
-      <label for="couponNo">쿠폰 선택:</label>
-      <input
-        type="text"
-        id="couponNo"
-        name="couponNo"
-        class="event_input"
-        readonly
-        required
-      />
-      <button type="button" id="selectCouponBtn" class="event_button">
-        쿠폰 선택
-      </button>
+	  <label for="couponNo">쿠폰 선택:</label>
+	  <input type="text" id="couponNo" name="couponNo" class="event_input" readonly required />
+	  <span id="selectedCouponName" class="coupon-name-display"></span>
+	  <button type="button" id="selectCouponBtn" class="event_button">쿠폰 선택</button>
 
       <input type="submit" value="이벤트 등록" class="event_submit" />
     </form>
