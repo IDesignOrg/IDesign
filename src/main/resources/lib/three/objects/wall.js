@@ -58,11 +58,8 @@ export class D2Wall extends THREE.Group {
       const p1 = point;
       const p2 = points[(i + 1) % points.length];
       const offsetPoints = calculateOffsetPoints(p1, p2, distance);
-      // console.log(p1, p2, offsetPoints);
       offsetLines.push(offsetPoints);
     });
-    // console.log(offsetLines);
-    // const newPoints = []
 
     const pointsArray = [];
     offsetLines.forEach((current, idx) => {

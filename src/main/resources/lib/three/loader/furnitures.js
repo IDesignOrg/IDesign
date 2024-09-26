@@ -5,7 +5,7 @@ const loader = new GLTFLoader();
 export const createChair = () => {
   return new Promise((res, rej) => {
     loader.load(
-      "gltf/chair/chair.gltf",
+      "public/gltf/chair/chair.gltf",
       (gltf) => {
         res(gltf.scene);
       },

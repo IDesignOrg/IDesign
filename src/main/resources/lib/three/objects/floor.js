@@ -4,7 +4,7 @@ import { floorName } from "../objectConf/objectNames";
 import { floorY } from "../objectConf/renderOrders";
 
 export class D2Floor {
-  constructor({ points, height, center, name }) {
+  constructor({ points, height, center }) {
     //바닥
     const shape = new Shape({ points });
     const geometry = new THREE.ShapeGeometry(shape);

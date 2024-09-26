@@ -2,20 +2,7 @@ import { THREE } from "../loader/three";
 import { arrowsY } from "../objectConf/renderOrders";
 
 export class Arrow extends THREE.Mesh {
-  constructor({ width, angle, position, cameraZoom }) {
-    // const group = new THREE.Group();
-    // group.name = MilliName;
-    // group.userData = {
-    //   ...group.userData,
-    //   oid: uuid(),
-    // };
-
-    // const text = new Text({
-    //   text: `${(width / MILLPerWidth).toFixed(2)}mm`,
-    //   angle,
-    //   cameraZoom,
-    //   position,
-    // });
+  constructor({ width, angle, position }) {
     const shape = new THREE.Shape();
     const arrowWidth = 2;
     const arrowHeight = 2;
