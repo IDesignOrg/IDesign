@@ -3,6 +3,7 @@ package com.my.interrior.client.user;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,7 +42,8 @@ public class UserRestController {
 	@GetMapping("/forgot-password")
 	@Operation(summary = "비밀번호 찾기", description = "회원의 비밀번호를 찾습니다.")
 	public ResponseEntity<CommonResponse<String>> findUPw(
-			@Parameter(name = "dto", description = "이메일과 이름을 받는 DTO") @ModelAttribute UserMailDTO dto, Model model) {
+			@Parameter(name = "dto", description = "이메일과 이름을 받는 DTO")
+			@ModelAttribute UserMailDTO dto, Model model) {
 		String mail = dto.getMail();
 		String UName = dto.getName();
 		log.info("mail: {}, name :{}", mail);

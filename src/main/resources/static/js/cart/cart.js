@@ -75,7 +75,7 @@
 
 					// 사전 검증
 					$.ajax({
-						url: '/payment/prepare',
+						url: '/api/payment/prepare',
 						type: 'POST',
 						data: {
 							merchant_uid: merchantUId,
@@ -102,7 +102,7 @@
 
 									$.when(
 										$.ajax({
-											url: '/save/payment',
+											url: '/api/save/payment',
 											type: 'POST',
 											contentType: 'application/json',
 											data: JSON.stringify({
@@ -117,7 +117,7 @@
 											})
 										}),
 										$.ajax({
-											url: '/save/shipment',
+											url: '/api/save/shipment',
 											type: 'POST',
 											contentType: 'application/json',
 											data: JSON.stringify({
@@ -140,7 +140,7 @@
 												}
 											}),
 											$.ajax({
-												url: '/payment/info',
+												url: '/api/payment/info',
 												type: 'POST',
 												contentType: 'application/json',
 												data: JSON.stringify({
@@ -178,8 +178,8 @@
 						},
 						error: function (xhr, status, error) {
 							// 사전 검증 실패 시 처리
-							console.log("사전 검증 실패: ", error);
-							alert("금액이 변조되었습니다. 결제를 진행할 수 없습니다.");
+							var a = xhr.message;
+							alert(a);
 						}
 					});
 				});
