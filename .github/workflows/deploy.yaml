@@ -85,6 +85,7 @@ jobs:
 
 
             if [ -z "$EXIST_BLUE" ] && [ -z "$EXIST_GREEN" ]; then
+              # 이미지 다시 풀 받기
               docker-compose -f docker-compose.yml up -d
               sudo cp ./nginx/nginx.blue.conf /etc/nginx/nginx.conf
               sudo nginx -s reload
