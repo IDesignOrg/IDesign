@@ -76,7 +76,7 @@ $(document).ready(function () {
         if (xhr.status == 401) {
           var msg = xhr.responseText;
           if (confirm(msg)) {
-            window.location.href = "/auth/login";
+            window.location.href = "/signin";
           }
         }
       },

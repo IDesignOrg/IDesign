@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@Tag(name = "Cart")
 @RestController
 @RequiredArgsConstructor
 @Slf4j

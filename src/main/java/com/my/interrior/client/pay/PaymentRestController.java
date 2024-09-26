@@ -2,30 +2,36 @@ package com.my.interrior.client.pay;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-
-
 import java.time.LocalDate;
+import java.util.NoSuchElementException;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.my.interrior.client.ordered.OrderedService;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
+import com.my.interrior.common.CommonResponse;
+import com.my.interrior.common.DefaultApiResponse;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@Tag(name = "Payment")
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/api")
 public class PaymentRestController {
 
 	private final PaymentService paymentService;
@@ -35,36 +41,45 @@ public class PaymentRestController {
 	private final PaymentAndUserRepository paymentAndUserRepository;
 	private final PaymentAndUserService PaymentAndUserService;
 	// 결제 사전 검증
+	@DefaultApiResponse
+	@Operation(summary = "결제 사전 검증", description = "스크립트 공격 사전 방지")
 	@PostMapping("/payment/prepare")
-	public ResponseEntity<?> preparePayment(@ModelAttribute PrePaymentEntity request,
+	public ResponseEntity<?> preparePayment(
+			@Parameter(name = "request")
+			@ModelAttribute PrePaymentEntity request,
 			@RequestParam("validation") int validation) throws IamportResponseException, IOException {
 
 		BigDecimal amount = (BigDecimal) request.getAmount();
 		BigDecimal validate = BigDecimal.valueOf(validation);
-		System.out.println("amount의 값은: " + amount);
-		System.out.println("validate의 값은: " + validate);
+
 		if (amount.compareTo(validate) == 0) {
 
 			request.setAmount(amount);
 
 			paymentService.postPrepare(request);
 
-			return ResponseEntity.ok("success");
+			return ResponseEntity.ok(CommonResponse.success("success"));
 		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+			throw new NoSuchElementException("값이 맞지 않습니다.");
 		}
 
 	}
 
 	// 결제 정보 저장
-	// 어떤 유저가 결제했는 지도 저장하자
+	@DefaultApiResponse
+	@Operation(summary = "결제 정보 저장")
 	@PostMapping("/save/payment")
-	public ResponseEntity<PayEntity> savePayment(@RequestBody PayEntity pay, HttpSession session) throws Exception {
-		System.out.println("pay.getPaidAt(): " + pay.getPaidAt());
+	public ResponseEntity<PayEntity> savePayment(
+			@Parameter(name = "pay", description = "결제 정보들 Payment 테이블에 저장")
+			@RequestBody PayEntity pay, HttpSession session) throws Exception {
+
+		if(pay == null)
+			throw new IllegalArgumentException("결제 정보가 없습니다.");
+		
 		pay.setPaidAt(LocalDate.now());
 
 		paymentService.saveMyPayment(pay);
-		System.out.println("merchantUIdInPayment: " + pay.getMerchantUId());
+		
 		session.setAttribute("merchantUId", pay.getMerchantUId());
 
 		String userId = (String) session.getAttribute("UId");
@@ -81,6 +96,8 @@ public class PaymentRestController {
 	}
 
 	// 환불
+	@DefaultApiResponse
+	@Operation(summary = "환불 정보 저장")
 	@PostMapping("/refund/payment")
 	public ResponseEntity<?> refundPayment(
 			@RequestParam("merchantUId") String merchantUId,
@@ -103,16 +120,28 @@ public class PaymentRestController {
 		paymentService.deleteByMerchantUId(merchantUId);
 		return ResponseEntity.ok().build();
 	}
+	@DefaultApiResponse
+	@Operation(summary = "배송 정보 저장")
 	@PostMapping("/save/shipment")
-	public ResponseEntity<ShipmentEntity> saveShipment(@RequestBody ShipmentEntity ship) throws Exception {
+	public ResponseEntity<ShipmentEntity> saveShipment(
+			@Parameter(name = "shipment", description = "배송 정보")
+			@RequestBody ShipmentEntity ship) throws Exception {
+		
+		if(ship == null)
+			throw new IllegalArgumentException("배송 정보가 없습니다.");
+		
 		shipmentService.saveMyShipment(ship);
 
 		return ResponseEntity.ok(ship);
 	}
 
 	// 부득이하게 URL 쿼리 문자열이 너무 길어져서 Post를 사용함.
+	@DefaultApiResponse
+	@Operation(summary = "주문 정보 확인", description = "쿼리 스트링이 너무 길어져서 POST 사용")
 	@PostMapping("/payment/info")
-	public ResponseEntity<?> goToPaymentInfo(@RequestBody PaymentAndShipmentDTO dto, HttpSession session)
+	public ResponseEntity<?> goToPaymentInfo(
+			@Parameter(name = "dto", description = "payment와 shipment의 정보들이 담겨있음.")
+			@RequestBody PaymentAndShipmentDTO dto, HttpSession session)
 			throws Exception {
 		PaymentAndShipmentDTO.PaymentInfo paymentInfo = dto.getPaymentInfo();
 		PaymentAndShipmentDTO.ShipmentInfo shipmentInfo = dto.getShipmentInfo();
@@ -125,7 +154,7 @@ public class PaymentRestController {
 		session.setAttribute("paymentRes", paymentInfo);
 		session.setAttribute("shipmentRes", shipmentInfo);
 
-		return ResponseEntity.ok("success");
+		return ResponseEntity.ok(CommonResponse.success("success"));
 	}
 
 }
