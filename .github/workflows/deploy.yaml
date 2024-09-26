@@ -44,6 +44,10 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build
 
+      - name: Check if JSON file exists in JAR
+        run: |
+          jar tf build/libs/app.jar | grep secure-sorter-435306-m4-acbd4a53fc25.json || echo "File not found"
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
