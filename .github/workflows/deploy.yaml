@@ -77,8 +77,11 @@ jobs:
           script: |
             set -x  # Debug mode enabled
             echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-                        
             cd IDesign
+            IMAGE_NAME="yoonjaehwan/idesign:latest"
+            if [ "$(docker images -q $IMAGE_NAME 2> /dev/null)" ]; then
+              docker rmi $IMAGE_NAME
+            fi
             # git pull origin feature-lhj
             EXIST_BLUE=$(docker ps --filter "name=idesign_blue" --filter "status=running" -q)
             EXIST_GREEN=$(docker ps --filter "name=idesign_green" --filter "status=running" -q)
