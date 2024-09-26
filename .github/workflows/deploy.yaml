@@ -78,7 +78,7 @@ jobs:
 
             elif [ -n "$EXIST_BLUE" ]; then
               sudo docker-compose -f ./dockercompose/docker-compose.green.yml pull
-              sudo docker-compose -f ./dockercompose/docker-compose.green.yml up -d
+              sudo docker-compose -f ./dockercompose/docker-compose.green.yml up 
 
               sudo cp ./nginx/nginx.green.conf /etc/nginx/nginx.conf
 
@@ -89,7 +89,7 @@ jobs:
             elif [ -n "$EXIST_GREEN" ]; then
               echo "green exits zzzzz"
               sudo docker-compose -f ./dockercompose/docker-compose.blue.yml pull
-              sudo docker-compose -f ./dockercompose/docker-compose.blue.yml up -d
+              sudo docker-compose -f ./dockercompose/docker-compose.blue.yml up 
 
               sudo cp ./nginx/nginx.blue.conf /etc/nginx/nginx.conf
 
