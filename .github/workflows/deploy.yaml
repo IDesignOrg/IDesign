@@ -69,16 +69,16 @@ jobs:
             # git pull origin feature-lhj
             EXIST_BLUE=$(docker ps --filter "name=idesign_blue" --filter "status=running" -q)
             EXIST_GREEN=$(docker ps --filter "name=idesign_green" --filter "status=running" -q)
-            echo "EXIST_BLUE zz: $EXIST_BLUE"
+
 
             if [ -z "$EXIST_BLUE" ] && [ -z "$EXIST_GREEN" ]; then
-              docker-compose -f docker-compose.yml up -d
+              docker-compose -f docker-compose.yml up
               sudo cp ./nginx/nginx.blue.conf /etc/nginx/nginx.conf
               sudo nginx -s reload
 
             elif [ -n "$EXIST_BLUE" ]; then
               sudo docker-compose -f ./dockercompose/docker-compose.green.yml pull
-              sudo docker-compose -f ./dockercompose/docker-compose.green.yml up 
+              sudo docker-compose -f ./dockercompose/docker-compose.green.yml up -d 
 
               sudo cp ./nginx/nginx.green.conf /etc/nginx/nginx.conf
 
@@ -89,7 +89,7 @@ jobs:
             elif [ -n "$EXIST_GREEN" ]; then
               echo "green exits zzzzz"
               sudo docker-compose -f ./dockercompose/docker-compose.blue.yml pull
-              sudo docker-compose -f ./dockercompose/docker-compose.blue.yml up 
+              sudo docker-compose -f ./dockercompose/docker-compose.blue.yml up -d 
 
               sudo cp ./nginx/nginx.blue.conf /etc/nginx/nginx.conf
 
