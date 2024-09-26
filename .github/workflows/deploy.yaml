@@ -24,13 +24,15 @@ jobs:
       - name: Write environment files
         run: |
           echo "${{ secrets.APPLICATIONPRIVATE }}" > src/main/resources/application-private.properties
+          echo "${{ secrets.APPLICATIONPROD }}" > src/main/resources/application-dev.properties
+
         shell: bash
 
       - name: create-json
         id: create-json
         uses: jsdaniell/create-json@v1.2.2
         with:
-          name: "persuasive-feat-426613-s5-a789fe6d3bc5.json"
+          name: "secure-sorter-435306-m4-acbd4a53fc25.json"
           json: ${{ secrets.PERSUASIVE }}
           dir: "src/main/resources/"
 
