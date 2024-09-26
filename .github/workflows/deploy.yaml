@@ -36,8 +36,8 @@ jobs:
           json: ${{ secrets.GCSFILE }}
           dir: "src/main/resources/"
 
-     - name: "json 권한 설정"
-       run: |
+      - name: "json 권한 설정"
+        run: |
           sudo chmod 644 src/main/resources/secure-sorter-435306-m4-acbd4a53fc25.json
 
       - name: List files in resources
