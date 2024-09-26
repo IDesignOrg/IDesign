@@ -24,7 +24,7 @@ jobs:
       - name: Write environment files
         run: |
           echo "${{ secrets.APPLICATIONPRIVATE }}" > src/main/resources/application-private.properties
-          echo "${{ secrets.APPLICATIONPROD }}" > src/main/resources/application-dev.properties
+          echo "${{ secrets.APPLICATIONPROD }}" > src/main/resources/application-prod.properties
 
         shell: bash
 
