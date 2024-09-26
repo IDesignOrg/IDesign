@@ -36,6 +36,11 @@ jobs:
           json: ${{ secrets.GCSFILE }}
           dir: "src/main/resources/"
 
+      - name: List files in resources
+        run: |
+          echo "Files in src/main/resources/:"
+          ls src/main/resources/
+
       - name: Build with Gradle
         run: ./gradlew clean build
 
