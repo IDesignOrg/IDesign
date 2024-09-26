@@ -33,7 +33,7 @@ jobs:
         uses: jsdaniell/create-json@v1.2.2
         with:
           name: "secure-sorter-435306-m4-acbd4a53fc25.json"
-          json: ${{ secrets.PERSUASIVE }}
+          json: ${{ secrets.GCSFILE }}
           dir: "src/main/resources/"
 
       - name: Build with Gradle
@@ -72,7 +72,7 @@ jobs:
 
 
             if [ -z "$EXIST_BLUE" ] && [ -z "$EXIST_GREEN" ]; then
-              docker-compose -f docker-compose.yml up
+              docker-compose -f docker-compose.yml up -d
               sudo cp ./nginx/nginx.blue.conf /etc/nginx/nginx.conf
               sudo nginx -s reload
 
