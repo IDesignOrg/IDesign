@@ -48,20 +48,24 @@ const hudIcon = document.getElementById("hud-icon");
 const modeToggles = document.getElementById("modeToggles");
 
 const [chair] = await loadFurnitures;
+const intersectionArray = [floorName, deskName, "Desk", chairName, circleName];
 
 export const furnitureObjects = {
   chair,
 };
 
-// zoom in/out & drag and drop
+// 2d 드래그 앤 드랍
 let isDragging = false;
-let isRoomClick = {
+
+// 방 회전 및 이동
+let isObjectClick = {
   isClick: false,
   object: null,
 };
-let previousMousePosition = { x: 0, y: 0 };
 export const maxZoom = 1000;
 export const minZoom = 20;
+
+let previousMousePosition = { x: 0, y: 0 };
 let cameraZoom = 500;
 
 // create object
@@ -72,7 +76,6 @@ let isCreating = {
 };
 
 let isChangingObject = {
-  isDBClick: false, //circle을 통해 드래깅 중인지
   isHover: false, //마우스에 무언가 올라가있
   isDragging: false, //is changer circle moving ?
   changingObjectId: null, // change object...
@@ -151,18 +154,21 @@ const gridHelper = new THREE.GridHelper(
 gridHelper.name = "helper";
 gridHelper.position.y = gridHelperY;
 scene.add(gridHelper);
+console.log("zzzz");
 
 const rotationController = new RotationController({ cameraZoom });
 rotationController.setScale({ object: rotationController, scaler: 6 });
-const moveController = new MoveController();
-scene.add(moveController);
+// const moveController = new MoveController();
+// scene.add(moveController);
 scene.add(rotationController);
+console.log(scene.children);
 
 const planeGeometry = new THREE.PlaneGeometry(8000, 8000);
 const planeMaterial = new THREE.MeshBasicMaterial({
   color: "rgb(250,251,255)",
   side: THREE.FrontSide,
 });
+
 const background = new THREE.Mesh(planeGeometry, planeMaterial);
 background.position.set(0, -2, 0);
 background.rotation.x = -Math.PI / 2; // x축을 기준으로 90도 회전
@@ -183,13 +189,8 @@ const getIntersects = (event) => {
 const getIntersectsArray = (raycaster) => {
   return raycaster.filter(
     (obj) =>
-      obj.object.name === floorName ||
-      obj.object.name === deskName ||
-      obj.object.name === "Desk" ||
-      obj.object.name === chairName ||
-      obj.object.name === circleName ||
-      obj.object.name.includes("controller") ||
-      obj.object.name === moveControllerChildrenName
+      intersectionArray.includes(obj.object.name) ||
+      obj.object.name.includes("controller")
   );
 };
 
@@ -218,33 +219,27 @@ const onMouseDown = (event) => {
 
   const objectArr = getIntersectsArray(raycaster);
 
-  if (isChangingObject.isDBClick) {
+  if (isObjectClick.isClick) {
     if (objectArr.length > 0) {
-      let controller = objectArr.find((obj) =>
-        obj.object.name.includes("controller")
-      );
-      if (!controller) {
-        controller = objectArr.find((obj) =>
-          obj.object.name.includes(moveControllerChildrenName)
-        );
+      //컨트롤러 동작
+      // let controller = objectArr.find((obj) =>
 
-        if (!controller) return;
-        controller = controller.object.parent;
-        controller.onMouseDown();
-        return;
-      }
-
-      controller = controller.object;
-      if (controller.name !== rotationConrollerName)
-        controller = controller.parent;
-      const rotationController = controller;
+      //   obj.object.name.includes("controller")
+      // );
+      // controller = controller.object;
+      // if (controller.name !== rotationConrollerName) {
+      //   controller = controller.parent;
+      // }
+      const rotationController = scene.getObjectByName(rotationConrollerName);
       rotationController.onMouseDown();
+      isObjectClick.isDragging = true;
       return;
     } else {
+      // 컨트롤러 취소
       const controller = scene.getObjectByName(rotationConrollerName);
-      const moveController = scene.getObjectByName(moveConrollerName);
+      // const moveController = scene.getObjectByName(moveConrollerName);
       controller.visible = false;
-      moveController.visible = false;
+      // moveController.visible = false;
 
       isChangingObject = {
         isDBClick: false,
@@ -255,7 +250,7 @@ const onMouseDown = (event) => {
         circleId: null,
         name: null,
       };
-      isRoomClick = {
+      isObjectClick = {
         isClick: false,
         object: null,
       };
@@ -374,10 +369,14 @@ const onMouseDown = (event) => {
         return;
 
       case floorName:
-        //
-        isRoomClick = {
+        // 컨트롤러로 회전 또는 움직이기
+        const rotationController = scene.getObjectByName(rotationConrollerName);
+        rotationController.visible = true;
+        const { parent } = object;
+        rotationController.setPosition(parent.userData.center);
+        isObjectClick = {
           isClick: true,
-          object: object,
+          object: parent,
         };
         break;
     }
@@ -399,7 +398,11 @@ const onMouseMove = (event) => {
     camera.lookAt(camera.position.x, 0, camera.position.z);
 
     previousMousePosition = { x: event.clientX, y: event.clientY };
-    isRoomClick = false;
+    isObjectClick = {
+      isDragging: false,
+      isClick: false,
+      object: null,
+    };
     return;
   }
   const raycaster = getIntersects(event);
@@ -451,48 +454,55 @@ const onMouseMove = (event) => {
       circleIdx: isChangingObject.circleIdx,
       circleId: isChangingObject.circleId,
     });
-  } else if (isChangingObject.isDBClick) {
-    const room = scene.getObjectById(isChangingObject.changingObjectId);
+  } else if (isObjectClick.isClick) {
+    const room = isObjectClick.object;
     const points = new THREE.Vector3(
       background.point.x,
       roomY,
       background.point.z
     );
-    const moveController = scene.getObjectByName(moveConrollerName);
+    // const moveController = scene.getObjectByName(moveConrollerName);
     const rotationController = scene.getObjectByName(rotationConrollerName);
-    if (moveController.isDragging) {
-      moveController.onMouseMove({ room, points, rotationController });
+    // if (moveController.isDragging) {
+    //   // moveController.onMouseMove({ room, points, rotationController });
+    // }
+    // else
+    if (isObjectClick.isDragging) {
+      rotationController.onMouseMove({ points, room });
     } else if (
-      !rotationController.isDragging &&
+      // isObjectClick.isClick &&
       arr.length > 0 &&
       arr.find((ob) => ob.object.name.includes("controller"))
     ) {
       rotationController.onMouseMove({ points });
-    } else if (rotationController.isDragging) {
-      rotationController.onMouseMove({ points, room });
     }
   }
 };
 
 const onMouseUp = () => {
   if (controls.enabled) return;
-  if (isRoomClick.isClick) {
-    // 방 옮기기
-    const room = isRoomClick.object.parent;
-    const center = calculateCenter(room.getShadowPoints());
-    const moveController = scene.getObjectByName(moveConrollerName);
-    const controller = scene.getObjectByName(rotationConrollerName);
-    moveController.setPosition(center);
-    moveController.visible = true;
-    controller.setPosition(center);
-    controller.visible = true;
-    isChangingObject = {
-      ...isChangingObject,
-      changingObjectId: room.id,
-      isDBClick: true,
-      isDragging: false,
-    };
+
+  if (isObjectClick.isDragging) {
+    isObjectClick.isDragging = false;
   }
+  // if (isRoomClick.isClick) {
+  //   // 방 옮기기
+  //   console.log("sisisis");
+  //   const room = isRoomClick.object.parent;
+  //   const center = calculateCenter(room.getShadowPoints());
+  //   const moveController = scene.getObjectByName(moveConrollerName);
+  //   const controller = scene.getObjectByName(rotationConrollerName);
+  //   moveController.setPosition(center);
+  //   moveController.visible = true;
+  //   controller.setPosition(center);
+  //   controller.visible = true;
+  //   isChangingObject = {
+  //     ...isChangingObject,
+  //     changingObjectId: room.id,
+  //     isDBClick: true,
+  //     isDragging: false,
+  //   };
+  // }
   if (isChangingObject.isDragging) {
     //circle을 통해 방 모양 변경
     const room = scene.getObjectById(isChangingObject.changingObjectId);
@@ -504,17 +514,18 @@ const onMouseUp = () => {
       isDragging: false,
       circleIdx: null,
     };
-    // return;
   }
-  const moveController = scene.getObjectByName(moveConrollerName);
-  const controller = scene.getObjectByName(rotationConrollerName);
-  if (moveController.isDragging) {
-    moveController.onMouseUp();
-  }
-  if (controller.isDragging) {
-    // 컨트롤러로 방 회전
-    controller.onMouseUp();
-  }
+  //   // return;
+  // }
+  // const moveController = scene.getObjectByName(moveConrollerName);
+  // const controller = scene.getObjectByName(rotationConrollerName);
+  // if (moveController.isDragging) {
+  //   moveController.onMouseUp();
+  // }
+  // if (controller.isDragging) {
+  //   // 컨트롤러로 방 회전
+  //   controller.onMouseUp();
+  // }
   isDragging = false;
 };
 
@@ -713,7 +724,6 @@ const onWindowResize = () => {
 };
 
 const getProjectNodes = async () => {
-  return;
   // todo
   // 코드 더러움
   const urlParams = new URLSearchParams(window.location.search);

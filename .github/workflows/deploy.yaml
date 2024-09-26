@@ -24,18 +24,29 @@ jobs:
       - name: Write environment files
         run: |
           echo "${{ secrets.APPLICATIONPRIVATE }}" > src/main/resources/application-private.properties
+          echo "${{ secrets.APPLICATIONPROD }}" > src/main/resources/application-prod.properties
+
         shell: bash
 
       - name: create-json
         id: create-json
         uses: jsdaniell/create-json@v1.2.2
         with:
-          name: "persuasive-feat-426613-s5-a789fe6d3bc5.json"
-          json: ${{ secrets.PERSUASIVE }}
+          name: "secure-sorter-435306-m4-acbd4a53fc25.json"
+          json: ${{ secrets.GCSFILE }}
           dir: "src/main/resources/"
+
+      - name: List files in resources
+        run: |
+          echo "Files in src/main/resources/:"
+          ls src/main/resources/
 
       - name: Build with Gradle
         run: ./gradlew clean build
+
+      - name: Check if JSON file exists in JAR
+        run: |
+          jar tf build/libs/app.jar | grep secure-sorter-435306-m4-acbd4a53fc25.json || echo "File not found"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -67,7 +78,7 @@ jobs:
             # git pull origin feature-lhj
             EXIST_BLUE=$(docker ps --filter "name=idesign_blue" --filter "status=running" -q)
             EXIST_GREEN=$(docker ps --filter "name=idesign_green" --filter "status=running" -q)
-            echo "EXIST_BLUE zz: $EXIST_BLUE"
+
 
             if [ -z "$EXIST_BLUE" ] && [ -z "$EXIST_GREEN" ]; then
               docker-compose -f docker-compose.yml up -d
@@ -76,7 +87,7 @@ jobs:
 
             elif [ -n "$EXIST_BLUE" ]; then
               sudo docker-compose -f ./dockercompose/docker-compose.green.yml pull
-              sudo docker-compose -f ./dockercompose/docker-compose.green.yml up -d
+              sudo docker-compose -f ./dockercompose/docker-compose.green.yml up -d 
 
               sudo cp ./nginx/nginx.green.conf /etc/nginx/nginx.conf
 
@@ -87,7 +98,7 @@ jobs:
             elif [ -n "$EXIST_GREEN" ]; then
               echo "green exits zzzzz"
               sudo docker-compose -f ./dockercompose/docker-compose.blue.yml pull
-              sudo docker-compose -f ./dockercompose/docker-compose.blue.yml up -d
+              sudo docker-compose -f ./dockercompose/docker-compose.blue.yml up -d 
 
               sudo cp ./nginx/nginx.blue.conf /etc/nginx/nginx.conf
 

@@ -90,10 +90,6 @@ export class D2Room extends THREE.Group {
     }
   }
 
-  getShadowPoints = () => {
-    return this.userData.points;
-  };
-
   createRoom = ({ cameraZoom }) => {
     this.name = roomName;
     if (this.getObjectByName("floor")) {
@@ -128,34 +124,13 @@ export class D2Room extends THREE.Group {
   };
 
   addWalls = ({ points, center }) => {
+    //외벽
     if (this.getObjectByName(wallsName)) {
       this.remove(this.getObjectByName(wallsName));
     }
     const color = "rgb(84,84,84)";
     const walls = new D2Wall({ points, center, color });
     this.add(walls);
-  };
-
-  setPosition = (center) => {
-    const prevCenter = this.userData.center;
-    const offset = {
-      x: center.x - prevCenter.x,
-      y: center.y,
-      z: center.z - prevCenter.z,
-    };
-    const newPoints = this.userData.points.map((point) => {
-      return {
-        x: point.x + offset.x,
-        y: prevCenter.y,
-        z: point.z + offset.z,
-      };
-    });
-    this.position.set(center.x, roomY, center.z);
-    this.userData = {
-      ...this.userData,
-      center,
-      points: newPoints,
-    };
   };
 
   addArea = () => {
@@ -187,7 +162,6 @@ export class D2Room extends THREE.Group {
     group.name = "arrow";
     group.position.y = arrowsY;
     for (let i = 0; i < points.length; i++) {
-      // const arrowGroup = new THREE.Group();
       const currentPoint = points[i];
       const nextPoint = points[(i + 1) % points.length];
       const width = calculateDistance(currentPoint, nextPoint);
@@ -226,6 +200,28 @@ export class D2Room extends THREE.Group {
     const circles = new Circles({ points });
     circles.position.set(-center.x, circleY, -center.z);
     this.add(circles);
+  };
+
+  setPosition = (center) => {
+    const prevCenter = this.userData.center;
+    const offset = {
+      x: center.x - prevCenter.x,
+      y: center.y,
+      z: center.z - prevCenter.z,
+    };
+    const newPoints = this.userData.points.map((point) => {
+      return {
+        x: point.x + offset.x,
+        y: prevCenter.y,
+        z: point.z + offset.z,
+      };
+    });
+    this.position.set(center.x, roomY, center.z);
+    this.userData = {
+      ...this.userData,
+      center,
+      points: newPoints,
+    };
   };
 
   drawLines = (points) => {
@@ -268,8 +264,6 @@ export class D2Room extends THREE.Group {
       point.y,
       getStraightLineZ({ point, prevPoint, nextPoint })
     );
-    // const currentPoint = point;
-    console.log(currentPoint);
 
     const offsetDistance = 25;
     const offsetPoint_prev = calculateOffsetPoints(

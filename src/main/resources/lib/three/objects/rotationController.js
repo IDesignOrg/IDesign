@@ -1,17 +1,18 @@
 import { THREE } from "../loader/three";
+import { rotationConrollerName } from "../objectConf/objectNames";
 
 export const RotationControllerY = 3;
 
 export class RotationController extends THREE.Group {
   constructor({ cameraZoom = 250 }) {
     super();
-    this.name = "rotationController";
+    this.name = rotationConrollerName;
     this.isDragging = false;
     this.visible = false;
     this.init(cameraZoom);
   }
 
-  init = (cameraZoom) => {
+  init = () => {
     const innerRadius = 30;
     const outerRadius = 20;
     const thetaSegments = 30;
@@ -81,7 +82,7 @@ export class RotationController extends THREE.Group {
 
     // 각도 계산 (atan2 사용)
     const angle = Math.atan2(dz, dx) + Math.PI / 2; // rotation.x가 -Math.PI / 2이기 때문에 보정
-    if (this.isDragging) {
+    if (room && this.isDragging) {
       this.rotation({ angle, room });
     }
     const controllerRing = this.getObjectByName("controllerRing");
@@ -94,23 +95,8 @@ export class RotationController extends THREE.Group {
   };
 
   rotation = ({ angle, room }) => {
-    room.userData.rotation = angle;
-    room.rotation.y = angle;
+    room.rotation.y = -angle;
     room.updateMatrix();
-    const floor = room.getObjectByName("floor");
-    // floor.applyMatrix4();
-    // floor.geometry.applyMatrix(floor.matrix);
-    // floor.matrix.identity();
-    // floor.updateMatrix();
-    // floor.geometry.clone().applyMatrix4(floor);
-    // room.getObjectByName("floor").updateMatrix();
-    // room
-    //   .getObjectByName("floor")
-    //   .geometry.clone()
-    //   .applyMatrix4(room.getObjectByName("floor"));
-    const area = room.getObjectByName("area");
-    area.rotation.z = 0;
-    // area.position.set(0, area.position.y, 0);
   };
 
   setScale = ({ object, scaler }) => {
