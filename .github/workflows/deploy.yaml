@@ -87,9 +87,9 @@ jobs:
 
             if [ -z "$EXIST_BLUE" ] && [ -z "$EXIST_GREEN" ]; then
               # 이미지 다시 풀 받기
-              if [ "$(docker images -q $IMAGE_NAME 2> /dev/null)" ]; then
-                docker rmi $IMAGE_NAME
-              fi
+              # if [ "$(docker images -q $IMAGE_NAME 2> /dev/null)" ]; then
+              #   docker rmi $IMAGE_NAME
+              # fi
               docker-compose -f docker-compose.yml up -d
               sudo cp ./nginx/nginx.blue.conf /etc/nginx/nginx.conf
               sudo nginx -s reload
@@ -97,9 +97,9 @@ jobs:
             elif [ -n "$EXIST_BLUE" ]; then
               sudo docker stop idesign_blue
               sudo docker remove idesign_blue
-              if [ "$(docker images -q $IMAGE_NAME 2> /dev/null)" ]; then
-                docker rmi $IMAGE_NAME
-              fi
+              # if [ "$(docker images -q $IMAGE_NAME 2> /dev/null)" ]; then
+              #   docker rmi $IMAGE_NAME
+              # fi
               sudo docker-compose -f ./dockercompose/docker-compose.green.yml pull
               sudo docker-compose -f ./dockercompose/docker-compose.green.yml up -d 
 
@@ -110,9 +110,9 @@ jobs:
             elif [ -n "$EXIST_GREEN" ]; then
               sudo docker stop idesign_green
               sudo docker remove idesign_green
-              if [ "$(docker images -q $IMAGE_NAME 2> /dev/null)" ]; then
-                docker rmi $IMAGE_NAME
-              fi
+              # if [ "$(docker images -q $IMAGE_NAME 2> /dev/null)" ]; then
+              #   docker rmi $IMAGE_NAME
+              # fi
               sudo docker-compose -f ./dockercompose/docker-compose.blue.yml pull
               sudo docker-compose -f ./dockercompose/docker-compose.blue.yml up -d 
 
