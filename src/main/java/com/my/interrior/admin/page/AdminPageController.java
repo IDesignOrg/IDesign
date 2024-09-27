@@ -38,11 +38,11 @@ import com.my.interrior.client.csc.inquiry.InquiryEntity;
 import com.my.interrior.client.csc.inquiry.InquiryListDTO;
 import com.my.interrior.client.csc.notice.NoticeEntity;
 import com.my.interrior.client.csc.recover.RecoveryEntity;
-import com.my.interrior.client.evaluation.ReviewCommentDTO;
 import com.my.interrior.client.evaluation.ReviewCommentEntity;
 import com.my.interrior.client.evaluation.ReviewEntity;
 import com.my.interrior.client.evaluation.ReviewRepository;
 import com.my.interrior.client.evaluation.ReviewService;
+import com.my.interrior.client.evaluation.DTO.ReviewCommentDTO;
 import com.my.interrior.client.event.EventEntity;
 import com.my.interrior.client.event.coupon.CouponEntity;
 import com.my.interrior.client.event.coupon.CouponMapEntity;
@@ -204,28 +204,6 @@ public class AdminPageController {
 
 		return "admin/page/adminReview";
 	}
-	//리뷰 댓글 
-	@GetMapping("/fetchRComments")
-	public ResponseEntity<List<ReviewCommentDTO>> fetchRComments(@RequestParam("reviewNo") Long reviewNo) {
-		List<ReviewCommentDTO> comments = reviewService.getCommentsByReviewId(reviewNo).stream()
-				.map(comment -> new ReviewCommentDTO(comment.getRCommentNo(), comment.getRComment(),
-						comment.getRCommentCreated(), comment.getUser().getUName(), comment.getUser().getUPofile()))
-				.collect(Collectors.toList());
-
-		return ResponseEntity.ok(comments);
-	}
-	//어드민페이지 리뷰 삭
-	@DeleteMapping("/deleteReview")
-    public ResponseEntity<String> deleteReview(@RequestParam("rNo") Long rNo) {
-        try {
-            // 리뷰 삭제 로직 호출 (댓글, 사진, GCS 파일 삭제 포함)
-            adminPageService.deleteReviewById(rNo);
-            return ResponseEntity.ok("리뷰가 성공적으로 삭제되었습니다.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("리뷰 삭제에 실패했습니다.");
-        }
-    }
 
 	@GetMapping("/searchUsers")
 	@ResponseBody
@@ -246,39 +224,6 @@ public class AdminPageController {
 		return results;
 	}
 
-	// 어드민 페이지 게시글 모달
-	@GetMapping("/fetchPosts")
-	@ResponseBody
-	public ResponseEntity<?> fetchPosts(@RequestParam("userUNo") Long userUNo) {
-		try {
-			List<ReviewEntity> reviews = reviewRepository.findByUserUNo(userUNo);
-			return ResponseEntity.ok(reviews);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching posts");
-		}
-	}
-
-	// 어드민 페이지 게시글 모달 삭제
-	@DeleteMapping("/deletePost")
-	public ResponseEntity<Void> deletePost(@RequestParam("rNo") Long rNo) {
-		reviewService.deleteReview(rNo);
-		return ResponseEntity.ok().build();
-	}
-
-	// 어드민 페이지 댓글 모달
-	@GetMapping("/fetchComments")
-	@ResponseBody
-	public List<ShopReviewEntity> fetchComments(@RequestParam("userUNo") Long userUNo) {
-		return shopReviewRepository.findByUserUNo(userUNo);
-	}
-
-	// 어드민 페이지 댓글 모달 삭제
-	@DeleteMapping("/deleteComment")
-	public ResponseEntity<Void> deleteComment(@RequestParam("shopReviewNo") Long shopReviewNo) {
-		shopService.deleteShopReview(shopReviewNo);
-		return ResponseEntity.ok().build();
-	}
-
 	// 공지사항
 	@GetMapping("/admin/page/adminNotice")
 	public String adminNoticeList(Model model, Pageable pageable) {
@@ -295,24 +240,6 @@ public class AdminPageController {
 	public ResponseEntity<Void> deleteNotice(@RequestParam("noticeNo") Long noticeNo) {
 		adminPageService.deleteNotice(noticeNo);
 		return ResponseEntity.ok().build();
-	}
-
-	// 유저 비활성화
-	@PostMapping("/deactivateUser")
-	public ResponseEntity<String> deactivateUser(@RequestParam("userUNo") Long userUNo) {
-		try {
-			// 사용자 비활성화 서비스 호출
-			boolean isDeactivated = userService.deactivateUser(userUNo);
-
-			if (isDeactivated) {
-				return ResponseEntity.ok("해당 유저는 비활성화 되었습니다.");
-			} else {
-				return ResponseEntity.status(400).body("유저 비활성화에 실패했습니다.");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(500).body("서버 오류로 인해 유저 비활성화에 실패했습니다.");
-		}
 	}
 
 	// 복구 페이지
@@ -354,14 +281,6 @@ public class AdminPageController {
 		return "redirect:/admin/page/adminRecovery";
 	}
 
-	// adminUser에서 임의로 복구
-	@PostMapping("/activateUser")
-	@ResponseBody
-	public String adminRecoveryUser(@RequestParam("userUNo") Long userUNo) {
-		adminPageService.recoveryUser(userUNo);
-
-		return "User activated successfully";
-	}
 
 	// 쿠폰 리스트
 	@GetMapping("/admin/page/adminCouponList")
@@ -380,28 +299,7 @@ public class AdminPageController {
 	public List<CouponEntity> getAllModalCoupons() {
 		return adminPageService.getAllModalCoupons();
 	}
-
-	// 유저한테 쿠폰 발급
-	@PostMapping("/issueCouponToUser")
-	public ResponseEntity<String> issueCouponToUser(@RequestBody CouponDTO request) {
-		UserEntity user = userService.findById(request.getUserNo());
-		CouponEntity coupon = couponService.findCouponNumber(request.getCouponNo());
-		CouponMapEntity couponMapEntity = new CouponMapEntity();
-		Optional<CouponMapEntity> existingCouponMapEntity = couponMap.findByuserEntityAndCouponEntity(user, coupon);
-		if (existingCouponMapEntity.isPresent() && existingCouponMapEntity.get().isUsed()) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("이미 쿠폰이 발급되었습니다.");
-		}
-
-		couponMapEntity.setUserEntity(user);
-		couponMapEntity.setCouponEntity(coupon);
-		couponMapEntity.setUsed(true);
-		couponMapEntity.setUsedDate(null);
-		couponMapEntity.setAssignedDate(LocalDate.now());
-
-		couponMap.save(couponMapEntity);
-
-		return ResponseEntity.ok("쿠폰 발급이 완료되었습니다. 마이페이지의 내 쿠폰함에서 확인해주세요.");
-	}
+	
 
 	// 유저 쿠폰 리스트
 	@GetMapping("/admin/page/adminUserCoupon")

@@ -280,154 +280,160 @@
 				});
 
 				function deactivateUser(userUNo) {
-					fetch('/deactivateUser?userUNo=' + userUNo, {
-						method: 'POST'
-					})
-						.then(response => {
-							if (response.ok) {
-								alert('해당 유저는 비활성화 되었습니다.');
-								location.reload(); // 페이지 새로고침으로 목록 갱신
-							} else {
-								alert('유저 비활성화에 실패했습니다.');
-							}
-						})
-						.catch(error => {
-							console.error('Error deactivating user:', error);
-							alert('유저 비활성화 중 오류가 발생했습니다.');
-						});
+				    fetch('/admin/api/deactivateUser?userUNo=' + userUNo, {
+				        method: 'PATCH',
+				        headers: {
+				            'Content-Type': 'application/json'
+				        }
+				    })
+				    .then(response => response.json())  // JSON 응답을 파싱
+				    .then(result => {
+				        if (result.code === 200) {  // CommonResponse의 상태 코드 확인
+				            alert(result.message || '해당 유저는 비활성화 되었습니다.');
+				            location.reload(); // 페이지 새로고침으로 목록 갱신
+				        } else {
+				            alert(result.message || '유저 비활성화에 실패했습니다.');
+				        }
+				    })
+				    .catch(error => {
+				        console.error('유저 비활성화 중 오류 발생:', error);
+				        alert('유저 비활성화 중 서버 오류가 발생했습니다.');
+				    });
 				}
 
+
 				function activateUser(userUNo) {
-					fetch('/activateUser?userUNo=' + userUNo, {
-						method: 'POST'
-					})
-						.then(response => {
-							if (response.ok) {
-								alert('해당 유저는 활성화 되었습니다.');
-								location.reload();
-							} else {
-								alert('유저 활성화에 실패했습니다.');
-							}
-						})
-						.catch(error => {
-							console.error('Error activating user:', error);
-							alert('유저 활성화 중 오류가 발생했습니다.');
-						});
+				    fetch('/admin/api/activateUser?userUNo=' + userUNo, {
+				        method: 'PATCH',
+				        headers: {
+				            'Content-Type': 'application/json'
+				        }
+				    })
+				    .then(response => response.json())  // JSON 응답을 파싱
+				    .then(result => {
+				        if (result.code === 200) {  // CommonResponse의 상태 코드 확인
+				            alert(result.message || '해당 유저는 성공적으로 활성화되었습니다.');
+				            location.reload(); // 페이지 새로고침으로 목록 갱신
+				        } else {
+				            alert(result.message || '유저 활성화에 실패했습니다.');
+				        }
+				    })
+				    .catch(error => {
+				        console.error('유저 활성화 중 오류 발생:', error);
+				        alert('유저 활성화 중 서버 오류가 발생했습니다.');
+				    });
 				}
+
 
 				// 기존의 게시글 모달 이벤트 처리
 				var postCountElements = document.querySelectorAll(".post-count");
 				postCountElements.forEach(function (element) {
-					element.addEventListener("click", function () {
-						var postCount = parseInt(element.getAttribute("data-post-count"));
-						var userUNo = element.parentElement.getAttribute("data-uno");
+				    element.addEventListener("click", function () {
+				        var postCount = parseInt(element.getAttribute("data-post-count"));
+				        var userUNo = element.parentElement.getAttribute("data-uno");
 
-						if (postCount === 0) {
-							document.getElementById("modalTableBody").innerHTML = '<tr><td colspan="6">아직 게시글을 작성하지 않았습니다</td></tr>';
-							document.getElementById("userModal").style.display = "block";
-						} else {
-							fetch('/fetchPosts?userUNo=' + userUNo)
-								.then(response => {
-									if (!response.ok) {
-										throw new Error('네트워크 응답에 문제가 있습니다.');
-									}
-									return response.text(); // JSON 대신 텍스트로 응답을 받아옵니다.
-								})
-								.then(text => {
-									console.log('서버 응답 텍스트:', text); // 서버에서 받은 응답을 로그에 출력합니다.
+				        if (postCount === 0) {
+				            document.getElementById("modalTableBody").innerHTML = '<tr><td colspan="6">아직 게시글을 작성하지 않았습니다</td></tr>';
+				            document.getElementById("userModal").style.display = "block";
+				        } else {
+				            fetch('/admin/api/getPosts?userUNo=' + userUNo)
+				                .then(response => {
+				                    if (!response.ok) {
+				                        throw new Error('네트워크 응답에 문제가 있습니다.');
+				                    }
+				                    return response.json();  // 응답을 JSON으로 파싱
+				                })
+				                .then(result => {
+				                    console.log('서버 응답 JSON:', result);
 
-									try {
-										const jsonData = JSON.parse(text); // JSON으로 파싱 시도
-										return jsonData;
-									} catch (error) {
-										console.error('JSON 파싱 오류 발생:', error.message);
-										throw error; // 파싱 오류를 발생시켜 이후 처리를 막습니다.
-									}
-								})
-								.then(data => {
-									if (!data || data.length === 0) {
-										document.getElementById("modalTableBody").innerHTML = '<tr><td colspan="6">게시글이 없습니다.</td></tr>';
-									} else {
-										let tableRows = data.map(post => `
-                <tr>
-                    <td>${post.RNo}</td>
-                    <td>${post.RTitle}</td>
-                    <td>${post.RStarRating}</td>
-                    <td>${post.RViews}</td>
-                    <td>${new Date(post.RWrittenTime).toLocaleString()}</td>
-                    <td><button class="delete-post-btn" data-rno="${post.RNo}">삭제</button></td>
-                </tr>
-            `).join('');
-										document.getElementById("modalTableBody").innerHTML = tableRows;
+				                    const data = result.data;  // data 필드에서 실제 데이터를 추출
 
-										// 삭제 버튼에 클릭 이벤트 추가
-										var deleteButtons = document.querySelectorAll(".delete-post-btn");
-										deleteButtons.forEach(function (button) {
-											button.addEventListener("click", function () {
-												var rNo = button.getAttribute("data-rno");
-												deletePost(rNo);
-											});
-										});
-									}
-									document.getElementById("userModal").style.display = "block";
-								})
-								.catch(error => {
-									console.error('게시글을 가져오는 중 오류 발생:', error);
-									document.getElementById("modalTableBody").innerHTML = '<tr><td colspan="6">데이터를 가져오는 중 오류가 발생했습니다.</td></tr>';
-									document.getElementById("userModal").style.display = "block";
-								});
+				                    if (!data || data.length === 0) {
+				                        document.getElementById("modalTableBody").innerHTML = '<tr><td colspan="6">게시글이 없습니다.</td></tr>';
+				                    } else {
+				                        let tableRows = data.map(post => `
+				                            <tr>
+				                                <td>${post.RNo}</td>
+				                                <td>${post.RTitle}</td>
+				                                <td>${post.RStarRating}</td>
+				                                <td>${post.RViews}</td>
+				                                <td>${new Date(post.RWrittenTime).toLocaleString()}</td>
+				                                <td><button class="delete-post-btn" data-rno="${post.RNo}">삭제</button></td>
+				                            </tr>
+				                        `).join('');
+				                        document.getElementById("modalTableBody").innerHTML = tableRows;
 
-						}
-					});
+				                        // 삭제 버튼에 클릭 이벤트 추가
+				                        var deleteButtons = document.querySelectorAll(".delete-post-btn");
+				                        deleteButtons.forEach(function (button) {
+				                            button.addEventListener("click", function () {
+				                                var rNo = button.getAttribute("data-rno");
+				                                deletePost(rNo);
+				                            });
+				                        });
+				                    }
+				                    document.getElementById("userModal").style.display = "block";
+				                })
+				                .catch(error => {
+				                    console.error('게시글을 가져오는 중 오류 발생:', error);
+				                    document.getElementById("modalTableBody").innerHTML = '<tr><td colspan="6">데이터를 가져오는 중 오류가 발생했습니다.</td></tr>';
+				                    document.getElementById("userModal").style.display = "block";
+				                });
+				        }
+				    });
 				});
+
 
 
 
 				var commentCountElements = document.querySelectorAll(".comment-count");
 				commentCountElements.forEach(function (element) {
-					element.addEventListener("click", function () {
-						var commentCount = parseInt(element.getAttribute("data-comment-count"));
-						var userUNo = element.parentElement.getAttribute("data-uno");
+				    element.addEventListener("click", function () {
+				        var commentCount = parseInt(element.getAttribute("data-comment-count"));
+				        var userUNo = element.parentElement.getAttribute("data-uno");
 
-						if (commentCount === 0) {
-							document.getElementById("commentModalTableBody").innerHTML = '<tr><td colspan="4">아직 댓글을 작성하지 않았습니다</td></tr>';
-							document.getElementById("commentModal").style.display = "block";
-						} else {
-							fetch('/fetchComments?userUNo=' + userUNo)
-								.then(response => response.json())
-								.then(data => {
-									if (!data || data.length === 0) {
-										document.getElementById("commentModalTableBody").innerHTML = '<tr><td colspan="4">댓글이 없습니다.</td></tr>';
-									} else {
-										let tableRows = data.map(comment => `
-                                            <tr>
-                                                <td>${comment.shopReviewNo}</td>
-                                                <td>${comment.shopReviewContent}</td>
-                                                <td>${new Date(comment.shopReviewCreated).toLocaleString()}</td>
-                                                <td><button class="delete-comment-btn" data-shopReviewNo="${comment.shopReviewNo}">삭제</button></td>
-                                            </tr>
-                                        `).join('');
-										document.getElementById("commentModalTableBody").innerHTML = tableRows;
+				        if (commentCount === 0) {
+				            document.getElementById("commentModalTableBody").innerHTML = '<tr><td colspan="4">아직 댓글을 작성하지 않았습니다</td></tr>';
+				            document.getElementById("commentModal").style.display = "block";
+				        } else {
+				            fetch('/fetchComments?userUNo=' + userUNo)
+				                .then(response => response.json())  // JSON 응답을 파싱
+				                .then(result => {
+				                    const data = result.data;  // CommonResponse에서 data 부분만 추출
 
-										// 댓글 삭제 버튼에 클릭 이벤트 추가
-										var deleteCommentButtons = document.querySelectorAll(".delete-comment-btn");
-										deleteCommentButtons.forEach(function (button) {
-											button.addEventListener("click", function () {
-												var shopReviewNo = button.getAttribute("data-shopReviewNo");
-												deleteComment(shopReviewNo);
-											});
-										});
-									}
-									document.getElementById("commentModal").style.display = "block";
-								})
-								.catch(error => {
-									console.error('Error fetching comments:', error);
-									document.getElementById("commentModalTableBody").innerHTML = '<tr><td colspan="4">데이터를 가져오는 중 오류가 발생했습니다.</td></tr>';
-									document.getElementById("commentModal").style.display = "block";
-								});
-						}
-					});
+				                    if (!data || data.length === 0) {
+				                        document.getElementById("commentModalTableBody").innerHTML = '<tr><td colspan="4">댓글이 없습니다.</td></tr>';
+				                    } else {
+				                        let tableRows = data.map(comment => `
+				                            <tr>
+				                                <td>${comment.shopReviewNo}</td>
+				                                <td>${comment.shopReviewContent}</td>
+				                                <td>${new Date(comment.shopReviewCreated).toLocaleString()}</td>
+				                                <td><button class="delete-comment-btn" data-shopReviewNo="${comment.shopReviewNo}">삭제</button></td>
+				                            </tr>
+				                        `).join('');
+				                        document.getElementById("commentModalTableBody").innerHTML = tableRows;
+
+				                        // 댓글 삭제 버튼에 클릭 이벤트 추가
+				                        var deleteCommentButtons = document.querySelectorAll(".delete-comment-btn");
+				                        deleteCommentButtons.forEach(function (button) {
+				                            button.addEventListener("click", function () {
+				                                var shopReviewNo = button.getAttribute("data-shopReviewNo");
+				                                deleteComment(shopReviewNo);
+				                            });
+				                        });
+				                    }
+				                    document.getElementById("commentModal").style.display = "block";
+				                })
+				                .catch(error => {
+				                    console.error('댓글을 불러오는 중 오류 발생:', error);
+				                    document.getElementById("commentModalTableBody").innerHTML = '<tr><td colspan="4">데이터를 가져오는 중 오류가 발생했습니다.</td></tr>';
+				                    document.getElementById("commentModal").style.display = "block";
+				                });
+				        }
+				    });
 				});
+
 
 				// 쿠폰 발급 모달 처리
 				issueCouponButtons.forEach(function (button) {
@@ -446,33 +452,32 @@
 				});
 
 				function issueCoupon(userNo, couponNo) {
-					fetch('/issueCouponToUser', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify({
-							userNo: userNo,
-							couponNo: couponNo
-						})
-					})
-						.then(response => {
-							return response.text().then(text => {
-								if (!response.ok) {
-									throw new Error(text);  // 오류가 있으면 예외 발생
-								}
-								return text;  // 성공적인 경우 텍스트 반환
-							});
-						})
-						.then(message => {
-							alert(message);
-							couponModal.style.display = "none";  // 쿠폰 모달 닫기
-						})
-						.catch(error => {
-							console.error('Error issuing coupon:', error);
-							alert('쿠폰 발급 중 오류가 발생했습니다: ' + error.message);
-						});
+				    fetch('/admin/api/issueCouponToUser', {
+				        method: 'POST',
+				        headers: {
+				            'Content-Type': 'application/json'
+				        },
+				        body: JSON.stringify({
+				            userNo: userNo,
+				            couponNo: couponNo
+				        })
+				    })
+				    .then(response => response.json())  // JSON 응답을 파싱
+				    .then(result => {
+				        if (result.code === 200) {  // CommonResponse의 상태 코드 확인
+				            alert(result.message || '쿠폰 발급이 완료되었습니다.');
+				            couponModal.style.display = "none";  // 쿠폰 모달 닫기
+				        } else {
+				            alert(result.message || '쿠폰 발급에 실패했습니다.');
+				        }
+				    })
+				    .catch(error => {
+				        console.error('쿠폰 발급 중 오류 발생:', error);
+				        alert('쿠폰 발급 중 서버 오류가 발생했습니다.');
+				    });
 				}
+
+
 
 				function fetchCoupons() {
 					fetch('/getCoupons')  // 서버에서 쿠폰 리스트를 가져오는 엔드포인트
@@ -504,47 +509,56 @@
 						});
 				}
 
-				// 게시글 삭제 요청 함수 추가
 				function deletePost(rNo) {
-					if (confirm("정말 이 게시글을 삭제하시겠습니까?")) {
-						fetch('/deletePost?rNo=' + rNo, {
-							method: 'DELETE'
-						})
-							.then(response => {
-								if (response.ok) {
-									alert('게시글이 삭제되었습니다.');
-									location.reload(); // 페이지 새로고침으로 목록 갱신
-								} else {
-									alert('게시글 삭제에 실패했습니다.');
-								}
-							})
-							.catch(error => {
-								console.error('Error deleting post:', error);
-								alert('게시글 삭제 중 오류가 발생했습니다.');
-							});
-					}
+				    if (confirm("정말 이 게시글을 삭제하시겠습니까?")) {
+				        fetch('/admin/api/deletePost?rNo=' + rNo, {  // 올바른 경로로 수정
+				            method: 'DELETE',
+				            headers: {
+				                'Content-Type': 'application/json'
+				            }
+				        })
+				        .then(response => response.json())  // JSON 응답을 파싱
+				        .then(result => {
+				            if (result.code === 200) {  // CommonResponse의 상태 코드 확인
+				                alert(result.message || '게시글이 삭제되었습니다.');
+				                location.reload(); // 페이지 새로고침으로 목록 갱신
+				            } else {
+				                alert(result.message || '게시글 삭제에 실패했습니다.');
+				            }
+				        })
+				        .catch(error => {
+				            console.error('게시글 삭제 중 오류 발생:', error);
+				            alert('게시글 삭제 중 서버 오류가 발생했습니다.');
+				        });
+				    }
 				}
+
 
 				// 댓글 삭제 요청 함수 추가
 				function deleteComment(shopReviewNo) {
-					if (confirm("정말 이 댓글을 삭제하시겠습니까?")) {
-						fetch('/deleteComment?shopReviewNo=' + shopReviewNo, {
-							method: 'DELETE'
-						})
-							.then(response => {
-								if (response.ok) {
-									alert('댓글이 삭제되었습니다.');
-									location.reload(); // 페이지 새로고침으로 목록 갱신
-								} else {
-									alert('댓글 삭제에 실패했습니다.');
-								}
-							})
-							.catch(error => {
-								console.error('Error deleting comment:', error);
-								alert('댓글 삭제 중 오류가 발생했습니다.');
-							});
-					}
+				    if (confirm("정말 이 댓글을 삭제하시겠습니까?")) {
+				        fetch('/admin/api/deleteShopComment?shopReviewNo=' + shopReviewNo, {
+				            method: 'DELETE',
+				            headers: {
+				                'Content-Type': 'application/json'
+				            }
+				        })
+				        .then(response => response.json())  // JSON 응답을 파싱
+				        .then(result => {
+				            if (result.code === 200) {  // CommonResponse의 상태 코드 확인
+				                alert(result.message || '댓글이 성공적으로 삭제되었습니다.');
+				                location.reload(); // 페이지 새로고침으로 목록 갱신
+				            } else {
+				                alert(result.message || '댓글 삭제에 실패했습니다.');
+				            }
+				        })
+				        .catch(error => {
+				            console.error('댓글 삭제 중 오류 발생:', error);
+				            alert('댓글 삭제 중 서버 오류가 발생했습니다.');
+				        });
+				    }
 				}
+
 
 				// 모달 닫기 버튼 핸들링
 				var closeButtons = document.querySelectorAll(".modal .close");

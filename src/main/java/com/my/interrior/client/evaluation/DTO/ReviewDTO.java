@@ -1,4 +1,4 @@
-package com.my.interrior.client.evaluation;
+package com.my.interrior.client.evaluation.DTO;
 
 
 import java.time.LocalDateTime;

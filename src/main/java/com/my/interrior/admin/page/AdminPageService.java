@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -499,4 +500,23 @@ public class AdminPageService {
 		}
 		return false;
 	}
+	//리뷰 아이디 있나 확인하기
+	public boolean existsReviewById(Long reviewNo) {
+        return reviewRepository.existsById(reviewNo);
+    }
+	
+	//유저페이지 게시글 모달 
+	// 사용자 번호에 따른 리뷰 조회
+	public List<ReviewEntity> getPostsByUser(Long userUNo) {
+        if (userUNo == null || userUNo <= 0) {
+            throw new IllegalArgumentException("유효하지 않은 사용자 번호입니다.");
+        }
+
+        List<ReviewEntity> reviews = reviewRepository.findByUserUNo(userUNo);
+        if (reviews.isEmpty()) {
+            throw new NoSuchElementException("해당 사용자의 게시물이 존재하지 않습니다.");
+        }
+
+        return reviews;
+    }
 }

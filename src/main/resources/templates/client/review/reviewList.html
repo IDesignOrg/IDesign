@@ -118,13 +118,15 @@
 		    console.log("currentReviewId:", currentReviewId);
 
 		    $.ajax({
-		        url: `/review/${currentReviewId}`,
+		        url: `/api/review/comment`,
 		        type: "POST",
-		        contentType: "application/x-www-form-urlencoded",  // URL 인코딩 방식
-		        data: {
-		            comment: commentText  // 서버가 기대하는 'comment' 파라미터로 전송
-		        },
-				success: function(newComment) {
+		        contentType: "application/json", 
+		        data: JSON.stringify({
+					reviewId: currentReviewId,
+		            comment: commentText  
+		        }),
+				success: function(response) {
+					const newComment = response.data;
 				    // 서버에서 받은 데이터를 콘솔에 출력하여 확인
 				    console.log("서버 응답 데이터:", newComment);
 
@@ -148,9 +150,11 @@
 				    document.getElementById("commentInput").value = "";
 				}
 ,
-		        error: function(jqXHR, textStatus, errorThrown) {
-		            alert("Error: " + errorThrown);
+		        error: function(xhr, status, error) {
+		            alert("Error: " + xhr);
+					console.log("xhr" + xhr)
 		        }
+				
 		    });
 		}
 
