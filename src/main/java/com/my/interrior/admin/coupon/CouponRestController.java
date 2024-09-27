@@ -4,30 +4,31 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.Collection;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.my.interrior.admin.page.CouponDTO;
 import com.my.interrior.client.event.coupon.CouponEntity;
 import com.my.interrior.client.event.coupon.CouponMapEntity;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Coupon", description = "Coupon API")
+@RequestMapping("/api")
 public class CouponRestController {
 
 	private final CouponService couponService;
@@ -36,7 +37,8 @@ public class CouponRestController {
 	private final UserRepository userRepository;
 
 	// 나중에 couponLimit으로 사용했는지 안했는지 파악하자.(아마 결제에서)
-	@PostMapping("/get/coupon/{couponNo}")
+	@PostMapping("/coupon/{couponNo}")
+	@Operation(summary = "쿠폰 발급", description = "쿠폰을 발급받았는지 확인 후 저장")
 	public ResponseEntity<String> getCoupon(@PathVariable("couponNo") Long couponNo, HttpSession session) {
 		// 세션에서 사용자 ID를 가져오기
 		String userId = (String) session.getAttribute("UId");
@@ -76,7 +78,8 @@ public class CouponRestController {
 		}
 	}
 
-	@GetMapping("/my/coupons")
+	@GetMapping("/coupons")
+	@Operation(summary = "쿠폰 로드", description = "사용했는지 확인 후 로드")
 	public ResponseEntity<List<CouponEntity>> showMyCoupons(HttpSession session) {
 		String userId = (String) session.getAttribute("UId");
 
@@ -93,7 +96,8 @@ public class CouponRestController {
 	}
 
 	@Transactional
-	@PatchMapping("/coupon/clear")
+	@PatchMapping("/coupon")
+	@Operation(summary = "쿠폰 처리", description = "사용 된 쿠폰은 처리, 사용 된 날짜를 기준.")
 	public ResponseEntity<?> patchCoupon(@RequestParam(value = "couponNo", required = false) Long couponNo) {
 		if (couponNo == null) {
 			return ResponseEntity.ok("success");
