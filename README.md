@@ -26,7 +26,7 @@
 
 > 24.06.29 ~ 24.09.21 (11주)
 >
-> 3D 1명, 백엔드 2명
+> 3D 기능 개발 1명, 백엔드 2명
 >
 > [IDesign Swagger API 확인하러 가기](https://idesign.r-e.kr/swagger-ui/index.html)
 
@@ -48,7 +48,7 @@
             </td>
             <td align="center" style = "border: 1px solid black;">
                 <a target="_blank" rel="noopener noreferrer" href="https://example.com">
-                    <img src="https://example.com/yjh-image.png" alt="윤재환" style="max-width: 50%;"/>
+                    <img src="https://github.com/user-attachments/assets/5a2486ac-9b4f-4793-b93f-79699d61c278" alt="윤재환" style="max-width: 50%;"/>
                 </a>
             </td>
             <td align="center" style = "border: 1px solid black;">
@@ -102,14 +102,16 @@
             </td>
         </tr>
         <tr>
-            <td align = "center" style = "border: 1px solid black;">
+            <td align = "left" style = "border: 1px solid black; padding-left:10px; font-size:14px">
                 -
             </td>
-            <td align = "center" style = "border: 1px solid black;">
+            <td align = "left" style = "border: 1px solid black; padding-left:10px; font-size:14px">
                 -
             </td>
-            <td align = "center" style = "border: 1px solid black;">
-                -
+            <td align = "left" style = "border: 1px solid black; padding-left:10px; font-size:14px">
+                <div>- 3D 기능개발</div>
+                <div>- 대쉬보드 페이지 개발</div>
+                <div>- 배포 및 CICD</div>
             </td>
         </tr>
     </tbody>
@@ -130,8 +132,8 @@
     gradlew build
     ```
 
-
 ## Deployment
+
 - EC2 Instance를 이용합니다.
 - Docker Container와 GitActions를 이용해 무중단 배포(blue-green)를 사용합니다.
 
