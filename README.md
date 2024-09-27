@@ -41,6 +41,9 @@
             <th> Backend 윤재환 </th>
             <th> Frontend 이준희 </th>
         </tr>
+        <tr>
+            <img src = "https://github.com/user-attachments/assets/829537ed-bce3-4bb1-bf06-c99e5d5a86e4>" alt = "한민욱" style= "max-width: 100%;"/>
+        </tr>
     </tbody>
 
 </table>
