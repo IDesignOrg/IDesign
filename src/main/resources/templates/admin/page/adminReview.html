@@ -116,68 +116,72 @@
 					commentModal.style.display = "none";
 				}
 			};
-
+			
 			function fetchRComments(rNo) {
-				fetch(`/fetchRComments?reviewNo=${rNo}`)
-					.then(response => response.json())
-					.then(data => {
-						var commentTableBody = document.getElementById("commentTableBody");
-						commentTableBody.innerHTML = "";
+			    fetch(`/admin/api/getRComments?reviewNo=${rNo}`)
+			        .then(response => response.json())
+			        .then(result => {
+			            // CommonResponse의 data 필드에 실제 댓글 데이터가 존재
+			            var comments = result.data;
+			            var commentTableBody = document.getElementById("commentTableBody");
+			            commentTableBody.innerHTML = "";
 
-						if (data.length === 0) {
-							commentTableBody.innerHTML = '<tr><td colspan="5">댓글이 없습니다.</td></tr>';
-						} else {
-							data.forEach(comment => {
-								console.log(comment);  // 여기서 comment 객체의 구조를 확인
+			            if (comments.length === 0) {
+			                commentTableBody.innerHTML = '<tr><td colspan="5">댓글이 없습니다.</td></tr>';
+			            } else {
+			                comments.forEach(comment => {
+			                    var row = `
+			                        <tr>
+			                            <td>${comment.rcommentNo}</td>
+			                            <td>${comment.userName}</td> 
+			                            <td>${comment.rcomment}</td>
+			                            <td>${new Date(comment.rcommentCreated).toLocaleString()}</td>
+			                            <td><button class="delete-comment-btn" data-rcommentno="${comment.rCommentNo}">삭제</button></td>
+			                        </tr>
+			                    `;
+			                    commentTableBody.innerHTML += row;
+			                });
 
-								var row = `
-                        <tr>
-                            <td>${comment.rcommentNo}</td>
-                            <td>${comment.userName}</td> <!-- 여기서 오류 발생 -->
-                            <td>${comment.rcomment}</td>
-                            <td>${new Date(comment.rcommentCreated).toLocaleString()}</td>
-                            <td><button class="delete-comment-btn" data-rcommentno="${comment.rCommentNo}">삭제</button></td>
-                        </tr>
-                    `;
-								commentTableBody.innerHTML += row;
-							});
-
-							// 댓글 삭제 버튼 이벤트 리스너 추가
-							var deleteCommentButtons = document.querySelectorAll(".delete-comment-btn");
-							deleteCommentButtons.forEach(function (button) {
-								button.addEventListener("click", function () {
-									var rCommentNo = button.getAttribute("data-rcommentno");
-									deleteComment(rCommentNo);
-								});
-							});
-						}
-						commentModal.style.display = "block";
-					})
-					.catch(error => {
-						console.error('댓글을 불러오는 중 오류 발생:', error);
-					});
+			                // 댓글 삭제 버튼 이벤트 리스너 추가
+			                var deleteCommentButtons = document.querySelectorAll(".delete-comment-btn");
+			                deleteCommentButtons.forEach(function (button) {
+			                    button.addEventListener("click", function () {
+			                        var rCommentNo = button.getAttribute("data-rcommentno");
+			                        deleteComment(rCommentNo);
+			                    });
+			                });
+			            }
+			            commentModal.style.display = "block";
+			        })
+			        .catch(error => {
+			            console.error('댓글을 불러오는 중 오류 발생:', error);
+			        });
 			}
-
-
 
 			function deleteReview(rNo) {
-				if (confirm("정말 이 리뷰를 삭제하시겠습니까?")) {
-					fetch(`/deleteReview?rNo=${rNo}`, {
-						method: 'DELETE'
-					})
-						.then(response => {
-							if (response.ok) {
-								alert('리뷰가 삭제되었습니다.');
-								location.reload();
-							} else {
-								alert('리뷰 삭제에 실패했습니다.');
-							}
-						})
-						.catch(error => {
-							console.error('리뷰 삭제 중 오류 발생:', error);
-						});
-				}
+			    if (confirm("정말 이 리뷰를 삭제하시겠습니까?")) {
+			        fetch(`/admin/api/deleteReview?rNo=${rNo}`, {
+			            method: 'DELETE',
+			            headers: {
+			                'Content-Type': 'application/json'
+			            }
+			        })
+			        .then(response => response.json())  // JSON 응답을 파싱
+			        .then(result => {
+			            if (result.code === 200) {  // CommonResponse의 상태 코드 확인
+			                alert(result.message || '리뷰가 삭제되었습니다.');
+			                location.reload();
+			            } else {
+			                alert(result.message || '리뷰 삭제에 실패했습니다.');
+			            }
+			        })
+			        .catch(error => {
+			            console.error('리뷰 삭제 중 오류 발생:', error);
+			            alert('서버 오류로 인해 리뷰 삭제에 실패했습니다.');
+			        });
+			    }
 			}
+
 
 			function deleteComment(rCommentNo) {
 				if (confirm("정말 이 댓글을 삭제하시겠습니까?")) {

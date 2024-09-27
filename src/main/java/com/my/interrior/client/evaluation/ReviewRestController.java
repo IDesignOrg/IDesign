@@ -36,7 +36,8 @@ public class ReviewRestController {
 
 	// 리뷰 댓글 쓰기
 	@PostMapping("/review/comment")
-	public ResponseEntity<CommonResponse<ReviewCommentDTO>> addComment(@RequestBody ReviewCommentRequest request,
+	public ResponseEntity<CommonResponse<ReviewCommentDTO>> addComment(
+			@RequestBody ReviewCommentRequest request,
 			HttpSession session) {
 
 		// 세션에서 userId를 가져옴
