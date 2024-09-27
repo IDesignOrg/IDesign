@@ -9,21 +9,24 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Tag(name = "Cart")
+@Tag(name = "Cart", description = "Cart API")
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/api")
 public class CartRestController {
 	
 	private final CartService cartService;
@@ -32,7 +35,8 @@ public class CartRestController {
 	private final CartOptionRepository cartOptionRepository;
 
 	
-	@PostMapping("/auth/cart")
+	@PostMapping("/cart")
+	@Operation(summary = "장바구니 담기")
     public ResponseEntity<String> goCart(
     		@RequestParam("shopNo") Long shopNo,
     		@RequestParam("options") List<Long> optionValueIds,
@@ -54,7 +58,8 @@ public class CartRestController {
     }
 	
 	@Transactional
-	@DeleteMapping("/delete/all/cart")
+	@DeleteMapping("/all/cart")
+	@Operation(summary = "장바구니 삭제", description = "결제 시 장바구니에 담긴 모든 상품 삭제")
 	public ResponseEntity<?> deleteAll(HttpSession session){
 		
 		String userId = (String) session.getAttribute("UId");
@@ -84,7 +89,8 @@ public class CartRestController {
 	
 
 	@Transactional
-	@DeleteMapping("/delete/cart")
+	@DeleteMapping("/cart")
+	@Operation(summary = "장바구니 상품 삭제", description = "장바구니에 담긴 상품 삭제")
 	public ResponseEntity<?> deleteCart(@RequestParam(value = "CNo", required = false) Long CNo){
 		
 		//delete from cart_option where c_no = (select c_no from cart where c_no = :CNo);

@@ -25,6 +25,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "3D", description = "2D, 3D Design API")
 public class ThreeRestController {
 
 	private final ThreeService threeService;
@@ -39,7 +43,10 @@ public class ThreeRestController {
 	private final ThreeRepository threeRepository;
 
 	@PostMapping("/save/project")
-	public ResponseEntity<String> saveProject(@RequestPart("jsonData") SaveProjectRequest request,
+	@Operation(summary = "프로젝트 저장", description = "사용자가 만든 3D 프로젝트 저장")
+	public ResponseEntity<String> saveProject(
+			@Parameter(name = "request", description = "point는 단일 객체 또는 배열로 전달받음.")
+			@RequestPart("jsonData") SaveProjectRequest request,
 			@RequestPart("file") MultipartFile thumbnail, HttpSession session) throws IOException {
 		String userId = (String) session.getAttribute("UId");
 
@@ -53,7 +60,10 @@ public class ThreeRestController {
 	}
 
 	@DeleteMapping("/api/remove/projects")
-	public ResponseEntity<?> removeProjects(@RequestParam("project_ids") List<String> projectIds) throws IOException {
+	@Operation(summary = "프로젝트 삭제", description = "1개 이상의 프로젝트 삭제")
+	public ResponseEntity<?> removeProjects(
+			@Parameter(name = "projectIds", description = "배열로 받음")
+			@RequestParam("project_ids") List<String> projectIds) throws IOException {
 		System.out.println("projectIds: " + projectIds);
 
 		// point -> data -> three 순서로 삭제
@@ -63,7 +73,10 @@ public class ThreeRestController {
 	}
 
 	@GetMapping("/api/get/project_nodes")
-	public ResponseEntity<SaveProjectRequest> getProjectNodes(@RequestParam("project_id") String projectId)
+	@Operation(summary = "프로젝트 불러오기", description = "저장했던 노드들 가져오기.")
+	public ResponseEntity<SaveProjectRequest> getProjectNodes(
+			@Parameter(name = "projectId", description = "Id는 randomUUID(16자리)")
+			@RequestParam("project_id") String projectId)
 			throws IOException {
 		Optional<ThreeEntity> three = threeRepository.findById(projectId);
 
@@ -84,7 +97,9 @@ public class ThreeRestController {
 	// dashboard에서 프로젝트 생성 클릭
 	@Transactional
 	@PostMapping("/api/create_project")
-	public ResponseEntity<?> createProject(@RequestBody CreateProjectRequest createProjectRequest, HttpSession session)
+	@Operation(summary = "프로젝트 만들기")
+	public ResponseEntity<?> createProject(
+			@RequestBody CreateProjectRequest createProjectRequest, HttpSession session)
 			throws IOException {
 		// UUID 생성 후 하이푼 제거
 		String uuid = UUID.randomUUID().toString().replaceAll("-", "");
@@ -123,6 +138,7 @@ public class ThreeRestController {
 	// response : status : success, fail || response: 200, errorcode || data:
 	// {projects:[], flag_num : 0 => 0~11, 1=> 12 ~23}
 	@GetMapping("/api/get/projects")
+	@Operation(summary = "3D 대시보드에 프로젝트 불러오기", description = "데이터베이스에 저장되어있는 프로젝트 불러오기")
 	public ResponseEntity<GetProjectsResponse> getProjects(@ModelAttribute("params") GetProjectsRequest request,
 			HttpSession session) {
 		String userId = (String) session.getAttribute("UId");

@@ -27,7 +27,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Tag(name = "Payment")
+@Tag(name = "Payment", description = "Payment API")
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -41,7 +41,6 @@ public class PaymentRestController {
 	private final PaymentAndUserRepository paymentAndUserRepository;
 	private final PaymentAndUserService PaymentAndUserService;
 	// 결제 사전 검증
-	@DefaultApiResponse
 	@Operation(summary = "결제 사전 검증", description = "스크립트 공격 사전 방지")
 	@PostMapping("/payment/prepare")
 	public ResponseEntity<?> preparePayment(
@@ -66,7 +65,6 @@ public class PaymentRestController {
 	}
 
 	// 결제 정보 저장
-	@DefaultApiResponse
 	@Operation(summary = "결제 정보 저장")
 	@PostMapping("/save/payment")
 	public ResponseEntity<PayEntity> savePayment(
@@ -96,7 +94,6 @@ public class PaymentRestController {
 	}
 
 	// 환불
-	@DefaultApiResponse
 	@Operation(summary = "환불 정보 저장")
 	@PostMapping("/refund/payment")
 	public ResponseEntity<?> refundPayment(
@@ -120,7 +117,6 @@ public class PaymentRestController {
 		paymentService.deleteByMerchantUId(merchantUId);
 		return ResponseEntity.ok().build();
 	}
-	@DefaultApiResponse
 	@Operation(summary = "배송 정보 저장")
 	@PostMapping("/save/shipment")
 	public ResponseEntity<ShipmentEntity> saveShipment(
@@ -136,7 +132,6 @@ public class PaymentRestController {
 	}
 
 	// 부득이하게 URL 쿼리 문자열이 너무 길어져서 Post를 사용함.
-	@DefaultApiResponse
 	@Operation(summary = "주문 정보 확인", description = "쿼리 스트링이 너무 길어져서 POST 사용")
 	@PostMapping("/payment/info")
 	public ResponseEntity<?> goToPaymentInfo(
