@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
+import com.my.interrior.client.evaluation.DTO.ReviewCommentDTO;
 import com.my.interrior.client.gcs.GCSFileDeleter;
 import com.my.interrior.client.shop.ShopEntity;
 import com.my.interrior.client.user.UserEntity;
