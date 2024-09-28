@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.my.interrior.client.evaluation.DTO.ReviewCommentDTO;
+import com.my.interrior.client.evaluation.DTO.ReviewDTO;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
 
@@ -38,12 +40,6 @@ public class ReviewController {
 
 	@Autowired
 	private ReviewService reviewService;
-
-	@Autowired
-	private ReviewRepository reviewRepository;
-
-	@Autowired
-	private UserRepository userRepository;
 
 	// 후기 작성 만들기
 	@GetMapping("/review_write")
@@ -65,6 +61,7 @@ public class ReviewController {
 		return "redirect:/auth/evaluation";
 	}
 
+
 	// 후기 페이지
 	@GetMapping("/auth/evaluation")
 	public String allReviews(Model model, Pageable pageable) {
@@ -83,7 +80,16 @@ public class ReviewController {
 	// 후기 상세페이지 및 댓글 포함 데이터 반환
 	@GetMapping("/auth/evaluation/{rNo}")
 	@ResponseBody
-	public ResponseEntity<ReviewDTO> getReviewDetail(@PathVariable("rNo") Long rNo) {
+	public ResponseEntity<ReviewDTO> getReviewDetail(@PathVariable("rNo") Long rNo,  HttpSession session) {
+		String pageKey = "viewedShop_" + rNo;
+        LocalDateTime lastViewedTime = (LocalDateTime) session.getAttribute(pageKey);
+
+        if (lastViewedTime == null || lastViewedTime.isBefore(LocalDateTime.now().minusHours(1))) {
+            reviewService.increaseViewCount(rNo);
+
+            // 현재 시간을 세션에 저장
+            session.setAttribute(pageKey, LocalDateTime.now());
+        }
 		// 리뷰와 리뷰 사진 데이터를 가져옵니다.
 		Optional<ReviewEntity> review = reviewService.getReviewById(rNo);
 		if (!review.isPresent()) {
@@ -105,24 +111,6 @@ public class ReviewController {
 				review.get().getRWrittenTime(), review.get().getUser().getUId(), reviewPhotos, comments);
 
 		return ResponseEntity.ok(response); // JSON 데이터 반환
-	}
-
-	// 리뷰 댓글 쓰기
-	@PostMapping("/review/{reviewId}")
-	public ResponseEntity<ReviewCommentDTO> addComment(@PathVariable("reviewId") Long reviewId,
-	        @RequestParam("comment") String comment, HttpSession session) {
-
-	    // 세션에서 userId를 가져옴
-	    String userId = (String) session.getAttribute("UId");
-	    if (userId == null) {
-	        return ResponseEntity.status(401).build(); // 로그인되지 않은 경우
-	    }
-
-	    // 서비스에서 댓글을 추가하고 DTO를 반환받음
-	    ReviewCommentDTO commentDTO = reviewService.addComment(reviewId, userId, comment);
-
-	    // 클라이언트에 DTO 반환
-	    return ResponseEntity.ok(commentDTO);
 	}
 
 	// 리뷰 삭제

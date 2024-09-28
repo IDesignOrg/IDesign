@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
+import com.my.interrior.client.evaluation.DTO.ReviewCommentDTO;
 import com.my.interrior.client.gcs.GCSFileDeleter;
 import com.my.interrior.client.shop.ShopEntity;
 import com.my.interrior.client.user.UserEntity;
@@ -255,9 +257,18 @@ public class ReviewService {
 		}
 
 	}
-
+	@Transactional
 	public void deleteReview(Long rNo) {
+		if (rNo == null || rNo <= 0) {
+            throw new IllegalArgumentException("유효하지 않은 리뷰 번호입니다.");
+        }
+
+        // 리뷰가 존재하는지 확인 후 삭제
+        if (!reviewRepository.existsById(rNo)) {
+            throw new NoSuchElementException("해당 리뷰가 존재하지 않습니다.");
+        }
 		ReviewEntity reviewEntity = reviewRepository.findById(rNo).orElse(null);
+		
 
 		String deleteGCSFileName = reviewEntity.getRMainPhoto();
 		gcsFileDeleter.deleteFile(deleteGCSFileName);
@@ -266,7 +277,7 @@ public class ReviewService {
 			gcsFileDeleter.deleteFile(photo.getRpPhoto());
 		}
 		reviewPhotoRepository.deleteByReviewRNo(rNo);
-
+		reviewCommentRepository.deleteByReviewEntityRNo(rNo);
 		reviewRepository.deleteById(rNo);
 	}
 
