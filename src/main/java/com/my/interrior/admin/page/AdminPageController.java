@@ -83,37 +83,9 @@ public class AdminPageController {
 	private PasswordEncoder passwordEncoder;
 
 	@Autowired
-	private ReviewRepository reviewRepository;
-
-	@Autowired
 	private OrderedRepository orderedRepository;
 
-	@Autowired
-	private ReviewService reviewService;
 
-	@Autowired
-	private ShopReviewRepository shopReviewRepository;
-
-	@Autowired
-	private ShopService shopService;
-
-	@Autowired
-	private CouponService couponService;
-
-	@Autowired
-	private CouponMapRepository couponMap;
-
-	@Autowired
-	private PaymentService paymentService;
-
-	@Autowired
-	private OrderedService orderedService;
-
-	@Autowired
-	private PaymentAndUserService PaymentAndUserService;
-
-	@Autowired
-	private OrderedRefundRepository orderedRefundRepository;
 
 	@GetMapping("/auth/adminLogin")
 	public String AdminLogin() {
@@ -341,29 +313,6 @@ public class AdminPageController {
 		return "admin/page/adminShopList";
 	}
 
-	// ordered 모달창
-	
-	@GetMapping("/fetchOrderDetails")
-	@ResponseBody
-	public List<Map<String, Object>> fetchOrderDetails(@RequestParam("shopNo") Long shopNo) {
-		List<OrderedEntity> orders = orderedRepository.findByShopNo(shopNo);
-
-		List<Map<String, Object>> orderDetailsList = new ArrayList<>();
-		for (OrderedEntity order : orders) {
-			Map<String, Object> orderDetails = new HashMap<>();
-			orderDetails.put("orderedNo", order.getOrderedNo());
-			orderDetails.put("orderedNumber", order.getOrderedNumber());
-			orderDetails.put("orderedState", order.getOrderedState());
-			orderDetails.put("shipmentState", order.getShipmentState());
-			orderDetails.put("orderedDate", order.getOrderedDate());
-			orderDetails.put("userName", order.getUserEntity().getUName()); // userEntity의 UName을 직접 추가
-			orderDetails.put("quantity", order.getQuantity());
-			orderDetailsList.add(orderDetails);
-		}
-
-		return orderDetailsList;
-	}
-
 	// 주문관리 페이지
 	@GetMapping("/admin/page/adminOrdered")
 	public String adminOrderedList(Model model, Pageable pageable) {
@@ -415,42 +364,6 @@ public class AdminPageController {
 		return "admin/page/adminFAQ";
 	}
 
-	// 자주 묻는 질문 수정 모달창
-	@GetMapping("/admin/faq/{faqNo}")
-	@ResponseBody
-	public ResponseEntity<FaqEntity> getFaq(@PathVariable("faqNo") Long faqNo) {
-		System.out.println("Fetching FAQ with ID: " + faqNo);
-		FaqEntity faq = adminPageService.getFaqById(faqNo);
-		if (faq != null) {
-			return ResponseEntity.ok(faq);
-		} else {
-			System.out.println("FAQ not found with ID: " + faqNo);
-			return ResponseEntity.notFound().build();
-		}
-	}
-
-	// 자주 묻는 질문 수정
-	@PutMapping("/admin/faq/{faqNo}")
-	@ResponseBody
-	public ResponseEntity<String> updateFaq(@PathVariable("faqNo") Long faqNo, @RequestBody FaqEntity faqData) {
-		boolean updated = adminPageService.updateFaq(faqNo, faqData);
-		if (updated) {
-			return ResponseEntity.ok("FAQ가 성공적으로 수정되었습니다.");
-		} else {
-			return ResponseEntity.badRequest().body("FAQ 수정에 실패했습니다.");
-		}
-	}
-
-	@DeleteMapping("/admin/faq/{faqNo}")
-	@ResponseBody
-	public ResponseEntity<String> deleteFaq(@PathVariable("faqNo") Long faqNo) {
-		boolean deleted = adminPageService.deleteFaq(faqNo);
-		if (deleted) {
-			return ResponseEntity.ok("FAQ가 성공적으로 삭제되었습니다.");
-		} else {
-			return ResponseEntity.badRequest().body("FAQ 삭제에 실패했습니다.");
-		}
-	}
 	//문의사항
 	@GetMapping("/admin/inquiry")
     public String getInquiryList(Model model, Pageable pageable) {
