@@ -45,6 +45,11 @@ jobs:
           echo "Files in src/main/resources/:"
           ls src/main/resources/
 
+      - name: "build three files"
+        run: |
+          cd src/main/resources
+          npm run build
+
       - name: Build with Gradle
         run: ./gradlew clean build
 
