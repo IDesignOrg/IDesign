@@ -100,29 +100,39 @@ jobs:
               sudo cp ./nginx/nginx.blue.conf /etc/nginx/nginx.conf
               sudo nginx -s reload
 
+
             elif [ -n "$EXIST_BLUE" ]; then
+              # Green 환경으로 전환
+              # 새로운 컨테이너를 배경에서 실행 (정지하지 않고)
+              sudo docker-compose -f ./dockercompose/docker-compose.green.yml up -d --no-recreate
+
+              # Healthcheck 새로운 컨테이너가 준비됐는지 확인
+              while ! curl -s http://localhost:8082/healthcheck; do
+                echo "Waiting for green container to be ready..."
+                sleep 5
+              done
+
+              # 기존 Blue 컨테이너 종료
               sudo docker stop idesign_blue
               sudo docker remove idesign_blue
-              # if [ "$(docker images -q $IMAGE_NAME 2> /dev/null)" ]; then
-              #   docker rmi $IMAGE_NAME
-              # fi
-              sudo docker-compose -f ./dockercompose/docker-compose.green.yml pull
-              sudo docker-compose -f ./dockercompose/docker-compose.green.yml up -d 
 
               sudo cp ./nginx/nginx.green.conf /etc/nginx/nginx.conf
-
               sudo nginx -s reload
 
             elif [ -n "$EXIST_GREEN" ]; then
+              # Blue 환경으로 전환
+              # 새로운 컨테이너를 배경에서 실행 (정지하지 않고)
+              sudo docker-compose -f ./dockercompose/docker-compose.blue.yml up -d --no-recreate
+
+              while ! curl -s http://localhost:8081/healthcheck; do
+                echo "Waiting for blue container to be ready..."
+                sleep 5
+              done
+
+              # 기존 Green 컨테이너 종료
               sudo docker stop idesign_green
               sudo docker remove idesign_green
-              # if [ "$(docker images -q $IMAGE_NAME 2> /dev/null)" ]; then
-              #   docker rmi $IMAGE_NAME
-              # fi
-              sudo docker-compose -f ./dockercompose/docker-compose.blue.yml pull
-              sudo docker-compose -f ./dockercompose/docker-compose.blue.yml up -d 
 
               sudo cp ./nginx/nginx.blue.conf /etc/nginx/nginx.conf
-
               sudo nginx -s reload
             fi
