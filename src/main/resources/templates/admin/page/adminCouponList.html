@@ -67,47 +67,53 @@
 
 		<!-- JavaScript 모달 제어 및 데이터 로드 -->
 		<script>
-			
-				// 활성화 버튼 이벤트 추가
+			// 활성화 버튼 이벤트 추가
+			document.addEventListener("DOMContentLoaded", function () {
 				const activateButtons = document.querySelectorAll(".activate-btn");
 				activateButtons.forEach(function (button) {
 					button.addEventListener("click", function () {
 						var couponNo = button.getAttribute("data-couponno");
 						if (confirm("해당 쿠폰을 활성화하시겠습니까?")) {
-							processCoupon(couponNo, 'true');
+							processCoupon(couponNo, 'true');  // 상태를 'ACTIVE'로 설정
 						}
 					});
 				});
 
 				// 비활성화 버튼 이벤트 추가
-				var deactivateButtons = document.querySelectorAll(".deactivate-btn");
+				const deactivateButtons = document.querySelectorAll(".deactivate-btn");
 				deactivateButtons.forEach(function (button) {
 					button.addEventListener("click", function () {
 						var couponNo = button.getAttribute("data-couponno");
 						if (confirm("해당 쿠폰을 비활성화하시겠습니까?")) {
-							processCoupon(couponNo, 'false');
+							processCoupon(couponNo, 'false');  // 상태를 'INACTIVE'로 설정
 						}
 					});
 				});
+			});
 
-				function processCoupon(couponNo, state) {
-					fetch('/processCoupon?couponNo=' + couponNo + '&state=' + state, {
-						method: 'POST' // POST 요청으로 전송
+			// processCoupon 함수는 이벤트 리스너 외부로 이동
+			function processCoupon(couponNo, state) {
+				fetch('/admin/api/processCoupon?couponNo=' + couponNo + '&state=' + state, {
+					method: 'PATCH',
+					headers: {
+						'Content-Type': 'application/json'
+					}
+				})
+					.then(response => response.json())  // JSON 응답을 파싱
+					.then(result => {
+						if (result.code === 0) {  // 성공 상태 코드 확인
+							alert(result.message || '쿠폰 상태가 성공적으로 업데이트되었습니다.');
+							location.reload();  // 페이지 새로고침으로 목록 갱신
+						} else {
+							alert(result.message || '쿠폰 상태 업데이트에 실패했습니다.');
+						}
 					})
-						.then(response => {
-							if (response.ok) {
-								alert('쿠폰 상태가 업데이트되었습니다.');
-								location.reload(); // 페이지 새로고침으로 목록 갱신
-							} else {
-								alert('쿠폰 상태 업데이트에 실패했습니다.');
-							}
-						})
-						.catch(error => {
-							console.error('Error processing coupon:', error);
-							alert('쿠폰 상태 업데이트 중 오류가 발생했습니다.');
-						});
-				}
-			
+					.catch(error => {
+						console.error('쿠폰 상태 업데이트 중 오류 발생:', error);
+						alert('쿠폰 상태 업데이트 중 서버 오류가 발생했습니다.');
+					});
+			}
+
 		</script>
 	</div>
 </body>
