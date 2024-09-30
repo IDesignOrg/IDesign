@@ -1,7 +1,9 @@
 package com.my.interrior.admin.page;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -14,7 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,7 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.my.interrior.admin.coupon.CouponMapRepository;
 import com.my.interrior.admin.coupon.CouponService;
 import com.my.interrior.admin.page.adminDTO.CouponDTO;
+import com.my.interrior.admin.page.adminDTO.FaqDTO;
 import com.my.interrior.admin.page.adminDTO.UserShopCommentDTO;
+import com.my.interrior.client.csc.faq.FaqEntity;
 import com.my.interrior.client.csc.inquiry.InquiryAnswerDTO;
 import com.my.interrior.client.csc.inquiry.InquiryAnswerEntity;
 import com.my.interrior.client.csc.inquiry.InquiryDTO;
@@ -34,8 +40,10 @@ import com.my.interrior.client.evaluation.ReviewService;
 import com.my.interrior.client.evaluation.DTO.ReviewCommentDTO;
 import com.my.interrior.client.event.coupon.CouponEntity;
 import com.my.interrior.client.event.coupon.CouponMapEntity;
+import com.my.interrior.client.ordered.OrderedEntity;
 import com.my.interrior.client.ordered.OrderedRefundEntity;
 import com.my.interrior.client.ordered.OrderedRefundRepository;
+import com.my.interrior.client.ordered.OrderedRepository;
 import com.my.interrior.client.ordered.OrderedService;
 import com.my.interrior.client.pay.PayEntity;
 import com.my.interrior.client.pay.PaymentAndUserService;
@@ -93,6 +101,9 @@ public class AdminPageRestController {
 	
 	@Autowired
 	private OrderedRefundRepository orderedRefundRepository;
+	
+	@Autowired
+	private OrderedRepository orderedRepository;
 
 //-----------------------어드민 리뷰 페이지----------------------
 	// admin페이지 리뷰 댓글 보기
@@ -332,6 +343,38 @@ public class AdminPageRestController {
 	        throw new RuntimeException("상점 상태 변경 중 오류가 발생했습니다.");
 	    }
 	}
+	
+	@GetMapping("/fetchOrderDetails")
+	@ResponseBody
+	@Operation(summary = "상품 구매수 모달", description = "해당 상품을 누가 구매한 정보를 볼 수 있다.")
+	public ResponseEntity<CommonResponse<List<Map<String, Object>>>> fetchOrderDetails(@RequestParam("shopNo") Long shopNo) {
+	    try {
+	        List<OrderedEntity> orders = orderedRepository.findByShopNo(shopNo);
+
+	        if (orders.isEmpty()) {
+	            return ResponseEntity.ok(CommonResponse.success(Collections.emptyList()));
+	        }
+
+	        List<Map<String, Object>> orderDetailsList = new ArrayList<>();
+	        for (OrderedEntity order : orders) {
+	            Map<String, Object> orderDetails = new HashMap<>();
+	            orderDetails.put("orderedNo", order.getOrderedNo());
+	            orderDetails.put("orderedNumber", order.getOrderedNumber());
+	            orderDetails.put("orderedState", order.getOrderedState());
+	            orderDetails.put("shipmentState", order.getShipmentState());
+	            orderDetails.put("orderedDate", order.getOrderedDate());
+	            orderDetails.put("userName", order.getUserEntity().getUName()); // userEntity의 UName을 직접 추가
+	            orderDetails.put("quantity", order.getQuantity());
+	            orderDetailsList.add(orderDetails);
+	        }
+
+	        return ResponseEntity.ok(CommonResponse.success(orderDetailsList));
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                             .body(CommonResponse.failure("주문 내역을 가져오는 중 오류가 발생했습니다."));
+	    }
+	}
+
 
 //-----------------------이벤트-------------------------------
 	@DeleteMapping("/deleteEvent")
@@ -471,6 +514,57 @@ public class AdminPageRestController {
 	                             .body(CommonResponse.failure("답변 저장에 실패했습니다."));
 	    }
 	}
+//--------------------------자주 묻는 질문 (faq)---------------------
+	@GetMapping("/getfaq")
+	@ResponseBody
+	@Operation(summary = "자주 묻는 질문 수정(get)", description = "자주 묻는 질문의 수정 모달창을 띄울수 있다.")
+	public ResponseEntity<CommonResponse<FaqDTO>> getFaq(@RequestParam("faqNo") Long faqNo) {
+	    FaqEntity faqEntity = adminPageService.getFaqById(faqNo);
+	    if (faqEntity != null) {
+	        // 엔티티를 DTO로 변환
+	        FaqDTO faqDTO = new FaqDTO();
+	        faqDTO.setFaqNo(faqEntity.getFaqNo());
+	        faqDTO.setFaqTitle(faqEntity.getFaqTitle());
+	        faqDTO.setFaqCategory(faqEntity.getFaqCategory());
+	        faqDTO.setFaqContent(faqEntity.getFaqContent());
+
+	        return ResponseEntity.ok(CommonResponse.success(faqDTO));
+	    } else {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                             .body(CommonResponse.failure("FAQ를 찾을 수 없습니다."));
+	    }
+	}
+	
+	@PatchMapping("/patchfaq")
+	@ResponseBody
+	@Operation(summary = "자주 묻는 질문 수정(patch)", description = "선택한 자주 묻는 질문을 수정 할 수 있다.")
+	public ResponseEntity<CommonResponse<String>> updateFaq(
+	        @RequestParam("faqNo") Long faqNo, @RequestBody FaqEntity faqData) {
+	    boolean updated = adminPageService.updateFaq(faqNo, faqData);
+	    
+	    if (updated) {
+	        return ResponseEntity.ok(CommonResponse.success("FAQ가 성공적으로 수정되었습니다."));
+	    } else {
+	        return ResponseEntity.badRequest().body(CommonResponse.failure("FAQ 수정에 실패했습니다."));
+	    }
+	}
+	
+	@DeleteMapping("/deletefaq")
+	@ResponseBody
+	@Operation(summary = "자주 묻는 질문 삭제", description = "선택한 자주 묻는 질문을 삭제 할 수 있다.")
+	public ResponseEntity<CommonResponse<String>> deleteFaq(@RequestParam("faqNo") Long faqNo) {
+	    boolean deleted = adminPageService.deleteFaq(faqNo);
+	    
+	    if (deleted) {
+	        return ResponseEntity.ok(CommonResponse.success("FAQ가 성공적으로 삭제되었습니다."));
+	    } else {
+	        return ResponseEntity.badRequest().body(CommonResponse.failure("FAQ 삭제에 실패했습니다."));
+	    }
+	}
+
+
+
+
 
 
 
