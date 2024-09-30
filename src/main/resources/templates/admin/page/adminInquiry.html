@@ -6,7 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>문의 리스트</title>
 	<link rel="stylesheet" href="/css/adminpage.css" />
-		<link rel="stylesheet" href="/css/adminsidebar.css" />
+	<link rel="stylesheet" href="/css/adminsidebar.css" />
 	<style>
 		.inquiry-table-container {
 			background-color: white;
@@ -268,12 +268,14 @@
 	<script>
 		// 공통으로 데이터를 가져오는 함수
 		function fetchInquiryDetails(inqNo) {
-			return fetch('/getInquiryDetails?inqNo=' + inqNo)
-				.then(response => {
-					if (!response.ok) {
-						throw new Error('Network response was not ok');
+			return fetch('/admin/api/getInquiryDetails?inqNo=' + inqNo)
+				.then(response => response.json())  // JSON 응답을 파싱
+				.then(result => {
+					if (result.code === 0) {  // 성공 상태 코드 확인
+						return result.data;  // CommonResponse의 data 반환
+					} else {
+						throw new Error(result.message || '데이터를 불러오는 중 오류가 발생했습니다.');
 					}
-					return response.json();
 				});
 		}
 
@@ -307,33 +309,35 @@
 
 		// 답변 제출 처리
 		function submitAnswer() {
-			const answerContent = document.getElementById('answerContent').value;
+		    const answerContent = document.getElementById('answerContent').value;
 
-			// 데이터를 URL 파라미터 형식으로 전달
-			const formData = new URLSearchParams();
-			formData.append('inqNo', answerInquiryId);
-			formData.append('answerContent', answerContent);
+		    // 데이터를 URL 파라미터 형식으로 전달
+		    const formData = new URLSearchParams();
+		    formData.append('inqNo', answerInquiryId);
+		    formData.append('answerContent', answerContent);
 
-			fetch('/submitAnswer?' + formData.toString(), {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded'
-				}
-			})
-				.then(response => {
-					if (response.ok) {
-						alert('답변이 제출되었습니다.');
-						closeAnswerModal();
-						location.reload();
-					} else {
-						alert('답변 제출에 실패했습니다.');
-					}
-				})
-				.catch(error => {
-					console.error('Error:', error);
-					alert('답변 제출 중 오류가 발생했습니다.');
-				});
+		    fetch('/admin/api/submitAnswer?' + formData.toString(), {
+		        method: 'POST',
+		        headers: {
+		            'Content-Type': 'application/x-www-form-urlencoded'
+		        }
+		    })
+		    .then(response => response.json())  // JSON 응답을 파싱
+		    .then(result => {
+		        if (result.code === 0) {  // 성공 상태 코드 확인
+		            alert(result.message || '답변이 제출되었습니다.');
+		            closeAnswerModal();
+		            location.reload();
+		        } else {
+		            alert(result.message || '답변 제출에 실패했습니다.');
+		        }
+		    })
+		    .catch(error => {
+		        console.error('Error:', error);
+		        alert('답변 제출 중 오류가 발생했습니다.');
+		    });
 		}
+
 
 		// 답변하기 모달 닫기
 		function closeAnswerModal() {
@@ -353,7 +357,6 @@
 					console.log(data);  // 데이터 확인
 
 					// 문의 데이터를 표시
-					console.log(document.getElementById('inquiryTitle'));
 					document.getElementById('ainquiryTitle').innerText = data.inqTitle || '제목 없음';
 					document.getElementById('ainquiryCategory').textContent = data.inqCategory || '카테고리 없음';
 					document.getElementById('ainquiryUser').textContent = data.user ? data.user.uName : '작성자 정보 없음';
@@ -384,6 +387,7 @@
 		function closeViewAnswerModal() {
 			document.getElementById('viewAnswerModal').style.display = 'none';
 		}
+
 
 	</script>
 </body>

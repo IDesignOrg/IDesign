@@ -14,6 +14,6 @@ public class CustomErrorController {
 	@GetMapping("/error/401")
 	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	public String unauthorized() {
-		return "error/401";
+		return "client/login";
 	}
 }

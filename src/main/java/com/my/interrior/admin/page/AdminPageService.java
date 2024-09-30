@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import com.my.interrior.admin.coupon.CouponMapRepository;
 import com.my.interrior.admin.coupon.CouponRepository;
 import com.my.interrior.admin.coupon.CouponService;
+import com.my.interrior.admin.page.adminDTO.ReviewAndCommentDTO;
+import com.my.interrior.admin.page.adminDTO.ShopListAndOrderedDTO;
 import com.my.interrior.client.csc.faq.FaqEntity;
 import com.my.interrior.client.csc.faq.FaqRepository;
 import com.my.interrior.client.csc.inquiry.InquiryAnswerDTO;

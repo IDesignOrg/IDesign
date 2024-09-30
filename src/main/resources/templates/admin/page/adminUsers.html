@@ -288,7 +288,7 @@
 				    })
 				    .then(response => response.json())  // JSON 응답을 파싱
 				    .then(result => {
-				        if (result.code === 200) {  // CommonResponse의 상태 코드 확인
+				        if (result.code === 0) {  // CommonResponse의 상태 코드 확인
 				            alert(result.message || '해당 유저는 비활성화 되었습니다.');
 				            location.reload(); // 페이지 새로고침으로 목록 갱신
 				        } else {
@@ -311,7 +311,7 @@
 				    })
 				    .then(response => response.json())  // JSON 응답을 파싱
 				    .then(result => {
-				        if (result.code === 200) {  // CommonResponse의 상태 코드 확인
+				        if (result.code === 0) {  // CommonResponse의 상태 코드 확인
 				            alert(result.message || '해당 유저는 성공적으로 활성화되었습니다.');
 				            location.reload(); // 페이지 새로고침으로 목록 갱신
 				        } else {
@@ -396,7 +396,7 @@
 				            document.getElementById("commentModalTableBody").innerHTML = '<tr><td colspan="4">아직 댓글을 작성하지 않았습니다</td></tr>';
 				            document.getElementById("commentModal").style.display = "block";
 				        } else {
-				            fetch('/fetchComments?userUNo=' + userUNo)
+				            fetch('/admin/api/fetchComments?userUNo=' + userUNo)
 				                .then(response => response.json())  // JSON 응답을 파싱
 				                .then(result => {
 				                    const data = result.data;  // CommonResponse에서 data 부분만 추출
@@ -464,7 +464,7 @@
 				    })
 				    .then(response => response.json())  // JSON 응답을 파싱
 				    .then(result => {
-				        if (result.code === 200) {  // CommonResponse의 상태 코드 확인
+				        if (result.code === 0) {  // CommonResponse의 상태 코드 확인
 				            alert(result.message || '쿠폰 발급이 완료되었습니다.');
 				            couponModal.style.display = "none";  // 쿠폰 모달 닫기
 				        } else {
@@ -519,7 +519,7 @@
 				        })
 				        .then(response => response.json())  // JSON 응답을 파싱
 				        .then(result => {
-				            if (result.code === 200) {  // CommonResponse의 상태 코드 확인
+				            if (result.code === 0) {  // CommonResponse의 상태 코드 확인
 				                alert(result.message || '게시글이 삭제되었습니다.');
 				                location.reload(); // 페이지 새로고침으로 목록 갱신
 				            } else {
@@ -545,7 +545,7 @@
 				        })
 				        .then(response => response.json())  // JSON 응답을 파싱
 				        .then(result => {
-				            if (result.code === 200) {  // CommonResponse의 상태 코드 확인
+				            if (result.code === 0) {  // CommonResponse의 상태 코드 확인
 				                alert(result.message || '댓글이 성공적으로 삭제되었습니다.');
 				                location.reload(); // 페이지 새로고침으로 목록 갱신
 				            } else {

@@ -58,34 +58,39 @@
 		<!-- JavaScript 쿠폰 사용 처리 -->
 		<script>
 			document.addEventListener("DOMContentLoaded", function () {
-				var deleteButtons = document.querySelectorAll(".delete-coupon-btn");
-				deleteButtons.forEach(function (button) {
-					button.addEventListener("click", function () {
-						var couponMapId = button.getAttribute("data-id");
-						if (confirm("해당 사용자의 쿠폰을 삭제하시겠습니까?")) {
-							deleteCoupon(couponMapId);
-						}
-					});
-				});
+			    var deleteButtons = document.querySelectorAll(".delete-coupon-btn");
+			    deleteButtons.forEach(function (button) {
+			        button.addEventListener("click", function () {
+			            var couponMapId = button.getAttribute("data-id");
+			            if (confirm("해당 사용자의 쿠폰을 삭제하시겠습니까?")) {
+			                deleteCoupon(couponMapId);
+			            }
+			        });
+			    });
 
-				function deleteCoupon(couponMapId) {
-					fetch('/deleteCoupon?id=' + couponMapId, {
-						method: 'DELETE' // DELETE 요청으로 전송
-					})
-						.then(response => {
-							if (response.ok) {
-								alert('쿠폰이 삭제되었습니다.');
-								location.reload(); // 페이지 새로고침으로 목록 갱신
-							} else {
-								alert('쿠폰 삭제에 실패했습니다.');
-							}
-						})
-						.catch(error => {
-							console.error('Error deleting coupon:', error);
-							alert('쿠폰 삭제 중 오류가 발생했습니다.');
-						});
-				}
+			    function deleteCoupon(couponMapId) {
+			        fetch('/admin/api/deleteCoupon?id=' + couponMapId, {
+			            method: 'DELETE',
+			            headers: {
+			                'Content-Type': 'application/json'
+			            }
+			        })
+			        .then(response => response.json())  // JSON 응답을 파싱
+			        .then(result => {
+			            if (result.code === 0) {  // 성공 상태 코드 확인
+			                alert(result.message || '쿠폰이 성공적으로 삭제되었습니다.');
+			                location.reload();  // 페이지 새로고침으로 목록 갱신
+			            } else {
+			                alert(result.message || '쿠폰 삭제에 실패했습니다.');
+			            }
+			        })
+			        .catch(error => {
+			            console.error('쿠폰 삭제 중 오류 발생:', error);
+			            alert('쿠폰 삭제 중 서버 오류가 발생했습니다.');
+			        });
+			    }
 			});
+
 		</script>
 	</div>
 </body>

@@ -84,7 +84,7 @@
 					var searchInput = document.getElementById("searchInput").value;
 					window.location.href = '/admin/page/adminEventSearch?type=' + searchType + '&keyword=' + searchInput;
 				});
-
+/*
 				// 이벤트 상태 변경 처리 함수
 				function processEvent(eventNo, state) {
 					fetch('/processEvent?eventNo=' + eventNo + '&state=' + state, {
@@ -103,25 +103,31 @@
 							alert('이벤트 상태 업데이트 중 오류가 발생했습니다.');
 						});
 				}
+				*/
 
 				// 이벤트 삭제 처리 함수
 				function deleteEvent(eventNo) {
-					fetch('/deleteEvent?eventNo=' + eventNo, {
-						method: 'DELETE'
-					})
-						.then(response => {
-							if (response.ok) {
-								alert('이벤트가 삭제되었습니다.');
-								location.reload(); // 페이지 새로고침으로 목록 갱신
-							} else {
-								alert('이벤트 삭제에 실패했습니다.');
-							}
-						})
-						.catch(error => {
-							console.error('Error deleting event:', error);
-							alert('이벤트 삭제 중 오류가 발생했습니다.');
-						});
+				    fetch('/admin/api/deleteEvent?eventNo=' + eventNo, {
+				        method: 'DELETE',
+				        headers: {
+				            'Content-Type': 'application/json'
+				        }
+				    })
+				    .then(response => response.json())  // JSON 응답을 파싱
+				    .then(result => {
+				        if (result.code === 0) {  // 성공 상태 코드 확인
+				            alert(result.message || '이벤트가 성공적으로 삭제되었습니다.');
+				            location.reload();  // 페이지 새로고침으로 목록 갱신
+				        } else {
+				            alert(result.message || '이벤트 삭제에 실패했습니다.');
+				        }
+				    })
+				    .catch(error => {
+				        console.error('이벤트 삭제 중 오류 발생:', error);
+				        alert('이벤트 삭제 중 서버 오류가 발생했습니다.');
+				    });
 				}
+
 			});
 		</script>
 	</div>
