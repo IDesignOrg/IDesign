@@ -48,6 +48,7 @@ jobs:
       - name: "build three files"
         run: |
           cd src/main/resources
+          npm install
           npm run build
 
       - name: Build with Gradle
