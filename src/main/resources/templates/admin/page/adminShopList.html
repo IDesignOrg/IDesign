@@ -162,33 +162,43 @@
 
 				function fetchOrderDetails(shopNo) {
 					console.log("Fetching order details for shopNo:", shopNo);
-					fetch('/fetchOrderDetails?shopNo=' + shopNo)
-						.then(response => response.json())
-						.then(data => {
-							console.log("Data received:", data); // 추가된 로그
-							if (data.length === 0) {
-								document.getElementById("orderModalTableBody").innerHTML = '<tr><td colspan="7">해당 상품에 대한 주문 내역이 없습니다.</td></tr>';
+
+					fetch(`/admin/api/fetchOrderDetails?shopNo=${shopNo}`)
+						.then(response => response.json())  // 응답을 JSON으로 변환
+						.then(result => {
+							console.log("Data received:", result); // 추가된 로그
+
+							if (result.code === 0) {  // 성공 상태 확인
+								const data = result.data;
+
+								if (data.length === 0) {
+									document.getElementById("orderModalTableBody").innerHTML = '<tr><td colspan="7">해당 상품에 대한 주문 내역이 없습니다.</td></tr>';
+								} else {
+									let tableRows = data.map(order => `
+				                        <tr>
+				                            <td>${order.orderedNo}</td>
+				                            <td>${order.orderedNumber}</td>
+				                            <td>${order.orderedState}</td>
+				                            <td>${order.shipmentState}</td>
+				                            <td>${new Date(order.orderedDate).toLocaleDateString()}</td>
+				                            <td>${order.userName}</td>
+				                            <td>${order.quantity}</td>
+				                        </tr>
+				                    `).join('');
+									document.getElementById("orderModalTableBody").innerHTML = tableRows;
+								}
+
+								document.getElementById("orderModal").style.display = "block";
 							} else {
-								let tableRows = data.map(order => `
-                    <tr>
-                        <td>${order.orderedNo}</td>
-                        <td>${order.orderedNumber}</td>
-                        <td>${order.orderedState}</td>
-                        <td>${order.shipmentState}</td>
-                        <td>${new Date(order.orderedDate).toLocaleDateString()}</td>
-                        <td>${order.userName}</td>
-                        <td>${order.quantity}</td>
-                    </tr>
-                `).join('');
-								document.getElementById("orderModalTableBody").innerHTML = tableRows;
+								alert(result.message || '주문 내역을 가져오는 중 오류가 발생했습니다.');
 							}
-							document.getElementById("orderModal").style.display = "block";
 						})
 						.catch(error => {
 							console.error('Error fetching order details:', error);
 							alert('주문 내역을 가져오는 중 오류가 발생했습니다.');
 						});
 				}
+
 
 				// 모달 창 닫기
 				var modal = document.getElementById("orderModal");
