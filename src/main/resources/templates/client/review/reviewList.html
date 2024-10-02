@@ -33,45 +33,45 @@
 		<a href="/review_write">리뷰 작성하기</a>
 		<!-- 모달 -->
 		<div id="reviewModal" class="modal">
-			<div class="modal-content">
-				<!-- 슬라이드 쇼 컨테이너 -->
-				<div class="slider">
-					<div class="slides" id="photoContainer">
-						<!-- 슬라이드 내용이 JavaScript로 동적으로 추가됨 -->
-					</div>
-					<!-- 이전 및 다음 버튼 -->
-					<button class="prev" onclick="changeSlide(-1)">&#10094;</button>
-					<button class="next" onclick="changeSlide(1)">&#10095;</button>
-				</div>
+		    <div class="modal-content">
+		        <!-- 슬라이드 쇼 컨테이너 -->
+		        <div class="slider">
+		            <div class="slides" id="photoContainer">
+		                <!-- 슬라이드 내용이 JavaScript로 동적으로 추가됨 -->
+		            </div>
+		            <!-- 이전 및 다음 버튼 -->
+		            <button class="prev" onclick="changeSlide(-1)">&#10094;</button>
+		            <button class="next" onclick="changeSlide(1)">&#10095;</button>
+		        </div>
 
-				<!-- 오른쪽 정보 패널 -->
-				<div class="info-panel">
-					<div class="info-header">
-						<h2 id="modalTitle"></h2>
-						<div class="info-subheader">
-							<span id="modalUserId"></span>
-							<span id="modalWrittenTime"></span>
-						</div>
-					</div>
-					<div class="info-content">
-						<p id="modalContent"></p>
+		        <!-- 오른쪽 정보 패널 -->
+		        <div class="info-panel">
+		            <div class="info-header">
+		                <h2 id="modalTitle"></h2>
+		                <div class="info-subheader">
+		                    <span id="modalUserId"></span>
+		                    <span id="modalWrittenTime"></span>
+		                </div>
+		            </div>
+		            <div class="info-content">
+		                <p id="modalContent"></p>
 
-						<!-- 댓글 섹션 -->
-						<div class="comment-section" id="commentSection">
-							<!-- 댓글이 JavaScript로 동적으로 추가됨 -->
-						</div>
-					</div>
-					<div class="info-footer">
-						<p>조회수: <span id="modalViews"></span></p>
-						<!-- 댓글 작성 폼 -->
-						<div class="comment-form" th:if="${session.UId != null}">
-							<textarea id="commentInput" placeholder="댓글을 입력하세요..."></textarea>
-							<button id="submitComment" onclick="submitComment()">댓글 작성</button>
-						</div>
-					</div>
-					<span class="close">&times;</span>
-				</div>
-			</div>
+		                <!-- 댓글 섹션 -->
+		                <div class="comment-section" id="commentSection">
+		                    <!-- 댓글이 JavaScript로 동적으로 추가됨 -->
+		                </div>
+		            </div>
+		            <div class="info-footer">
+		                <p>조회수: <span id="modalViews"></span></p>
+		                <!-- 댓글 작성 폼 -->
+		                <div class="comment-form" th:if="${session.UId != null}">
+		                    <textarea id="commentInput" placeholder="댓글을 입력하세요..."></textarea>
+		                    <button id="submitComment" onclick="submitComment()">댓글 작성</button>
+		                </div>
+		            </div>
+		            <span class="close">&times;</span>
+		        </div>
+		    </div>
 		</div>
 		<div class="pagination">
 			<a th:href="@{/auth/evaluation(page=${currentPage - 1})}" th:if="${currentPage > 0}">&laquo; 이전</a>
@@ -86,26 +86,30 @@
 
 	<script>
 		let currentSlideIndex = 0;
-		let currentReviewId = null;
+		let currentReviewId = null;  // 전역 변수로 선언하여 리뷰 ID를 저장
+		const currentUserId = '[[${session.UId}]]';
 
+		// 슬라이드 보여주기
 		function showSlides(index) {
-			const slides = document.querySelectorAll(".slides img");
-			if (index >= slides.length) {
-				currentSlideIndex = 0;
-			} else if (index < 0) {
-				currentSlideIndex = slides.length - 1;
-			} else {
-				currentSlideIndex = index;
-			}
-			slides.forEach((slide, i) => {
-				slide.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
-			});
+		    const slides = document.querySelectorAll(".slides img");
+		    if (index >= slides.length) {
+		        currentSlideIndex = 0;
+		    } else if (index < 0) {
+		        currentSlideIndex = slides.length - 1;
+		    } else {
+		        currentSlideIndex = index;
+		    }
+		    slides.forEach((slide, i) => {
+		        slide.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
+		    });
 		}
 
+		// 슬라이드 변경
 		function changeSlide(n) {
-			showSlides(currentSlideIndex + n);
+		    showSlides(currentSlideIndex + n);
 		}
 
+		// 댓글 제출
 		function submitComment() {
 		    const commentInput = document.getElementById("commentInput");
 		    const commentText = commentInput.value.trim();
@@ -115,125 +119,163 @@
 		        return;
 		    }
 
+		    if (!currentReviewId) {
+		        alert("리뷰를 선택하세요.");
+		        return;
+		    }
+
 		    console.log("currentReviewId:", currentReviewId);
 
+		    // AJAX를 사용하여 댓글 추가 요청 보내기
 		    $.ajax({
 		        url: `/api/review/comment`,
 		        type: "POST",
-		        contentType: "application/json", 
+		        contentType: "application/json",
 		        data: JSON.stringify({
-					reviewId: currentReviewId,
-		            comment: commentText  
+		            reviewId: currentReviewId,
+		            comment: commentText
 		        }),
-				success: function(response) {
-					const newComment = response.data;
-				    // 서버에서 받은 데이터를 콘솔에 출력하여 확인
-				    console.log("서버 응답 데이터:", newComment);
+		        success: function (response) {
+		            const newComment = response.data;
 
-				    const commentSection = document.getElementById("commentSection");
-				    const commentDiv = document.createElement("div");
-				    commentDiv.classList.add("comment");
+		            // 서버에서 받은 데이터를 콘솔에 출력하여 확인
+		            console.log("서버 응답 데이터:", newComment);
 
-				    // 데이터를 HTML에 추가
-				    commentDiv.innerHTML = `
-				        <img src="${newComment.userProfile || 'https://storage.googleapis.com/idesign_dev/static/static_static_blank-profile-picture-973460_640.png'}" alt="User profile">
-				        <div class="comment-text">
-				            <span class="username">${newComment.userName || 'Unknown'}</span>
-				            ${newComment.rcomment || 'No comment available'}
-				        </div>
-				    `;
-				    
-				    // 댓글 섹션에 새 댓글 추가
-				    commentSection.appendChild(commentDiv);
+		            const commentSection = document.getElementById("commentSection");
+		            const commentDiv = document.createElement("div");
+		            commentDiv.classList.add("comment");
 
-				    // 입력 필드 비우기
-				    document.getElementById("commentInput").value = "";
-				}
-,
-		        error: function(xhr, status, error) {
-		            alert("Error: " + xhr);
-					console.log("xhr" + xhr)
+		            // 데이터를 HTML에 추가
+		            commentDiv.innerHTML = `
+		                <img src="${newComment.userProfile || 'https://storage.googleapis.com/idesign_dev/static/static_static_blank-profile-picture-973460_640.png'}" alt="User profile">
+		                <div class="comment-text">
+		                    <span class="username">${newComment.userName || 'Unknown'}</span>
+		                    ${newComment.rcomment || 'No comment available'}
+							${newComment.userId === currentUserId ? `<button class="delete-comment-btn" onclick="deleteComment(${newComment.rcommentNo})">삭제</button>` : ''}
+		                </div>
+		            `;
+
+		            // 댓글 섹션에 새 댓글 추가
+		            commentSection.appendChild(commentDiv);
+
+		            // 입력 필드 비우기
+		            commentInput.value = "";
+		        },
+		        error: function (xhr, status, error) {
+		            const response = JSON.parse(xhr.responseText);
+		            alert(`Error: ${response.message || '댓글 추가 중 오류가 발생했습니다.'}`);
+		            console.log("Error details:", response);
 		        }
-				
+		    });
+		}
+		// 댓글 삭제 함수
+		function deleteComment(commentId) {
+		    if (!confirm("정말로 이 댓글을 삭제하시겠습니까?")) {
+		        return;
+		    }
+
+		    fetch(`/api/review/comment/${commentId}`, {
+		        method: 'DELETE',
+		    })
+		    .then(response => response.json())
+		    .then(result => {
+		        if (result.code === 0) {  // 성공 코드 확인 (0이 성공 코드라고 가정)
+		            alert(result.message || '댓글이 성공적으로 삭제되었습니다.');
+
+		            // UI에서 댓글 삭제
+		            const commentDiv = document.querySelector(`.comment[data-comment-id="${commentId}"]`);
+		            if (commentDiv) {
+		                commentDiv.remove();
+		            }
+		        } else {
+		            alert(result.message || '댓글 삭제에 실패했습니다.');
+		        }
+		    })
+		    .catch(error => {
+		        console.error('댓글 삭제 중 오류 발생:', error);
+		        alert('댓글 삭제 중 오류가 발생했습니다.');
 		    });
 		}
 
-
+		// DOM이 로드되었을 때 실행되는 함수
 		document.addEventListener("DOMContentLoaded", function () {
-			const modal = document.getElementById("reviewModal");
-			const closeModal = document.getElementsByClassName("close")[0];
+		    const modal = document.getElementById("reviewModal");
+		    const closeModal = document.getElementsByClassName("close")[0];
 
-			document.querySelectorAll(".review-card").forEach(card => {
-				card.addEventListener("click", function () {
-					currentReviewId = card.getAttribute("data-rno");
+		    // 리뷰 카드를 클릭하면 리뷰 세부 정보와 댓글을 모달에 표시
+		    document.querySelectorAll(".review-card").forEach(card => {
+		        card.addEventListener("click", function () {
+		            currentReviewId = card.getAttribute("data-rno");
 
-					fetch(`/auth/evaluation/${currentReviewId}`)  // 리뷰 데이터와 댓글 데이터 동시에 가져옴
-						//.then(response => response.json())
-						.then(response => response.text()) 
-						.then(text => {
-						    console.log(text);  // JSON 텍스트 출력
-						    return JSON.parse(text);  // 이후에 파싱 시도
-						  })
-						.then(reviewData => {
-							// 리뷰 데이터 처리
-							document.getElementById("modalTitle").textContent = reviewData.rtitle || 'N/A';
-							document.getElementById("modalUserId").textContent = reviewData.userId || 'Unknown';
-							document.getElementById("modalWrittenTime").textContent = reviewData.rwrittenTime || 'N/A';
-							document.getElementById("modalContent").textContent = reviewData.rcontent || 'N/A';
-							document.getElementById("modalViews").textContent = reviewData.rviews || '0';
+		            fetch(`/api/getReviewDetail?rNo=${currentReviewId}`)
+		                .then(response => response.json())  // CommonResponse 형태의 JSON 파싱
+		                .then(result => {
+		                    if (result.code === 0) {  // 성공 코드 확인
+		                        const reviewData = result.data;
 
-							// 사진 처리 코드
-							const photoContainer = document.getElementById("photoContainer");
-							photoContainer.innerHTML = '';
-							reviewData.reviewPhotos.forEach(photoUrl => {
-								const img = document.createElement("img");
-								img.src = photoUrl;
-								img.alt = "Review Photo";
-								photoContainer.appendChild(img);
-							});
+		                        // 리뷰 데이터 처리
+		                        document.getElementById("modalTitle").textContent = reviewData.rtitle || 'N/A';
+		                        document.getElementById("modalUserId").textContent = reviewData.userId || 'Unknown';
+		                        document.getElementById("modalWrittenTime").textContent = reviewData.rwrittenTime || 'N/A';
+		                        document.getElementById("modalContent").textContent = reviewData.rcontent || 'N/A';
+		                        document.getElementById("modalViews").textContent = reviewData.rviews || '0';
 
-							// 댓글 데이터 처리
-							const commentSection = document.getElementById("commentSection");
-							commentSection.innerHTML = ''; // 기존 댓글 삭제
+		                        // 사진 처리
+		                        const photoContainer = document.getElementById("photoContainer");
+		                        photoContainer.innerHTML = '';
+		                        reviewData.reviewPhotos.forEach(photoUrl => {
+		                            const img = document.createElement("img");
+		                            img.src = photoUrl;
+		                            img.alt = "Review Photo";
+		                            photoContainer.appendChild(img);
+		                        });
 
-							if (reviewData.comments.length > 0) {
-								reviewData.comments.forEach(comment => {
-									const commentDiv = document.createElement("div");
-									commentDiv.classList.add("comment");
+		                        // 댓글 처리
+		                        const commentSection = document.getElementById("commentSection");
+		                        commentSection.innerHTML = '';  // 기존 댓글 제거
+		                        if (reviewData.comments.length > 0) {
+		                            reviewData.comments.forEach(comment => {
+		                                const commentDiv = document.createElement("div");
+		                                commentDiv.classList.add("comment");
 
-									commentDiv.innerHTML = `
-                                <img src="${comment.userProfile || '/path/to/default/profile.jpg'}" alt="User profile">
-                                <div class="comment-text">
-                                    <span class="username">${comment.userName || 'Unknown'}</span>
-                                    ${comment.rcomment || 'No comment available'}
-                                </div>
-                            `;
-									commentSection.appendChild(commentDiv);
-								});
-								commentSection.style.display = 'block'; // 댓글 섹션 보이기
-							} else {
-								commentSection.style.display = 'none'; // 댓글이 없으면 숨기기
-							}
+		                                commentDiv.innerHTML = `
+		                                    <img src="${comment.userProfile || 'https://path/to/default/profile.jpg'}" alt="User profile">
+		                                    <div class="comment-text">
+		                                        <span class="username">${comment.userName || 'Unknown'}</span>
+		                                        ${comment.rcomment || 'No comment available'}
+												${comment.userId === currentUserId ? `<button class="delete-comment-btn" onclick="deleteComment(${comment.rcommentNo})">삭제</button>` : ''}
+		                                    </div>
+		                                `;
+		                                commentSection.appendChild(commentDiv);
+		                            });
+		                            commentSection.style.display = 'block';  // 댓글이 있으면 표시
+		                        } else {
+		                            commentSection.style.display = 'none';  // 댓글이 없으면 숨김
+		                        }
 
-							// 모달 열기
-							modal.style.display = "block";
-							showSlides(0);  // 첫 슬라이드 표시
-						})
-						.catch(error => console.error('Error:', error));
-				});
-			});
+		                        // 모달 표시
+		                        modal.style.display = "block";
+		                        showSlides(0);  // 첫 슬라이드 표시
+		                    } else {
+		                        alert(result.message || '리뷰 데이터를 가져오는 중 오류가 발생했습니다.');
+		                    }
+		                })
+		                .catch(error => console.error('Error fetching review details:', error));
+		        });
+		    });
+			
 
-			// 모달 닫기 기능
-			closeModal.onclick = function () {
-				modal.style.display = "none";
-			};
+		    // 모달 닫기 기능
+		    closeModal.onclick = function () {
+		        modal.style.display = "none";
+		    };
 
-			// 모달 외부 클릭 시 닫기
-			window.onclick = function (event) {
-				if (event.target === modal) {
-					modal.style.display = "none";
-				}
-			};
+		    // 모달 외부 클릭 시 닫기
+		    window.onclick = function (event) {
+		        if (event.target === modal) {
+		            modal.style.display = "none";
+		        }
+		    };
 		});
 
 	</script>

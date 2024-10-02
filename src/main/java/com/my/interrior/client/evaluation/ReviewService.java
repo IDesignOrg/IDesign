@@ -191,6 +191,7 @@ public class ReviewService {
 	        savedComment.getRComment(),                // 댓글 내용
 	        savedComment.getRCommentCreated(),         // 댓글 작성 시간
 	        userEntity.getUName(),                      // 사용자 이름 (UserEntity에서 추출)
+	        userEntity.getUId(),                       //사용자 아이디 (UserEntity에서 추출)
 	        userEntity.getUPofile()                    // 사용자 프로필 이미지 (UserEntity에서 추출)
 	    );
 	}

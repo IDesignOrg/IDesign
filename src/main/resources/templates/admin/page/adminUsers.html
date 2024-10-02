@@ -480,34 +480,39 @@
 
 
 				function fetchCoupons() {
-					fetch('/getCoupons')  // 서버에서 쿠폰 리스트를 가져오는 엔드포인트
-						.then(response => response.json())
-						.then(data => {
-							let tableRows = data.map(coupon => `
-                                <tr>
-                                    <td>${coupon.couponName}</td>
-                                    <td>${coupon.couponDiscount}</td>
-                                    <td>${coupon.couponLimit}</td>
-                                    <td>${coupon.couponStartAt}</td>
-                                    <td>${coupon.couponEndAt}</td>
-                                    <td><input type="radio" name="selectedCoupon" value="${coupon.couponNo}"></td>
-                                </tr>
-                            `).join('');
-							document.getElementById("couponTableBody").innerHTML = tableRows;
+				    fetch('/admin/api/showCoupons')
+				        .then(response => response.json())
+				        .then(result => {
+				            if (result.code === 0) {
+				                let tableRows = result.data.map(coupon => `
+				                    <tr>
+				                        <td>${coupon.couponName}</td>
+				                        <td>${coupon.couponDiscount}</td>
+				                        <td>${coupon.couponLimit}</td>
+				                        <td>${coupon.couponStartAt}</td>
+				                        <td>${coupon.couponEndAt}</td>
+				                        <td><input type="radio" name="selectedCoupon" value="${coupon.couponNo}"></td>
+				                    </tr>
+				                `).join('');
+				                document.getElementById("couponTableBody").innerHTML = tableRows;
 
-							document.querySelectorAll('input[name="selectedCoupon"]').forEach(function (radio) {
-								radio.addEventListener("change", function () {
-									selectedCouponNo = this.value;
-								});
-							});
+				                document.querySelectorAll('input[name="selectedCoupon"]').forEach(function (radio) {
+				                    radio.addEventListener("change", function () {
+				                        selectedCouponNo = this.value;
+				                    });
+				                });
 
-							couponModal.style.display = "block";
-						})
-						.catch(error => {
-							console.error('Error fetching coupons:', error);
-							alert('쿠폰을 불러오는 중 오류가 발생했습니다.');
-						});
+				                couponModal.style.display = "block";
+				            } else {
+				                alert(result.message || '쿠폰을 불러오는 중 오류가 발생했습니다.');
+				            }
+				        })
+				        .catch(error => {
+				            console.error('Error fetching coupons:', error);
+				            alert('쿠폰을 불러오는 중 서버 오류가 발생했습니다.');
+				        });
 				}
+
 
 				function deletePost(rNo) {
 				    if (confirm("정말 이 게시글을 삭제하시겠습니까?")) {
