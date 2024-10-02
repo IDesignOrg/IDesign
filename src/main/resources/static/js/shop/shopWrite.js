@@ -182,7 +182,7 @@ const onSubmitProduct = async () => {
 
 
   try {
-      const resData = await fetch("/shopWrite", {
+      const resData = await fetch("/admin/api/shopWrite", {
         method: "POST",
         body: formData,
       });
@@ -190,9 +190,9 @@ const onSubmitProduct = async () => {
 	  if(!resData.ok) return alert('공습경보')
   const response = await resData.json();
   console.log(response)
-  if (response.response ==='success') {
+  if (response.code === 0) {
        // 성공적으로 처리된 경우, 원하는 페이지로 리다이렉트
-       window.location.href = "/admin/adminShopList"; // 원하는 리다이렉트 경로
+       window.location.href = "/admin/page/adminShopList"; // 원하는 리다이렉트 경로
      } else {
        alert("상품 등록 중 오류가 발생했습니다.");
      }

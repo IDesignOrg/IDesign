@@ -12,13 +12,15 @@ public class ReviewCommentDTO {
     private String rComment;
     private LocalDateTime rCommentCreated;
     private String userName;
+    private String userId;
     private String userProfile;
     
-    public ReviewCommentDTO(Long rCommentNo, String rComment, LocalDateTime rCommentCreated, String userName, String userProfile) {
+    public ReviewCommentDTO(Long rCommentNo, String rComment, LocalDateTime rCommentCreated,  String userName, String userId,String userProfile) {
         this.rCommentNo = rCommentNo;
         this.rComment = rComment;
         this.rCommentCreated = rCommentCreated;
         this.userName = userName;
+        this.userId = userId;
         this.userProfile = userProfile;
     }
 }

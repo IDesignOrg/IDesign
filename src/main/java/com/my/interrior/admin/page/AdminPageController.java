@@ -1,71 +1,39 @@
 package com.my.interrior.admin.page;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.my.interrior.admin.coupon.CouponMapRepository;
-import com.my.interrior.admin.coupon.CouponService;
 import com.my.interrior.admin.page.adminDTO.ReviewAndCommentDTO;
 import com.my.interrior.admin.page.adminDTO.ShopListAndOrderedDTO;
 import com.my.interrior.client.csc.faq.FaqEntity;
-import com.my.interrior.client.csc.inquiry.InquiryAnswerDTO;
-import com.my.interrior.client.csc.inquiry.InquiryAnswerEntity;
-import com.my.interrior.client.csc.inquiry.InquiryDTO;
-import com.my.interrior.client.csc.inquiry.InquiryEntity;
 import com.my.interrior.client.csc.inquiry.InquiryListDTO;
 import com.my.interrior.client.csc.notice.NoticeEntity;
 import com.my.interrior.client.csc.recover.RecoveryEntity;
-import com.my.interrior.client.evaluation.ReviewCommentEntity;
-import com.my.interrior.client.evaluation.ReviewEntity;
-import com.my.interrior.client.evaluation.ReviewRepository;
-import com.my.interrior.client.evaluation.ReviewService;
-import com.my.interrior.client.evaluation.DTO.ReviewCommentDTO;
 import com.my.interrior.client.event.EventEntity;
 import com.my.interrior.client.event.coupon.CouponEntity;
 import com.my.interrior.client.event.coupon.CouponMapEntity;
 import com.my.interrior.client.ordered.OrderedEntity;
-import com.my.interrior.client.ordered.OrderedRefundEntity;
-import com.my.interrior.client.ordered.OrderedRefundRepository;
-import com.my.interrior.client.ordered.OrderedRepository;
-import com.my.interrior.client.ordered.OrderedService;
-import com.my.interrior.client.pay.PayEntity;
-import com.my.interrior.client.pay.PaymentAndUserService;
-import com.my.interrior.client.pay.PaymentService;
 import com.my.interrior.client.shop.ShopEntity;
-import com.my.interrior.client.shop.ShopReviewEntity;
-import com.my.interrior.client.shop.ShopReviewRepository;
-import com.my.interrior.client.shop.ShopService;
-import com.my.interrior.client.user.FindUserDTO;
 import com.my.interrior.client.user.UserDTO;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserService;
 
-import jakarta.persistence.EntityNotFoundException;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -81,10 +49,6 @@ public class AdminPageController {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-
-	@Autowired
-	private OrderedRepository orderedRepository;
-
 
 
 	@GetMapping("/auth/adminLogin")
@@ -127,15 +91,12 @@ public class AdminPageController {
 	public String adminIndex(HttpSession session, Model model) {
 		// 유저 수 체크
 		Long userCount = adminPageService.getUserCount();
-		System.out.println("유저 수는 : " + userCount);
 		model.addAttribute("userCount", userCount);
 		// 상점 후기 체크
 		Long shopCount = adminPageService.getShopCount();
-		System.out.println("쇼핑몰 후기 수는  : " + shopCount);
 		model.addAttribute("shopCount", shopCount);
 		// 리뷰 수
 		Long reviewCount = adminPageService.getReviewCount();
-		System.out.println("리뷰의 수 : " + reviewCount);
 		model.addAttribute("reviewCount", reviewCount);
 		// 가장 높은 조회수를 가진 상점
 		Optional<ShopEntity> mostViewedShop = adminPageService.getMostViewedShop();
@@ -181,6 +142,7 @@ public class AdminPageController {
 
 	@GetMapping("/searchUsers")
 	@ResponseBody
+	@Operation(hidden = true)
 	public List<UserWithPostAndCommentCount> searchUsers(@RequestParam(name = "searchType") String searchType,
 			@RequestParam(name = "searchInput") String searchInput,
 			@RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -221,6 +183,7 @@ public class AdminPageController {
 
 	@GetMapping("/admin/page/adminRecovery/search")
 	@ResponseBody
+	@Operation(hidden = true)
 	public List<RecoveryEntity> searchRecoveryRequests(@RequestParam(name = "searchType") String searchType,
 			@RequestParam(name = "searchInput", required = false) String searchInput,
 			@RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -258,13 +221,6 @@ public class AdminPageController {
 		model.addAttribute("totalPages", coupons.getTotalPages());
 		return "admin/page/adminCouponList"; // 쿠폰 관리 페이지로 이동
 	}
-
-	// 쿠폰 모달창
-	@GetMapping("/getCoupons")
-	@ResponseBody
-	public List<CouponEntity> getAllModalCoupons() {
-		return adminPageService.getAllModalCoupons();
-	}
 	
 
 	// 유저 쿠폰 리스트
@@ -279,7 +235,7 @@ public class AdminPageController {
 	}
 
 	// shop리스트와 ordered의 count
-	@GetMapping("/admin/adminShopList")
+	@GetMapping("/admin/page/adminShopList")
 	public String adminShopList(Model model, Pageable pageable) {
 		Page<ShopListAndOrderedDTO> shops = adminPageService
 				.getAllShopsAndCounts(PageRequest.of(pageable.getPageNumber(), PAGE_SIZE));
@@ -288,8 +244,9 @@ public class AdminPageController {
 		model.addAttribute("totalPages", shops.getTotalPages());
 		return "admin/page/adminShopList";
 	}
-
+	
 	@GetMapping("/adminsearch")
+	@Operation(hidden = true)
 	public String shopList(@RequestParam(name = "shopTitle", required = false) String shopTitle,
 			@RequestParam(name = "shopCategory", required = false) String shopCategory,
 			@RequestParam(name = "minPrice", required = false) Integer minPrice,
@@ -312,6 +269,8 @@ public class AdminPageController {
 
 		return "admin/page/adminShopList";
 	}
+	
+	
 
 	// 주문관리 페이지
 	@GetMapping("/admin/page/adminOrdered")
