@@ -336,7 +336,7 @@
 				            document.getElementById("modalTableBody").innerHTML = '<tr><td colspan="6">아직 게시글을 작성하지 않았습니다</td></tr>';
 				            document.getElementById("userModal").style.display = "block";
 				        } else {
-				            fetch('/admin/api/getPosts?userUNo=' + userUNo)
+				            fetch('/admin/api/user/Posts?userUNo=' + userUNo)
 				                .then(response => {
 				                    if (!response.ok) {
 				                        throw new Error('네트워크 응답에 문제가 있습니다.');
@@ -396,7 +396,7 @@
 				            document.getElementById("commentModalTableBody").innerHTML = '<tr><td colspan="4">아직 댓글을 작성하지 않았습니다</td></tr>';
 				            document.getElementById("commentModal").style.display = "block";
 				        } else {
-				            fetch('/admin/api/fetchComments?userUNo=' + userUNo)
+				            fetch('/admin/api/user/Comments?userUNo=' + userUNo)
 				                .then(response => response.json())  // JSON 응답을 파싱
 				                .then(result => {
 				                    const data = result.data;  // CommonResponse에서 data 부분만 추출
@@ -452,7 +452,7 @@
 				});
 
 				function issueCoupon(userNo, couponNo) {
-				    fetch('/admin/api/issueCouponToUser', {
+				    fetch('/admin/api/get/CouponToUser', {
 				        method: 'POST',
 				        headers: {
 				            'Content-Type': 'application/json'
@@ -480,7 +480,7 @@
 
 
 				function fetchCoupons() {
-				    fetch('/admin/api/showCoupons')
+				    fetch('/admin/api/user/showCoupons')
 				        .then(response => response.json())
 				        .then(result => {
 				            if (result.code === 0) {
@@ -516,7 +516,7 @@
 
 				function deletePost(rNo) {
 				    if (confirm("정말 이 게시글을 삭제하시겠습니까?")) {
-				        fetch('/admin/api/deletePost?rNo=' + rNo, {  // 올바른 경로로 수정
+				        fetch('/admin/api/user/Post?rNo=' + rNo, {  // 올바른 경로로 수정
 				            method: 'DELETE',
 				            headers: {
 				                'Content-Type': 'application/json'
@@ -542,7 +542,7 @@
 				// 댓글 삭제 요청 함수 추가
 				function deleteComment(shopReviewNo) {
 				    if (confirm("정말 이 댓글을 삭제하시겠습니까?")) {
-				        fetch('/admin/api/deleteShopComment?shopReviewNo=' + shopReviewNo, {
+				        fetch('/admin/api/user/ShopComment?shopReviewNo=' + shopReviewNo, {
 				            method: 'DELETE',
 				            headers: {
 				                'Content-Type': 'application/json'

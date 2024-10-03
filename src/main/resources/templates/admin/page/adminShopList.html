@@ -129,7 +129,7 @@
 				});
 
 				function toggleShopActivation(shopNo, isDeactivated) {
-					fetch('/admin/api/toggleShopActivation?shopNo=' + shopNo + '&isDeactivated=' + isDeactivated, {
+					fetch('/admin/api/processShop?shopNo=' + shopNo + '&isDeactivated=' + isDeactivated, {
 						method: 'PATCH',
 						headers: {
 							'Content-Type': 'application/json'
@@ -163,7 +163,7 @@
 				function fetchOrderDetails(shopNo) {
 					console.log("Fetching order details for shopNo:", shopNo);
 
-					fetch(`/admin/api/fetchOrderDetails?shopNo=${shopNo}`)
+					fetch(`/admin/api/shop/OrderDetails?shopNo=${shopNo}`)
 						.then(response => response.json())  // 응답을 JSON으로 변환
 						.then(result => {
 							console.log("Data received:", result); // 추가된 로그

@@ -123,7 +123,7 @@ public class AdminPageRestController {
 	}
 
 	// 리뷰페이지에서 리뷰 삭제
-	@DeleteMapping("/deleteReview")
+	@DeleteMapping("/Review")
 	@Operation(summary = "리뷰 삭제", description = "어드민 페이지에서 리뷰를 삭제 시킨다.")
 	public ResponseEntity<CommonResponse<String>> deleteReview(@RequestParam("rNo") Long rNo) {
 		if (rNo == null || rNo <= 0) {
@@ -142,7 +142,7 @@ public class AdminPageRestController {
 
 //--------------------어드민유저 페이지-------------------
 	// 어드민 유저 페이지 게시글 모달
-	@GetMapping("/getPosts")
+	@GetMapping("/user/Posts")
 	@ResponseBody
 	@Operation(summary = "게시글 모달", description = "특정 회원의 게시글을 볼 수 있다(리뷰).")
 	public ResponseEntity<CommonResponse<List<ReviewEntity>>> fetchPosts(@RequestParam("userUNo") Long userUNo) {
@@ -151,7 +151,7 @@ public class AdminPageRestController {
 	}
 
 	// 어드민 유저 페이지 게시글 모달 삭제
-	@DeleteMapping("/deletePost")
+	@DeleteMapping("/user/Post")
 	@Operation(summary = "게시글 삭제", description = "특정 회원의 게시글을 삭제 시킬 수 있다.")
 	public ResponseEntity<CommonResponse<String>> deletePost(@RequestParam("rNo") Long rNo) {
 		reviewService.deleteReview(rNo);
@@ -195,7 +195,7 @@ public class AdminPageRestController {
 	}
 
 	// 유저한테 쿠폰 발급
-	@PostMapping("/issueCouponToUser")
+	@PostMapping("/get/CouponToUser")
 	@Operation(summary = "유저 쿠폰 발급", description = "특정 유저에게 쿠폰을 발급한다.")
 	public ResponseEntity<CommonResponse<String>> issueCouponToUser(@RequestBody CouponDTO request) {
 		UserEntity user = userService.findById(request.getUserNo());
@@ -219,7 +219,7 @@ public class AdminPageRestController {
 	}
 
 	// 어드민 페이지 댓글 모달 삭제
-	@DeleteMapping("/deleteShopComment")
+	@DeleteMapping("/user/ShopComment")
 	@Operation(summary = "유저 댓글 삭제", description = "특정 유저의 댓글을 삭제한다.")
 	public ResponseEntity<CommonResponse<String>> deleteComment(@RequestParam("shopReviewNo") Long shopReviewNo) {
 		if (shopReviewNo == null || shopReviewNo <= 0) {
@@ -237,7 +237,7 @@ public class AdminPageRestController {
 	}
 
 	// 어드민 페이지 유저 댓글 (무한재귀형산으로 인한 DTO 생성)
-	@GetMapping("/fetchComments")
+	@GetMapping("/user/Comments")
 	@ResponseBody
 	@Operation(summary = "유저 상품 리뷰", description = "특정 유저의 상품 리뷰를 확인한다.")
 	public ResponseEntity<CommonResponse<List<UserShopCommentDTO>>> fetchComments(
@@ -262,7 +262,7 @@ public class AdminPageRestController {
 		}
 	}
 	
-	@GetMapping("/showCoupons")
+	@GetMapping("/user/showCoupons")
 	@Operation(summary = "유저 쿠폰 모달창", description = "특정 유저에게 admin이 쿠폰을 발급해 줄 수 있는 모달창을 띄운다.")
 	public ResponseEntity<CommonResponse<List<CouponEntity>>> getAllModalCoupons() {
 	    try {
@@ -275,7 +275,7 @@ public class AdminPageRestController {
 
 
 	// -----------------------------------공지사항------------------------------------
-	@DeleteMapping("/deleteNotice")
+	@DeleteMapping("/Notice")
 	@ResponseBody
 	@Operation(summary = "공지사항 삭제", description = "선택한 공지사항을 삭제한다.")
 	public ResponseEntity<CommonResponse<String>> deleteNotice(@RequestParam("noticeNo") Long noticeNo) {
@@ -294,7 +294,7 @@ public class AdminPageRestController {
 	}
 
 	// ---------------------------------쿠폰-----------------------------------------
-	@DeleteMapping("/deleteCoupon")
+	@DeleteMapping("/user/Coupon")
 	@Operation(summary = "유저 쿠폰 삭제", description = "유저 쿠폰 페이지에서 선택한 유저의 쿠폰을 삭제한다.")
 	public ResponseEntity<CommonResponse<String>> deleteCoupon(@RequestParam("id") Long couponMapId) {
 		if (couponMapId == null || couponMapId <= 0) {
@@ -338,7 +338,7 @@ public class AdminPageRestController {
 	}
 
 //------------------------------상점---------------------------
-	@PatchMapping("/toggleShopActivation")
+	@PatchMapping("/processShop")
 	@Operation(summary = "상점 비활성화, 활성화", description = "상점을 비활성화, 활성화 한다. 비활성화시 검색 불가.")
 	public ResponseEntity<CommonResponse<String>> toggleShopActivation(@RequestParam("shopNo") Long shopNo,
 			@RequestParam("isDeactivated") boolean isDeactivated) {
@@ -357,7 +357,7 @@ public class AdminPageRestController {
 		}
 	}
 
-	@GetMapping("/fetchOrderDetails")
+	@GetMapping("/shop/OrderDetails")
 	@ResponseBody
 	@Operation(summary = "상품 구매수 모달", description = "해당 상품을 누가 구매한 정보를 볼 수 있다.")
 	public ResponseEntity<CommonResponse<List<Map<String, Object>>>> fetchOrderDetails(
@@ -423,7 +423,7 @@ public class AdminPageRestController {
 	}
 
 //-----------------------이벤트-------------------------------
-	@DeleteMapping("/deleteEvent")
+	@DeleteMapping("/Event")
 	@Operation(summary = "이벤트 삭제", description = "이벤트를 삭제한다.")
 	public ResponseEntity<CommonResponse<String>> deleteEvent(@RequestParam("eventNo") Long eventNo) {
 		if (eventNo == null || eventNo <= 0) {
@@ -484,7 +484,7 @@ public class AdminPageRestController {
 		return ResponseEntity.ok(CommonResponse.success(responseData));
 	}
 
-	@PatchMapping("/updateShipmentState")
+	@PatchMapping("/checkOdered")
 	@Operation(summary = "주문 상태 변환", description = "유저의 주문을 확인하고 상태를 변경(주문확인)한다.")
 	public ResponseEntity<CommonResponse<String>> updateShipmentState(@RequestParam("orderedNo") Long orderedNo,
 			@RequestParam("shipmentState") String shipmentState) {
@@ -503,7 +503,7 @@ public class AdminPageRestController {
 	}
 
 //------------------문의 사항---------------------------------
-	@GetMapping("/getInquiryDetails")
+	@GetMapping("/InquiryDetails")
 	@ResponseBody
 	@Operation(summary = "문의사항 모달창", description = "문의사항 모달창을 열어 답변을 본다.")
 	public ResponseEntity<CommonResponse<InquiryDTO>> getInquiryDetails(@RequestParam("inqNo") Long inqNo) {
@@ -546,7 +546,7 @@ public class AdminPageRestController {
 	}
 
 	// 문의사항 모달창(답변보내기)
-	@PostMapping("/submitAnswer")
+	@PostMapping("/Answer")
 	@ResponseBody
 	@Operation(summary = "문의사항 답변", description = "유저의 문의사항에 답변을 할 수 있다.")
 	public ResponseEntity<CommonResponse<String>> submitAnswer(@RequestParam("inqNo") Long inqNo,
@@ -561,7 +561,7 @@ public class AdminPageRestController {
 	}
 
 //--------------------------자주 묻는 질문 (faq)---------------------
-	@GetMapping("/getfaq")
+	@GetMapping("/faq")
 	@ResponseBody
 	@Operation(summary = "자주 묻는 질문 수정(get)", description = "자주 묻는 질문의 수정 모달창을 띄울수 있다.")
 	public ResponseEntity<CommonResponse<FaqDTO>> getFaq(@RequestParam("faqNo") Long faqNo) {
@@ -580,7 +580,7 @@ public class AdminPageRestController {
 		}
 	}
 
-	@PatchMapping("/patchfaq")
+	@PatchMapping("/faq")
 	@ResponseBody
 	@Operation(summary = "자주 묻는 질문 수정(patch)", description = "선택한 자주 묻는 질문을 수정 할 수 있다.")
 	public ResponseEntity<CommonResponse<String>> updateFaq(@RequestParam("faqNo") Long faqNo,
@@ -594,7 +594,7 @@ public class AdminPageRestController {
 		}
 	}
 
-	@DeleteMapping("/deletefaq")
+	@DeleteMapping("/faq")
 	@ResponseBody
 	@Operation(summary = "자주 묻는 질문 삭제", description = "선택한 자주 묻는 질문을 삭제 할 수 있다.")
 	public ResponseEntity<CommonResponse<String>> deleteFaq(@RequestParam("faqNo") Long faqNo) {
