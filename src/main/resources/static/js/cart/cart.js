@@ -8,7 +8,7 @@
 				var CNo = button.closest('.cart-item').querySelector('#cart-no').value;
 				console.log('CNo의 값은', CNo);
 				$.ajax({
-					url: '/delete/cart',
+					url: '/api/cart',
 					type: 'DELETE',
 					data: {
 						CNo: CNo
