@@ -53,8 +53,6 @@ public class OrderedRestController {
     	orderedDTO.setOrderedEntities(orderedEntities);
     	orderedDTO.setShopEntities(shopEntities);
     	
-    	System.out.println("orderedDTO에는: " + orderedDTO);
-    	
     	return ResponseEntity.ok(orderedDTO);
     }
 }

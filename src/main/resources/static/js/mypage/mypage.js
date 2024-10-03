@@ -23,7 +23,7 @@ function openTab(evt, tabName) {
 function loadOrdered() {
 	$.ajax({
 		type: "GET",
-		url: "/my/ordered",
+		url: "/api/ordered",
 		success: function(orderedDTO) {
 			console.log("orderdDTO: ", orderedDTO);
 			if (orderedDTO == null || orderedDTO.orderedEntities.length === 0) {
@@ -42,7 +42,7 @@ function loadOrdered() {
 function loadCoupons() {
 	$.ajax({
 		type: "GET",
-		url: "/my/coupons",
+		url: "/api/coupons",
 		success: function(coupons) {
 			if (coupons == null || coupons.length === 0) {
 				thereIsNoCoupon();
@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	// 환불 사유 보기 모달 열기
 	window.showRefundReasonModal = function(merchantUId) {
-		fetch(`/refund/reason?merchantUId=${merchantUId}`)
+		fetch(`/admin/api/refund/reason?merchantUId=${merchantUId}`)
 			.then((response) => {
 				if (!response.ok) {
 					throw new Error("환불 정보를 불러오는 데 실패했습니다.");
@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 
 	function refundOrder(merchantUId, refundReason) {
-		fetch("/refund/paymentToAdmin", {
+		fetch("/admin/api/refund/paymentToAdmin", {
 			method: "POST",
 			body: new URLSearchParams({
 				merchantUId: merchantUId,
