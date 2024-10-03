@@ -6,7 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>상점 관리</title>
 	<link rel="stylesheet" href="/css/adminpage.css" />
-		<link rel="stylesheet" href="/css/adminsidebar.css" />
+	<link rel="stylesheet" href="/css/adminsidebar.css" />
 </head>
 
 <body>
@@ -129,20 +129,24 @@
 				});
 
 				function toggleShopActivation(shopNo, isDeactivated) {
-					fetch('/toggleShopActivation?shopNo=' + shopNo + '&isDeactivated=' + isDeactivated, {
-						method: 'POST'
+					fetch('/admin/api/toggleShopActivation?shopNo=' + shopNo + '&isDeactivated=' + isDeactivated, {
+						method: 'PATCH',
+						headers: {
+							'Content-Type': 'application/json'
+						}
 					})
-						.then(response => {
-							if (response.ok) {
-								alert('상점 상태가 변경되었습니다.');
-								location.reload();
+						.then(response => response.json())  // JSON 응답을 파싱
+						.then(result => {
+							if (result.code === 0) {  // 성공 상태 코드 확인
+								alert(result.message || '상점 상태가 변경되었습니다.');
+								location.reload();  // 페이지 새로고침으로 목록 갱신
 							} else {
-								alert('상점 상태 변경에 실패했습니다.');
+								alert(result.message || '상점 상태 변경에 실패했습니다.');
 							}
 						})
 						.catch(error => {
-							console.error('Error toggling shop activation:', error);
-							alert('상점 상태 변경 중 오류가 발생했습니다.');
+							console.error('상점 상태 변경 중 오류 발생:', error);
+							alert('상점 상태 변경 중 서버 오류가 발생했습니다.');
 						});
 				}
 
@@ -158,33 +162,43 @@
 
 				function fetchOrderDetails(shopNo) {
 					console.log("Fetching order details for shopNo:", shopNo);
-					fetch('/fetchOrderDetails?shopNo=' + shopNo)
-						.then(response => response.json())
-						.then(data => {
-							console.log("Data received:", data); // 추가된 로그
-							if (data.length === 0) {
-								document.getElementById("orderModalTableBody").innerHTML = '<tr><td colspan="7">해당 상품에 대한 주문 내역이 없습니다.</td></tr>';
+
+					fetch(`/admin/api/fetchOrderDetails?shopNo=${shopNo}`)
+						.then(response => response.json())  // 응답을 JSON으로 변환
+						.then(result => {
+							console.log("Data received:", result); // 추가된 로그
+
+							if (result.code === 0) {  // 성공 상태 확인
+								const data = result.data;
+
+								if (data.length === 0) {
+									document.getElementById("orderModalTableBody").innerHTML = '<tr><td colspan="7">해당 상품에 대한 주문 내역이 없습니다.</td></tr>';
+								} else {
+									let tableRows = data.map(order => `
+				                        <tr>
+				                            <td>${order.orderedNo}</td>
+				                            <td>${order.orderedNumber}</td>
+				                            <td>${order.orderedState}</td>
+				                            <td>${order.shipmentState}</td>
+				                            <td>${new Date(order.orderedDate).toLocaleDateString()}</td>
+				                            <td>${order.userName}</td>
+				                            <td>${order.quantity}</td>
+				                        </tr>
+				                    `).join('');
+									document.getElementById("orderModalTableBody").innerHTML = tableRows;
+								}
+
+								document.getElementById("orderModal").style.display = "block";
 							} else {
-								let tableRows = data.map(order => `
-                    <tr>
-                        <td>${order.orderedNo}</td>
-                        <td>${order.orderedNumber}</td>
-                        <td>${order.orderedState}</td>
-                        <td>${order.shipmentState}</td>
-                        <td>${new Date(order.orderedDate).toLocaleDateString()}</td>
-                        <td>${order.userName}</td>
-                        <td>${order.quantity}</td>
-                    </tr>
-                `).join('');
-								document.getElementById("orderModalTableBody").innerHTML = tableRows;
+								alert(result.message || '주문 내역을 가져오는 중 오류가 발생했습니다.');
 							}
-							document.getElementById("orderModal").style.display = "block";
 						})
 						.catch(error => {
 							console.error('Error fetching order details:', error);
 							alert('주문 내역을 가져오는 중 오류가 발생했습니다.');
 						});
 				}
+
 
 				// 모달 창 닫기
 				var modal = document.getElementById("orderModal");

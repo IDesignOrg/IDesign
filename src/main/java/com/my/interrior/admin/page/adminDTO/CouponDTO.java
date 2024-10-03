@@ -1,4 +1,4 @@
-package com.my.interrior.admin.page;
+package com.my.interrior.admin.page.adminDTO;
 
 import lombok.Getter;
 import lombok.Setter;

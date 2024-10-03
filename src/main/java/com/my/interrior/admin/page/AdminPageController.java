@@ -1,69 +1,39 @@
 package com.my.interrior.admin.page;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.my.interrior.admin.coupon.CouponMapRepository;
-import com.my.interrior.admin.coupon.CouponService;
+import com.my.interrior.admin.page.adminDTO.ReviewAndCommentDTO;
+import com.my.interrior.admin.page.adminDTO.ShopListAndOrderedDTO;
 import com.my.interrior.client.csc.faq.FaqEntity;
-import com.my.interrior.client.csc.inquiry.InquiryAnswerDTO;
-import com.my.interrior.client.csc.inquiry.InquiryAnswerEntity;
-import com.my.interrior.client.csc.inquiry.InquiryDTO;
-import com.my.interrior.client.csc.inquiry.InquiryEntity;
 import com.my.interrior.client.csc.inquiry.InquiryListDTO;
 import com.my.interrior.client.csc.notice.NoticeEntity;
 import com.my.interrior.client.csc.recover.RecoveryEntity;
-import com.my.interrior.client.evaluation.ReviewCommentEntity;
-import com.my.interrior.client.evaluation.ReviewEntity;
-import com.my.interrior.client.evaluation.ReviewRepository;
-import com.my.interrior.client.evaluation.ReviewService;
-import com.my.interrior.client.evaluation.DTO.ReviewCommentDTO;
 import com.my.interrior.client.event.EventEntity;
 import com.my.interrior.client.event.coupon.CouponEntity;
 import com.my.interrior.client.event.coupon.CouponMapEntity;
 import com.my.interrior.client.ordered.OrderedEntity;
-import com.my.interrior.client.ordered.OrderedRefundEntity;
-import com.my.interrior.client.ordered.OrderedRefundRepository;
-import com.my.interrior.client.ordered.OrderedRepository;
-import com.my.interrior.client.ordered.OrderedService;
-import com.my.interrior.client.pay.PayEntity;
-import com.my.interrior.client.pay.PaymentAndUserService;
-import com.my.interrior.client.pay.PaymentService;
 import com.my.interrior.client.shop.ShopEntity;
-import com.my.interrior.client.shop.ShopReviewEntity;
-import com.my.interrior.client.shop.ShopReviewRepository;
-import com.my.interrior.client.shop.ShopService;
-import com.my.interrior.client.user.FindUserDTO;
 import com.my.interrior.client.user.UserDTO;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserService;
 
-import jakarta.persistence.EntityNotFoundException;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -80,38 +50,6 @@ public class AdminPageController {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	@Autowired
-	private ReviewRepository reviewRepository;
-
-	@Autowired
-	private OrderedRepository orderedRepository;
-
-	@Autowired
-	private ReviewService reviewService;
-
-	@Autowired
-	private ShopReviewRepository shopReviewRepository;
-
-	@Autowired
-	private ShopService shopService;
-
-	@Autowired
-	private CouponService couponService;
-
-	@Autowired
-	private CouponMapRepository couponMap;
-
-	@Autowired
-	private PaymentService paymentService;
-
-	@Autowired
-	private OrderedService orderedService;
-
-	@Autowired
-	private PaymentAndUserService PaymentAndUserService;
-
-	@Autowired
-	private OrderedRefundRepository orderedRefundRepository;
 
 	@GetMapping("/auth/adminLogin")
 	public String AdminLogin() {
@@ -153,15 +91,12 @@ public class AdminPageController {
 	public String adminIndex(HttpSession session, Model model) {
 		// 유저 수 체크
 		Long userCount = adminPageService.getUserCount();
-		System.out.println("유저 수는 : " + userCount);
 		model.addAttribute("userCount", userCount);
 		// 상점 후기 체크
 		Long shopCount = adminPageService.getShopCount();
-		System.out.println("쇼핑몰 후기 수는  : " + shopCount);
 		model.addAttribute("shopCount", shopCount);
 		// 리뷰 수
 		Long reviewCount = adminPageService.getReviewCount();
-		System.out.println("리뷰의 수 : " + reviewCount);
 		model.addAttribute("reviewCount", reviewCount);
 		// 가장 높은 조회수를 가진 상점
 		Optional<ShopEntity> mostViewedShop = adminPageService.getMostViewedShop();
@@ -207,6 +142,7 @@ public class AdminPageController {
 
 	@GetMapping("/searchUsers")
 	@ResponseBody
+	@Operation(hidden = true)
 	public List<UserWithPostAndCommentCount> searchUsers(@RequestParam(name = "searchType") String searchType,
 			@RequestParam(name = "searchInput") String searchInput,
 			@RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -234,14 +170,6 @@ public class AdminPageController {
 		return "admin/page/adminNotice";
 	}
 
-	// 공지사항 삭제
-	@DeleteMapping("/deleteNotice")
-	@ResponseBody
-	public ResponseEntity<Void> deleteNotice(@RequestParam("noticeNo") Long noticeNo) {
-		adminPageService.deleteNotice(noticeNo);
-		return ResponseEntity.ok().build();
-	}
-
 	// 복구 페이지
 	@GetMapping("/admin/page/adminRecovery")
 	public String adminRecovery(Model model, Pageable pageable) {
@@ -255,6 +183,7 @@ public class AdminPageController {
 
 	@GetMapping("/admin/page/adminRecovery/search")
 	@ResponseBody
+	@Operation(hidden = true)
 	public List<RecoveryEntity> searchRecoveryRequests(@RequestParam(name = "searchType") String searchType,
 			@RequestParam(name = "searchInput", required = false) String searchInput,
 			@RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -292,13 +221,6 @@ public class AdminPageController {
 		model.addAttribute("totalPages", coupons.getTotalPages());
 		return "admin/page/adminCouponList"; // 쿠폰 관리 페이지로 이동
 	}
-
-	// 쿠폰 모달창
-	@GetMapping("/getCoupons")
-	@ResponseBody
-	public List<CouponEntity> getAllModalCoupons() {
-		return adminPageService.getAllModalCoupons();
-	}
 	
 
 	// 유저 쿠폰 리스트
@@ -312,38 +234,8 @@ public class AdminPageController {
 		return "admin/page/adminUserCoupon";
 	}
 
-	// 유저 쿠폰 삭제
-	@DeleteMapping("/deleteCoupon")
-	public ResponseEntity<String> deleteCoupon(@RequestParam("id") Long couponMapId) {
-		try {
-			adminPageService.deleteCouponById(couponMapId);
-			return ResponseEntity.ok("쿠폰이 삭제되었습니다.");
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("쿠폰 삭제에 실패했습니다.");
-		}
-	}
-
-	// 쿠폰 비활성화, 활성
-	@PostMapping("/processCoupon")
-	public ResponseEntity<String> processCoupon(@RequestParam("couponNo") Long couponNo,
-			@RequestParam("state") String state) {
-		try {
-			CouponEntity coupon = couponService.findCouponById(couponNo);
-
-			// 현재 날짜와 쿠폰 만료일 비교
-			if (state.equalsIgnoreCase("ACTIVE") && coupon.getCouponEndAt().isBefore(LocalDate.now())) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("쿠폰의 유효 기간이 만료되어 활성화할 수 없습니다.");
-			}
-
-			adminPageService.updateCouponState(couponNo, state);
-			return ResponseEntity.ok("쿠폰 상태가 업데이트되었습니다.");
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("쿠폰 상태 업데이트에 실패했습니다.");
-		}
-	}
-
 	// shop리스트와 ordered의 count
-	@GetMapping("/admin/adminShopList")
+	@GetMapping("/admin/page/adminShopList")
 	public String adminShopList(Model model, Pageable pageable) {
 		Page<ShopListAndOrderedDTO> shops = adminPageService
 				.getAllShopsAndCounts(PageRequest.of(pageable.getPageNumber(), PAGE_SIZE));
@@ -352,8 +244,9 @@ public class AdminPageController {
 		model.addAttribute("totalPages", shops.getTotalPages());
 		return "admin/page/adminShopList";
 	}
-
+	
 	@GetMapping("/adminsearch")
+	@Operation(hidden = true)
 	public String shopList(@RequestParam(name = "shopTitle", required = false) String shopTitle,
 			@RequestParam(name = "shopCategory", required = false) String shopCategory,
 			@RequestParam(name = "minPrice", required = false) Integer minPrice,
@@ -376,29 +269,8 @@ public class AdminPageController {
 
 		return "admin/page/adminShopList";
 	}
-
-	// ordered 모달창
-	// orderedEntity에서 UserEntity가 @JsonIgnore 해당 어노테이션 때문에 오류로 인하여 좀 복잡하게 만듬
-	@GetMapping("/fetchOrderDetails")
-	@ResponseBody
-	public List<Map<String, Object>> fetchOrderDetails(@RequestParam("shopNo") Long shopNo) {
-		List<OrderedEntity> orders = orderedRepository.findByShopNo(shopNo);
-
-		List<Map<String, Object>> orderDetailsList = new ArrayList<>();
-		for (OrderedEntity order : orders) {
-			Map<String, Object> orderDetails = new HashMap<>();
-			orderDetails.put("orderedNo", order.getOrderedNo());
-			orderDetails.put("orderedNumber", order.getOrderedNumber());
-			orderDetails.put("orderedState", order.getOrderedState());
-			orderDetails.put("shipmentState", order.getShipmentState());
-			orderDetails.put("orderedDate", order.getOrderedDate());
-			orderDetails.put("userName", order.getUserEntity().getUName()); // userEntity의 UName을 직접 추가
-			orderDetails.put("quantity", order.getQuantity());
-			orderDetailsList.add(orderDetails);
-		}
-
-		return orderDetailsList;
-	}
+	
+	
 
 	// 주문관리 페이지
 	@GetMapping("/admin/page/adminOrdered")
@@ -411,19 +283,6 @@ public class AdminPageController {
 		return "admin/page/adminOrdered";
 	}
 
-	// ㅂ지활성화 할거임
-	@PostMapping("/toggleShopActivation")
-	public ResponseEntity<String> toggleShopActivation(@RequestParam("shopNo") Long shopNo,
-			@RequestParam("isDeactivated") boolean isDeactivated) {
-		try {
-			adminPageService.toggleShopActivation(shopNo, isDeactivated);
-			String status = isDeactivated ? "비활성화" : "활성화";
-			return ResponseEntity.ok("상점이 " + status + "되었습니다.");
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body("상점 상태 변경에 실패했습니다.");
-		}
-	}
-
 	// 이벤트 관리 페이지
 	@GetMapping("/admin/page/adminEvent")
 	public String adminEvent(Model model, Pageable pageable) {
@@ -434,16 +293,6 @@ public class AdminPageController {
 		return "admin/page/adminEvent";
 	}
 	
-	//이벤트 삭제
-	@DeleteMapping("/deleteEvent")
-    public ResponseEntity<String> deleteEvent(@RequestParam("eventNo") Long eventNo) {
-        try {
-            adminPageService.deleteEvent(eventNo);
-            return ResponseEntity.ok("이벤트가 성공적으로 삭제되었습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("이벤트 삭제 중 오류가 발생했습니다.");
-        }
-    }
 
 	@GetMapping("/admin/page/adminEventSearch")
 	public String searchEvents(@RequestParam("type") String type, @RequestParam("keyword") String keyword,
@@ -464,59 +313,6 @@ public class AdminPageController {
 		return "admin/page/adminEvent";
 	}
 
-	// 환불
-	@PostMapping("/refund/paymentToAdmin")
-	public ResponseEntity<?> refundPayment(@RequestParam("merchantUId") String merchantUId,
-			@RequestParam("refundReason") String refundReason, HttpSession session) throws Exception {
-		String userid = (String) session.getAttribute("UId");
-		String token = paymentService.getAccessToken();
-		System.out.println("멀천튜유아이딩 : "+merchantUId);
-		System.out.println("뤼펀드우느랒 : " + refundReason);
-		paymentService.refundRequest(token, merchantUId);
-		
-
-		// 여기에 주문 내역에서 삭제해야 됨.
-		// ordered랑 payment랑 payment_user_mapping 테이블 전부인데 payment_user_mapping부터 지워야 됨.
-		// shipment는 나중에 시간나면 추가해줘야 됨. 지금 shipment 지울만한 속성이 없음.
-		// 오더 상태 변경
-		orderedService.updateOrderedState(merchantUId, refundReason, userid);
-
-		PayEntity pay = paymentService.findPayEntity(merchantUId);
-		Long payNo = pay.getPayNo();
-		// payment_user_mapping 제거
-		PaymentAndUserService.deleteByPayNo(payNo);
-		// payment 제거
-		paymentService.deleteByMerchantUId(merchantUId);
-		return ResponseEntity.ok().build();
-	}
-
-	@GetMapping("/refund/reason")
-	public ResponseEntity<?> getRefundReason(@RequestParam("merchantUId") String merchantUId) {
-		OrderedRefundEntity refundEntity = orderedRefundRepository.findByOrderedEntity_MerchantUId(merchantUId)
-				.orElseThrow(() -> new EntityNotFoundException("No refund found for merchantUId: " + merchantUId));
-
-		return ResponseEntity
-				.ok(Map.of("refundReason", refundEntity.getRefundReason(), "refundUser", refundEntity.getRefundUser() // 추가된
-																														// 필드
-				));
-	}
-
-	@PostMapping("/admin/updateShipmentState")
-	public ResponseEntity<?> updateShipmentState(@RequestParam("orderedNo") Long orderedNo,
-			@RequestParam("shipmentState") String shipmentState) {
-
-		try {
-			// 주문 번호를 기반으로 주문을 조회하고 상태 업데이트
-			adminPageService.updateShipmentState(orderedNo, shipmentState);
-
-			// 성공적으로 업데이트된 경우 HTTP 200 응답을 반환
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			// 오류가 발생한 경우 HTTP 500 응답을 반환
-			return ResponseEntity.status(500).body("주문 상태 업데이트 중 오류가 발생했습니다.");
-		}
-	}
-
 	// 자주 묻는 질문 리스
 	@GetMapping("/admin/adminFAQ")
 	public String getFaqList(Model model, Pageable pageable) {
@@ -527,42 +323,6 @@ public class AdminPageController {
 		return "admin/page/adminFAQ";
 	}
 
-	// 자주 묻는 질문 수정 모달창
-	@GetMapping("/admin/faq/{faqNo}")
-	@ResponseBody
-	public ResponseEntity<FaqEntity> getFaq(@PathVariable("faqNo") Long faqNo) {
-		System.out.println("Fetching FAQ with ID: " + faqNo);
-		FaqEntity faq = adminPageService.getFaqById(faqNo);
-		if (faq != null) {
-			return ResponseEntity.ok(faq);
-		} else {
-			System.out.println("FAQ not found with ID: " + faqNo);
-			return ResponseEntity.notFound().build();
-		}
-	}
-
-	// 자주 묻는 질문 수정
-	@PutMapping("/admin/faq/{faqNo}")
-	@ResponseBody
-	public ResponseEntity<String> updateFaq(@PathVariable("faqNo") Long faqNo, @RequestBody FaqEntity faqData) {
-		boolean updated = adminPageService.updateFaq(faqNo, faqData);
-		if (updated) {
-			return ResponseEntity.ok("FAQ가 성공적으로 수정되었습니다.");
-		} else {
-			return ResponseEntity.badRequest().body("FAQ 수정에 실패했습니다.");
-		}
-	}
-
-	@DeleteMapping("/admin/faq/{faqNo}")
-	@ResponseBody
-	public ResponseEntity<String> deleteFaq(@PathVariable("faqNo") Long faqNo) {
-		boolean deleted = adminPageService.deleteFaq(faqNo);
-		if (deleted) {
-			return ResponseEntity.ok("FAQ가 성공적으로 삭제되었습니다.");
-		} else {
-			return ResponseEntity.badRequest().body("FAQ 삭제에 실패했습니다.");
-		}
-	}
 	//문의사항
 	@GetMapping("/admin/inquiry")
     public String getInquiryList(Model model, Pageable pageable) {
@@ -576,59 +336,6 @@ public class AdminPageController {
 
         return "admin/page/adminInquiry";  // Thymeleaf 템플릿 경로
     }
-	
-	//문의사항 모달창(답변보기)
-	@GetMapping("/getInquiryDetails")
-	@ResponseBody
-	public InquiryDTO getInquiryDetails(@RequestParam("inqNo") Long inqNo) {
-		InquiryEntity inquiryEntity = adminPageService.getInquiryById(inqNo);
-		//문의테이블에서 값을 dto에 입력
-		InquiryDTO inquiryDTO = new InquiryDTO();
-		inquiryDTO.setInqNo(inquiryEntity.getInqNo());
-		inquiryDTO.setInqTitle(inquiryEntity.getInqTitle());
-		inquiryDTO.setInqRegisteredDate(inquiryEntity.getInqRegisteredDate());
-		inquiryDTO.setInqCategory(inquiryEntity.getInqCategory());
-		inquiryDTO.setInqContent(inquiryEntity.getInqContent());
-		//findUserDTO에 원하는 값을 넣고 inquiryDTO의 User에 값을 넣음
-		FindUserDTO findUserDTO = new FindUserDTO();
-		findUserDTO.setUName(inquiryEntity.getUserEntity().getUName());
-		findUserDTO.setUNo(inquiryEntity.getUserEntity().getUNo());
-		findUserDTO.setUPofile(inquiryEntity.getUserEntity().getUPofile());
-		inquiryDTO.setUser(findUserDTO);
-		System.out.println("InquiryDTO: " + inquiryDTO);
-		//답변하기
-		InquiryAnswerEntity answerEntity = adminPageService.getInquiryAnswerById(inqNo);
-        if (answerEntity != null) {
-            InquiryAnswerDTO answerDTO = new InquiryAnswerDTO();
-            answerDTO.setAnsNo(answerEntity.getAnsNo());
-            answerDTO.setAnsContent(answerEntity.getAnsContent());
-            answerDTO.setAnsRegisteredDate(answerEntity.getAnsRegisteredDate());
 
-            // UserEntity -> UserDTO for the answer
-            FindUserDTO answerUserDTO = new FindUserDTO();
-            answerUserDTO.setUName(answerEntity.getUserEntity().getUName());
-            answerUserDTO.setUPofile(answerEntity.getUserEntity().getUPofile());
-            answerUserDTO.setUNo(answerEntity.getUserEntity().getUNo());
-            answerDTO.setUser(answerUserDTO);
-
-            inquiryDTO.setAnswer(answerDTO); // 단일 답변 설정
-        }else {
-            inquiryDTO.setAnswer(null); // 답변이 없으면 null 설정
-        }
-
-        return inquiryDTO;
-	}
-	// 문의 상세 정보 조회 (답변 작성 페이지 로드용)
-	//문의사항 모달창(답변보내기)
-	@PostMapping("/submitAnswer")
-    @ResponseBody
-    public ResponseEntity<String> submitAnswer(@RequestParam("inqNo") Long inqNo, @RequestParam("answerContent") String answerContent) {
-        try {
-            adminPageService.saveInquiryAnswer(inqNo, answerContent);
-            return ResponseEntity.ok("답변이 성공적으로 저장되었습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("답변 저장에 실패했습니다.");
-        }
-    }
 
 }
