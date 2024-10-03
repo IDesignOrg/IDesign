@@ -65,7 +65,7 @@ $(document).ready(function () {
 
     $.ajax({
       type: "POST",
-      url: "/auth/cart",
+      url: "/api/cart",
       data: $(this).serialize(),
       success: function (res) {
         if (confirm(res)) {
