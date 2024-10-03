@@ -60,9 +60,6 @@ public class UserController {
 		model.addAttribute("naverClientId", naverApi.getClientId());
 		model.addAttribute("naverRedirectUri", naverApi.getRedirectUri());
 
-		System.out.println("googleClientId: " + googleApi.getClientId());
-		System.out.println("googleRedirectUri: " + googleApi.getRedirectUri());
-		System.out.println("googleScope: " + googleApi.getScope());
 		return "client/login";
 	}
 
@@ -79,7 +76,7 @@ public class UserController {
 	}
 
 	@PostMapping("/signup")
-	public String join(@ModelAttribute UserEntity userEntity) throws Exception {
+	public String join(@ModelAttribute UserEntity userEntity){
 		try {
 			userEntity.setURegister(LocalDate.now());
 			userEntity.setUPw(passwordEncoder.encode(userEntity.getUPw()));
@@ -97,7 +94,7 @@ public class UserController {
 	}
 
 	@PostMapping("/signin")
-	public String login(@ModelAttribute UserDTO userDTO, HttpSession session, Model model,  RedirectAttributes redirectAttributes) throws Exception {
+	public String login(@ModelAttribute UserDTO userDTO, HttpSession session, Model model,  RedirectAttributes redirectAttributes){
 		try {
 			if (userDTO.getUId() == null || userDTO.getUPw() == null)
 				return "redirect:/signin";
@@ -105,7 +102,7 @@ public class UserController {
 			String UId = userDTO.getUId();
 			String UPw = userDTO.getUPw();
 			UserEntity user = userService.checkLogin(UId);
-			System.out.println("user" + user);
+
 			if (user != null && passwordEncoder.matches(UPw, user.getUPw())) {
 				if (user.isUDeactivated()) {
 					redirectAttributes.addFlashAttribute("deactivatedError", "비활성화된 아이디입니다. 복구신청을 하시겠습니까?");
