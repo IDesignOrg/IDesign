@@ -112,7 +112,7 @@
 				});
 
 				function loadFaqData(faqNo) {
-					fetch(`/admin/api/getfaq?faqNo=${faqNo}`)
+					fetch(`/admin/api/faq?faqNo=${faqNo}`)
 						.then(response => response.json())  // JSON 응답을 파싱
 						.then(result => {
 							if (result.code === 0) {  // 성공 상태 코드 확인
@@ -142,7 +142,7 @@
 						faqContent: document.getElementById("editFaqContent").value
 					};
 
-					fetch(`/admin/api/patchfaq?faqNo=${faqNo}`, {
+					fetch(`/admin/api/faq?faqNo=${faqNo}`, {
 						method: 'PATCH',  // PATCH 메소드 사용
 						headers: {
 							'Content-Type': 'application/json'
@@ -166,7 +166,7 @@
 
 
 				function deleteFaq(faqNo) {
-					fetch(`/admin/api/deletefaq?faqNo=${faqNo}`, {
+					fetch(`/admin/api/faq?faqNo=${faqNo}`, {
 						method: 'DELETE',  // DELETE 메소드 사용
 						headers: {
 							'Content-Type': 'application/json'

@@ -54,7 +54,7 @@
 	<script>
 		function deleteNotice(noticeNo) {
 			if (confirm("정말로 이 공지사항을 삭제하시겠습니까?")) {
-				fetch('/admin/api/deleteNotice?noticeNo=' + noticeNo, {
+				fetch('/admin/api/Notice?noticeNo=' + noticeNo, {
 					method: 'DELETE',
 					headers: {
 						'Content-Type': 'application/json'

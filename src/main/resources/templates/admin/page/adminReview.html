@@ -160,7 +160,7 @@
 
 			function deleteReview(rNo) {
 			    if (confirm("정말 이 리뷰를 삭제하시겠습니까?")) {
-			        fetch(`/admin/api/deleteReview?rNo=${rNo}`, {
+			        fetch(`/admin/api/Review?rNo=${rNo}`, {
 			            method: 'DELETE',
 			            headers: {
 			                'Content-Type': 'application/json'

@@ -268,7 +268,7 @@
 	<script>
 		// 공통으로 데이터를 가져오는 함수
 		function fetchInquiryDetails(inqNo) {
-			return fetch('/admin/api/getInquiryDetails?inqNo=' + inqNo)
+			return fetch('/admin/api/InquiryDetails?inqNo=' + inqNo)
 				.then(response => response.json())  // JSON 응답을 파싱
 				.then(result => {
 					if (result.code === 0) {  // 성공 상태 코드 확인
@@ -316,7 +316,7 @@
 		    formData.append('inqNo', answerInquiryId);
 		    formData.append('answerContent', answerContent);
 
-		    fetch('/admin/api/submitAnswer?' + formData.toString(), {
+		    fetch('/admin/api/Answer?' + formData.toString(), {
 		        method: 'POST',
 		        headers: {
 		            'Content-Type': 'application/x-www-form-urlencoded'
