@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     $.ajax({
       type: "POST",
-      url: "/get/coupon/" + couponNo,
+      url: "/api/coupon/" + couponNo,
       contentType: "application/json",
       data: JSON.stringify({ couponNo: couponNo }), // couponNo를 JSON으로 보냄
       success: function (res) {
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (xhr.status === 401) {
           alert("로그인이 필요합니다.");
           // 로그인 페이지로 리다이렉트
-          window.location.href = "/auth/login"; // 로그인 페이지 경로
+          window.location.href = "/signin"; // 로그인 페이지 경로
         } else {
           alert(xhr.responseText);
         }
