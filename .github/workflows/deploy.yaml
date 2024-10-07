@@ -85,7 +85,7 @@ jobs:
             echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             cd IDesign
             IMAGE_NAME="yoonjaehwan/idesign:latest"
-
+            docker pull $IMAGE_NAME
             # git pull origin feature-lhj
             EXIST_BLUE=$(docker ps --filter "name=idesign_blue" --filter "status=running" -q)
             EXIST_GREEN=$(docker ps --filter "name=idesign_green" --filter "status=running" -q)
