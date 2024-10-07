@@ -14,6 +14,7 @@ export const projectNode = (project) => {
   a.className = "project-wrapper";
   box.style.position = "relative";
   box.appendChild(a);
+
   box.className = "project received";
 
   //img wrapper
