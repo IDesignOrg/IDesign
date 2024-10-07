@@ -9,7 +9,6 @@ export const projectNode = (project) => {
   const { project_id, thumbnail, title, regDt, src } = project;
   box.id = project_id;
   // wook 눌렀을 때 이동
-  //wrapper
   a.href = `${window.location.origin}/three?project_id=${project_id}`;
   a.className = "project-wrapper";
   box.style.position = "relative";
