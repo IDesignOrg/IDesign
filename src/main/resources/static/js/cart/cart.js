@@ -133,7 +133,7 @@
 										$.when(
 											// 주문 내역 저장
 											$.ajax({
-												url: '/save/ordered',
+												url: '/api/ordered',
 												type: 'POST',
 												data: {
 													price: discountedAmount
@@ -150,7 +150,7 @@
 											}),
 											$.ajax({
 												// 쿠폰 처리: 쓴 쿠폰 확인은 쓴 날짜로 함
-												url: '/coupon/clear',
+												url: '/api/coupon',
 												type: 'PATCH',
 												data: {
 													couponNo: couponNo
@@ -158,7 +158,7 @@
 											}),
 											$.ajax({
 												// 장바구니 전부 삭제
-												url: '/delete/all/cart',
+												url: '/api/all/cart',
 												type: 'DELETE'
 											})
 										).done(function (res0, res1, res2, res3) {

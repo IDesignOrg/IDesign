@@ -196,7 +196,7 @@
 
 				// 주문 상태 업데이트 함수
 				function updateShipmentState(orderedNo) {
-				    fetch(`/admin/api/updateShipmentState`, {
+				    fetch(`/admin/api/checkOdered`, {
 				        method: 'PATCH',
 				        headers: {
 				            'Content-Type': 'application/x-www-form-urlencoded'
