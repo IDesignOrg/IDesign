@@ -101,7 +101,7 @@ jobs:
             elif [ -n "$EXIST_BLUE" ]; then
               # Green 환경으로 전환
               # 새로운 컨테이너를 배경에서 실행 (정지하지 않고)
-              sudo docker-compose -f ./dockercompose/docker-compose.green.yml up -d --no-recreate
+              sudo docker-compose -f ./dockercompose/docker-compose.green.yml up -d 
 
               # Healthcheck 새로운 컨테이너가 준비됐는지 확인
               while ! curl -s http://localhost:8082/healthcheck; do
@@ -118,7 +118,7 @@ jobs:
 
             elif [ -n "$EXIST_GREEN" ]; then
               # Blue 환경으로 전환
-              sudo docker-compose -f ./dockercompose/docker-compose.blue.yml up -d --no-recreate
+              sudo docker-compose -f ./dockercompose/docker-compose.blue.yml up -d 
 
               while ! curl -s http://localhost:8081/healthcheck; do
                 echo "Waiting for blue container to be ready..."
