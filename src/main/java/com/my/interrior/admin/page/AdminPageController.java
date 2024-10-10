@@ -124,7 +124,7 @@ public class AdminPageController {
 		return "admin/page/adminUsers";
 	}
 
-	// 리뷰 리스트
+	// 리뷰 리스트api
 	@GetMapping("/admin/adminReview")
 	public String adminReview(@RequestParam(name = "page", defaultValue = "0") int page,
 			@RequestParam(name = "size", defaultValue = "10") int size, Model model) {
