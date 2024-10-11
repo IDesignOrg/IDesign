@@ -121,6 +121,7 @@ public class AdminPageRestController {
 
 		return ResponseEntity.ok(CommonResponse.success(comments));
 	}
+	
 
 	// 리뷰페이지에서 리뷰 삭제
 	@DeleteMapping("/Review")
