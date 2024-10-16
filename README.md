@@ -167,7 +167,7 @@
 
 # 기술 스택
 
-> [BackEnd](https://www.notion.so/IDESIGN-BackEnd-Skill-Tools-10ebd9219c6880889428f39c62308e13)
+> [BackEnd]([https://www.notion.so/IDESIGN-BackEnd-Skill-Tools-10ebd9219c6880889428f39c62308e13](https://www.notion.so/IDesign-BackEnd-Skill-Tools-10e6f41133c880459f21d2be9d3ce28b?pvs=4))
 
 > [3D]
 
