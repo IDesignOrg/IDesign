@@ -64,15 +64,20 @@
 
         <!-- 구글 -->
         <div class="text-center">
-          <a
-            th:href="@{https://accounts.google.com/o/oauth2/v2/auth(client_id=${googleClientId}, redirect_uri=${googleRedirectUri}, response_type='code', scope=${googleScope})}"
-          >
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/2048px-Google_%22G%22_logo.svg.png"
-              alt=""
-            />
-            <span> 구글 로그인 </span>
-          </a>
+			<a
+			  th:href="@{https://accounts.google.com/o/oauth2/v2/auth(
+			    client_id=${googleClientId},
+			    redirect_uri=${#urls.urlEncode(googleRedirectUri)},
+			    response_type='code',
+			    scope=${#urls.urlEncode(googleScope)}
+			  )}"
+			>
+			  <img
+			    src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/2048px-Google_%22G%22_logo.svg.png"
+			    alt=""
+			  />
+			  <span> 구글 로그인 </span>
+			</a>
         </div>
 
         <!-- 네이버 -->
