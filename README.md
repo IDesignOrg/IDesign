@@ -212,7 +212,7 @@
 </table>
 </markdown-accessibly-table>
 
-> [👉세부 기능 확인하러 가기](https://www.notion.so/IDESIGN-10ebd9219c6880fd8a6cfe17b6a2dbf2?pvs=4)
+> [👉세부 기능 확인하러 가기](https://lightning-scent-c7f.notion.site/IDESIGN-10ebd9219c6880fd8a6cfe17b6a2dbf2?pvs=4)
 
 # API 명세
 
