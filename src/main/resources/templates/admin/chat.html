@@ -21,7 +21,8 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script>
 		//서버의 admin의 서블릿으로 웹 소켓을 한다.
-		var webSocket = new WebSocket(`wss://${window.location.host}/adminBroadsocket`);
+		var webSocket = new WebSocket(`wss://idesign.r-e.kr/adminBroadsocket`);
+
 		console.log("window.location.host: ", window.location.host);
 		// 관리자는 open, close, error 의미가 지금은 없으니 형태만 선언한다.
 		webSocket.onopen = function (message) { console.log("연결 성공")};
