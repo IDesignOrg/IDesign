@@ -169,8 +169,6 @@
 
 > [BackEnd](https://swamp-gull-171.notion.site/IDesign-BackEnd-Skill-Tools-10e6f41133c880459f21d2be9d3ce28b?pvs=4)
 
-> [3D]
-
 # 주요 기능
 
 ### 요약
