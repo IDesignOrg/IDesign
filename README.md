@@ -1,4 +1,4 @@
-# 🙌팀 IDESIGN
+# 🙌팀 IDESIGN.
 
 <img width="1468" alt="스크린샷 2024-09-23 오후 4 43 17" src="https://github.com/user-attachments/assets/cb01ae97-d77b-4bce-9979-74c9ea3cac9d">
 
