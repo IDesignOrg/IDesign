@@ -20,5 +20,5 @@ private String clientSecret;
 
 private String redirectUri;
 
-private String authorizationGrantType;
+private String authorizationGrantType; 
 }
