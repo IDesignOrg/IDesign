@@ -13,12 +13,7 @@ public class CustomErrorController {
 
 	@GetMapping("/error/401")
 	@ResponseStatus(HttpStatus.UNAUTHORIZED)
-	public String unauthorized(HttpServletRequest request) {
-		String scheme = request.getScheme();
-	    if (scheme.equals("http")) {
-	        // HTTP로 접근할 경우 HTTPS로 리다이렉트
-	        return "redirect:https://idesign.r-e.kr/error/401";
-	    }
-	    return "client/login";
+	public String unauthorized() {
+		return "client/login";
 	}
 }
