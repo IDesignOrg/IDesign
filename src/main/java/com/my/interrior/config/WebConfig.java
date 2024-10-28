@@ -25,7 +25,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(interceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/v3/**","/swagger-ui/**","/admin/api/**","/api/**", "/signin/**", "/signup/**", "/forgot-id/**","/forgot-password/**","/error/**","/auth/**","/", "/board/**", "/static/**", "/css/**", "/js/**", "/include/**", "/image/**", "/logout", "/board/faq/search/**", "/dist/**", "/save/**", "/get/**"); //auth명시된건 패스시킨다
+                .excludePathPatterns("/v3/**","/swagger-ui/**","/admin/api/**","/api/**", "/signin/**", "/signup/**", "/forgot-id/**","/forgot-password/**","/error/**","/auth/**","/", "/board/**", "/static/**", "/css/**", "/js/**", "/include/**", "/image/**", "/logout", "/board/faq/search/**", "/dist/**", "/save/**", "/get/**", "/favicon.ico", "/meta/favicon.ico"); //auth명시된건 패스시킨다
     }
     @Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
