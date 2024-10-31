@@ -71,9 +71,18 @@ jobs:
         id: ip
         uses: haythem/public-ip@v1.3
 
+      - name: Debug Public IP
+        run: |
+          echo "Public IP is ${{ steps.ip.outputs.ip }}"
+          echo "CIDR Block is ${{ steps.ip.outputs.ip }}/32"
+
       - name: Add GitHub Actions IP to Security Group
         run: |
           echo "Public IP is ${{ steps.ip.outputs.ip }}"
+          if [ -z "${{ steps.ip.outputs.ip }}" ]; then
+            echo "Public IP not found. Exiting..."
+            exit 1
+          fi
           aws ec2 authorize-security-group-ingress \
             --group-id ${{ secrets.AWS_SG_ID }} \
             --protocol tcp \
