@@ -69,7 +69,8 @@ jobs:
 
       - name: Get Public IP
         id: ip
-        uses: haythem/public-ip@v1.3
+        run: |
+          echo "::set-output name=ip::$(curl -s ifconfig.me)"
 
       - name: Debug Public IP
         run: |
