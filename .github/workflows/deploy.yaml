@@ -67,6 +67,23 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Get Public IP
+        id: ip
+        uses: haythem/public-ip@v1.3
+
+      - name: Add GitHub Actions IP to Security Group
+        run: |
+          echo "Public IP is ${{ steps.ip.outputs.ip }}"
+          aws ec2 authorize-security-group-ingress \
+            --group-id ${{ secrets.AWS_SG_ID }} \
+            --protocol tcp \
+            --port 3306 \
+            --cidr ${{ steps.ip.outputs.ip }}/32
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ap-northeast-2
+
       - name: Build and push Docker images
         run: |
           docker build -t yoonjaehwan/idesign:latest .
@@ -132,3 +149,15 @@ jobs:
               sudo cp ./nginx/nginx.blue.conf /etc/nginx/nginx.conf
               sudo nginx -s reload
             fi
+
+      - name: Remove GitHub Actions IP from Security Group
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id ${{ secrets.AWS_SG_ID }} \
+            --protocol tcp \
+            --port 3306 \
+            --cidr ${{ steps.ip.outputs.ip }}/32
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ap-northeast-2
