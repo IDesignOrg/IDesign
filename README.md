@@ -216,7 +216,7 @@
 
 > [👉 API 명세 확인하러 가기(Swagger)](https://idesign.r-e.kr/swagger-ui/index.html)
 
-# 형상 관리
+# 프로젝트 관리
 
 <markdown-accessibly-table data-catalyst>
 <table align="center" tabindex="0" style="border-collapse: collapse; width:100%;">
