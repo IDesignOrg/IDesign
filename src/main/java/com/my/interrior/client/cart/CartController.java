@@ -131,6 +131,6 @@ public class CartController {
 		// shop_no를 기준으로 shopEntity 테이블의 데이터들이 들어가있음.
 		model.addAttribute("shopEntities", shopEntities);
 
-		return "/client/cart/cart";
+		return "client/cart/cart";
 	}
 }
