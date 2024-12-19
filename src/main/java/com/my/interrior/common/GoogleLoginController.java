@@ -43,7 +43,7 @@ public class GoogleLoginController {
                 .clientId(googleApi.getClientId())
                 .clientSecret(googleApi.getClientSecret())
                 .code(authCode)
-                .redirectUri("http://idesign.r-e.kr/auth/login/google")
+                .redirectUri("https://idesign.r-e.kr/auth/login/google")
                 .grantType("authorization_code").build();
         
         ResponseEntity<GoogleResponse> resultEntity = restTemplate.postForEntity("https://oauth2.googleapis.com/token",
