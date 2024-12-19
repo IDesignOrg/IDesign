@@ -12,8 +12,8 @@ import com.my.interrior.client.user.UserEntity;
 
 @Repository
 public interface CouponMapRepository extends JpaRepository<CouponMapEntity, Long>{
-	Optional<CouponMapEntity> findByuserEntityAndCouponEntity(UserEntity userEntity, CouponEntity couponEntity);
-	List<CouponMapEntity> findByuserEntity(UserEntity userEntity);
-	List<CouponMapEntity> findByuserEntity_UNo(Long userNo);
-	CouponMapEntity findBycouponEntity_couponNo(Long couponNo);
+   Optional<CouponMapEntity> findByuserEntityAndCouponEntity(UserEntity userEntity, CouponEntity couponEntity);
+   List<CouponMapEntity> findByuserEntity(UserEntity userEntity);
+   List<CouponMapEntity> findByuserEntity_UNo(Long userNo);
+   CouponMapEntity findByCouponEntity_CouponNoAndUserEntity_UNo(Long couponNo, Long uNo);
 }
