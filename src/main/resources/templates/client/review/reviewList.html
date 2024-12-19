@@ -140,8 +140,13 @@
 
 		            // 서버에서 받은 데이터를 콘솔에 출력하여 확인
 		            console.log("서버 응답 데이터:", newComment);
+					
+					
 
-		            const commentSection = document.getElementById("commentSection");
+					const commentSection = document.getElementById("commentSection");
+					            if (commentSection.style.display === "none") {
+					                commentSection.style.display = "block"; // 숨겨진 댓글 섹션 표시
+					            }
 		            const commentDiv = document.createElement("div");
 		            commentDiv.classList.add("comment");
 

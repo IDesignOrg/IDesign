@@ -4,22 +4,15 @@
 <meta charset="EUC-KR">
 <title>Insert title here</title>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-<style>
-    #fileList {
-        list-style: none;
-        padding: 0;
-    }
-    #fileList li {
-        margin: 5px 0;
-        padding: 10px;
-        border: 1px solid #ccc;
-        background-color: #f9f9f9;
-    }
-</style>
+	<link rel="stylesheet" href="/css/review/review_write.css" />	
+	<link rel="stylesheet" href="/css/header.css" />
+	<link rel="stylesheet" href="/css/reset.css" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
+	<th:block th:include="~{fragments/header.html::header}"></th:block>
 	<h1>Write a Review</h1>
-    <form id="reviewForm" action="/review_write" method="post" enctype="multipart/form-data">
+    <form id="reviewForm" action="/review_write" method="post" enctype="multipart/form-data" class="review-form-container">
     <label for="title">리뷰 제목:</label>
     <input type="text" id="title" name="title" placeholder="리뷰 제목"><br><br>
     
