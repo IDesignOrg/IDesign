@@ -90,7 +90,7 @@ public class GoogleLoginController {
             newUser.setUName("");
             newUser.setURegister(LocalDate.now());
             newUser.setUPw("");
-            newUser.setUPofile("https://storage.googleapis.com/idesign/static/blank-profile-picture-973460_640.png");
+            newUser.setUPofile("https://storage.googleapis.com/idesgins3/static/static_static_blank-profile-picture-973460_640.png");
             newUser.setUBirth("");
             newUser.setUTel("");
             newUser.setUId("Google_"+uid);
