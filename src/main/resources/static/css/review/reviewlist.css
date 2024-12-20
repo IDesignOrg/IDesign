@@ -286,7 +286,7 @@ body {
 		}
 
 		.pagination a.active {
-			background-color: #4CAF50;
+			background-color: #6633ff;
 			color: white;
 			border-radius: 5px;
 		}
