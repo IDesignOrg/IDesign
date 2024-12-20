@@ -9,3 +9,48 @@
 	width:200px;
 	height: 250px;
 }
+/* h1의 공통 스타일 정의 */
+.r_h1 {
+    font-size: 2rem; /* h1 글자 크기 설정 */
+    font-weight: bold; /* 글자 굵기 설정 */
+    margin: 0; /* 기본 마진 제거 */
+    padding: 0; /* 기본 패딩 제거 */
+}
+
+/* r_title 클래스 스타일 정의 */
+.r_title {
+    color: #6633ff; /* 텍스트 색상 */
+    text-align: left; /* 텍스트 가운데 정렬 */
+    margin: 20px 0; /* 위아래 마진 80px, 좌우 마진 0 */
+    padding: 20px 0; /* 위아래 패딩 80px, 좌우 패딩 0 */
+    width: 100%; /* 가로 크기를 부모 요소에 맞춤 */
+	box-sizing: border-box; /* 패딩 포함 크기 계산 */
+	    border-bottom: 1px solid #d3d3d3; /* 밑줄 추가 */
+}
+
+/* r_write 스타일 정의 */
+.r_write {
+    border-top: 2px solid #d3d3d3; /* 위쪽 줄 추가 (밝은 회색) */
+    margin: 20px 0; /* 위아래 마진 20px */
+    padding: 20px; /* 내부 여백 20px */
+    text-align: right; /* 오른쪽 정렬 */
+}
+
+/* r_write 안의 a 태그 스타일 */
+.r_write a {
+    display: inline-block; /* a 태그를 박스처럼 보이게 설정 */
+    background-color: #6633ff; /* 보라색 배경 */
+    color: #ffffff !important; /* 글자 색상 흰색 */
+    text-decoration: none; /* 밑줄 제거 */
+    padding: 10px 20px; /* 내부 여백 설정 */
+    border-radius: 5px; /* 모서리를 둥글게 */
+    font-size: 1rem; /* 글자 크기 */
+    font-weight: bold; /* 글자 굵게 */
+    transition: background-color 0.3s; /* 호버 시 배경색 부드럽게 전환 */
+}
+
+/* a 태그 호버 효과 */
+.r_write a:hover {
+    background-color: #4b2bab; /* 호버 시 약간 어두운 보라색 */
+}
+

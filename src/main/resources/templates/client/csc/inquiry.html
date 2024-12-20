@@ -56,14 +56,14 @@
 					</li>
 
 					<!-- 페이지 번호 링크 -->
-					<li th:each="pageNum : ${#numbers.sequence(0, inquiries.totalPages - 1)}"
-						th:class="${inquiries.number == pageNum ? 'page-item active' : 'page-item'}">
-						<a th:if="${param!=null}" class="page-link"
-							th:href="@{/board/inquiry/search(page=${pageNum}, size=${inquiries.size}, keyword=${param.keyword})}"
-							th:text="${pageNum + 1}"></a>
-						<a th:if="${param==null}" class="page-link"
-							th:href="@{/board/inquiry(page=${pageNum}, size=${inquiries.size})}"
-							th:text="${pageNum + 1}"></a>
+					<li th:each="pageNum : ${#numbers.sequence(1, inquiries.totalPages)}"
+					    th:class="${inquiries.number + 1 == pageNum ? 'page-item active' : 'page-item'}">
+					    <a th:if="${param != null}" class="page-link"
+					        th:href="@{/board/inquiry/search(page=${pageNum - 1}, size=${inquiries.size}, keyword=${param.keyword})}"
+					        th:text="${pageNum}"></a>
+					    <a th:if="${param == null}" class="page-link"
+					        th:href="@{/board/inquiry(page=${pageNum - 1}, size=${inquiries.size})}"
+					        th:text="${pageNum}"></a>
 					</li>
 
 					<li class="page-item" th:class="${inquiries.last ? 'disabled' : ''}">

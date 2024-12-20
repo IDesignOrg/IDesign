@@ -15,7 +15,9 @@
 <body>
 	<th:block th:include="~{fragments/header.html::header}"></th:block>
 	<div class="container">
-		<h1>리뷰</h1>
+		<div class="r_title">
+			<h1 class="r_h1">리뷰</h1>
+		</div>
 		<div class="review-grid">
 			<div class="review-card" th:each="review : ${reviews}" th:data-rno="${review.RNo}">
 				<img th:src="${review.RMainPhoto}" alt="Review Image">
@@ -30,7 +32,9 @@
 				</div>
 			</div>
 		</div>
-		<a href="/review_write">리뷰 작성하기</a>
+		<div class="r_write">
+		    <a href="/review_write">리뷰 작성하기</a>
+		</div>
 		<!-- 모달 -->
 		<div id="reviewModal" class="modal">
 		    <div class="modal-content">

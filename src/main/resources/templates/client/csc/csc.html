@@ -2,69 +2,71 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSC</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="/css/header.css" />
-    <link rel="stylesheet" href="/css/reset.css" />
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>CSC</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="/css/header.css" />
+	<link rel="stylesheet" href="/css/reset.css" />
 	<link rel="stylesheet" href="/css/csc.css" />
 </head>
 
 <body>
-    <th:block th:include="~{fragments/header.html::header}"></th:block>
-    <div class="container">
-        <div class="customContent">
-            <th:block th:include="~{fragments/cscHeader.html}"></th:block>
-            <div>
-                <a th:href="@{/board/faq}">전체</a>
-                <a th:each="category : ${categories}" th:href="@{|/board/faq/category/${category}|}"
-                    th:text="${category}"></a>
-            </div>
+	<th:block th:include="~{fragments/header.html::header}"></th:block>
+	<div class="container">
+		<div class="customContent">
+			<th:block th:include="~{fragments/cscHeader.html}"></th:block>
+			<div>
+				<a th:href="@{/board/faq}">전체</a>
+				<a th:each="category : ${categories}" th:href="@{|/board/faq/category/${category}|}"
+					th:text="${category}"></a>
+			</div>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>번호</th>
-                        <th>제목</th>
-                        <th>카테고리</th>
-                        <th>작성자</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="faq : ${faqs}">
-                        <td th:text="${faq.faqNo}"></td>
-                        <td>
-                            <a th:href="@{/board/faq/{no}(no=${faq.faqNo})}" th:text="${faq.faqTitle}"></a>
-                        </td>
-                        <td th:text="${faq.faqCategory}"></td>
-                        <td th:text="${faq.userEntity.UName}"></td>
-                    </tr>
-                </tbody>
-            </table>
+			<table>
+				<thead>
+					<tr>
+						<th>번호</th>
+						<th>제목</th>
+						<th>카테고리</th>
+						<th>작성자</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="faq : ${faqs}">
+						<td th:text="${faq.faqNo}"></td>
+						<td>
+							<a th:href="@{/board/faq/{no}(no=${faq.faqNo})}" th:text="${faq.faqTitle}"></a>
+						</td>
+						<td th:text="${faq.faqCategory}"></td>
+						<td th:text="${faq.userEntity.UName}"></td>
+					</tr>
+				</tbody>
+			</table>
 
-            <nav aria-label="Page navigation">
-                <ul class="pagination">
-                    <li class="page-item" th:class="${faqs.first ? 'disabled' : ''}">
-                        <a th:if="${!faqs.first}" class="page-link"
-                            th:href="@{/board/faq(page=${faqs.number - 1}, size=${faqs.size})}">이전</a>
-                    </li>
-                    <li th:each="pageNum : ${#numbers.sequence(0, faqs.totalPages - 1)}"
-                        th:class="${faqs.number == pageNum ? 'page-item active' : 'page-item'}">
-                        <a th:if="${param!=null}" class="page-link"
-                            th:href="@{/board/faq/search(page=${pageNum}, size=${faqs.size}, keyword=${param.keyword})}"
-                            th:text="${pageNum + 1}"></a>
-                        <a th:if="${param==null}" class="page-link"
-                            th:href="@{/board/faq(page=${pageNum}, size=${faqs.size})}" th:text="${pageNum + 1}"></a>
-                    </li>
-                    <li class="page-item" th:class="${faqs.last ? 'disabled' : ''}">
-                        <a th:if="${!faqs.last}" class="page-link"
-                            th:href="@{/board/faq(page=${faqs.number + 1}, size=${faqs.size})}">다음</a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </div>
+			<nav aria-label="Page navigation">
+				<ul class="pagination">
+					<li class="page-item" th:class="${faqs.first ? 'disabled' : ''}">
+						<a th:if="${!faqs.first}" class="page-link"
+							th:href="@{/board/faq(page=${faqs.number - 1}, size=${faqs.size})}">이전</a>
+					</li>
+
+
+					<li th:each="pageNum : ${#numbers.sequence(1, faqs.totalPages)}"
+						th:class="${faqs.number + 1 == pageNum ? 'page-item active' : 'page-item'}">
+						<a th:if="${param != null}" class="page-link"
+							th:href="@{/board/faqs/search(page=${pageNum - 1}, size=${faqs.size}, keyword=${param.keyword})}"
+							th:text="${pageNum}"></a>
+						<a th:if="${param == null}" class="page-link"
+							th:href="@{/board/faqs(page=${pageNum - 1}, size=${faqs.size})}" th:text="${pageNum}"></a>
+					</li>
+					<li class="page-item" th:class="${faqs.last ? 'disabled' : ''}">
+						<a th:if="${!faqs.last}" class="page-link"
+							th:href="@{/board/faq(page=${faqs.number + 1}, size=${faqs.size})}">다음</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
 </body>
 
 </html>
