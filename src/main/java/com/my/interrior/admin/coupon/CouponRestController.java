@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -95,7 +96,7 @@ public class CouponRestController {
    }
 
    @Transactional
-   @PostMapping("/coupon")
+   @PatchMapping("/coupon")
    @Operation(summary = "쿠폰 처리", description = "사용 된 쿠폰은 처리, 사용 된 날짜를 기준.")
    public ResponseEntity<?> patchCoupon(@RequestParam(value = "couponNo", required = false) Long couponNo, HttpSession session) {
       
