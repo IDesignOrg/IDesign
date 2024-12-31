@@ -25,6 +25,7 @@ public class BroadSocket extends TextWebSocketHandler {
         WebSocketSession session;
         String key;
     }
+
     private final Chat chat;
     // 유저와 서버간의 접속 리스트
     private List<User> sessionUsers = Collections.synchronizedList(new ArrayList<>());
@@ -35,17 +36,17 @@ public class BroadSocket extends TextWebSocketHandler {
     }
 
     // Session으로 접속 리스트에서 User 클래스를 탐색
-    private User getUser(WebSocketSession session) {
+    private synchronized User getUser(WebSocketSession session) {
         return searchUser(x -> x.session == session);
     }
 
     // key로 접속 리스트에서 User 클래스를 탐색
-    private User getUser(String key) {
+    private synchronized User getUser(String key) {
         return searchUser(x -> x.key.equals(key));
     }
 
     // 접속 리스트 탐색 함수
-    private User searchUser(SearchExpression func) {
+    private synchronized User searchUser(SearchExpression func) {
         Optional<User> op = sessionUsers.stream().filter(x -> func.expression(x)).findFirst();
         return op.orElse(null);
     }
@@ -60,7 +61,9 @@ public class BroadSocket extends TextWebSocketHandler {
         // WebSocket의 세션
         user.session = session;
         // 유저 리스트에 등록
-        sessionUsers.add(user);
+        synchronized (sessionUsers) {
+            sessionUsers.add(user);
+        }
         // 관리자한테 알리기
         chat.visit(user.key); // Chat 클래스의 visit 메서드 호출
     }
@@ -71,14 +74,16 @@ public class BroadSocket extends TextWebSocketHandler {
         // Session으로 접속 리스트에서 User 클래스를 탐색하기
         User user = getUser(session);
         System.out.println("클라이언트에서 관리자로 보내는 메시지는? : " + message);
-        
+
         // 접속 리스트에 User가 없으면
         if (user == null) {
             chat.bye(user.key); // Chat 클래스의 bye 메서드 호출
-            sessionUsers.remove(user);
-        }else {
-        	//여기에 클라이언트에서 관리자로 메시지 보내는 로직 작성
-        	chat.sendMessage(user.key, message.getPayload());
+            synchronized (sessionUsers) {
+                sessionUsers.remove(user);
+            }
+        } else {
+            //여기에 클라이언트에서 관리자로 메시지 보내는 로직 작성
+            chat.sendMessage(user.key, message.getPayload());
         }
     }
 
@@ -87,7 +92,9 @@ public class BroadSocket extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         User user = getUser(session);
         if (user != null) {
-            sessionUsers.remove(user);
+            synchronized (sessionUsers) {
+                sessionUsers.remove(user);
+            }
             chat.bye(user.key); // Chat 클래스의 bye 메서드 호출
         }
     }
@@ -95,7 +102,7 @@ public class BroadSocket extends TextWebSocketHandler {
     // 관리자에게 메시지 보내는 함수
     public void sendMessage(String key, String message) {
         // key로 접속 리스트에서 User 클래스를 탐색
-    	System.out.println("관리자에서 클라이언트로 보내는 메시지: " + message);
+        System.out.println("관리자에서 클라이언트로 보내는 메시지: " + message);
         User user = getUser(key);
         if (user != null) {
             try {
@@ -109,9 +116,9 @@ public class BroadSocket extends TextWebSocketHandler {
     // 모든 유저의 key를 가져와서 List로 반환
     public List<String> visitAllUsers() {
         List<String> keys = new ArrayList<>();
-        sessionUsers.forEach(user -> {
-            keys.add(user.key);
-        });
+        synchronized (sessionUsers) {
+            sessionUsers.forEach(user -> keys.add(user.key));
+        }
         return keys;
     }
 
