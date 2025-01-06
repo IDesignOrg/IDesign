@@ -1,0 +1,13 @@
+User-agent: *
+Disallow: /
+User-agent: Googlebot
+Allow: /
+User-agent: Naver
+Allow: /
+User-agent: Daum
+Allow: /
+User-agent: FacebookBot
+Allow: /
+User-agent: facebookexternalhit
+Allow: /
+Crawl-delay :60
