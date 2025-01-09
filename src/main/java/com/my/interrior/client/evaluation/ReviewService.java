@@ -97,7 +97,7 @@ public class ReviewService {
 
 		Long rNo = review.getRNo();
 
-		System.out.println("r_no값 확인 : " + rNo);
+		
 		review.setRTitle(title);
 		review.setRCategory(category);
 		review.setRContent(content);
@@ -144,8 +144,6 @@ public class ReviewService {
 		// 1. 리뷰 번호(rNo)를 사용하여 리뷰 포토 엔티티(ReviewPhotoEntity)를 조회합니다.
 		List<ReviewPhotoEntity> reviewPhotos = reviewPhotoRepository.findByReview_RNo(rNo);
 
-		System.out.println("백엔드 rno의 값 : " + rNo);
-		System.out.println("백엔드 reviewphotos :" + reviewPhotos);
 
 		// 2. 조회된 리뷰 포토 목록을 반환합니다.
 		return reviewPhotos;
