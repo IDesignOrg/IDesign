@@ -17,8 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.my.interrior.common.GoogleApi;
-import com.my.interrior.common.KakaoApi;
+//import com.my.interrior.common.KakaoApi;
 import com.my.interrior.common.NaverApi;
 
 import jakarta.servlet.http.HttpSession;
@@ -37,11 +36,8 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 
-	@Autowired
-	private KakaoApi kakaoApi;
-
-	@Autowired
-	private GoogleApi googleApi;
+	//@Autowired
+	//private KakaoApi kakaoApi;
 
 	@Autowired
 	private NaverApi naverApi;
@@ -52,11 +48,11 @@ public class UserController {
 	@GetMapping("/signin")
 	public String LoginPage(Model model) {
 
-		model.addAttribute("kakaoApiKey", kakaoApi.getKakaoApiKey());
-		model.addAttribute("redirectUri", kakaoApi.getKakaoRedirectUri());
-		model.addAttribute("googleClientId", googleApi.getClientId());
-		model.addAttribute("googleRedirectUri", googleApi.getRedirectUri());
-		model.addAttribute("googleScope", googleApi.getScope());
+		//model.addAttribute("kakaoApiKey", kakaoApi.getKakaoApiKey());
+		//model.addAttribute("redirectUri", kakaoApi.getKakaoRedirectUri());
+		//model.addAttribute("googleClientId", googleApi.getClientId());
+		//model.addAttribute("googleRedirectUri", googleApi.getRedirectUri());
+		//model.addAttribute("googleScope", googleApi.getScope());
 		model.addAttribute("naverClientId", naverApi.getClientId());
 		model.addAttribute("naverRedirectUri", naverApi.getRedirectUri());
 
@@ -65,11 +61,11 @@ public class UserController {
 
 	@GetMapping("/signup")
 	public String join(Model model) {
-		model.addAttribute("kakaoApiKey", kakaoApi.getKakaoApiKey());
-		model.addAttribute("redirectUri", kakaoApi.getKakaoRedirectUri());
-		model.addAttribute("googleClientId", googleApi.getClientId());
-		model.addAttribute("googleRedirectUri", googleApi.getRedirectUri());
-		model.addAttribute("googleScope", googleApi.getScope());
+		//model.addAttribute("kakaoApiKey", kakaoApi.getKakaoApiKey());
+		//model.addAttribute("redirectUri", kakaoApi.getKakaoRedirectUri());
+		//model.addAttribute("googleClientId", googleApi.getClientId());
+		//model.addAttribute("googleRedirectUri", googleApi.getRedirectUri());
+		//model.addAttribute("googleScope", googleApi.getScope());
 		model.addAttribute("naverClientId", naverApi.getClientId());
 		model.addAttribute("naverRedirectUri", naverApi.getRedirectUri());
 		return "client/join";

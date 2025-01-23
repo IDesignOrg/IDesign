@@ -2,7 +2,7 @@ package com.my.interrior.common;
 
 import lombok.Builder;
 import lombok.Data;
-
+/*
 @Data
 @Builder
 public class GoogleRequest {
@@ -19,3 +19,4 @@ public class GoogleRequest {
     private String loginHint;   // 애플리케이션이 인증하려는 사용자를 알고 있는 경우 이 매개변수를 사용하여 Google 인증 서버에 힌트를 제공
     private String prompt;  // default: 처음으로 액세스를 요청할 때만 사용자에게 메시지가 표시
 }
+*/
