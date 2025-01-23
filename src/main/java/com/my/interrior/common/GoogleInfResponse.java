@@ -2,7 +2,7 @@ package com.my.interrior.common;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+/*
 @Data
 @NoArgsConstructor
 public class GoogleInfResponse {
@@ -24,3 +24,4 @@ public class GoogleInfResponse {
     private String kid;
     private String typ;
 }
+*/

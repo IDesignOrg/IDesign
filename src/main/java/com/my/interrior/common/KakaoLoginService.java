@@ -1,4 +1,4 @@
-package com.my.interrior.common;
+/*package com.my.interrior.common;
 
 
 import java.io.BufferedReader;
@@ -133,3 +133,4 @@ public class KakaoLoginService {
 	    return userInfo;
 	}
 }
+*/

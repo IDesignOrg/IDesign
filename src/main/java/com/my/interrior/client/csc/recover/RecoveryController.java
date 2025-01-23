@@ -16,9 +16,7 @@ import com.my.interrior.client.user.UserDTO;
 import com.my.interrior.client.user.UserEntity;
 import com.my.interrior.client.user.UserRepository;
 import com.my.interrior.client.user.UserService;
-import com.my.interrior.common.GoogleApi;
-import com.my.interrior.common.KakaoApi;
-import com.my.interrior.common.NaverApi;
+
 
 
 @Controller

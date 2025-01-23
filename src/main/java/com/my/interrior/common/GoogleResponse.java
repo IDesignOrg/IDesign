@@ -2,7 +2,7 @@ package com.my.interrior.common;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+/*
 @Data
 @NoArgsConstructor
 public class GoogleResponse {
@@ -13,3 +13,4 @@ public class GoogleResponse {
     private String token_type;   // 반환된 토큰 유형(Bearer 고정)
     private String id_token;
 }
+*/

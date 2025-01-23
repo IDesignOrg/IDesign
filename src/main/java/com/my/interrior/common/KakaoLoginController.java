@@ -1,4 +1,4 @@
-package com.my.interrior.common;
+/*package com.my.interrior.common;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -69,3 +69,4 @@ public class KakaoLoginController {
 		return "redirect:/";
 	}
 }
+*/

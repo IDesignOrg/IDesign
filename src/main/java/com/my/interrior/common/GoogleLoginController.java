@@ -19,7 +19,7 @@ import com.my.interrior.client.user.UserRepository;
 import com.my.interrior.client.user.UserService;
 
 import jakarta.servlet.http.HttpSession;
-
+/*
 @Controller
 //@CrossOrigin("*")
 //로컬 환경에서 CORS 에러가 발생하여 선언함.
@@ -104,3 +104,4 @@ public class GoogleLoginController {
 	
 	
 }
+*/
