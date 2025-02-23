@@ -21,7 +21,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mariadb://43.203.106.250:3306/idesign
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 1q2w3e4r!@#$
+      SPRING_DATASOURCE_PASSWORD: 1234
     ports:
       - "8081:8080"
     # depends_on:
