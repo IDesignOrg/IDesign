@@ -89,6 +89,13 @@ public class AdminPageController {
 	// 인덱스 페이지
 	@GetMapping("/admin/page/adminIndex")
 	public String adminIndex(HttpSession session, Model model) {
+		//어드민 유저 정보
+		String userId = (String) session.getAttribute("UId");
+		if (userId == null) {
+			return "redirect:admin/page/adminLogin";
+		}
+		UserEntity user = userService.findByUId(userId);
+		model.addAttribute(userId, user);
 		// 유저 수 체크
 		Long userCount = adminPageService.getUserCount();
 		model.addAttribute("userCount", userCount);

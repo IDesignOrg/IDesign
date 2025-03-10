@@ -19,8 +19,8 @@
 		<header>
 			<h1>Dashboard</h1>
 			<div class="user-info">
-				<span>ADMIN</span>
-				<img src="path_to_user_icon" alt="User Icon">
+				<span th:text="${user.UName}"></span>
+				<img th:src="${user.UPofile}" alt="admin Profile">
 			</div>
 		</header>
 		<div class="cards">
