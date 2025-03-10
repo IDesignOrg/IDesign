@@ -91,11 +91,15 @@ public class AdminPageController {
 	public String adminIndex(HttpSession session, Model model) {
 		//어드민 유저 정보
 		String userId = (String) session.getAttribute("UId");
+		System.out.println("user ID : " + userId);
+		//세션값에 아이디값이 없을경우 다시 어드민 로그인 페이지로
 		if (userId == null) {
 			return "redirect:admin/page/adminLogin";
 		}
+		//세션값의 UId를 통해서해당 값을 찾음
 		UserEntity user = userService.findByUId(userId);
-		model.addAttribute(userId, user);
+		//모델아 담아서 html에 출력
+		model.addAttribute("user", user);
 		// 유저 수 체크
 		Long userCount = adminPageService.getUserCount();
 		model.addAttribute("userCount", userCount);
