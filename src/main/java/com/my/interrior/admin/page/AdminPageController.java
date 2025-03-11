@@ -72,7 +72,7 @@ public class AdminPageController {
 			String UId = userDTO.getUId();
 			String UPw = userDTO.getUPw();
 			UserEntity user = userService.checkLogin(UId);
-			System.out.println("user" + user);
+			
 			if (user != null && passwordEncoder.matches(UPw, user.getUPw())) {
 				session.setAttribute("UId", user.getUId());
 				return "redirect:/admin/page/adminIndex";
