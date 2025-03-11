@@ -68,19 +68,11 @@ public class OAuthLoginService {
 	        standardizedAttributes.put("profile_image", response != null ? response.get("profile_image") : "");
 	        standardizedAttributes.put("userId", platform.toLowerCase() + "_" + (response != null ? response.get("id") : "")); // 사용자 ID 추가
 	    } else if ("google".equals(platform)) {
-	    	//구글 oaut응답 전체 확인
-	    	System.out.println("[Google 응답 전체 확인 ] : " + attributes);
 	    	//구글 계정 정보 추출
 	        standardizedAttributes.put("email", attributes.get("email"));
 	        standardizedAttributes.put("nickname", attributes.get("name"));
 	        standardizedAttributes.put("profile_image", attributes.get("picture"));
 	        standardizedAttributes.put("userId", platform.toLowerCase() + "_" + attributes.get("sub")); // 사용자 ID 추가
-	        
-	        //각 속성별로 값들 확인
-	        System.out.println(" 이메일: " + attributes.get("email"));
-	        System.out.println(" 이름(name): " + attributes.get("name"));
-	        System.out.println(" 프로필 이미지: " + attributes.get("picture"));
-	        System.out.println(" 고유 ID(sub): " + attributes.get("sub"));
 	    } else {
 	        throw new IllegalArgumentException("지원되지 않는 플랫폼: " + platform);
 	    }
