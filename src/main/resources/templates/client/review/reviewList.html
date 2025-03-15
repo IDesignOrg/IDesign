@@ -190,7 +190,7 @@
 		    .then(result => {
 		        if (result.code === 0) {  // 성공 코드 확인 (0이 성공 코드라고 가정)
 		            alert(result.message || '댓글이 성공적으로 삭제되었습니다.');
-
+					refreshComments();
 		            // UI에서 댓글 삭제
 		            const commentDiv = document.querySelector(`.comment[data-comment-id="${commentId}"]`);
 		            if (commentDiv) {
@@ -204,6 +204,46 @@
 		        console.error('댓글 삭제 중 오류 발생:', error);
 		        alert('댓글 삭제 중 오류가 발생했습니다.');
 		    });
+		}
+		// 댓글 목록을 다시 불러오는 함수 (동적 업데이트)
+		function refreshComments() {
+		    if (!currentReviewId) {
+		        console.error("현재 선택된 리뷰 ID가 없습니다.");
+		        return;
+		    }
+
+		    fetch(`/api/review/${currentReviewId}/comments`) // 서버에서 최신 댓글 목록 가져오기
+		    .then(response => response.json())
+		    .then(result => {
+		        if (result.code === 0) {  // 성공 코드 확인
+		            const commentSection = document.getElementById("commentSection");
+		            commentSection.innerHTML = '';  // 기존 댓글 초기화
+
+		            if (result.data.length > 0) {
+		                result.data.forEach(comment => {
+		                    const commentDiv = document.createElement("div");
+		                    commentDiv.classList.add("comment");
+		                    commentDiv.dataset.commentId = comment.rcommentNo;  // 삭제 시 식별 가능하도록 설정
+
+		                    commentDiv.innerHTML = `
+		                        <img src="${comment.userProfile || 'https://storage.googleapis.com/idesign_dev/static/static_static_blank-profile-picture-973460_640.png'}" alt="User profile">
+		                        <div class="comment-text">
+		                            <span class="username">${comment.userName || 'Unknown'}</span>
+		                            ${comment.rcomment || 'No comment available'}
+		                            ${comment.userId === currentUserId ? `<button class="delete-comment-btn" onclick="deleteComment(${comment.rcommentNo})">삭제</button>` : ''}
+		                        </div>
+		                    `;
+		                    commentSection.appendChild(commentDiv);
+		                });
+		                commentSection.style.display = 'block';  // 댓글이 있으면 표시
+		            } else {
+		                commentSection.style.display = 'none';  // 댓글이 없으면 숨김
+		            }
+		        } else {
+		            console.error('댓글 목록 불러오기 실패:', result.message);
+		        }
+		    })
+		    .catch(error => console.error('댓글 목록 불러오는 중 오류 발생:', error));
 		}
 
 		// DOM이 로드되었을 때 실행되는 함수
