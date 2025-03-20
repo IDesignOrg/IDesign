@@ -23,7 +23,7 @@ public class GcsConfig {
         //
         // ClassPathResource 객체를 생성하여 JSON 인증 파일의 경로를 지정합니다.
         // 파일 이름은 필요에 따라 수정할 수 있습니다.
-        ClassPathResource credentialsPath = new ClassPathResource("cosmic-howl-445105-j4-e04e64e7cddd.json");
+        ClassPathResource credentialsPath = new ClassPathResource("deft-ocean-446417-h4-99fedebcafcb.json");
 
         // 지정된 경로에서 JSON 인증 파일을 읽기 위해 InputStream을 엽니다.
         InputStream credentialsStream = credentialsPath.getInputStream();
