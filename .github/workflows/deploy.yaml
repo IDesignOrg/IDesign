@@ -38,7 +38,7 @@ jobs:
 
       - name: "json 권한 설정"
         run: |
-          sudo chmod 644 src/main/resources/deft-ocean-446417-h4-99fedebcafcb.json
+          sudo chmod 644 src/main/resources/winter-rider-455716-t9-73bb37a367c3.json
 
       - name: List files in resources
         run: |
