@@ -39,7 +39,7 @@ import com.my.interrior.client.csc.inquiry.InquiryDTO;
 import com.my.interrior.client.csc.inquiry.InquiryEntity;
 import com.my.interrior.client.evaluation.ReviewEntity;
 import com.my.interrior.client.evaluation.ReviewService;
-import com.my.interrior.client.evaluation.DTO.ReviewCommentDTO;
+import com.my.interrior.client.evaluation.DTO.CommentResponseDto;
 import com.my.interrior.client.event.coupon.CouponEntity;
 import com.my.interrior.client.event.coupon.CouponMapEntity;
 import com.my.interrior.client.ordered.OrderedEntity;
@@ -112,10 +112,10 @@ public class AdminPageRestController {
 	// admin페이지 리뷰 댓글 보기
 	@GetMapping("/getRComments")
 	@Operation(summary = "리뷰페이지 댓글", description = "리뷰 페이지 댓글 본다.")
-	public ResponseEntity<CommonResponse<List<ReviewCommentDTO>>> fetchRComments(
+	public ResponseEntity<CommonResponse<List<CommentResponseDto>>> fetchRComments(
 			@Parameter(name = "reviewNo", description = "리뷰 번호를 받는 dto") @RequestParam("reviewNo") Long reviewNo) {
-		List<ReviewCommentDTO> comments = reviewService.getCommentsByReviewId(reviewNo).stream()
-				.map(comment -> new ReviewCommentDTO(comment.getRCommentNo(), comment.getRComment(),
+		List<CommentResponseDto> comments = reviewService.getCommentsByReviewId(reviewNo).stream()
+				.map(comment -> new CommentResponseDto(comment.getRCommentNo(), comment.getRComment(),
 						comment.getRCommentCreated(), comment.getUser().getUName(),comment.getUser().getUId(), comment.getUser().getUPofile()))
 				.collect(Collectors.toList());
 

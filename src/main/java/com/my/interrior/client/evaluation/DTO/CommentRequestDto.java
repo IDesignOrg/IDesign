@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ReviewCommentRequest {
+public class CommentRequestDto {
 	private Long reviewId;
 	private String comment;
 	
