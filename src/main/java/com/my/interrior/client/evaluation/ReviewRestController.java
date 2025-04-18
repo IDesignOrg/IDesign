@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.my.interrior.client.evaluation.DTO.ReviewCommentDTO;
-import com.my.interrior.client.evaluation.DTO.ReviewCommentRequest;
-import com.my.interrior.client.evaluation.DTO.ReviewDTO;
+import com.my.interrior.client.evaluation.DTO.CommentResponseDto;
+import com.my.interrior.client.evaluation.DTO.CommentRequestDto;
+import com.my.interrior.client.evaluation.DTO.ReviewResponseDto;
 import com.my.interrior.common.CommonResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,7 +41,7 @@ public class ReviewRestController {
 	// 리뷰 댓글 쓰기
 	@PostMapping("/review/comment")
 	@Operation(summary = "댓글 작성", description = "리뷰에 댓글을 작성한다. `userId`는 세션에서 자동으로 가져온다.")
-	public ResponseEntity<CommonResponse<ReviewCommentDTO>> addComment(@RequestBody ReviewCommentRequest request,
+	public ResponseEntity<CommonResponse<CommentResponseDto>> addComment(@RequestBody CommentRequestDto request,
 			HttpSession session) {
 
 		// 세션에서 userId를 가져옴
@@ -52,7 +52,7 @@ public class ReviewRestController {
 
 		try {
 			// 서비스에서 댓글을 추가하고 DTO를 반환받음
-			ReviewCommentDTO commentDTO = reviewService.addComment(request.getReviewId(), userId, request.getComment());
+			CommentResponseDto commentDTO = reviewService.addComment(request.getReviewId(), userId, request.getComment());
 
 			// 클라이언트에 DTO 반환
 			return ResponseEntity.ok(CommonResponse.success(commentDTO));
@@ -64,7 +64,7 @@ public class ReviewRestController {
 	@GetMapping("/getReviewDetail")
 	@ResponseBody
 	@Operation(summary = "리뷰 상세 조회", description = "리뷰 번호를 기준으로 리뷰와 리뷰의 사진, 댓글 데이터를 조회한다.")
-	public ResponseEntity<CommonResponse<ReviewDTO>> getReviewDetail(@RequestParam("rNo") Long rNo,
+	public ResponseEntity<CommonResponse<ReviewResponseDto>> getReviewDetail(@RequestParam("rNo") Long rNo,
 			HttpSession session) {
 		try {
 			// 조회수 증가 로직
@@ -85,8 +85,8 @@ public class ReviewRestController {
 			List<String> reviewPhotos = reviewService.getPhotosByReviewId(rNo).stream()
 					.map(ReviewPhotoEntity::getRpPhoto).collect(Collectors.toList());
 
-			List<ReviewCommentDTO> comments = reviewService.getCommentsByReviewId(rNo).stream()
-					.map(comment -> new ReviewCommentDTO(
+			List<CommentResponseDto> comments = reviewService.getCommentsByReviewId(rNo).stream()
+					.map(comment -> new CommentResponseDto(
 							comment.getRCommentNo(),
 							comment.getRComment(),
 							comment.getRCommentCreated(),
@@ -96,7 +96,7 @@ public class ReviewRestController {
 					.collect(Collectors.toList());
 
 			// DTO 구성
-			ReviewDTO response = new ReviewDTO(review.get().getRNo(), review.get().getRTitle(),
+			ReviewResponseDto response = new ReviewResponseDto(review.get().getRNo(), review.get().getRTitle(),
 					review.get().getRContent(), review.get().getRCategory(), review.get().getRStarRating(),
 					review.get().getRViews(), review.get().getRWrittenTime(), review.get().getUser().getUId(),
 					reviewPhotos, comments);

@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
-import com.my.interrior.client.evaluation.DTO.ReviewCommentDTO;
+import com.my.interrior.client.evaluation.DTO.CommentResponseDto;
 import com.my.interrior.client.gcs.GCSFileDeleter;
 import com.my.interrior.client.shop.ShopEntity;
 import com.my.interrior.client.user.UserEntity;
@@ -131,38 +131,35 @@ public class ReviewService {
 		return reviewPhotoRepository.findByReview_RNo(rNo);
 	}
 
-	// 후기 상세 페이지
+	// n+1 문제 해결된 리뷰 조회
 	public Optional<ReviewEntity> getReviewById(Long rNo) {
-		return reviewRepository.findById(rNo);
+		//새로 추가한 쿼리문
+		return reviewRepository.findByIdWithUser(rNo);
 	}
 
-	// public int updateHits(Long rNo) {
-	// return reviewRepository.updateHits(rNo);
-	// }
-	// 후기 상세 페이지(사진)
+	// N+1 문제 해결된 리뷰 사진
 	public List<ReviewPhotoEntity> getPhotosByReviewId(Long rNo) {
-		// 1. 리뷰 번호(rNo)를 사용하여 리뷰 포토 엔티티(ReviewPhotoEntity)를 조회합니다.
-		List<ReviewPhotoEntity> reviewPhotos = reviewPhotoRepository.findByReview_RNo(rNo);
-
-
-		// 2. 조회된 리뷰 포토 목록을 반환합니다.
-		return reviewPhotos;
-	}
+        // 최적화된 쿼리 사용
+        return reviewPhotoRepository.findByReviewIdOptimized(rNo);
+    }
 
 	// 조회수 증가
 	public void increaseViewCount(Long rNo) {
-		ReviewEntity review = reviewRepository.findByRNo(rNo);
+		ReviewEntity review = reviewRepository.findByIdWithUser(rNo)
+		        .orElseThrow(() -> new NoSuchElementException("해당 리뷰를 찾을 수 없습니다."));
+		    
 		review.setRViews(review.getRViews() + 1);
 		reviewRepository.save(review);
 	}
 
+	//N+1을 해결한 리뷰 사진 조회
 	public List<ReviewCommentEntity> getCommentsByReviewId(Long reviewId) {
-		ReviewEntity reviewEntity = reviewRepository.findById(reviewId)
-				.orElseThrow(() -> new IllegalArgumentException("Invalid review ID: " + reviewId));
-		return reviewCommentRepository.findByReviewEntity(reviewEntity);
+		
+		 return reviewCommentRepository.findByReviewIdWithUser(reviewId);
 	}
 
-	public ReviewCommentDTO addComment(Long reviewId, String userIdFromSession, String comment) {
+	//댓글 추가 
+	public CommentResponseDto addComment(Long reviewId, String userIdFromSession, String comment) {
 	    // ReviewEntity를 조회
 	    ReviewEntity reviewEntity = reviewRepository.findById(reviewId)
 	            .orElseThrow(() -> new IllegalArgumentException("Invalid review ID: " + reviewId));
@@ -184,7 +181,7 @@ public class ReviewService {
 	    ReviewCommentEntity savedComment = reviewCommentRepository.save(reviewCommentEntity);
 
 	    // 엔티티에서 필요한 값 추출하여 DTO로 변환
-	    return new ReviewCommentDTO(
+	    return new CommentResponseDto(
 	        savedComment.getRCommentNo(),              // 댓글 번호
 	        savedComment.getRComment(),                // 댓글 내용
 	        savedComment.getRCommentCreated(),         // 댓글 작성 시간
@@ -210,8 +207,9 @@ public class ReviewService {
 		}
 
 		// 리뷰 조회 또는 새로 생성
-		ReviewEntity review;
-		review = reviewRepository.findById(rNo).orElse(null);
+		ReviewEntity review = reviewRepository.findByIdWithUser(rNo)
+		        .orElseThrow(() -> new NoSuchElementException("해당 리뷰를 찾을 수 없습니다."));
+		    
 
 		// 리뷰 정보 설정
 		review.setRTitle(title);
@@ -266,7 +264,7 @@ public class ReviewService {
         if (!reviewRepository.existsById(rNo)) {
             throw new NoSuchElementException("해당 리뷰가 존재하지 않습니다.");
         }
-		ReviewEntity reviewEntity = reviewRepository.findById(rNo).orElse(null);
+		ReviewEntity reviewEntity = reviewRepository.findByIdWithUser(rNo).orElse(null);
 		
 
 		String deleteGCSFileName = reviewEntity.getRMainPhoto();

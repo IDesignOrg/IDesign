@@ -19,7 +19,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 //import com.my.interrior.common.KakaoApi;
 import com.my.interrior.common.NaverApi;
+import com.my.interrior.config.LoginAttemptService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,6 +37,9 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private LoginAttemptService loginAttemptService;
 
 	//@Autowired
 	//private KakaoApi kakaoApi;
@@ -76,7 +81,7 @@ public class UserController {
 		try {
 			userEntity.setURegister(LocalDate.now());
 			userEntity.setUPw(passwordEncoder.encode(userEntity.getUPw()));
-			userEntity.setUPofile("https://storage.googleapis.com/idesgins3/static/static_static_blank-profile-picture-973460_640.png");
+			userEntity.setUPofile("https://storage.googleapis.com/idesign5/static/Default-Profile-Picture-PNG-Download-Image.png");
 			if (userEntity.getURegister() == null || userEntity.getUPw() == null)
 				return null;
 			// insert
@@ -90,7 +95,24 @@ public class UserController {
 	}
 
 	@PostMapping("/signin")
-	public String login(@ModelAttribute UserDTO userDTO, HttpSession session, Model model,  RedirectAttributes redirectAttributes){
+	public String login(@ModelAttribute UserDTO userDTO, HttpSession session, Model model,  RedirectAttributes redirectAttributes, HttpServletRequest request){
+		
+		//ip와 id값을 key로 생성
+		String key = request.getRemoteAddr();
+		if (userDTO.getUId() != null && !userDTO.getUId().isEmpty()) {
+			key = key + "-" + userDTO.getUId();
+		}
+		
+		//차단 여부 확인
+		//차단 횟수가 5회가 되면 해당 메서드에서 차단(true)
+		if(loginAttemptService.isBlocked(key)) {
+			//차단 시간을 가져와서 model에 뿌림
+			long remainingMinute = loginAttemptService.getRemainingBlockTime(key);
+			model.addAttribute("loginError", "로그인 시도 횟수를 초과했습니다. " + remainingMinute + "분 후에 다시 시도해주세요.");
+			return "client/login";
+			
+		}
+		
 		try {
 			if (userDTO.getUId() == null || userDTO.getUPw() == null)
 				return "redirect:/signin";
@@ -108,10 +130,17 @@ public class UserController {
 				session.setAttribute("UId", user.getUId());
 				return "redirect:/";
 			} else {
-				model.addAttribute("loginError", "입력하신 정보를 확인하세요.");
+				//로그인 실패시 실패 횟수 증가
+				loginAttemptService.loginFailed(key);
+				//남은 로그인 횟수 확인
+				int attemptsLeft = loginAttemptService.getAttemptsLeft(key);
+				
+				model.addAttribute("loginError", "입력하신 정보를 확인하세요. 남은 시도 횟수: " + attemptsLeft + "회");
 				return "client/login";
 			}
 		} catch (Exception e) {
+			// 에러가 나오 로그인 횟수 증가
+			loginAttemptService.loginFailed(key);
 			e.printStackTrace();
 			return "error";
 		}
