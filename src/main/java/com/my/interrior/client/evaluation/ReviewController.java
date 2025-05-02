@@ -67,8 +67,7 @@ public class ReviewController {
 	@GetMapping("review/reviewUpdate/{rNo}")
 	public String reviewUpdate(Pageable pageable, Model model, @PathVariable("rNo") Long rNo) {
 		Optional<ReviewEntity> review = reviewService.getReviewById(rNo);
-		System.out.println("rno 의 값 : " + rNo);
-		System.out.println("reviews 의 값 : " + review);
+
 		model.addAttribute("reviews", review.get());
 
 		List<ReviewPhotoEntity> reviewPhoto = reviewService.getPhotosByReviewId(rNo);

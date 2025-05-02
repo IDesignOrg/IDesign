@@ -114,7 +114,7 @@ public class ReviewRestController {
 	@DeleteMapping("/review/comment/{commentId}")
 	@Operation(summary = "댓글 삭제", description = "리뷰에 달린 댓글을 삭제한다.")
 	public ResponseEntity<CommonResponse<String>> deleteComment(@PathVariable("commentId") Long commentId) {
-		System.out.println("리뷰 삭제에 들어옴");
+
 	    try {
 	        // 댓글 삭제 로직 호출
 	        reviewService.deleteComment(commentId);

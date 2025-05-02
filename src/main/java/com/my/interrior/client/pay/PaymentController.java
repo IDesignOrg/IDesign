@@ -24,11 +24,10 @@ public class PaymentController {
 				.getAttribute("shipmentRes");
 
 		
-		System.out.println("paymentInfo: get에서 시작함" + paymentInfo);
-		System.out.println("shipmentInfo: get에서 시작함" + shipmentInfo);
+
 		
 		if (paymentInfo != null && shipmentInfo != null) {
-			System.out.println("둘 다 있어서 여기 안까지 들어옴");
+
 			model.addAttribute("paymentRes", paymentInfo);
 			model.addAttribute("shipmentRes", shipmentInfo);
 

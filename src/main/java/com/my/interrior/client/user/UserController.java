@@ -95,7 +95,7 @@ public class UserController {
 	}
 
 	@PostMapping("/signin")
-	public String login(@ModelAttribute UserDTO userDTO, HttpSession session, Model model,  RedirectAttributes redirectAttributes, HttpServletRequest request){
+	public String login(@ModelAttribute UserDTO userDTO, Model model,  RedirectAttributes redirectAttributes, HttpServletRequest request){
 		
 		//ip와 id값을 key로 생성
 		String key = request.getRemoteAddr();
@@ -127,7 +127,17 @@ public class UserController {
 					redirectAttributes.addFlashAttribute("userNo", user.getUNo());
 	                return "redirect:/signin";
 				}
-				session.setAttribute("UId", user.getUId());
+				
+				//기존 세션 무효화
+				HttpSession oldSession = request.getSession(false);
+				if(oldSession != null) {
+					oldSession.invalidate();
+				}
+				
+				//새 세션 생성 및 정보 저장
+				HttpSession newSession = request.getSession(true);
+				newSession.setAttribute("UId", user.getUId());
+				
 				return "redirect:/";
 			} else {
 				//로그인 실패시 실패 횟수 증가
