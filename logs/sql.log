@@ -1,17 +1,67 @@
-2025-05-03 00:00:00.079 [scheduling-1] DEBUG org.hibernate.SQL - 
-    select
-        oe1_0.ordered_no,
-        oe1_0.merchant_uid,
-        oe1_0.ordered_date,
-        oe1_0.ordered_number,
-        oe1_0.ordered_state,
-        oe1_0.quantity,
-        oe1_0.shipment_state,
-        oe1_0.shop_no,
-        oe1_0.u_no 
-    from
-        ordered oe1_0
-2025-05-03 00:00:00.097 [scheduling-1] DEBUG org.hibernate.SQL - 
+2025-05-04 02:33:34.685 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists data 
+       add column id bigint not null auto_increment
+2025-05-04 02:33:34.709 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists point 
+       modify column oid bigint not null
+2025-05-04 02:33:34.736 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists child_relationship 
+       add constraint FKajww51h8tam715wl9te627rie 
+       foreign key (child_id) 
+       references data (id)
+2025-05-04 02:33:34.762 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists child_relationship 
+       add constraint FKe9fammyk9ruy3hluyfy2kie0v 
+       foreign key (parent_id) 
+       references data (id)
+2025-05-04 02:33:34.788 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists data_entity_children 
+       add constraint FK7ei631u6xtbb6ywrj13sl8qov 
+       foreign key (data_entity_id) 
+       references data (id)
+2025-05-04 02:34:34.174 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists data 
+       add column id bigint not null auto_increment
+2025-05-04 02:34:34.194 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists point 
+       modify column oid bigint not null
+2025-05-04 02:34:34.221 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists child_relationship 
+       add constraint FKajww51h8tam715wl9te627rie 
+       foreign key (child_id) 
+       references data (id)
+2025-05-04 02:34:34.246 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists child_relationship 
+       add constraint FKe9fammyk9ruy3hluyfy2kie0v 
+       foreign key (parent_id) 
+       references data (id)
+2025-05-04 02:34:34.273 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists data_entity_children 
+       add constraint FK7ei631u6xtbb6ywrj13sl8qov 
+       foreign key (data_entity_id) 
+       references data (id)
+2025-05-04 02:35:43.992 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists data 
+       add column id bigint not null auto_increment
+2025-05-04 02:35:44.012 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists point 
+       modify column oid bigint not null
+2025-05-04 02:35:44.041 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists child_relationship 
+       add constraint FKajww51h8tam715wl9te627rie 
+       foreign key (child_id) 
+       references data (id)
+2025-05-04 02:35:44.066 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists child_relationship 
+       add constraint FKe9fammyk9ruy3hluyfy2kie0v 
+       foreign key (parent_id) 
+       references data (id)
+2025-05-04 02:35:44.092 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists data_entity_children 
+       add constraint FK7ei631u6xtbb6ywrj13sl8qov 
+       foreign key (data_entity_id) 
+       references data (id)
+2025-05-04 02:35:52.602 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
     select
         ue1_0.u_no,
         ue1_0.u_birth,
@@ -26,8 +76,8 @@
     from
         user ue1_0 
     where
-        ue1_0.u_no=?
-2025-05-03 00:00:00.104 [scheduling-1] DEBUG org.hibernate.SQL - 
+        ue1_0.u_id=?
+2025-05-04 02:36:12.936 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
     select
         ue1_0.u_no,
         ue1_0.u_birth,
@@ -42,20 +92,1124 @@
     from
         user ue1_0 
     where
-        ue1_0.u_no=?
-2025-05-03 00:00:00.120 [scheduling-1] DEBUG org.hibernate.SQL - 
+        ue1_0.u_id=?
+2025-05-04 02:37:59.105 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
     select
-        ce1_0.coupon_no,
-        ce1_0.coupon_create_at,
-        ce1_0.coupon_discount,
-        ce1_0.coupon_end_at,
-        ce1_0.coupon_limit,
-        ce1_0.coupon_name,
-        ce1_0.coupon_start_at,
-        ce1_0.coupon_state,
-        ce1_0.coupon_value 
+        ue1_0.u_no,
+        ue1_0.u_birth,
+        ue1_0.u_deactivated,
+        ue1_0.u_id,
+        ue1_0.u_mail,
+        ue1_0.u_name,
+        ue1_0.u_profile,
+        ue1_0.u_pw,
+        ue1_0.u_register,
+        ue1_0.u_tel 
     from
-        coupon ce1_0 
+        user ue1_0 
     where
-        ce1_0.coupon_end_at<? 
-        and ce1_0.coupon_state=?
+        ue1_0.u_id=?
+2025-05-04 02:38:08.150 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        ue1_0.u_no,
+        ue1_0.u_birth,
+        ue1_0.u_deactivated,
+        ue1_0.u_id,
+        ue1_0.u_mail,
+        ue1_0.u_name,
+        ue1_0.u_profile,
+        ue1_0.u_pw,
+        ue1_0.u_register,
+        ue1_0.u_tel 
+    from
+        user ue1_0 
+    where
+        ue1_0.u_id=?
+2025-05-04 02:38:47.640 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        ue1_0.u_no,
+        ue1_0.u_birth,
+        ue1_0.u_deactivated,
+        ue1_0.u_id,
+        ue1_0.u_mail,
+        ue1_0.u_name,
+        ue1_0.u_profile,
+        ue1_0.u_pw,
+        ue1_0.u_register,
+        ue1_0.u_tel 
+    from
+        user ue1_0 
+    where
+        ue1_0.u_id=?
+2025-05-04 02:39:41.384 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        ue1_0.u_no,
+        ue1_0.u_birth,
+        ue1_0.u_deactivated,
+        ue1_0.u_id,
+        ue1_0.u_mail,
+        ue1_0.u_name,
+        ue1_0.u_profile,
+        ue1_0.u_pw,
+        ue1_0.u_register,
+        ue1_0.u_tel 
+    from
+        user ue1_0 
+    where
+        ue1_0.u_id=?
+2025-05-04 02:40:29.746 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        re1_0.r_no,
+        re1_0.r_category,
+        re1_0.r_content,
+        re1_0.r_mainphoto,
+        re1_0.r_star_rating,
+        re1_0.r_title,
+        re1_0.r_views,
+        re1_0.r_written_time,
+        re1_0.u_id 
+    from
+        review re1_0 
+    limit
+        ?, ?
+2025-05-04 02:40:29.750 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        ue1_0.u_no,
+        ue1_0.u_birth,
+        ue1_0.u_deactivated,
+        ue1_0.u_id,
+        ue1_0.u_mail,
+        ue1_0.u_name,
+        ue1_0.u_profile,
+        ue1_0.u_pw,
+        ue1_0.u_register,
+        ue1_0.u_tel 
+    from
+        user ue1_0 
+    where
+        ue1_0.u_id=?
+2025-05-04 02:40:29.752 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        ue1_0.u_no,
+        ue1_0.u_birth,
+        ue1_0.u_deactivated,
+        ue1_0.u_id,
+        ue1_0.u_mail,
+        ue1_0.u_name,
+        ue1_0.u_profile,
+        ue1_0.u_pw,
+        ue1_0.u_register,
+        ue1_0.u_tel 
+    from
+        user ue1_0 
+    where
+        ue1_0.u_id=?
+2025-05-04 02:40:29.760 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        rpe1_0.rp_no,
+        rpe1_0.rp_photo,
+        rpe1_0.r_no 
+    from
+        review_photo rpe1_0 
+    left join
+        review r1_0 
+            on r1_0.r_no=rpe1_0.r_no 
+    where
+        r1_0.r_no=?
+2025-05-04 02:40:29.764 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        rpe1_0.rp_no,
+        rpe1_0.rp_photo,
+        rpe1_0.r_no 
+    from
+        review_photo rpe1_0 
+    left join
+        review r1_0 
+            on r1_0.r_no=rpe1_0.r_no 
+    where
+        r1_0.r_no=?
+2025-05-04 02:40:29.765 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        rpe1_0.rp_no,
+        rpe1_0.rp_photo,
+        rpe1_0.r_no 
+    from
+        review_photo rpe1_0 
+    left join
+        review r1_0 
+            on r1_0.r_no=rpe1_0.r_no 
+    where
+        r1_0.r_no=?
+2025-05-04 02:40:29.766 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        rpe1_0.rp_no,
+        rpe1_0.rp_photo,
+        rpe1_0.r_no 
+    from
+        review_photo rpe1_0 
+    left join
+        review r1_0 
+            on r1_0.r_no=rpe1_0.r_no 
+    where
+        r1_0.r_no=?
+2025-05-04 02:40:35.977 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        re1_0.r_no,
+        re1_0.r_category,
+        re1_0.r_content,
+        re1_0.r_mainphoto,
+        re1_0.r_star_rating,
+        re1_0.r_title,
+        re1_0.r_views,
+        re1_0.r_written_time,
+        u1_0.u_no,
+        u1_0.u_birth,
+        u1_0.u_deactivated,
+        u1_0.u_id,
+        u1_0.u_mail,
+        u1_0.u_name,
+        u1_0.u_profile,
+        u1_0.u_pw,
+        u1_0.u_register,
+        u1_0.u_tel 
+    from
+        review re1_0 
+    join
+        user u1_0 
+            on u1_0.u_id=re1_0.u_id 
+    where
+        re1_0.r_no=?
+2025-05-04 02:40:36.002 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    update
+        review 
+    set
+        r_category=?,
+        r_content=?,
+        r_mainphoto=?,
+        r_star_rating=?,
+        r_title=?,
+        r_views=?,
+        r_written_time=?,
+        u_id=? 
+    where
+        r_no=?
+2025-05-04 02:40:36.007 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        re1_0.r_no,
+        re1_0.r_category,
+        re1_0.r_content,
+        re1_0.r_mainphoto,
+        re1_0.r_star_rating,
+        re1_0.r_title,
+        re1_0.r_views,
+        re1_0.r_written_time,
+        u1_0.u_no,
+        u1_0.u_birth,
+        u1_0.u_deactivated,
+        u1_0.u_id,
+        u1_0.u_mail,
+        u1_0.u_name,
+        u1_0.u_profile,
+        u1_0.u_pw,
+        u1_0.u_register,
+        u1_0.u_tel 
+    from
+        review re1_0 
+    join
+        user u1_0 
+            on u1_0.u_id=re1_0.u_id 
+    where
+        re1_0.r_no=?
+2025-05-04 02:40:36.009 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        rpe1_0.rp_no,
+        rpe1_0.rp_photo,
+        rpe1_0.r_no 
+    from
+        review_photo rpe1_0 
+    where
+        rpe1_0.r_no=?
+2025-05-04 02:40:36.011 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        rce1_0.r_comment_no,
+        rce1_0.r_comment,
+        rce1_0.r_comment_created,
+        rce1_0.r_no,
+        u1_0.u_no,
+        u1_0.u_birth,
+        u1_0.u_deactivated,
+        u1_0.u_id,
+        u1_0.u_mail,
+        u1_0.u_name,
+        u1_0.u_profile,
+        u1_0.u_pw,
+        u1_0.u_register,
+        u1_0.u_tel 
+    from
+        review_comment rce1_0 
+    join
+        user u1_0 
+            on u1_0.u_id=rce1_0.u_id 
+    where
+        rce1_0.r_no=?
+2025-05-04 02:41:03.095 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    select
+        ue1_0.u_no,
+        ue1_0.u_birth,
+        ue1_0.u_deactivated,
+        ue1_0.u_id,
+        ue1_0.u_mail,
+        ue1_0.u_name,
+        ue1_0.u_profile,
+        ue1_0.u_pw,
+        ue1_0.u_register,
+        ue1_0.u_tel 
+    from
+        user ue1_0 
+    where
+        ue1_0.u_id=?
+2025-05-04 02:41:14.278 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - 
+    select
+        ue1_0.u_no,
+        ue1_0.u_birth,
+        ue1_0.u_deactivated,
+        ue1_0.u_id,
+        ue1_0.u_mail,
+        ue1_0.u_name,
+        ue1_0.u_profile,
+        ue1_0.u_pw,
+        ue1_0.u_register,
+        ue1_0.u_tel 
+    from
+        user ue1_0 
+    where
+        ue1_0.u_id=?
+2025-05-04 02:41:36.116 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    select
+        re1_0.r_no,
+        re1_0.r_category,
+        re1_0.r_content,
+        re1_0.r_mainphoto,
+        re1_0.r_star_rating,
+        re1_0.r_title,
+        re1_0.r_views,
+        re1_0.r_written_time,
+        re1_0.u_id 
+    from
+        review re1_0 
+    limit
+        ?, ?
+2025-05-04 02:41:36.120 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    select
+        ue1_0.u_no,
+        ue1_0.u_birth,
+        ue1_0.u_deactivated,
+        ue1_0.u_id,
+        ue1_0.u_mail,
+        ue1_0.u_name,
+        ue1_0.u_profile,
+        ue1_0.u_pw,
+        ue1_0.u_register,
+        ue1_0.u_tel 
+    from
+        user ue1_0 
+    where
+        ue1_0.u_id=?
+2025-05-04 02:41:36.123 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    select
+        ue1_0.u_no,
+        ue1_0.u_birth,
+        ue1_0.u_deactivated,
+        ue1_0.u_id,
+        ue1_0.u_mail,
+        ue1_0.u_name,
+        ue1_0.u_profile,
+        ue1_0.u_pw,
+        ue1_0.u_register,
+        ue1_0.u_tel 
+    from
+        user ue1_0 
+    where
+        ue1_0.u_id=?
+2025-05-04 02:41:36.128 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    select
+        rpe1_0.rp_no,
+        rpe1_0.rp_photo,
+        rpe1_0.r_no 
+    from
+        review_photo rpe1_0 
+    left join
+        review r1_0 
+            on r1_0.r_no=rpe1_0.r_no 
+    where
+        r1_0.r_no=?
+2025-05-04 02:41:36.133 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    select
+        rpe1_0.rp_no,
+        rpe1_0.rp_photo,
+        rpe1_0.r_no 
+    from
+        review_photo rpe1_0 
+    left join
+        review r1_0 
+            on r1_0.r_no=rpe1_0.r_no 
+    where
+        r1_0.r_no=?
+2025-05-04 02:41:36.136 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    select
+        rpe1_0.rp_no,
+        rpe1_0.rp_photo,
+        rpe1_0.r_no 
+    from
+        review_photo rpe1_0 
+    left join
+        review r1_0 
+            on r1_0.r_no=rpe1_0.r_no 
+    where
+        r1_0.r_no=?
+2025-05-04 02:41:36.137 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    select
+        rpe1_0.rp_no,
+        rpe1_0.rp_photo,
+        rpe1_0.r_no 
+    from
+        review_photo rpe1_0 
+    left join
+        review r1_0 
+            on r1_0.r_no=rpe1_0.r_no 
+    where
+        r1_0.r_no=?
+2025-05-04 02:44:43.286 [http-nio-8080-exec-11] DEBUG org.hibernate.SQL - 
+    select
+        ue1_0.u_no,
+        ue1_0.u_birth,
+        ue1_0.u_deactivated,
+        ue1_0.u_id,
+        ue1_0.u_mail,
+        ue1_0.u_name,
+        ue1_0.u_profile,
+        ue1_0.u_pw,
+        ue1_0.u_register,
+        ue1_0.u_tel 
+    from
+        user ue1_0 
+    where
+        ue1_0.u_id=?
+2025-05-04 02:44:52.797 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        ue1_0.u_no,
+        ue1_0.u_birth,
+        ue1_0.u_deactivated,
+        ue1_0.u_id,
+        ue1_0.u_mail,
+        ue1_0.u_name,
+        ue1_0.u_profile,
+        ue1_0.u_pw,
+        ue1_0.u_register,
+        ue1_0.u_tel 
+    from
+        user ue1_0 
+    where
+        ue1_0.u_id=?
+2025-05-04 02:49:01.505 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists data 
+       add column id bigint not null auto_increment
+2025-05-04 02:49:01.534 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists point 
+       modify column oid bigint not null
+2025-05-04 02:49:01.561 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists child_relationship 
+       add constraint FKajww51h8tam715wl9te627rie 
+       foreign key (child_id) 
+       references data (id)
+2025-05-04 02:49:01.586 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists child_relationship 
+       add constraint FKe9fammyk9ruy3hluyfy2kie0v 
+       foreign key (parent_id) 
+       references data (id)
+2025-05-04 02:49:01.611 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists data_entity_children 
+       add constraint FK7ei631u6xtbb6ywrj13sl8qov 
+       foreign key (data_entity_id) 
+       references data (id)
+2025-05-04 02:49:10.982 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    select
+        ue1_0.u_no,
+        ue1_0.u_birth,
+        ue1_0.u_deactivated,
+        ue1_0.u_id,
+        ue1_0.u_mail,
+        ue1_0.u_name,
+        ue1_0.u_profile,
+        ue1_0.u_pw,
+        ue1_0.u_register,
+        ue1_0.u_tel 
+    from
+        user ue1_0 
+    where
+        ue1_0.u_id=?
+2025-05-04 02:49:22.279 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        ue1_0.u_no,
+        ue1_0.u_birth,
+        ue1_0.u_deactivated,
+        ue1_0.u_id,
+        ue1_0.u_mail,
+        ue1_0.u_name,
+        ue1_0.u_profile,
+        ue1_0.u_pw,
+        ue1_0.u_register,
+        ue1_0.u_tel 
+    from
+        user ue1_0 
+    where
+        ue1_0.u_id=?
+2025-05-04 02:49:37.229 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        re1_0.r_no,
+        re1_0.r_category,
+        re1_0.r_content,
+        re1_0.r_mainphoto,
+        re1_0.r_star_rating,
+        re1_0.r_title,
+        re1_0.r_views,
+        re1_0.r_written_time,
+        re1_0.u_id 
+    from
+        review re1_0 
+    limit
+        ?, ?
+2025-05-04 02:49:37.234 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        ue1_0.u_no,
+        ue1_0.u_birth,
+        ue1_0.u_deactivated,
+        ue1_0.u_id,
+        ue1_0.u_mail,
+        ue1_0.u_name,
+        ue1_0.u_profile,
+        ue1_0.u_pw,
+        ue1_0.u_register,
+        ue1_0.u_tel 
+    from
+        user ue1_0 
+    where
+        ue1_0.u_id=?
+2025-05-04 02:49:37.238 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        ue1_0.u_no,
+        ue1_0.u_birth,
+        ue1_0.u_deactivated,
+        ue1_0.u_id,
+        ue1_0.u_mail,
+        ue1_0.u_name,
+        ue1_0.u_profile,
+        ue1_0.u_pw,
+        ue1_0.u_register,
+        ue1_0.u_tel 
+    from
+        user ue1_0 
+    where
+        ue1_0.u_id=?
+2025-05-04 02:49:37.246 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        rpe1_0.rp_no,
+        rpe1_0.rp_photo,
+        rpe1_0.r_no 
+    from
+        review_photo rpe1_0 
+    left join
+        review r1_0 
+            on r1_0.r_no=rpe1_0.r_no 
+    where
+        r1_0.r_no=?
+2025-05-04 02:49:37.248 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        rpe1_0.rp_no,
+        rpe1_0.rp_photo,
+        rpe1_0.r_no 
+    from
+        review_photo rpe1_0 
+    left join
+        review r1_0 
+            on r1_0.r_no=rpe1_0.r_no 
+    where
+        r1_0.r_no=?
+2025-05-04 02:49:37.250 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        rpe1_0.rp_no,
+        rpe1_0.rp_photo,
+        rpe1_0.r_no 
+    from
+        review_photo rpe1_0 
+    left join
+        review r1_0 
+            on r1_0.r_no=rpe1_0.r_no 
+    where
+        r1_0.r_no=?
+2025-05-04 02:49:37.251 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        rpe1_0.rp_no,
+        rpe1_0.rp_photo,
+        rpe1_0.r_no 
+    from
+        review_photo rpe1_0 
+    left join
+        review r1_0 
+            on r1_0.r_no=rpe1_0.r_no 
+    where
+        r1_0.r_no=?
+2025-05-04 02:49:39.910 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        re1_0.r_no,
+        re1_0.r_category,
+        re1_0.r_content,
+        re1_0.r_mainphoto,
+        re1_0.r_star_rating,
+        re1_0.r_title,
+        re1_0.r_views,
+        re1_0.r_written_time,
+        u1_0.u_no,
+        u1_0.u_birth,
+        u1_0.u_deactivated,
+        u1_0.u_id,
+        u1_0.u_mail,
+        u1_0.u_name,
+        u1_0.u_profile,
+        u1_0.u_pw,
+        u1_0.u_register,
+        u1_0.u_tel 
+    from
+        review re1_0 
+    join
+        user u1_0 
+            on u1_0.u_id=re1_0.u_id 
+    where
+        re1_0.r_no=?
+2025-05-04 02:49:39.930 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    update
+        review 
+    set
+        r_category=?,
+        r_content=?,
+        r_mainphoto=?,
+        r_star_rating=?,
+        r_title=?,
+        r_views=?,
+        r_written_time=?,
+        u_id=? 
+    where
+        r_no=?
+2025-05-04 02:49:39.935 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        re1_0.r_no,
+        re1_0.r_category,
+        re1_0.r_content,
+        re1_0.r_mainphoto,
+        re1_0.r_star_rating,
+        re1_0.r_title,
+        re1_0.r_views,
+        re1_0.r_written_time,
+        u1_0.u_no,
+        u1_0.u_birth,
+        u1_0.u_deactivated,
+        u1_0.u_id,
+        u1_0.u_mail,
+        u1_0.u_name,
+        u1_0.u_profile,
+        u1_0.u_pw,
+        u1_0.u_register,
+        u1_0.u_tel 
+    from
+        review re1_0 
+    join
+        user u1_0 
+            on u1_0.u_id=re1_0.u_id 
+    where
+        re1_0.r_no=?
+2025-05-04 02:49:39.938 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        rpe1_0.rp_no,
+        rpe1_0.rp_photo,
+        rpe1_0.r_no 
+    from
+        review_photo rpe1_0 
+    where
+        rpe1_0.r_no=?
+2025-05-04 02:49:39.940 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        rce1_0.r_comment_no,
+        rce1_0.r_comment,
+        rce1_0.r_comment_created,
+        rce1_0.r_no,
+        u1_0.u_no,
+        u1_0.u_birth,
+        u1_0.u_deactivated,
+        u1_0.u_id,
+        u1_0.u_mail,
+        u1_0.u_name,
+        u1_0.u_profile,
+        u1_0.u_pw,
+        u1_0.u_register,
+        u1_0.u_tel 
+    from
+        review_comment rce1_0 
+    join
+        user u1_0 
+            on u1_0.u_id=rce1_0.u_id 
+    where
+        rce1_0.r_no=?
+2025-05-04 02:49:42.157 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        re1_0.r_no,
+        re1_0.r_category,
+        re1_0.r_content,
+        re1_0.r_mainphoto,
+        re1_0.r_star_rating,
+        re1_0.r_title,
+        re1_0.r_views,
+        re1_0.r_written_time,
+        u1_0.u_no,
+        u1_0.u_birth,
+        u1_0.u_deactivated,
+        u1_0.u_id,
+        u1_0.u_mail,
+        u1_0.u_name,
+        u1_0.u_profile,
+        u1_0.u_pw,
+        u1_0.u_register,
+        u1_0.u_tel 
+    from
+        review re1_0 
+    join
+        user u1_0 
+            on u1_0.u_id=re1_0.u_id 
+    where
+        re1_0.r_no=?
+2025-05-04 02:49:42.161 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    update
+        review 
+    set
+        r_category=?,
+        r_content=?,
+        r_mainphoto=?,
+        r_star_rating=?,
+        r_title=?,
+        r_views=?,
+        r_written_time=?,
+        u_id=? 
+    where
+        r_no=?
+2025-05-04 02:49:42.164 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        re1_0.r_no,
+        re1_0.r_category,
+        re1_0.r_content,
+        re1_0.r_mainphoto,
+        re1_0.r_star_rating,
+        re1_0.r_title,
+        re1_0.r_views,
+        re1_0.r_written_time,
+        u1_0.u_no,
+        u1_0.u_birth,
+        u1_0.u_deactivated,
+        u1_0.u_id,
+        u1_0.u_mail,
+        u1_0.u_name,
+        u1_0.u_profile,
+        u1_0.u_pw,
+        u1_0.u_register,
+        u1_0.u_tel 
+    from
+        review re1_0 
+    join
+        user u1_0 
+            on u1_0.u_id=re1_0.u_id 
+    where
+        re1_0.r_no=?
+2025-05-04 02:49:42.168 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        rpe1_0.rp_no,
+        rpe1_0.rp_photo,
+        rpe1_0.r_no 
+    from
+        review_photo rpe1_0 
+    where
+        rpe1_0.r_no=?
+2025-05-04 02:49:42.171 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        rce1_0.r_comment_no,
+        rce1_0.r_comment,
+        rce1_0.r_comment_created,
+        rce1_0.r_no,
+        u1_0.u_no,
+        u1_0.u_birth,
+        u1_0.u_deactivated,
+        u1_0.u_id,
+        u1_0.u_mail,
+        u1_0.u_name,
+        u1_0.u_profile,
+        u1_0.u_pw,
+        u1_0.u_register,
+        u1_0.u_tel 
+    from
+        review_comment rce1_0 
+    join
+        user u1_0 
+            on u1_0.u_id=rce1_0.u_id 
+    where
+        rce1_0.r_no=?
+2025-05-04 02:49:43.862 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        re1_0.r_no,
+        re1_0.r_category,
+        re1_0.r_content,
+        re1_0.r_mainphoto,
+        re1_0.r_star_rating,
+        re1_0.r_title,
+        re1_0.r_views,
+        re1_0.r_written_time,
+        u1_0.u_no,
+        u1_0.u_birth,
+        u1_0.u_deactivated,
+        u1_0.u_id,
+        u1_0.u_mail,
+        u1_0.u_name,
+        u1_0.u_profile,
+        u1_0.u_pw,
+        u1_0.u_register,
+        u1_0.u_tel 
+    from
+        review re1_0 
+    left join
+        user u1_0 
+            on u1_0.u_id=re1_0.u_id 
+    where
+        re1_0.r_no=?
+2025-05-04 02:49:43.865 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        ue1_0.u_no,
+        ue1_0.u_birth,
+        ue1_0.u_deactivated,
+        ue1_0.u_id,
+        ue1_0.u_mail,
+        ue1_0.u_name,
+        ue1_0.u_profile,
+        ue1_0.u_pw,
+        ue1_0.u_register,
+        ue1_0.u_tel 
+    from
+        user ue1_0 
+    where
+        ue1_0.u_id=?
+2025-05-04 02:49:43.869 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        review_comment
+        (r_comment, r_comment_created, r_no, u_id) 
+    values
+        (?, ?, ?, ?)
+2025-05-04 02:49:49.746 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - 
+    select
+        re1_0.r_no,
+        re1_0.r_category,
+        re1_0.r_content,
+        re1_0.r_mainphoto,
+        re1_0.r_star_rating,
+        re1_0.r_title,
+        re1_0.r_views,
+        re1_0.r_written_time,
+        re1_0.u_id 
+    from
+        review re1_0 
+    limit
+        ?, ?
+2025-05-04 02:49:49.747 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - 
+    select
+        ue1_0.u_no,
+        ue1_0.u_birth,
+        ue1_0.u_deactivated,
+        ue1_0.u_id,
+        ue1_0.u_mail,
+        ue1_0.u_name,
+        ue1_0.u_profile,
+        ue1_0.u_pw,
+        ue1_0.u_register,
+        ue1_0.u_tel 
+    from
+        user ue1_0 
+    where
+        ue1_0.u_id=?
+2025-05-04 02:49:49.749 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - 
+    select
+        ue1_0.u_no,
+        ue1_0.u_birth,
+        ue1_0.u_deactivated,
+        ue1_0.u_id,
+        ue1_0.u_mail,
+        ue1_0.u_name,
+        ue1_0.u_profile,
+        ue1_0.u_pw,
+        ue1_0.u_register,
+        ue1_0.u_tel 
+    from
+        user ue1_0 
+    where
+        ue1_0.u_id=?
+2025-05-04 02:49:49.754 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - 
+    select
+        rpe1_0.rp_no,
+        rpe1_0.rp_photo,
+        rpe1_0.r_no 
+    from
+        review_photo rpe1_0 
+    left join
+        review r1_0 
+            on r1_0.r_no=rpe1_0.r_no 
+    where
+        r1_0.r_no=?
+2025-05-04 02:49:49.757 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - 
+    select
+        rpe1_0.rp_no,
+        rpe1_0.rp_photo,
+        rpe1_0.r_no 
+    from
+        review_photo rpe1_0 
+    left join
+        review r1_0 
+            on r1_0.r_no=rpe1_0.r_no 
+    where
+        r1_0.r_no=?
+2025-05-04 02:49:49.760 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - 
+    select
+        rpe1_0.rp_no,
+        rpe1_0.rp_photo,
+        rpe1_0.r_no 
+    from
+        review_photo rpe1_0 
+    left join
+        review r1_0 
+            on r1_0.r_no=rpe1_0.r_no 
+    where
+        r1_0.r_no=?
+2025-05-04 02:49:49.763 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - 
+    select
+        rpe1_0.rp_no,
+        rpe1_0.rp_photo,
+        rpe1_0.r_no 
+    from
+        review_photo rpe1_0 
+    left join
+        review r1_0 
+            on r1_0.r_no=rpe1_0.r_no 
+    where
+        r1_0.r_no=?
+2025-05-04 02:49:50.523 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        re1_0.r_no,
+        re1_0.r_category,
+        re1_0.r_content,
+        re1_0.r_mainphoto,
+        re1_0.r_star_rating,
+        re1_0.r_title,
+        re1_0.r_views,
+        re1_0.r_written_time,
+        u1_0.u_no,
+        u1_0.u_birth,
+        u1_0.u_deactivated,
+        u1_0.u_id,
+        u1_0.u_mail,
+        u1_0.u_name,
+        u1_0.u_profile,
+        u1_0.u_pw,
+        u1_0.u_register,
+        u1_0.u_tel 
+    from
+        review re1_0 
+    join
+        user u1_0 
+            on u1_0.u_id=re1_0.u_id 
+    where
+        re1_0.r_no=?
+2025-05-04 02:49:50.528 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    update
+        review 
+    set
+        r_category=?,
+        r_content=?,
+        r_mainphoto=?,
+        r_star_rating=?,
+        r_title=?,
+        r_views=?,
+        r_written_time=?,
+        u_id=? 
+    where
+        r_no=?
+2025-05-04 02:49:50.534 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        re1_0.r_no,
+        re1_0.r_category,
+        re1_0.r_content,
+        re1_0.r_mainphoto,
+        re1_0.r_star_rating,
+        re1_0.r_title,
+        re1_0.r_views,
+        re1_0.r_written_time,
+        u1_0.u_no,
+        u1_0.u_birth,
+        u1_0.u_deactivated,
+        u1_0.u_id,
+        u1_0.u_mail,
+        u1_0.u_name,
+        u1_0.u_profile,
+        u1_0.u_pw,
+        u1_0.u_register,
+        u1_0.u_tel 
+    from
+        review re1_0 
+    join
+        user u1_0 
+            on u1_0.u_id=re1_0.u_id 
+    where
+        re1_0.r_no=?
+2025-05-04 02:49:50.536 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        rpe1_0.rp_no,
+        rpe1_0.rp_photo,
+        rpe1_0.r_no 
+    from
+        review_photo rpe1_0 
+    where
+        rpe1_0.r_no=?
+2025-05-04 02:49:50.539 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        rce1_0.r_comment_no,
+        rce1_0.r_comment,
+        rce1_0.r_comment_created,
+        rce1_0.r_no,
+        u1_0.u_no,
+        u1_0.u_birth,
+        u1_0.u_deactivated,
+        u1_0.u_id,
+        u1_0.u_mail,
+        u1_0.u_name,
+        u1_0.u_profile,
+        u1_0.u_pw,
+        u1_0.u_register,
+        u1_0.u_tel 
+    from
+        review_comment rce1_0 
+    join
+        user u1_0 
+            on u1_0.u_id=rce1_0.u_id 
+    where
+        rce1_0.r_no=?
+2025-05-04 02:49:56.975 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        re1_0.r_no,
+        re1_0.r_category,
+        re1_0.r_content,
+        re1_0.r_mainphoto,
+        re1_0.r_star_rating,
+        re1_0.r_title,
+        re1_0.r_views,
+        re1_0.r_written_time,
+        u1_0.u_no,
+        u1_0.u_birth,
+        u1_0.u_deactivated,
+        u1_0.u_id,
+        u1_0.u_mail,
+        u1_0.u_name,
+        u1_0.u_profile,
+        u1_0.u_pw,
+        u1_0.u_register,
+        u1_0.u_tel 
+    from
+        review re1_0 
+    left join
+        user u1_0 
+            on u1_0.u_id=re1_0.u_id 
+    where
+        re1_0.r_no=?
+2025-05-04 02:49:56.979 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        ue1_0.u_no,
+        ue1_0.u_birth,
+        ue1_0.u_deactivated,
+        ue1_0.u_id,
+        ue1_0.u_mail,
+        ue1_0.u_name,
+        ue1_0.u_profile,
+        ue1_0.u_pw,
+        ue1_0.u_register,
+        ue1_0.u_tel 
+    from
+        user ue1_0 
+    where
+        ue1_0.u_id=?
+2025-05-04 02:49:56.981 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        review_comment
+        (r_comment, r_comment_created, r_no, u_id) 
+    values
+        (?, ?, ?, ?)
+2025-05-04 02:49:59.573 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        re1_0.r_no,
+        re1_0.r_category,
+        re1_0.r_content,
+        re1_0.r_mainphoto,
+        re1_0.r_star_rating,
+        re1_0.r_title,
+        re1_0.r_views,
+        re1_0.r_written_time,
+        u1_0.u_no,
+        u1_0.u_birth,
+        u1_0.u_deactivated,
+        u1_0.u_id,
+        u1_0.u_mail,
+        u1_0.u_name,
+        u1_0.u_profile,
+        u1_0.u_pw,
+        u1_0.u_register,
+        u1_0.u_tel 
+    from
+        review re1_0 
+    join
+        user u1_0 
+            on u1_0.u_id=re1_0.u_id 
+    where
+        re1_0.r_no=?
+2025-05-04 02:49:59.576 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        rpe1_0.rp_no,
+        rpe1_0.rp_photo,
+        rpe1_0.r_no 
+    from
+        review_photo rpe1_0 
+    where
+        rpe1_0.r_no=?
+2025-05-04 02:49:59.579 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        rce1_0.r_comment_no,
+        rce1_0.r_comment,
+        rce1_0.r_comment_created,
+        rce1_0.r_no,
+        u1_0.u_no,
+        u1_0.u_birth,
+        u1_0.u_deactivated,
+        u1_0.u_id,
+        u1_0.u_mail,
+        u1_0.u_name,
+        u1_0.u_profile,
+        u1_0.u_pw,
+        u1_0.u_register,
+        u1_0.u_tel 
+    from
+        review_comment rce1_0 
+    join
+        user u1_0 
+            on u1_0.u_id=rce1_0.u_id 
+    where
+        rce1_0.r_no=?
