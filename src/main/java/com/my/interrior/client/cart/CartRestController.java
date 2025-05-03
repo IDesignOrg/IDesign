@@ -70,12 +70,12 @@ public class CartRestController {
 		//cart의 c_no를 참조하고 있는 cart_option의 c_no를 지움.
 		//delete from cart_option where c_no IN(select c_no from cart where u_no = 3);
 		List<CartEntity> carts = cartRepository.findByUserEntity_UNo(userNo);
-		System.out.println("지금 cart에 담겨있는 carts들은: " + carts);
+
 		
 		List<Long> cartNos = carts.stream()
 							.map(cart -> cart.getCNo())
 							.collect(Collectors.toList());
-		System.out.println("cartNos의 값들은: " + cartNos);
+
 		
 		cartOptionRepository.deleteByCartEntity_CNoIn(cartNos);
 		

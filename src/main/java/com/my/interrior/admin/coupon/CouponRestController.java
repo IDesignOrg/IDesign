@@ -100,9 +100,9 @@ public class CouponRestController {
    @Operation(summary = "쿠폰 처리", description = "사용 된 쿠폰은 처리, 사용 된 날짜를 기준.")
    public ResponseEntity<?> patchCoupon(@RequestParam(value = "couponNo", required = false) Long couponNo, HttpSession session) {
       
-      System.out.println("couponNo의 값은 !!!!!: " + couponNo);
+
       if (couponNo == null) {
-         System.out.println("그래서 couponNo가 null로 들어옴");
+
          return ResponseEntity.ok("success");
       } else {
          //유저 넘버도 가져와야됨
@@ -112,11 +112,11 @@ public class CouponRestController {
          Long userNo = user.getUNo();
          
          CouponMapEntity coupon = couponService.getCouponBycouponNos(couponNo, userNo);
-         System.out.println("그래서 coupon에 있는 값이 아마도 null?: " + coupon);
+
          coupon.setUsed(true);
          coupon.setUsedDate(LocalDate.now());
 
-         System.out.println("coupon의 값은? 변경되었을 때 : " + coupon);
+
 
          couponMap.save(coupon);
 

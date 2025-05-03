@@ -71,7 +71,7 @@ public class CartController {
 		List<Long> options = cartOptions.stream()
 				.map(option -> option.getShopOptionValueEntity().getShopOptionValueNo()).collect(Collectors.toList());
 
-		System.out.println("options: " + options);
+
 		List<ShopOptionValueEntity> shopOptionValues = new ArrayList<>();
 		for (int i = 0; i < options.size(); i++) {
 			shopOptionValues.add(shopOptionValueService.getShopOptionValues(options.get(i)));
@@ -92,7 +92,7 @@ public class CartController {
 				total += (cartEntities.get(i - 1).getQuantity()
 						* Integer.parseInt(cartEntities.get(i - 1).getShopEntity().getShopPrice()))
 						+ shopOptionValues.get(i - 1).getShopOptionPrice();
-				System.out.println("total:" + total);
+
 			} else {
 				total += (cartEntities.get(i - 1).getQuantity()
 						* Integer.parseInt(cartEntities.get(i - 1).getShopEntity().getShopPrice()));
@@ -112,8 +112,7 @@ public class CartController {
 
 		List<CouponEntity> couponEntities = couponService.getCouponEntitiesBycouponNos(couponNos);
 
-		System.out.println("coupons: " + coupons);
-		System.out.println("couponEntities: " + couponEntities);
+
 
 		NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.KOREA);
 		String formattedTotal = numberFormat.format(total);
@@ -124,7 +123,7 @@ public class CartController {
 		model.addAttribute("total", formattedTotal);
 		model.addAttribute("cartEntities", cartEntities);
 		model.addAttribute("cartSize", cartEntities.size());
-		System.out.println("cartSize는 : " + cartEntities.size());
+
 		model.addAttribute("cartOptions", cartOptions);
 		// shop_option_value 테이블이 전부 들어가있음.
 		model.addAttribute("shopOptionValues", shopOptionValues);

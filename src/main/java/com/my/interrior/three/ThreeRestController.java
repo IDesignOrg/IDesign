@@ -64,7 +64,7 @@ public class ThreeRestController {
 	public ResponseEntity<?> removeProjects(
 			@Parameter(name = "projectIds", description = "배열로 받음")
 			@RequestParam("project_ids") List<String> projectIds) throws IOException {
-		System.out.println("projectIds: " + projectIds);
+
 
 		// point -> data -> three 순서로 삭제
 		String response = threeService.removeProjects(projectIds);
