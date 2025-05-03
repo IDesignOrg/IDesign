@@ -60,4 +60,16 @@ winter-rider-455716-t9-73bb37a367c3.json
 application-prod.properties
 application-dev.properties
 
+# Querydsl generated files
+**/generated/
+src/main/generated/
+src/test/generated/
+
+# Log files
+logs/
+*.log
+log/
+*.log.*
+/logs/
+/log/
 
