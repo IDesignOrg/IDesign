@@ -22,16 +22,16 @@ public class PointEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@Column(name = "x")
 	private Double x;
-	
+
 	@Column(name = "y")
 	private Double y;
-	
+
 	@Column(name = "z")
 	private Double z;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "oid", nullable = false)
 	private DataEntity data;

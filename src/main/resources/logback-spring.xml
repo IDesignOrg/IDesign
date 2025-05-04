@@ -3,6 +3,7 @@
     <!-- 콘솔 로그 설정 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
+            <charset>UTF-8</charset>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
@@ -78,6 +79,7 @@
     <springProfile name="prod">
         <!-- 운영 환경 루트 로거 -->
         <root level="WARN">
+
             <appender-ref ref="FILE-PROD" />
         </root>
 
