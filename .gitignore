@@ -66,10 +66,5 @@ src/main/generated/
 src/test/generated/
 
 # Log files
-logs/
 *.log
-log/
 *.log.*
-/logs/
-/log/
-
