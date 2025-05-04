@@ -26,7 +26,7 @@ public class DataEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@Column(name = "oid")
 	private String oid;
 	
