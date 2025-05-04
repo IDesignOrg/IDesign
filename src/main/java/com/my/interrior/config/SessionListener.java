@@ -13,11 +13,11 @@ public class SessionListener implements HttpSessionListener {
 
     @Override
     public void sessionCreated(HttpSessionEvent se) {
-        logger.info("技记 积己: ID={}", se.getSession().getId());
+        logger.info("Session created: ID={}", se.getSession().getId());
     }
 
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
-        logger.info("技记 家戈: ID={}", se.getSession().getId());
+        logger.info("Session destroyed: ID={}", se.getSession().getId());
     }
 }
